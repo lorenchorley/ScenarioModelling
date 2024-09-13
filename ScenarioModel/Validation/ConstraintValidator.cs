@@ -2,16 +2,21 @@
 
 namespace ScenarioModel.Validation;
 
-public class ConstraintValidator :  IValidator<Constraint>
+public class ConstraintValidator :  IValidator<ConstraintExpression>
 {
-    public ValidationErrors Validate(Constraint constraint)
+    private readonly System _system;
+    private readonly ConstraintValidatorVisitor _visitor;
+
+    public ConstraintValidator(System system)
     {
-        ValidationErrors validationErrors = new();
+        _system = system;
+        _visitor = new ConstraintValidatorVisitor(system);
+    }
 
-        // If has state, it should be of type EntityType.StateType
-        // All relations should be valid
-        // This entity should be either the left or right entity of each relation
-
-        return validationErrors;
+    public ValidationErrors Validate(ConstraintExpression constraint)
+    {
+        constraint.Accept(_visitor);    
+        
+        return _visitor.Errors;
     }
 }

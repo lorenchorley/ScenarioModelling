@@ -3,7 +3,7 @@ using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.SystemObjects.Entities;
 
-public class Entity : IStateful
+public class Entity : IStateful, IRelatable
 {
     public string Name { get; set; } = "";
     public EntityType EntityType { get; set; } = null!;

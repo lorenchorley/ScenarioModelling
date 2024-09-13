@@ -8,7 +8,7 @@ namespace ScenarioModel.Tests
     public class ScenarioTests
     {
         [TestMethod]
-        [TestCategory("Valid")]
+        [TestCategory("Valid"), TestCategory("Scenario")]
         public void Scenario1_Validates_Runs()
         {
             // Arrange

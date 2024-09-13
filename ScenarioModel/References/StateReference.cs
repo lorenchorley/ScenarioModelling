@@ -1,5 +1,12 @@
-﻿namespace ScenarioModel.References;
+﻿using LanguageExt;
+using ScenarioModel.SystemObjects.States;
 
-public class StateReference : IReference
+namespace ScenarioModel.References;
+
+public class StateReference : IReference<State>
 {
+    public Option<State> ResolveReference(System system)
+    {
+        throw new NotImplementedException();
+    }
 }

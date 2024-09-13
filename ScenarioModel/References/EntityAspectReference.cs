@@ -1,5 +1,23 @@
-﻿namespace ScenarioModel.References;
+﻿using LanguageExt;
+using ScenarioModel.SystemObjects.Entities;
+using ScenarioModel.SystemObjects.Relations;
+using ScenarioModel.SystemObjects.States;
 
-public class EntityAspectReference : IReference
+namespace ScenarioModel.References;
+
+public class EntityAspectReference : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference
 {
+    public string EntityName { get; set; } = "";
+    public string AspectName { get; set; } = "";
+
+    public Option<Aspect> ResolveReference(System system)
+    {
+        throw new NotImplementedException();
+    }
+
+    Option<IStateful> IReference<IStateful>.ResolveReference(System system)
+        => ResolveReference(system).Map(x => (IStateful)x);
+
+    Option<IRelatable> IReference<IRelatable>.ResolveReference(System system)
+        => ResolveReference(system).Map(x => (IRelatable)x);
 }

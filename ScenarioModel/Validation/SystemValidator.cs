@@ -19,6 +19,7 @@ public class SystemValidator : IValidator<System>
         ValidateStateTypes(system, validationErrors);
         ValidateStates(system, validationErrors);
         ValidateRelations(system, validationErrors);
+        ValidateConstraints(system, validationErrors);
 
         return validationErrors;
     }
@@ -72,6 +73,16 @@ public class SystemValidator : IValidator<System>
         foreach (var entityType in system.EntityTypes)
         {
             _entityValidator.ValidateType(entityType);
+        }
+    }
+
+    private void ValidateConstraints(System system, ValidationErrors validationErrors)
+    {
+        ConstraintValidator validator = new(system);
+
+        foreach (var constraint in system.Constraints)
+        {
+            validationErrors.Incorporate(validator.Validate(constraint));
         }
     }
 }
