@@ -6,6 +6,7 @@ namespace ScenarioModel;
 
 public class System
 {
+    public string Name { get; set; } = "";
     public List<EntityType> EntityTypes { get; set; } = new();
     public List<Entity> Entities { get; set; } = new();
     public List<StateType> StateTypes { get; set; } = new();
@@ -15,7 +16,7 @@ public class System
     {
         foreach (var stateType in StateTypes)
         {
-            foreach (var state in stateType.States)        
+            foreach (var state in stateType.States)
             {
                 state.StateType = stateType;
             }

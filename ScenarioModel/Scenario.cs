@@ -18,11 +18,25 @@ namespace ScenarioModel;
 public class Scenario
 {
     public string Name { get; set; } = "";
-    public System System { get; init; } = new();
+    public string SystemName { get; set; } = "";
+    public System System { get; set; } = new();
     public DirectedGraph<IScenarioAction> Steps { get; set; } = new();
 
-    public void Initialise()
+    public void Initialise(Context context)
     {
+        if (!string.Equals(System.Name, SystemName))
+        {
+            var correspondingSystem = context.Systems.FirstOrDefault(system => string.Equals(system.Name, SystemName));
+            if (correspondingSystem != null)
+            {
+                System = correspondingSystem;
+            }
+            else
+            {
+                // ?
+            }
+        }
+
         // Complete system with entityies, states etc from the steps before initialising the system
         foreach (var action in Steps)
         {

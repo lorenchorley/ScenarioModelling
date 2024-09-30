@@ -16,8 +16,6 @@ public class ConstraintValidatorVisitor : IConstraintNodeVisitor
 
     public object VisitAndConstraint(AndConstraint andConstraint)
     {
-
-
         return Errors;
     }
 

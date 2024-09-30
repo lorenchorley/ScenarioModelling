@@ -43,7 +43,8 @@ public class ConstraintEvalatorVisitor : IConstraintNodeVisitor
         var relatables = hasRelationConstraint.RelatableObject.ResolveReference(_system);
 
         return relatables.Match(
-            relatable => { 
+            relatable =>
+            {
                 foreach (var objectRelation in relatable.Relations)
                 {
                     if (systemRelation.Case == objectRelation)

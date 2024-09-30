@@ -6,16 +6,19 @@ namespace ScenarioModel.Tests.Valid;
 
 public static class InvalidSystem1
 {
-    public static System Generate()
-        => new()
+    public static System System
+    {
+        get => new()
         {
+            Name = nameof(InvalidSystem1),
             Entities = [
                 new() { Name = "E1", Relations = [ new Relation() { LeftEntity = new EntityReference() { EntityName = "E1" }, RightEntity = new EntityReference() { EntityName = "E2" } } ] },
                 new() { Name = "E2" }
             ],
-            Constraints = 
+            Constraints =
             [
                 new HasRelationConstraint() { Ref = new RelationReference() { RelationName = "R1" }, RelatableObject = new EntityReference() { EntityName = "E1" } } // R1 does not exist on an entity
             ]
         };
+    }
 }

@@ -1,30 +1,27 @@
 using FluentAssertions;
+using ScenarioModel.Serialisation;
 using ScenarioModel.Tests.Valid;
-using ScenarioModel.Validation;
 
-namespace ScenarioModel.Tests
+namespace ScenarioModel.Tests;
+
+[TestClass]
+public class InvalidSystemTests
 {
-    [TestClass]
-    public class InvalidSystemTests
+    [TestMethod]
+    [TestCategory("Invalid"), TestCategory("System")]
+    public void Scenario1_DoesNotValidate()
     {
-        [TestMethod]
-        [TestCategory("Invalid"), TestCategory("System")]
-        public void Scenario1_DoesNotValidate()
-        {
-            // Arrange
-            // =======
-            var system = InvalidSystem1.Generate();
+        // Arrange && Act
+        // ==============
+        var context =
+            Context.New()
+                   .UseSerialiser<HumanReadablePromptSerialiserV1>()
+                   .LoadSystem(InvalidSystem1.System, out System system)
+                   .Initialise();
 
 
-            // Act
-            // ===
-            var validationErrors = new SystemValidator().Validate(system);
-
-
-            // Assert
-            // ======
-
-            validationErrors.Should().HaveCount(1);
-        }
+        // Assert
+        // ======
+        context.ValidationErrors.Should().HaveCount(1);
     }
 }
