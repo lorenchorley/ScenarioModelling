@@ -10,7 +10,6 @@ public static class InvalidSystem1
     {
         get => new()
         {
-            Name = nameof(InvalidSystem1),
             Entities = [
                 new() { Name = "E1", Relations = [ new Relation() { LeftEntity = new EntityReference() { EntityName = "E1" }, RightEntity = new EntityReference() { EntityName = "E2" } } ] },
                 new() { Name = "E2" }

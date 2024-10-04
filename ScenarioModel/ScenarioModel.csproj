@@ -8,6 +8,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Serialisation\HumanReadable\Grammar\HumanReadableGrammar.egt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Serialisation\HumanReadable\Grammar\HumanReadableGrammar.egt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="GoldEngine" Version="1.0.0" />
 	  <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
 	  <PackageReference Include="YamlDotNet" Version="16.1.2" />
 	</ItemGroup>

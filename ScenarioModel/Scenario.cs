@@ -18,41 +18,25 @@ namespace ScenarioModel;
 public class Scenario
 {
     public string Name { get; set; } = "";
-    public string SystemName { get; set; } = "";
     public System System { get; set; } = new();
-    public DirectedGraph<IScenarioAction> Steps { get; set; } = new();
+    public DirectedGraph<IScenarioNode> Steps { get; set; } = new();
 
     public void Initialise(Context context)
     {
-        if (!string.Equals(System.Name, SystemName))
-        {
-            var correspondingSystem = context.Systems.FirstOrDefault(system => string.Equals(system.Name, SystemName));
-            if (correspondingSystem != null)
-            {
-                System = correspondingSystem;
-            }
-            else
-            {
-                // ?
-            }
-        }
-
         // Complete system with entityies, states etc from the steps before initialising the system
         foreach (var action in Steps)
         {
             CompleteSystemWithObjectsFrom(action);
         }
-
-        System.Initialise();
     }
 
-    private void CompleteSystemWithObjectsFrom(IScenarioAction action)
+    private void CompleteSystemWithObjectsFrom(IScenarioNode action)
     {
         switch (action)
         {
-            case ChooseAction chooseAction:
+            case ChooseNode chooseAction:
                 break;
-            case StateTransitionAction stateTransitionAction:
+            case StateTransitionNode stateTransitionAction:
 
                 // Check if the state already exists in the system
                 if (!System.HasState(stateTransitionAction.StateName))
@@ -67,9 +51,9 @@ public class Scenario
 
     public StoryRunResult StartAtStep(string stepName)
     {
-        Story story = new() { Scenario = this };
+        Run story = new() { Scenario = this };
 
-        IScenarioAction? initialAction = Steps.FirstOrDefault(step => step.Name == stepName);
+        IScenarioNode? initialAction = Steps.FirstOrDefault(step => step.Name == stepName);
 
         return StoryRunResult.Successful(story);
     }

@@ -1,4 +1,5 @@
-﻿using ScenarioModel.Serialisation;
+﻿using LanguageExt.Common;
+using ScenarioModel.Serialisation;
 using ScenarioModel.Validation;
 using System.Text;
 
@@ -8,7 +9,7 @@ public class Context
 {
     public List<ISerialiser> Serialisers { get; set; } = new();
     public List<Scenario> Scenarios { get; set; } = new();
-    public List<System> Systems { get; set; } = new();
+    public System System { get; set; } = new();
     public ValidationErrors ValidationErrors { get; set; } = new();
 
     private Context()
@@ -26,6 +27,19 @@ public class Context
         return this;
     }
 
+    public Context LoadContext<T>(string serialisedContext) where T : ISerialiser
+    {
+        var serialiser = Serialisers.FirstOrDefault(s => s.GetType() == typeof(T));
+        if (serialiser == null)
+        {
+            throw new Exception("Serialiser not found : " + typeof(T).Name);
+        }
+
+        serialiser.DeserialiseExtraContextIntoExisting(serialisedContext, this);
+
+        return this;
+    }
+
     public Context LoadSystem(System system)
     {
         return LoadSystem(system, out _);
@@ -33,33 +47,43 @@ public class Context
 
     public Context LoadSystem(System newSystem, out System system)
     {
-        Systems.Add(newSystem);
+        System = newSystem;
         system = newSystem;
+
+        foreach (var scenario in Scenarios)
+        {
+            scenario.System = system;
+        }
 
         return this;
     }
-    
-    public Context LoadSystem(string serialisedSystem, out System system)
-    {
-        foreach (var serialiser in Serialisers)
-        {
-            var result = serialiser.DeserialiseSystem(serialisedSystem, this);
-            if (result.IsSome)
-            {
-                system = (System)result.Case;
-                Systems.Add(system);
 
-                return this;
-            }
-        }
+    //public Context LoadSystem(string serialisedSystem, out System system)
+    //{
+    //    foreach (var serialiser in Serialisers)
+    //    {
+    //        var result = serialiser.DeserialiseSystem(serialisedSystem, this);
+    //        if (result.IsSome)
+    //        {
+    //            system = (System)result.Case;
+    //            System = system;
 
-        throw new Exception("Failed to load system, no serialiser was able to deserialise the incoming text");
-    }
+    //            foreach (var scenario in Scenarios)
+    //            {
+    //                scenario.System = system;
+    //            }
 
-    public Context LoadSystem(string serialisedSystem)
-    {
-        return LoadSystem(serialisedSystem, out _);
-    }
+    //            return this;
+    //        }
+    //    }
+
+    //    throw new Exception("Failed to load system, no serialiser was able to deserialise the incoming text");
+    //}
+
+    //public Context LoadSystem(string serialisedSystem)
+    //{
+    //    return LoadSystem(serialisedSystem, out _);
+    //}
 
     public Context LoadScenario(Scenario scenario)
     {
@@ -69,31 +93,37 @@ public class Context
     public Context LoadScenario(Scenario newScenario, out Scenario scenario)
     {
         Scenarios.Add(newScenario);
+        newScenario.System = System;
         scenario = newScenario;
         return this;
     }
 
-    public Context LoadScenario(string serialisedScenario)
-    {
-        return LoadScenario(serialisedScenario, out _);
-    }
+    //public Context LoadScenarios(string serialisedScenarios)
+    //{
+    //    return LoadScenarios(serialisedScenarios, out _);
+    //}
 
-    public Context LoadScenario(string serialisedScenario, out Scenario scenario)
-    {
-        foreach (var serialiser in Serialisers)
-        {
-            var result = serialiser.DeserialiseScenario(serialisedScenario, this);
-            if (result.IsSome)
-            {
-                scenario = (Scenario)result.Case;
-                Scenarios.Add(scenario);
+    //public Context LoadScenarios(string serialisedScenarios, out List<Scenario> scenarios)
+    //{
+    //    foreach (var serialiser in Serialisers)
+    //    {
+    //        var result = serialiser.DeserialiseScenarios(serialisedScenarios, this);
+    //        if (result.IsSome)
+    //        {
+    //            scenarios = (List<Scenario>)result.Case;
 
-                return this;
-            }
-        }
+    //            foreach (Scenario scenario in scenarios)
+    //            {
+    //                scenario.System = System;
+    //                Scenarios.Add(scenario);
+    //            }
 
-        throw new Exception("Failed to load scenario, no serialiser was able to deserialise the incoming text");
-    }
+    //            return this;
+    //        }
+    //    }
+
+    //    throw new Exception("Failed to load scenario, no serialiser was able to deserialise the incoming text");
+    //}
 
     public Context Initialise()
     {
@@ -112,28 +142,14 @@ public class Context
         }
     }
 
-    public string Serialise<T>() where T : ISerialiser
+    public Result<string> Serialise<T>() where T : ISerialiser
     {
-        StringBuilder sb = new();
-
         var serialiser = Serialisers.FirstOrDefault(s => s.GetType() == typeof(T));
         if (serialiser == null)
         {
             throw new Exception("Serialiser not found : " + typeof(T).Name);
         }
 
-        foreach (var system in Systems)
-        {
-            sb.AppendLine(serialiser.SerialiseSystem(system));
-            sb.AppendLine();
-        }
-
-        foreach (var scenario in Scenarios)
-        {
-            sb.AppendLine(serialiser.SerialiseScenario(scenario));
-            sb.AppendLine();
-        }
-
-        return sb.ToString();
+        return serialiser.SerialiseContext(this);
     }
 }

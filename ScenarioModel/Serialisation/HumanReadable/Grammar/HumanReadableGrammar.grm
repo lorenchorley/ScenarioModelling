@@ -1,0 +1,60 @@
+﻿"Name"    = 'Human Readable Grammar'
+"Author"  = 'LChorley'
+"Version" = '1.0'
+"About"   = ''
+
+"Start Symbol" = <Program>
+"Case Sensitive" = False 
+
+
+! ----------------------------------------------------------------- Sets
+
+{FirstIdentifierCharacter} = {Letter} + [_]
+{OtherIdentifierCharacter} = {AlphaNumeric} + [_éèàäëïöüùçâêîôûÇÄÅÉæÆÖÜøØƒáíóúñÑÁÂÀãÃðÐÊËÈiÍÎÏÌÓßÔÒõÕµþÞÚÛÙýÝ'']
+{StringCharacter}      = {All Printable} - ["\] + {HT} + {CR} + {LF}
+
+! ----------------------------------------------------------------- Terminals
+
+!'[a-zA-Z_][a-zA-Z_0-9]*'                                              Identificateur;
+Identifier = {FirstIdentifierCharacter}{OtherIdentifierCharacter}*
+
+!'[0-9]+(\.[0-9]+)?'                                                   ConstNum;
+NumberLiteral = {Number}+ ('.' {Number}+)?
+
+!'[^\"]*'                                                              ConstCh;
+!'\"'                                                                  %ignore, %pop;
+StringLiteral = '"' {StringCharacter}* '"'
+
+
+! ===========================================================================
+! C.1.8 Literals 
+! ===========================================================================
+
+<ID> ::= Identifier
+      
+<String> ::= Identifier
+          |  StringLiteral
+
+! ===========================================================================
+! C.2.4 Expressions 
+! ===========================================================================
+
+<Program> ::= <Definitions>
+
+<Definitions> ::= <Definitions> <Definition>
+               |  ! Empty
+
+<Definition> ::= <NamedDefinition>
+              |  <UnnamedDefinition>
+              |  <NamedLink> 
+              |  <UnnamedLink>
+              
+<NamedDefinition> ::= <ID> <String> '{' <Definitions> '}'
+                   |  <ID> <String> 
+
+<UnnamedDefinition> ::= <ID> '{' <Definitions> '}'
+                     |  <ID> 
+                   
+<UnnamedLink> ::= <String> '->' <String>
+                   
+<NamedLink> ::= <String> '->' <String> ':' <String>

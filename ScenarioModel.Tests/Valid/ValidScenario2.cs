@@ -10,10 +10,9 @@ public static class ValidScenario2
         get => new()
         {
             Name = nameof(ValidScenario2),
-            SystemName = nameof(ValidScenario2) + "_System",
             Steps = new()
             {
-                new ChooseAction() { Name = "A1", Choices = [ "A2", "A1" ] },
+                new ChooseNode() { Name = "A1", Choices = [ "A2", "A1" ] },
             }
         };
     }
@@ -22,7 +21,6 @@ public static class ValidScenario2
     {
         get => new()
         {
-            Name = nameof(ValidScenario2) + "_System",
             Entities = new()
             {
                 new() { Name = "E1", State = new() { Name = "S1" } },

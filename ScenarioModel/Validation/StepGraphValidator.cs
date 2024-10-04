@@ -3,9 +3,9 @@ using ScenarioModel.SystemObjects.Entities;
 
 namespace ScenarioModel.Validation;
 
-public class StepGraphValidator : IValidator<DirectedGraph<IScenarioAction>>
+public class StepGraphValidator : IValidator<DirectedGraph<IScenarioNode>>
 {
-    public ValidationErrors Validate(DirectedGraph<IScenarioAction> stepGraph)
+    public ValidationErrors Validate(DirectedGraph<IScenarioNode> stepGraph)
     {
         ValidationErrors validationErrors = new();
 
@@ -13,11 +13,11 @@ public class StepGraphValidator : IValidator<DirectedGraph<IScenarioAction>>
         {
             switch (step)
             {
-                case ChooseAction chooseAction:
+                case ChooseNode chooseAction:
 
                     foreach (var choice in chooseAction.Choices)
                     {
-                        validationErrors.AddIfNot(IsStepName(stepGraph, choice), new InvalidStepName($"Step {choice} not found on {typeof(ChooseAction)} {chooseAction.Name}"));
+                        validationErrors.AddIfNot(IsStepName(stepGraph, choice), new InvalidStepName($"Step {choice} not found on {typeof(ChooseNode)} {chooseAction.Name}"));
                     }
 
                     break;
@@ -27,7 +27,7 @@ public class StepGraphValidator : IValidator<DirectedGraph<IScenarioAction>>
         return validationErrors;
     }
 
-    private bool IsStepName(DirectedGraph<IScenarioAction> stepGraph, string name)
+    private bool IsStepName(DirectedGraph<IScenarioNode> stepGraph, string name)
     {
         return stepGraph.Any(s => string.Equals(s.Name, s));
     }

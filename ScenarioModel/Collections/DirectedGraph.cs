@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using ScenarioModel.SystemObjects.Entities;
+using System.Collections;
 
 namespace ScenarioModel.Collections;
 
 public interface IDirectedGraphNode
 {
     string Name { get; }
-    IEnumerable<string> TargetNodeNames { get; }
 }
 
 public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
@@ -23,7 +23,12 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
 
         foreach (var node in _nodes)
         {
-            foreach (var targetNode in node.TargetNodeNames)
+            if (node is not ITransitionNode transitionNode)
+            {
+                continue;
+            }
+
+            foreach (var targetNode in transitionNode.TargetNodeNames)
             {
                 if (!_nodes.Any(n => string.Equals(n.Name, targetNode)))
                 {

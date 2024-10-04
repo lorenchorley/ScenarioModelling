@@ -1,5 +1,5 @@
 using FluentAssertions;
-using ScenarioModel.Serialisation;
+using ScenarioModel.Serialisation.HumanReadable;
 using ScenarioModel.Tests.Valid;
 
 namespace ScenarioModel.Tests;

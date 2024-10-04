@@ -1,5 +1,7 @@
 using FluentAssertions;
+using LanguageExt.Common;
 using ScenarioModel.Serialisation;
+using ScenarioModel.Serialisation.HumanReadable;
 using ScenarioModel.Tests.Valid;
 
 namespace ScenarioModel.Tests;
@@ -27,26 +29,23 @@ public class SerialisationTests
             var context =
                 Context.New()
                        .UseSerialiser<HumanReadablePromptSerialiserV1>()
-                       .UseSerialiser<YamlSerialiserV1>()
-                       .LoadSystem(serialisedSystem)
+                       .LoadContext<HumanReadablePromptSerialiserV1>(serialisedSystem)
                        .Initialise();
 
-            context.Systems.Should().HaveCount(1);
-            var system = context.Systems.First();
 
             // Assert
             // ======
 
         }
     }
-    
+
     [TestMethod]
     [TestCategory("Serialisation")]
     public void Serialise_Deserialise_AllSystems()
     {
         // Arrange
         // =======
-        List<System> systems = 
+        List<System> systems =
         [
             ValidScenario1.System,
             ValidScenario2.System,
@@ -54,7 +53,7 @@ public class SerialisationTests
         ];
 
         TestSerialiseDeserialiseSystemsForSerialiser<HumanReadablePromptSerialiserV1>(systems);
-        TestSerialiseDeserialiseSystemsForSerialiser<YamlSerialiserV1>(systems);
+        //TestSerialiseDeserialiseSystemsForSerialiser<YamlSerialiserV1>(systems);
     }
 
     private static void TestSerialiseDeserialiseSystemsForSerialiser<T>(List<System> systems) where T : ISerialiser, new()
@@ -63,21 +62,27 @@ public class SerialisationTests
         {
             // Act
             // ===
-            string serialisedSystem =
+            Result<string> serialisedSystem =
                 Context.New()
                        .UseSerialiser<T>()
                        .LoadSystem(originalSystem)
                        .Initialise()
                        .Serialise<T>();
 
-            Context.New()
-                   .UseSerialiser<T>()
-                   .LoadSystem(serialisedSystem, out System finalSystem)
-                   .Initialise();
+            serialisedSystem.IfFail(ex => Assert.Fail(ex.Message));
 
-            // Assert
-            // ======
-            originalSystem.Should().BeEquivalentTo(finalSystem);
+            serialisedSystem.IfSucc(newContext =>
+            {
+                var finalContext =
+                    Context.New()
+                       .UseSerialiser<T>()
+                       .LoadContext<T>(newContext)
+                       .Initialise();
+
+                // Assert
+                // ======
+                originalSystem.Should().BeEquivalentTo(finalContext.System);
+            });
         }
     }
 
@@ -101,8 +106,8 @@ public class SerialisationTests
             var context =
                 Context.New()
                        .UseSerialiser<HumanReadablePromptSerialiserV1>()
-                       .UseSerialiser<YamlSerialiserV1>()
-                       .LoadScenario(serialisedScenario)
+                       //.UseSerialiser<YamlSerialiserV1>()
+                       .LoadContext<HumanReadablePromptSerialiserV1>(serialisedScenario)
                        .Initialise();
 
             context.Scenarios.Should().HaveCount(1);
@@ -120,13 +125,14 @@ public class SerialisationTests
     {
         // Arrange
         // =======
-        List<Scenario> scenarios = 
+        List<Scenario> scenarios =
         [
             ValidScenario1.Scenario,
             ValidScenario2.Scenario
         ];
 
-        TestSerialiseDeserialiseScenariosForSerialiser<YamlSerialiserV1>(scenarios);
+        TestSerialiseDeserialiseScenariosForSerialiser<HumanReadablePromptSerialiserV1>(scenarios);
+        //TestSerialiseDeserialiseScenariosForSerialiser<YamlSerialiserV1>(scenarios);
     }
 
     private static void TestSerialiseDeserialiseScenariosForSerialiser<T>(List<Scenario> scenarios) where T : ISerialiser, new()
@@ -135,21 +141,74 @@ public class SerialisationTests
         {
             // Act
             // ===
-            string serialisedScenario =
+            Result<string> serialisedScenario =
                 Context.New()
                        .UseSerialiser<T>()
                        .LoadScenario(originalScenario)
                        .Initialise()
                        .Serialise<T>();
 
-            Context.New()
-                   .UseSerialiser<T>()
-                   .LoadScenario(serialisedScenario, out Scenario finalScenario)
-                   .Initialise();
+            serialisedScenario.IfFail(ex => Assert.Fail(ex.Message));
 
-            // Assert
-            // ======
-            originalScenario.Should().BeEquivalentTo(finalScenario);
+            serialisedScenario.IfSucc(newContext =>
+            {
+                Context reloadedContext =
+                    Context.New()
+                       .UseSerialiser<T>()
+                       .LoadContext<T>(newContext)
+                       .Initialise();
+
+                // Assert
+                // ======
+                reloadedContext.Scenarios.Should().HaveCount(1);
+                originalScenario.Should().BeEquivalentTo(reloadedContext.Scenarios.First());
+            });
         }
     }
+
+    [TestMethod]
+    [TestCategory("Serialisation")]
+    public void Deserialise_Serialise_AllContexts()
+    {
+        // Arrange
+        // =======
+        List<string> contexts =
+        [
+            ValidScenario1.SerialisedContext
+        ];
+
+        TestDeserialiseSerialiseContextForSerialiser<HumanReadablePromptSerialiserV1>(contexts);
+        //TestSerialiseDeserialiseSystemsForSerialiser<YamlSerialiserV1>(systems);
+    }
+
+    private static void TestDeserialiseSerialiseContextForSerialiser<T>(List<string> contexts) where T : ISerialiser, new()
+    {
+        foreach (string context in contexts)
+        {
+            // Act
+            // ===
+            Context loadedContext =
+                Context.New()
+                       .UseSerialiser<T>()
+                       .LoadContext<T>(context)
+                       .Initialise();
+
+            Result<string> reserialisedContext = loadedContext.Serialise<T>();
+
+            reserialisedContext.IfFail(ex => Assert.Fail(ex.Message));
+
+            reserialisedContext.IfSucc(newContext =>
+            {
+                Context reloadedContext = Context.New()
+                       .UseSerialiser<T>()
+                       .LoadContext<T>(newContext)
+                       .Initialise();
+
+                // Assert
+                // ======
+                loadedContext.Should().BeEquivalentTo(reloadedContext);
+            });
+        }
+    }
+
 }

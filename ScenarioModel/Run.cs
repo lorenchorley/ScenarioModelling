@@ -15,7 +15,7 @@ namespace ScenarioModel;
 /// <summary>
 /// A story is an instance or a play through of a scenario.
 /// </summary>
-public class Story
+public class Run
 {
     public Scenario Scenario { get; init; } = null!;
     public List<IScenarioEvent> Events { get; set; } = new();
@@ -25,7 +25,7 @@ public class Story
 public interface StoryRunResult
 {
     public static StoryRunResult ConstraintFailure(string value) => new ConstraintFailure(value);
-    public static StoryRunResult Successful(Story story) => new Successful(story);
+    public static StoryRunResult Successful(Run story) => new Successful(story);
     public static StoryRunResult NotStarted() => new NotStarted();
 }
 
@@ -34,9 +34,9 @@ public class ConstraintFailure(string value) : StoryRunResult
     public string Value { get; } = value;
 }
 
-public class Successful(Story story) : StoryRunResult
+public class Successful(Run story) : StoryRunResult
 {
-    public Story Story { get; } = story;
+    public Run Story { get; } = story;
 }
 
 public class NotStarted : StoryRunResult

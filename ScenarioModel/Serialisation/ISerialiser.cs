@@ -1,12 +1,11 @@
 ﻿using LanguageExt;
+using LanguageExt.Common;
 
 namespace ScenarioModel.Serialisation;
 
 public interface ISerialiser
 {
-    string SerialiseSystem(System system);
-    Option<System> DeserialiseSystem(string text, Context context);
-
-    string SerialiseScenario(Scenario scenario);
-    Option<Scenario> DeserialiseScenario(string text, Context context);
+    Result<string> SerialiseContext(Context context);
+    Result<Context> DeserialiseContext(string text);
+    Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context);
 }
