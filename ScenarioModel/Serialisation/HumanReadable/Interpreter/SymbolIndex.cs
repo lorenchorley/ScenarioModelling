@@ -10,16 +10,19 @@ public enum SymbolIndex
     @Rbrace = 5,                               // '}'
     @Minusgt = 6,                              // '->'
     @Identifier = 7,                           // Identifier
-    @Numberliteral = 8,                        // NumberLiteral
-    @Stringliteral = 9,                        // StringLiteral
-    @Definition = 10,                          // <Definition>
-    @Definitions = 11,                         // <Definitions>
-    @Id = 12,                                  // <ID>
-    @Nameddefinition = 13,                     // <NamedDefinition>
-    @Namedlink = 14,                           // <NamedLink>
-    @Program = 15,                             // <Program>
-    @String = 16,                              // <String>
-    @Unnameddefinition = 17,                   // <UnnamedDefinition>
-    @Unnamedlink = 18                          // <UnnamedLink>
+    @Newline = 8,                              // NewLine
+    @Numberliteral = 9,                        // NumberLiteral
+    @Stringliteral = 10,                       // StringLiteral
+    @Definition = 11,                          // <Definition>
+    @Definitions = 12,                         // <Definitions>
+    @Id = 13,                                  // <ID>
+    @Nameddefinition = 14,                     // <NamedDefinition>
+    @Namedlink = 15,                           // <NamedLink>
+    @Nl = 16,                                  // <nl>
+    @Nlo = 17,                                 // <nlo>
+    @Program = 18,                             // <Program>
+    @String = 19,                              // <String>
+    @Unnameddefinition = 20,                   // <UnnamedDefinition>
+    @Unnamedlink = 21                          // <UnnamedLink>
 }
 

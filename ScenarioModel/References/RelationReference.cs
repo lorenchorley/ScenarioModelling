@@ -17,7 +17,7 @@ public class RelationReference : IReference<SystemObjects.Relations.Relation>, I
             return _relation;
         }
 
-        _relation = system.Relations.Find(x => string.Equals(x.Name, RelationName)).Match(Some: x => _relation = x, None: () => Option<SystemObjects.Relations.Relation>.None);
+        _relation = system.AllRelations.Find(x => string.Equals(x.Name, RelationName)).Match(Some: x => _relation = x, None: () => Option<SystemObjects.Relations.Relation>.None);
         return _relation;
     }
 

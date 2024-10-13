@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModelling", "Scenar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel", "ScenarioModel\ScenarioModel.csproj", "{184C6E70-1580-44E9-BB75-0F07F1F19236}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScenarioModel.Tests", "ScenarioModel.Tests\ScenarioModel.Tests.csproj", "{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel.Tests", "ScenarioModel.Tests\ScenarioModel.Tests.csproj", "{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

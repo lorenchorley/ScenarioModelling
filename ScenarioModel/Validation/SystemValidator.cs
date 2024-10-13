@@ -41,13 +41,13 @@ public class SystemValidator : IValidator<System>
     private void ValidateStateTypes(System system, ValidationErrors validationErrors)
     {
         // Uniqueness of state type names
-        var names = system.StateTypes.GroupBy(s => s.Name);
+        var names = system.StateMachines.GroupBy(s => s.Name);
         foreach (var name in names)
         {
             validationErrors.AddIf(name.Count() > 1, new NameNotUnique($"State type name {name.Key} is not unique. {name.Count()} instances found."));
         }
 
-        foreach (var stateType in system.StateTypes)
+        foreach (var stateType in system.StateMachines)
         {
             _stateValidator.ValidateType(stateType);
         }
@@ -56,13 +56,13 @@ public class SystemValidator : IValidator<System>
     private void ValidateStates(System system, ValidationErrors validationErrors)
     {
         // Uniqueness of state names
-        var names = system.States.GroupBy(s => s.Name);
+        var names = system.AllStates.GroupBy(s => s.Name);
         foreach (var name in names)
         {
             validationErrors.AddIf(name.Count() > 1, new NameNotUnique($"State name {name.Key} is not unique. {name.Count()} instances found."));
         }
 
-        foreach (var state in system.States)
+        foreach (var state in system.AllStates)
         {
             _stateValidator.Validate(state);
         }

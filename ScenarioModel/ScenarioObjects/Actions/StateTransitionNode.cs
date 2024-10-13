@@ -1,16 +1,16 @@
-﻿using ScenarioModel.ScenarioObjects.Events;
-using ScenarioModel.SystemObjects.States;
+﻿using ScenarioModel.References;
+using ScenarioModel.ScenarioObjects.Events;
 
 namespace ScenarioModel.SystemObjects.Entities;
 
-public class StateTransitionNode : IScenarioNode
+public class StateTransitionNode : ITransitionNode
 {
     public string Name { get; set; } = "";
-    public IStateful? StatefulObject { get; set; }
+    public IStatefulObjectReference? StatefulObject { get; set; }
     public string StateName { get; set; } = "";
 
-    public IEnumerable<string> TargetNodeNames => throw new NotImplementedException();
-    
+    public IEnumerable<string> TargetNodeNames => [ StateName ];
+
     public IScenarioEvent ProduceEvent(string choice)
     {
         return new StateChangeEvent { };

@@ -11,11 +11,11 @@ public record UnnamedDefinition : Definition
     {
         if (Definitions.Count == 0)
         {
-            return $"UnnamedDefinition({Type}, _)";
+            return $"Definition({Type}, _)";
         }
         else
         {
-            return $"UnnamedDefinition({Type}, _) {{ {Definitions} }}";
+            return $"Definition({Type}, _) {{ {Definitions} }}";
         }
     }
 }

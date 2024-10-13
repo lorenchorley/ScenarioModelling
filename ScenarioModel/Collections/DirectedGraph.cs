@@ -1,11 +1,11 @@
 ﻿using ScenarioModel.SystemObjects.Entities;
+using ScenarioModel.SystemObjects.States;
 using System.Collections;
 
 namespace ScenarioModel.Collections;
 
-public interface IDirectedGraphNode
+public interface IDirectedGraphNode : INameful
 {
-    string Name { get; }
 }
 
 public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
@@ -15,6 +15,11 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
     public void Add(T node)
     {
         _nodes.Add(node);
+    }
+    
+    public void AddRange(IEnumerable<T> nodes)
+    {
+        _nodes.AddRange(nodes);
     }
 
     public DirectedGraphValidationResult Validate()

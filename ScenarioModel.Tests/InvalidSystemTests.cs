@@ -9,7 +9,7 @@ public class InvalidSystemTests
 {
     [TestMethod]
     [TestCategory("Invalid"), TestCategory("System")]
-    public void Scenario1_DoesNotValidate()
+    public void Scenario1_Invalid_DoesNotValidate()
     {
         // Arrange && Act
         // ==============

@@ -8,11 +8,11 @@ public record NamedDefinition : UnnamedDefinition
     {
         if (Definitions.Count == 0)
         {
-            return $"NamedDefinition({Type}, {Name})";
+            return $"Definition({Type}, {Name})";
         }
         else
         {
-            return $"NamedDefinition({Type}, {Name}) {{ {Definitions} }}";
+            return $"Definition({Type}, {Name}) {{ {Definitions} }}";
         }
     }
 }

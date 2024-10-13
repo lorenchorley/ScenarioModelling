@@ -20,6 +20,8 @@ public partial class HumanReadableInterpreter
     {
         FilterParserResult result = new();
 
+        text += "\r\n";
+
         _parser.Open(ref text);
         _parser.TrimReductions = false;
 
@@ -39,7 +41,7 @@ public partial class HumanReadableInterpreter
     /// <param name="result"></param>
     /// <param name="response"></param>
     /// <returns>Si on devrait continuer le parsing</returns>
-    private bool ProcessResponse(FilterParserResult result, string filter, ParseMessage response)
+    private bool ProcessResponse(FilterParserResult result, string text, ParseMessage response)
     {
         switch (response)
         {
@@ -59,25 +61,29 @@ public partial class HumanReadableInterpreter
             case ParseMessage.InternalError:
             case ParseMessage.NotLoadedError:
             case ParseMessage.GroupError:
-                int column = _parser.CurrentPosition().Column;
-                int line = _parser.CurrentPosition().Line;
+                int columnNumber = _parser.CurrentPosition().Column;
+                int lineNumber = _parser.CurrentPosition().Line;
+                var lines = text.Replace("\r", "").Split('\n');
 
-                if (line == 0)
+                StringBuilder sb = new();
+
+                sb.AppendLine(response.ToString());
+                sb.AppendLine("---");
+                sb.AppendLine("");
+
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    // Faire un message d'erreur qui est bien sympa à lire
-                    StringBuilder sb = new();
-                    sb.AppendLine("");
-                    sb.AppendLine($@"{response} autour de ""{GetSubstringAround(filter, column, 5)}"" dans l'expression suivante :");
-                    sb.AppendLine(filter);
-                    sb.AppendLine(new string(' ', Math.Max(column - 1, 0)) + "^^^");
-                    result.Errors.Add(sb.ToString());
+                    if (i != lineNumber)
+                    {
+                        sb.AppendLine(lines[i]);
+                        continue;
+                    }
+
+                    sb.AppendLine(lines[i]);
+                    sb.AppendLine(new string(' ', Math.Max(columnNumber, 0)) + "^ <- Error here");
                 }
-                else
-                {
-                    // Fallback
-                    result.Errors.Add("Normalement on ne doit pas avoir un filtre qui s'étend sur plusieurs lignes");
-                    result.Errors.Add($"{response} à la ligne {line} et à la colonne {column}");
-                }
+
+                result.Errors.Add(sb.ToString());
 
                 return false;
         }
@@ -98,6 +104,22 @@ public partial class HumanReadableInterpreter
         ProductionIndex productionIndex = (ProductionIndex)r.Parent.TableIndex();
         switch ((ProductionIndex)r.Parent.TableIndex())
         {
+            case ProductionIndex.Nl_Newline:
+                // <nl> ::= NewLine <nl>
+                return null;
+
+            case ProductionIndex.Nl_Newline2:
+                // <nl> ::= NewLine
+                return null;
+
+            case ProductionIndex.Nlo_Newline:
+                // <nlo> ::= NewLine <nlo>
+                return null;
+
+            case ProductionIndex.Nlo:
+                // <nlo> ::= 
+                return null;
+
             case ProductionIndex.Id_Identifier:
                 // <ID> ::= Identifier
 
@@ -111,7 +133,7 @@ public partial class HumanReadableInterpreter
 
                 return new StringValue()
                 {
-                    Value = (string)r[0].Data
+                    Value = ((string)r[0].Data).Trim('"')
                 };
 
             case ProductionIndex.String_Stringliteral:
@@ -119,7 +141,7 @@ public partial class HumanReadableInterpreter
 
                 return new StringValue()
                 {
-                    Value = (string)r[0].Data
+                    Value = ((string)r[0].Data).Trim('"')
                 };
 
             case ProductionIndex.Program:
@@ -132,15 +154,19 @@ public partial class HumanReadableInterpreter
                 {
 
                     Definitions definitions = (Definitions)r[0].Data;
-                    Definition definition = (Definition)r[1].Data;
 
-                    definitions.Add(definition);
+                    if (r[1].Data != null)
+                    {
+                        Definition definition = (Definition)r[1].Data;
+                        definitions.Add(definition);
+                    }
+
                     return definitions;
 
                 }
 
             case ProductionIndex.Definitions2:
-                // <Definitions> ::= 
+                // <Definitions> ::= <nlo>
 
                 return new Definitions();
 
@@ -165,17 +191,17 @@ public partial class HumanReadableInterpreter
                 return r.PassOn();
 
             case ProductionIndex.Nameddefinition_Lbrace_Rbrace:
-                // <NamedDefinition> ::= <ID> <String> '{' <Definitions> '}'
+                // <NamedDefinition> ::= <ID> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 
                 return new NamedDefinition()
                 {
                     Type = (IDValue)r[0].Data,
                     Name = (StringValue)r[1].Data,
-                    Definitions = (Definitions)r[3].Data
+                    Definitions = (Definitions)r[5].Data
                 };
 
             case ProductionIndex.Nameddefinition:
-                // <NamedDefinition> ::= <ID> <String>
+                // <NamedDefinition> ::= <ID> <String> <nl>
 
                 return new NamedDefinition()
                 {
@@ -184,16 +210,16 @@ public partial class HumanReadableInterpreter
                 };
 
             case ProductionIndex.Unnameddefinition_Lbrace_Rbrace:
-                // <UnnamedDefinition> ::= <ID> '{' <Definitions> '}'
+                // <UnnamedDefinition> ::= <ID> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 
                 return new UnnamedDefinition()
                 {
                     Type = (IDValue)r[0].Data,
-                    Definitions = (Definitions)r[2].Data
+                    Definitions = (Definitions)r[4].Data
                 };
 
             case ProductionIndex.Unnameddefinition:
-                // <UnnamedDefinition> ::= <ID>
+                // <UnnamedDefinition> ::= <ID> <nl>
 
                 return new NamedDefinition()
                 {
@@ -201,7 +227,8 @@ public partial class HumanReadableInterpreter
                 };
 
             case ProductionIndex.Unnamedlink_Minusgt:
-                // <UnnamedLink> ::= <String> '->' <String>
+                // <UnnamedLink> ::= <String> '->' <String> <nl>
+
                 return new UnnamedLinkDefinition()
                 {
                     Source = (StringValue)r[0].Data,
@@ -209,7 +236,7 @@ public partial class HumanReadableInterpreter
                 };
 
             case ProductionIndex.Namedlink_Minusgt_Colon:
-                // <NamedLink> ::= <String> '->' <String> ':' <String>
+                // <NamedLink> ::= <String> '->' <String> ':' <String> <nl>
 
                 return new NamedLinkDefinition()
                 {
@@ -217,7 +244,6 @@ public partial class HumanReadableInterpreter
                     Destination = (StringValue)r[2].Data,
                     Name = (StringValue)r[4].Data
                 };
-
         }
 
         return null;

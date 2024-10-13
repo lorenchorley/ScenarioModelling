@@ -23,7 +23,7 @@ public class Scenario
 
     public void Initialise(Context context)
     {
-        // Complete system with entityies, states etc from the steps before initialising the system
+        // Complete system with entities, states etc from the steps before initialising the system
         foreach (var action in Steps)
         {
             CompleteSystemWithObjectsFrom(action);
@@ -42,7 +42,7 @@ public class Scenario
                 if (!System.HasState(stateTransitionAction.StateName))
                 {
                     var stateType = new StateType() { Name = stateTransitionAction.StateName + "_Type", States = new() { new State() { Name = stateTransitionAction.StateName } } };
-                    System.StateTypes.Add(stateType);
+                    System.StateMachines.Add(stateType);
                 }
 
                 break;

@@ -29,6 +29,6 @@ public class StepGraphValidator : IValidator<DirectedGraph<IScenarioNode>>
 
     private bool IsStepName(DirectedGraph<IScenarioNode> stepGraph, string name)
     {
-        return stepGraph.Any(s => string.Equals(s.Name, s));
+        return stepGraph.Any(s => string.Equals(s.Name, name));
     }
 }

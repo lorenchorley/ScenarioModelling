@@ -1,8 +1,4 @@
-﻿using ScenarioModel.References;
-using ScenarioModel.SystemObjects.States;
-using ScenarioModel.Validation;
-
-namespace ScenarioModel.SystemObjects.Relations;
+﻿namespace ScenarioModel.SystemObjects.Relations;
 
 public interface IRelatable
 {

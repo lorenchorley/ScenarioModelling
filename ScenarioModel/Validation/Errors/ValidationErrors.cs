@@ -22,4 +22,9 @@ public class ValidationErrors : List<ValidationError>
     {
         AddRange(otherErrors);
     }
+
+    public override string ToString()
+    {
+        return string.Join("\n", this.Select(a => a.Message));
+    }
 }

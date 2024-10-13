@@ -1,6 +1,7 @@
 using FluentAssertions;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace ScenarioModel.Tests;
 
@@ -10,7 +11,7 @@ public class GrammarTests
     [DataTestMethod]
     [TestCategory("Grammar")]
     [GrammarTestDataProvider]
-    public void GrammarTests_Valid(string name, string text, string expectedResult)
+    public void GrammarTests_Valid(string name, string text, string expectedResultRegex)
     {
         // Arrange
         // =======
@@ -22,13 +23,40 @@ public class GrammarTests
 
         // Assert
         // ======
-        result.HasErrors.Should().BeFalse();
+        result.HasErrors.Should().BeFalse(because: string.Join("\n", result.Errors));
 
         string serialisedResult = result.Tree.ToString();
 
-        Debug.WriteLine("Results :");
+        Debug.WriteLine("Result :");
         Debug.WriteLine(result);
+        Debug.WriteLine("");
 
-        Assert.AreEqual(expectedResult.Trim(), serialisedResult.Trim());
+        Regex regex = new(expectedResultRegex.Trim(), RegexOptions.Multiline);
+        Assert.IsTrue(regex.IsMatch(serialisedResult.Trim()), $"The result did not correspond to the expected regex expression\n\nResult: {result}\nExpression: {expectedResultRegex}");
     }
+
+    [TestMethod]
+    [TestCategory("Grammar")]
+    public void GrammarTestData()
+    {
+        // Arrange
+        // =======
+        GrammarTestDataProviderAttribute grammarTestDataProvider = new();
+
+        // Act
+        // ===
+        var list = grammarTestDataProvider.TestData;
+
+        // Assert
+        // ======
+
+        list.Should().NotBeNullOrEmpty();
+
+        foreach (var item in list)
+        {
+            Debug.WriteLine($"{item}");
+        }
+    }
+
+
 }

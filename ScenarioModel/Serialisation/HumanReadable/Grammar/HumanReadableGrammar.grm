@@ -7,11 +7,28 @@
 "Case Sensitive" = False 
 
 
+!{WS}                  = {Whitespace} - {CR} - {LF} ! Remove newlines from the whitespace def
+!Whitespace            = {WS}+
+!NewLine               = {CR}{LF} | {CR} ! Just one new line
+!<nlp>                   ::= NewLine*      ! New lines possible
+!<nlr>                   ::= NewLine+      ! New lines required
+
+{WS} = {Whitespace} - {CR} - {LF}
+Whitespace = {WS}+
+NewLine = {CR}{LF}|{CR}
+
+<nl>     ::= NewLine <nl>
+          |  NewLine
+
+<nlo>    ::= NewLine <nlo>
+          |
+
 ! ----------------------------------------------------------------- Sets
 
 {FirstIdentifierCharacter} = {Letter} + [_]
 {OtherIdentifierCharacter} = {AlphaNumeric} + [_éèàäëïöüùçâêîôûÇÄÅÉæÆÖÜøØƒáíóúñÑÁÂÀãÃðÐÊËÈiÍÎÏÌÓßÔÒõÕµþÞÚÛÙýÝ'']
-{StringCharacter}      = {All Printable} - ["\] + {HT} + {CR} + {LF}
+{StringCharacter}          = {All Printable} - ["\] + {HT} + {CR} + {LF}
+
 
 ! ----------------------------------------------------------------- Terminals
 
@@ -35,26 +52,27 @@ StringLiteral = '"' {StringCharacter}* '"'
 <String> ::= Identifier
           |  StringLiteral
 
+
 ! ===========================================================================
 ! C.2.4 Expressions 
 ! ===========================================================================
 
 <Program> ::= <Definitions>
 
-<Definitions> ::= <Definitions> <Definition>
-               |  ! Empty
+<Definitions> ::= <Definitions> <Definition> 
+               |  <nlo>
 
 <Definition> ::= <NamedDefinition>
               |  <UnnamedDefinition>
-              |  <NamedLink> 
+              |  <NamedLink>
               |  <UnnamedLink>
               
-<NamedDefinition> ::= <ID> <String> '{' <Definitions> '}'
-                   |  <ID> <String> 
+<NamedDefinition> ::= <ID> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+                   |  <ID> <String> <nl>
 
-<UnnamedDefinition> ::= <ID> '{' <Definitions> '}'
-                     |  <ID> 
+<UnnamedDefinition> ::= <ID> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+                     |  <ID> <nl>
                    
-<UnnamedLink> ::= <String> '->' <String>
+<UnnamedLink> ::= <String> '->' <String> <nl>
                    
-<NamedLink> ::= <String> '->' <String> ':' <String>
+<NamedLink> ::= <String> '->' <String> ':' <String> <nl>

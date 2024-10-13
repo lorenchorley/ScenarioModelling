@@ -35,7 +35,9 @@ public class Context
             throw new Exception("Serialiser not found : " + typeof(T).Name);
         }
 
-        serialiser.DeserialiseExtraContextIntoExisting(serialisedContext, this);
+        var result = serialiser.DeserialiseExtraContextIntoExisting(serialisedContext, this);
+
+        result.IfFail(e => ValidationErrors.Add(new ContextLoadError(e.Message)));
 
         return this;
     }
@@ -131,6 +133,11 @@ public class Context
         {
             scenario.Initialise(this);
         }
+
+        System.Initialise();
+
+        Validate();
+
         return this;
     }
 
@@ -140,6 +147,8 @@ public class Context
         {
             ValidationErrors.Incorporate(new ScenarioValidator().Validate(scenario));
         }
+
+        ValidationErrors.Incorporate(new SystemValidator().Validate(System));
     }
 
     public Result<string> Serialise<T>() where T : ISerialiser
@@ -151,5 +160,17 @@ public class Context
         }
 
         return serialiser.SerialiseContext(this);
+    }
+
+    public Context Incorporate(Context newContext)
+    {
+        Scenarios.AddRange(newContext.Scenarios);
+
+        System.Entities.AddRange(newContext.System.Entities);
+        System.EntityTypes.AddRange(newContext.System.EntityTypes);
+        System.StateMachines.AddRange(newContext.System.StateMachines);
+        System.Constraints.AddRange(newContext.System.Constraints);
+
+        return this;
     }
 }
