@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.SystemObjects.Entities;
+﻿namespace ScenarioModel.ScenarioObjects;
 
 public interface ITransitionNode : IScenarioNode
 {

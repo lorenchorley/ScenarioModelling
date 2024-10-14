@@ -1,6 +1,6 @@
-﻿using ScenarioModel.SystemObjects.Entities;
+﻿using ScenarioModel.ScenarioObjects;
 
-namespace ScenarioModel.ScenarioObjects.Events;
+namespace ScenarioModel.Execution.Events;
 
 public class ChoiceSelectedEvent : IScenarioEvent
 {

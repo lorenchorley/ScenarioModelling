@@ -21,4 +21,8 @@
 	  <PackageReference Include="YamlDotNet" Version="16.1.2" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Execution\EventSourcing\" />
+	</ItemGroup>
+
 </Project>

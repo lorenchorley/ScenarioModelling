@@ -1,5 +1,6 @@
 ﻿using LanguageExt;
 using LanguageExt.Common;
+using ScenarioModel.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.States;

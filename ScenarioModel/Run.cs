@@ -1,5 +1,5 @@
 ﻿using ScenarioModel.Collections;
-using ScenarioModel.ScenarioObjects.Events;
+using ScenarioModel.Execution.Events;
 
 namespace ScenarioModel;
 

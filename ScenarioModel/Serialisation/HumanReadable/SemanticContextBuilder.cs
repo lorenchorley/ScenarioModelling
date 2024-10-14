@@ -1,6 +1,7 @@
 ﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
 using LanguageExt;
 using LanguageExt.Common;
+using ScenarioModel.ScenarioObjects;
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.States;
 using System.Xml.Linq;

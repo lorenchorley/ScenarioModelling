@@ -1,7 +1,6 @@
-﻿
-using ScenarioModel.ScenarioObjects.Events;
+﻿using ScenarioModel.Execution.Events;
 
-namespace ScenarioModel.SystemObjects.Entities;
+namespace ScenarioModel.ScenarioObjects;
 
 public class ChooseNode : IScenarioNode
 {
@@ -10,8 +9,8 @@ public class ChooseNode : IScenarioNode
 
     public IEnumerable<string> TargetNodeNames => Choices;
 
-    public IScenarioEvent ProduceEvent(string choice) 
-    { 
+    public IScenarioEvent ProduceEvent(string choice)
+    {
         return new ChoiceSelectedEvent { Choice = choice };
     }
 }

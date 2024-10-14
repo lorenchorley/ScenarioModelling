@@ -1,4 +1,4 @@
-﻿using ScenarioModel.SystemObjects.Entities;
+﻿using ScenarioModel.ScenarioObjects;
 using ScenarioModel.SystemObjects.States;
 using System.Collections;
 

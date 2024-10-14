@@ -1,5 +1,5 @@
 ﻿using ScenarioModel.Collections;
-using ScenarioModel.SystemObjects.Entities;
+using ScenarioModel.ScenarioObjects;
 using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel;
