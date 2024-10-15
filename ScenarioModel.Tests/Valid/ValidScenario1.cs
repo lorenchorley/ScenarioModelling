@@ -1,5 +1,6 @@
 using ScenarioModel.References;
-using ScenarioModel.SystemObjects.Entities;
+using ScenarioModel.ScenarioObjects;
+using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.Tests.Valid;
 
@@ -14,7 +15,7 @@ public static class ValidScenario1
             {
                 new DialogNode() { Name = "D1", TextTemplate = "Hello" },
                 new ChooseNode() { Name = "C1", Choices = [ "ST1", "D1" ] },
-                new StateTransitionNode() { Name = "ST1", StatefulObject = new EntityReference() { EntityName = "E1" }, StateName = "S1" },
+                new StateTransitionNode() { Name = "ST1", StatefulObject = new EntityReference() { EntityName = "E1" }, TransitionName = "S1" },
                 new DialogNode() { Name = "D2", TextTemplate = "Bubye" },
             }
         };
@@ -31,7 +32,7 @@ public static class ValidScenario1
             },
             StateMachines = new()
             {
-                new() { Name = "ST1", States = [ new() { Name = "S1", Transitions = ["S2"] }, new() { Name = "S2" }] },
+                new() { Name = "ST1", States = [ new() { Name = "S1", Transitions = [new Transition() { SourceState = "S1", DestinationState = "S2", Name = "T1" }] }, new() { Name = "S2" }] },
             }
         };
     }

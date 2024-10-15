@@ -1,5 +1,7 @@
 using ScenarioModel.References;
-using ScenarioModel.SystemObjects.Entities;
+using ScenarioModel.ScenarioObjects;
+using ScenarioModel.SystemObjects.Expressions;
+using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.Tests.Valid;
 
@@ -28,11 +30,11 @@ public static class ValidScenario2
             },
             StateMachines = new()
             {
-                new() { Name = "ST1", States = [ new() { Name = "S1", Transitions = ["S2"] }, new() { Name = "S2" }] },
+                new() { Name = "ST1", States = [ new() { Name = "S1", Transitions = [new Transition() { SourceState = "S1", DestinationState = "S2", Name = "T1" }] }, new() { Name = "S2" }] },
             },
             Constraints =
             [
-                new HasRelationConstraint()
+                new HasRelationExpression()
                 {
                     Ref = new RelationReference()
                     {

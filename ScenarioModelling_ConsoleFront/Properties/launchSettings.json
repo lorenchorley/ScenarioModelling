@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ScenarioModelling_ConsoleFront": {
+      "commandName": "Project",
+      "commandLineArgs": "run \".\\Scenarios\\Scenario1.txt\" First"
+    }
+  }
+}

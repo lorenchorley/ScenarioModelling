@@ -1,19 +1,23 @@
 ﻿using ScenarioModel.Execution.Events;
 using ScenarioModel.References;
-using ScenarioModel.ScenarioObjects.Events;
 
 namespace ScenarioModel.ScenarioObjects;
 
-public class StateTransitionNode : ITransitionNode
+public record StateTransitionNode : IScenarioNode<StateChangeEvent>
 {
     public string Name { get; set; } = "";
     public IStatefulObjectReference? StatefulObject { get; set; }
-    public string StateName { get; set; } = "";
+    public string TransitionName { get; set; } = "";
 
-    public IEnumerable<string> TargetNodeNames => [StateName];
-
-    public IScenarioEvent ProduceEvent(string choice)
+    public StateChangeEvent GenerateEvent()
     {
-        return new StateChangeEvent { };
+        ArgumentNullException.ThrowIfNull(StatefulObject);
+
+        return new StateChangeEvent()
+        {
+            ProducerNode = this,
+            StatefulObject = StatefulObject,
+            TransitionName = TransitionName
+        };
     }
 }

@@ -5,7 +5,7 @@ using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.References;
 
-public class EntityAspectReference : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference
+public record EntityAspectReference : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string EntityName { get; set; } = "";
     public string AspectName { get; set; } = "";
@@ -20,4 +20,6 @@ public class EntityAspectReference : IReference<Aspect>, IRelatableObjectReferen
 
     Option<IRelatable> IReference<IRelatable>.ResolveReference(System system)
         => ResolveReference(system).Map(x => (IRelatable)x);
+
+    override public string ToString() => $"{EntityName}.{AspectName}";
 }

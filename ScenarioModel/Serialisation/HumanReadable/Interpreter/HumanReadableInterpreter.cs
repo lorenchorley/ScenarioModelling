@@ -1,6 +1,6 @@
 ﻿using GOLD;
 using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
-using Isagri.Reporting.StimulSoftMigration.Report.Common.GoldEngine;
+using ScenarioModel.Parsers;
 using System.Text;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Interpreter;
@@ -16,9 +16,9 @@ public partial class HumanReadableInterpreter
         _parser = GoldEngineParserFactory.BuildParser(COMPILED_GRAMMAR_EMBEDDED_RESSOURCE);
     }
 
-    public FilterParserResult Parse(string text)
+    public HumanReadableParserResult Parse(string text)
     {
-        FilterParserResult result = new();
+        HumanReadableParserResult result = new();
 
         text += "\r\n";
 
@@ -41,7 +41,7 @@ public partial class HumanReadableInterpreter
     /// <param name="result"></param>
     /// <param name="response"></param>
     /// <returns>Si on devrait continuer le parsing</returns>
-    private bool ProcessResponse(FilterParserResult result, string text, ParseMessage response)
+    private bool ProcessResponse(HumanReadableParserResult result, string text, ParseMessage response)
     {
         switch (response)
         {
@@ -99,36 +99,28 @@ public partial class HumanReadableInterpreter
         return source.Substring(start, end - start);
     }
 
-    private static object? Interpret(FilterParserResult result, Reduction r)
+    private static object? Interpret(HumanReadableParserResult result, Reduction r)
     {
-        ProductionIndex productionIndex = (ProductionIndex)r.Parent.TableIndex();
-        switch ((ProductionIndex)r.Parent.TableIndex())
+        HumanReadableProductionIndex productionIndex = (HumanReadableProductionIndex)r.Parent.TableIndex();
+        switch ((HumanReadableProductionIndex)r.Parent.TableIndex())
         {
-            case ProductionIndex.Nl_Newline:
+            case HumanReadableProductionIndex.Nl_Newline:
                 // <nl> ::= NewLine <nl>
                 return null;
 
-            case ProductionIndex.Nl_Newline2:
+            case HumanReadableProductionIndex.Nl_Newline2:
                 // <nl> ::= NewLine
                 return null;
 
-            case ProductionIndex.Nlo_Newline:
+            case HumanReadableProductionIndex.Nlo_Newline:
                 // <nlo> ::= NewLine <nlo>
                 return null;
 
-            case ProductionIndex.Nlo:
+            case HumanReadableProductionIndex.Nlo:
                 // <nlo> ::= 
                 return null;
 
-            case ProductionIndex.Id_Identifier:
-                // <ID> ::= Identifier
-
-                return new IDValue()
-                {
-                    Value = (string)r[0].Data
-                };
-
-            case ProductionIndex.String_Identifier:
+            case HumanReadableProductionIndex.String_Identifier:
                 // <String> ::= Identifier
 
                 return new StringValue()
@@ -136,7 +128,7 @@ public partial class HumanReadableInterpreter
                     Value = ((string)r[0].Data).Trim('"')
                 };
 
-            case ProductionIndex.String_Stringliteral:
+            case HumanReadableProductionIndex.String_Stringliteral:
                 // <String> ::= StringLiteral
 
                 return new StringValue()
@@ -144,12 +136,12 @@ public partial class HumanReadableInterpreter
                     Value = ((string)r[0].Data).Trim('"')
                 };
 
-            case ProductionIndex.Program:
+            case HumanReadableProductionIndex.Program:
                 // <Program> ::= <Definitions>
 
                 return r.PassOn();
 
-            case ProductionIndex.Definitions:
+            case HumanReadableProductionIndex.Definitions:
                 // <Definitions> ::= <Definitions> <Definition>
                 {
 
@@ -162,71 +154,70 @@ public partial class HumanReadableInterpreter
                     }
 
                     return definitions;
-
                 }
 
-            case ProductionIndex.Definitions2:
+            case HumanReadableProductionIndex.Definitions2:
                 // <Definitions> ::= <nlo>
 
                 return new Definitions();
 
-            case ProductionIndex.Definition:
+            case HumanReadableProductionIndex.Definition:
                 // <Definition> ::= <NamedDefinition>
-
                 return r.PassOn();
 
-            case ProductionIndex.Definition2:
+            case HumanReadableProductionIndex.Definition2:
                 // <Definition> ::= <UnnamedDefinition>
-
                 return r.PassOn();
 
-            case ProductionIndex.Definition3:
+            case HumanReadableProductionIndex.Definition3:
                 // <Definition> ::= <NamedLink>
-
                 return r.PassOn();
 
-            case ProductionIndex.Definition4:
+            case HumanReadableProductionIndex.Definition4:
                 // <Definition> ::= <UnnamedLink>
-
                 return r.PassOn();
 
-            case ProductionIndex.Nameddefinition_Lbrace_Rbrace:
-                // <NamedDefinition> ::= <ID> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+            case HumanReadableProductionIndex.Definition5:
+                // <Definition> ::= <Transition>
+                return r.PassOn();
+
+            case HumanReadableProductionIndex.Nameddefinition_Lbrace_Rbrace:
+                // <NamedDefinition> ::= <String> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 
                 return new NamedDefinition()
                 {
-                    Type = (IDValue)r[0].Data,
+                    Type = (StringValue)r[0].Data,
                     Name = (StringValue)r[1].Data,
                     Definitions = (Definitions)r[5].Data
                 };
 
-            case ProductionIndex.Nameddefinition:
-                // <NamedDefinition> ::= <ID> <String> <nl>
+            case HumanReadableProductionIndex.Nameddefinition:
+                // <NamedDefinition> ::= <String> <String> <nl>
 
                 return new NamedDefinition()
                 {
-                    Type = (IDValue)r[0].Data,
+                    Type = (StringValue)r[0].Data,
                     Name = (StringValue)r[1].Data
                 };
 
-            case ProductionIndex.Unnameddefinition_Lbrace_Rbrace:
-                // <UnnamedDefinition> ::= <ID> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+            case HumanReadableProductionIndex.Unnameddefinition_Lbrace_Rbrace:
+                // <UnnamedDefinition> ::= <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 
                 return new UnnamedDefinition()
                 {
-                    Type = (IDValue)r[0].Data,
+                    Type = (StringValue)r[0].Data,
                     Definitions = (Definitions)r[4].Data
                 };
 
-            case ProductionIndex.Unnameddefinition:
-                // <UnnamedDefinition> ::= <ID> <nl>
+            case HumanReadableProductionIndex.Unnameddefinition:
+                // <UnnamedDefinition> ::= <String> <nl>
 
                 return new NamedDefinition()
                 {
-                    Type = (IDValue)r[0].Data
+                    Type = (StringValue)r[0].Data
                 };
 
-            case ProductionIndex.Unnamedlink_Minusgt:
+            case HumanReadableProductionIndex.Unnamedlink_Minusgt:
                 // <UnnamedLink> ::= <String> '->' <String> <nl>
 
                 return new UnnamedLinkDefinition()
@@ -235,7 +226,7 @@ public partial class HumanReadableInterpreter
                     Destination = (StringValue)r[2].Data
                 };
 
-            case ProductionIndex.Namedlink_Minusgt_Colon:
+            case HumanReadableProductionIndex.Namedlink_Minusgt_Colon:
                 // <NamedLink> ::= <String> '->' <String> ':' <String> <nl>
 
                 return new NamedLinkDefinition()
@@ -244,9 +235,21 @@ public partial class HumanReadableInterpreter
                     Destination = (StringValue)r[2].Data,
                     Name = (StringValue)r[4].Data
                 };
+
+            case HumanReadableProductionIndex.Transition_Colon:
+                // <Transition> ::= <String> ':' <String> <nl>
+
+                return new TransitionDefinition()
+                {
+                    Type = (StringValue)r[0].Data,
+                    TransitionName = (StringValue)r[2].Data
+                };
+
+            default:
+                throw new NotImplementedException("Case not handled : " + r.Parent.TableIndex());
         }
 
-        return null;
+        throw new NotImplementedException("Case did not return value" + r.Parent.TableIndex());
     }
 
 }

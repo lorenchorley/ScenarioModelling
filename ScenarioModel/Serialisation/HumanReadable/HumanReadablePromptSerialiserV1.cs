@@ -75,6 +75,12 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
                 WriteDialogNode(sb, dialogNode, _indent);
                 continue;
             }
+
+            if (step is JumpNode jumpNode)
+            {
+                WriteJumpNode(sb, jumpNode, _indent);
+                continue;
+            }
         }
 
         sb.AppendLine($"}}");
@@ -99,6 +105,21 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
         sb.AppendLine($"{indent}Dialog {node.Name} {{");
 
         sb.AppendLine($"{indent}{_indent}Text {node.TextTemplate}");
+        
+        if (node.Character != null)
+        {
+            sb.AppendLine($"{indent}{_indent}Character {node.Character}");
+        }
+
+        sb.AppendLine($"{indent}}}");
+        sb.AppendLine($"");
+    }
+    
+    private static void WriteJumpNode(StringBuilder sb, JumpNode node, string indent)
+    {
+        sb.AppendLine($"{indent}Jump {node.Name} {{");
+
+        sb.AppendLine($"{indent}{_indent}{node.Target}");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -106,14 +127,14 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
 
     public void SerialiseSystem(StringBuilder sb, System system)
     {
-        foreach (var entityType in system.EntityTypes)
-        {
-            WriteEntityType(sb, "", entityType);
-        }
-
         foreach (var entity in system.Entities)
         {
             WriteEntity(sb, system, "", entity);
+        }
+
+        foreach (var entityType in system.EntityTypes)
+        {
+            WriteEntityType(sb, "", entityType);
         }
 
         foreach (var stateMachine in system.StateMachines)
@@ -126,11 +147,6 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
     {
         sb.AppendLine($"{indent}Entity {AddQuotes(entity.Name)} {{");
 
-        if (entity.Name != null && !entity.Equals("Unnamed"))
-        {
-            sb.AppendLine($"{indent}{_indent}Name {entity.Name}");
-        }
-
         if (entity.EntityType != null)
         {
             sb.AppendLine($"{indent}{_indent}EntityType {entity.EntityType.Name}");
@@ -138,12 +154,12 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
 
         if (entity.State != null)
         {
-            sb.AppendLine($"{indent}{_indent}State {entity.State.Name}");
+            WriteSMState(sb, indent + _indent, entity.State);
         }
 
         foreach (var aspectType in entity.Aspects)
         {
-            WriteAspectType(sb, indent + _indent, aspectType);
+            WriteAspect(sb, indent + _indent, aspectType);
         }
 
         foreach (var relation in entity.Relations)
@@ -160,9 +176,9 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
         sb.AppendLine($"{indent}{relation.LeftEntity} -> {relation.RightEntity}");
     }
 
-    private static void WriteAspectType(StringBuilder sb, string indent, Aspect aspectType)
+    private static void WriteAspect(StringBuilder sb, string indent, Aspect aspect)
     {
-        sb.AppendLine($"{indent}AspectType {AddQuotes(aspectType.Name)} {{");
+        sb.AppendLine($"{indent}Aspect {AddQuotes(aspect.Name)} {{");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -174,14 +190,14 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
 
         if (entityType.StateType != null)
         {
-            sb.AppendLine($"{indent}{indent}StateType {AddQuotes(entityType.StateType.Name)}");
+            sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateType.Name)}");
         }
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
     }
 
-    private static void WriteStateMachine(StringBuilder sb, string indent, StateType stateType)
+    private static void WriteStateMachine(StringBuilder sb, string indent, StateMachine stateType)
     {
         sb.AppendLine($"{indent}SM {AddQuotes(stateType.Name)} {{");
 
@@ -204,26 +220,22 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
 
     private static void WriteSMState(StringBuilder sb, string indent, State state)
     {
+        //sb.AppendLine($"{indent}State {state.Name} {{ SM {state.StateMachine.Name} }}");
         sb.AppendLine($"{indent}State {AddQuotes(state.Name)}");
     }
 
-    private static void WriteSMTransition(StringBuilder sb, string indent, List<State> states, State state, string target)
+    private static void WriteSMTransition(StringBuilder sb, string indent, List<State> states, State state, Transition transition)
     {
-        if (!states.Any(s => s.Name == target))
-        {
-            throw new Exception(@$"Target state ""{target}"" is not a state in the current state machine");
-        }
-
-        sb.AppendLine($"{indent}{state.Name} -> {target}");
+        sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState} : {transition.Name}");
     }
 
-    private static void WriteAspect(StringBuilder sb, string indent, AspectType aspectType)
-    {
-        sb.AppendLine($"{indent}AspectType {AddQuotes(aspectType.Name)} {{");
+    //private static void WriteAspect(StringBuilder sb, string indent, AspectType aspectType)
+    //{
+    //    sb.AppendLine($"{indent}AspectType {AddQuotes(aspectType.Name)} {{");
 
-        sb.AppendLine($"{indent}}}");
-        sb.AppendLine($"");
-    }
+    //    sb.AppendLine($"{indent}}}");
+    //    sb.AppendLine($"");
+    //}
 
     private static string AddQuotes(string str)
     {

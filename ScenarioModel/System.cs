@@ -1,6 +1,8 @@
-﻿using ScenarioModel.SystemObjects.Entities;
+﻿using ScenarioModel.Expressions.SemanticTree;
+using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.Relations;
 using ScenarioModel.SystemObjects.States;
+using System.Linq;
 
 namespace ScenarioModel;
 
@@ -9,8 +11,8 @@ public class System
     public List<EntityType> EntityTypes { get; set; } = new();
     public List<AspectType> AspectTypes { get; set; } = new();
     public List<Entity> Entities { get; set; } = new();
-    public List<StateType> StateMachines { get; set; } = new();
-    public List<ConstraintExpression> Constraints { get; set; } = new();
+    public List<StateMachine> StateMachines { get; set; } = new();
+    public List<Expression> Constraints { get; set; } = new();
 
     public void Initialise()
     {
@@ -18,14 +20,30 @@ public class System
         {
             foreach (var state in stateType.States)
             {
-                state.StateType = stateType;
+                state.StateMachine = stateType;
+
             }
         }
     }
 
     public IEnumerable<State> AllStates
     {
-        get => StateMachines.SelectMany(x => x.States);
+        get => Enumerable.Empty<State?>()
+                         .Concat(Entities.Select(e => e.State))
+                         .Concat(AllAspects.Select(e => e.State))
+                         .Concat(AllRelations.Select(e => e.State))
+                         .Concat(StateMachines.SelectMany(x => x.States))
+                         .Where(s => s != null)
+                         .Cast<State>()
+                         .Distinct();
+    }
+    
+    public IEnumerable<IStateful> AllStateful
+    {
+        get => Enumerable.Empty<IStateful>()
+                         .Concat(Entities)
+                         .Concat(AllAspects)
+                         .Concat(AllRelations);
     }
 
     public IEnumerable<Relation> AllRelations
@@ -43,6 +61,6 @@ public class System
 
     public bool HasState(string stateName)
     {
-        return AllStates.Any(s => string.Equals(s.Name, stateName));
+        return AllStates.Any(s => s.Name.IsEqv(stateName));
     }
 }

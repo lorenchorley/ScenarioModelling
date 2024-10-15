@@ -1,5 +1,5 @@
 using ScenarioModel.References;
-using ScenarioModel.SystemObjects.Entities;
+using ScenarioModel.SystemObjects.Expressions;
 using ScenarioModel.SystemObjects.Relations;
 
 namespace ScenarioModel.Tests.Valid;
@@ -16,7 +16,7 @@ public static class InvalidSystem1
             ],
             Constraints =
             [
-                new HasRelationConstraint() { Ref = new RelationReference() { RelationName = "R1" }, RelatableObject = new EntityReference() { EntityName = "E1" } } // R1 does not exist on an entity
+                new HasRelationExpression() { Ref = new RelationReference() { RelationName = "R1" }, RelatableObject = new EntityReference() { EntityName = "E1" } } // R1 does not exist on an entity
             ]
         };
     }

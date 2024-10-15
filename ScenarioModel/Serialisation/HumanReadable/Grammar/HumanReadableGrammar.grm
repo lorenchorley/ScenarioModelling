@@ -47,8 +47,6 @@ StringLiteral = '"' {StringCharacter}* '"'
 ! C.1.8 Literals 
 ! ===========================================================================
 
-<ID> ::= Identifier
-      
 <String> ::= Identifier
           |  StringLiteral
 
@@ -66,13 +64,16 @@ StringLiteral = '"' {StringCharacter}* '"'
               |  <UnnamedDefinition>
               |  <NamedLink>
               |  <UnnamedLink>
+              |  <Transition>
               
-<NamedDefinition> ::= <ID> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
-                   |  <ID> <String> <nl>
+<NamedDefinition> ::= <String> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+                   |  <String> <String> <nl>
 
-<UnnamedDefinition> ::= <ID> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
-                     |  <ID> <nl>
+<UnnamedDefinition> ::= <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+                     |  <String> <nl>
                    
 <UnnamedLink> ::= <String> '->' <String> <nl>
                    
 <NamedLink> ::= <String> '->' <String> ':' <String> <nl>
+             
+<Transition> ::= <String> ':' <String> <nl>

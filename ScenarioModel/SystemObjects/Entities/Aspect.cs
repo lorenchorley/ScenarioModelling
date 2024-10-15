@@ -1,9 +1,10 @@
-﻿using ScenarioModel.SystemObjects.Relations;
+﻿using ScenarioModel.References;
+using ScenarioModel.SystemObjects.Relations;
 using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.SystemObjects.Entities;
 
-public class Aspect : IStateful, IRelatable
+public record Aspect : IStateful, IRelatable
 {
     public string Name 
     { 
@@ -14,4 +15,9 @@ public class Aspect : IStateful, IRelatable
     public Entity Entity { get; set; } = null!;
     public List<Relation> Relations { get; set; } = new();
     public State? State { get; set; }
+
+    public IStatefulObjectReference GenerateReference()
+    {
+        return new EntityAspectReference() { AspectName = Name };
+    }
 }

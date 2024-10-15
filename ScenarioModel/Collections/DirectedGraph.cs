@@ -22,6 +22,18 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
         _nodes.AddRange(nodes);
     }
 
+    public T? GetNextInSequence(T node)
+    {
+        var index = _nodes.IndexOf(node);
+
+        if (index == -1 || index == _nodes.Count - 1)
+        {
+            return default;
+        }
+
+        return _nodes[index + 1];
+    }
+
     public DirectedGraphValidationResult Validate()
     {
         var brokenLinks = new List<(IDirectedGraphNode node, string intended)>();
@@ -35,7 +47,7 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
 
             foreach (var targetNode in transitionNode.TargetNodeNames)
             {
-                if (!_nodes.Any(n => string.Equals(n.Name, targetNode)))
+                if (!_nodes.Any(n => n.Name.IsEqv(targetNode)))
                 {
                     brokenLinks.Add((node, targetNode));
                 }

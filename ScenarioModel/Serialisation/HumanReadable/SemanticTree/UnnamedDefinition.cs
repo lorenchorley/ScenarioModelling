@@ -4,7 +4,7 @@ namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
 
 public record UnnamedDefinition : Definition
 {
-    public IDValue Type { get; init; } = null!;
+    public StringValue Type { get; init; } = null!;
     public Definitions Definitions { get; init; } = new();
 
     public override string ToString()

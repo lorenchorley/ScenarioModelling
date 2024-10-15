@@ -3,7 +3,7 @@ using ScenarioModel.ScenarioObjects;
 
 namespace ScenarioModel.Execution.Events;
 
-public class RemoveRelationEvent : IScenarioEvent
+public record RemoveRelationEvent : IScenarioEvent
 {
     public RelationReference Ref { get; set; } = null!;
     public IScenarioNode ProducerNode { get; init; } = null!;

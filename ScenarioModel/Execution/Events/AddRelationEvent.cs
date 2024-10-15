@@ -3,7 +3,7 @@ using ScenarioModel.ScenarioObjects;
 
 namespace ScenarioModel.Execution.Events;
 
-public class AddRelationEvent : IScenarioEvent
+public record AddRelationEvent : IScenarioEvent
 {
     public IReference First { get; set; } = null!;
     public IReference Second { get; set; } = null!;

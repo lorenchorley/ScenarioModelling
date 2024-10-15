@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using ScenarioModelling.Data;
+using ScenarioModelling;
+using ScenarioModelling_WebFront.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

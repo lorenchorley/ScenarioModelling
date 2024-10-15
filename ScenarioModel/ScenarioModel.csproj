@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Execution\EventSourcing\" />
+	  <Folder Include="SystemObjects\Constraints\" />
 	</ItemGroup>
 
 </Project>

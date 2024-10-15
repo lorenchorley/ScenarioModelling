@@ -1,0 +1,38 @@
+Entity E1 {
+    State S1
+    TextColor "Red"
+}
+
+Entity E2 {}
+
+SM "SM1" {
+    S1 -> S2 : "T1"
+    S2 -> S1 : "T1"
+}
+
+Scenario First {
+    Dialog {
+        Character E1
+        Text "Hello"
+    }
+    Dialog "PC" {
+        Text "Please choose an option"
+    }
+    Choose "C1" {
+        D2 "End"
+        PC "Choose again"
+        ST1 "Change state and repeat"
+    }
+    Dialog "ST1" {
+        Text "Changing state... (E1 in state {E1.State})"
+    }
+    Transition {
+        E1 : T1
+    }
+    Jump {
+        PC
+    }
+    Dialog "D2" {
+        Text "Bubye (E1 in state {E1.State})"
+    }
+}

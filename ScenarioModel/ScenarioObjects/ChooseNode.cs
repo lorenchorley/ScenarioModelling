@@ -2,15 +2,15 @@
 
 namespace ScenarioModel.ScenarioObjects;
 
-public class ChooseNode : IScenarioNode
+public record ChooseNode : IScenarioNode<ChoiceSelectedEvent>
 {
     public string Name { get; set; } = "";
-    public List<string> Choices { get; set; } = new();
+    public ChoiceList Choices { get; set; } = new();
 
     public IEnumerable<string> TargetNodeNames => Choices;
 
-    public IScenarioEvent ProduceEvent(string choice)
+    public ChoiceSelectedEvent GenerateEvent()
     {
-        return new ChoiceSelectedEvent { Choice = choice };
+        return new ChoiceSelectedEvent() { ProducerNode = this };
     }
 }

@@ -1,4 +1,4 @@
-namespace ScenarioModelling.Data
+namespace ScenarioModelling_WebFront.Data
 {
     public class WeatherForecast
     {

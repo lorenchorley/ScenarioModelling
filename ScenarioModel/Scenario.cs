@@ -39,9 +39,9 @@ public class Scenario
             case StateTransitionNode stateTransitionAction:
 
                 // Check if the state already exists in the system
-                if (!System.HasState(stateTransitionAction.StateName))
+                if (!System.HasState(stateTransitionAction.TransitionName))
                 {
-                    var stateType = new StateType() { Name = stateTransitionAction.StateName + "_Type", States = new() { new State() { Name = stateTransitionAction.StateName } } };
+                    var stateType = new StateMachine() { Name = stateTransitionAction.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionAction.TransitionName } } };
                     System.StateMachines.Add(stateType);
                 }
 
@@ -51,7 +51,7 @@ public class Scenario
 
     public StoryRunResult StartAtStep(string stepName)
     {
-        Run story = new() { Scenario = this };
+        ScenarioRun story = new() { Scenario = this };
 
         IScenarioNode? initialAction = Steps.FirstOrDefault(step => step.Name == stepName);
 

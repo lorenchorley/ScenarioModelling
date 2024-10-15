@@ -2,17 +2,18 @@
 
 namespace ScenarioModel.ScenarioObjects;
 
-public class DialogNode : IScenarioNode
+public record DialogNode : IScenarioNode<DialogEvent>
 {
     public string Name { get; set; } = "";
     public string TextTemplate { get; set; } = "";
+    public string? Character { get; set; } = null;
 
-    public IScenarioEvent ProduceEvent(string finalText)
+    public DialogEvent GenerateEvent()
     {
-        return new DialogEvent
+        return new DialogEvent()
         {
+            Character = Character,
             ProducerNode = this,
-            Text = finalText
         };
     }
 }

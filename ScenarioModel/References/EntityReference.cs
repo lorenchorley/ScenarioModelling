@@ -5,13 +5,13 @@ using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.References;
 
-public class EntityReference : IReference<Entity>, IRelatableObjectReference, IStatefulObjectReference
+public record EntityReference : IReference<Entity>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string EntityName { get; set; } = "";
 
     public Option<Entity> ResolveReference(System system)
     {
-        throw new NotImplementedException();
+        return system.Entities.Find(x => x.Name.IsEqv(EntityName));
     }
 
     Option<IRelatable> IReference<IRelatable>.ResolveReference(System system)
@@ -19,4 +19,6 @@ public class EntityReference : IReference<Entity>, IRelatableObjectReference, IS
 
     Option<IStateful> IReference<IStateful>.ResolveReference(System system)
         => ResolveReference(system).Map(x => (IStateful)x);
+
+    override public string ToString() => $"{EntityName}";
 }

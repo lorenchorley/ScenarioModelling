@@ -2,8 +2,8 @@
 
 namespace ScenarioModel.SystemObjects.Entities;
 
-public class AspectType : INameful
+public record AspectType : INameful
 {
     public string Name { get; set; } = "";
-    public StateType StateType { get; set; } = null!;
+    public StateMachine StateType { get; set; } = null!;
 }
