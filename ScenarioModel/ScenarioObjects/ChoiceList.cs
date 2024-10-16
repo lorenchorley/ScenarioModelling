@@ -1,6 +1,6 @@
 ﻿namespace ScenarioModel.ScenarioObjects;
 
-public class ChoiceList : List<string>
+public class ChoiceList : List<(string NodeName, string Text)>
 {
     public override string ToString()
     {

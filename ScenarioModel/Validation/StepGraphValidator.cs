@@ -17,7 +17,7 @@ public class StepGraphValidator : IValidator<DirectedGraph<IScenarioNode>>
 
                     foreach (var choice in chooseAction.Choices)
                     {
-                        validationErrors.AddIfNot(IsStepName(stepGraph, choice), new InvalidStepName($"Step {choice} not found on {typeof(ChooseNode)} {chooseAction.Name}"));
+                        validationErrors.AddIfNot(IsStepName(stepGraph, choice.NodeName), new InvalidStepName($"Step {choice} not found on {typeof(ChooseNode)} {chooseAction.Name}"));
                     }
 
                     break;

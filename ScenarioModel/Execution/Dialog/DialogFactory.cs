@@ -25,7 +25,7 @@ public class DialogFactory : IEventFactory
         return _scenarioRun.Events.LastOrDefault();
     }
 
-    public void StartScenario(string name)
+    public Scenario StartScenario(string name)
     {
         _scenario = _context.Scenarios.FirstOrDefault(s => s.Name == name);
         
@@ -37,6 +37,7 @@ public class DialogFactory : IEventFactory
         _scenarioRun = new ScenarioRun { Scenario = _scenario };
         _scenarioRun.Init();
 
+        return _scenario;
     }
 
     public IScenarioNode? NextNode()

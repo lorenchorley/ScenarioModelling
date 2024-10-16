@@ -42,7 +42,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
         AnsiConsole.Markup($"[blue]{context.Serialise<HumanReadablePromptSerialiserV1>()}[/]");
 
         DialogFactory dialogFactory = new(context);
-        dialogFactory.StartScenario(settings.ScenarioName ?? "");
+        var scenario = dialogFactory.StartScenario(settings.ScenarioName ?? "");
 
         var node = dialogFactory.NextNode();
 
@@ -83,10 +83,10 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
                     .Title("Select an option")
                     .PageSize(10)
                     .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-                    .AddChoices(chooseNode.TargetNodeNames)
+                    .AddChoices(chooseNode.Choices.Select(n => n.Text))
                 );
 
-                e.Choice = promptResult;
+                e.Choice = chooseNode.Choices.Where(n => n.Text.IsEqv(promptResult)).Select(s => s.NodeName).First();
                 AnsiConsole.Markup($"[blue]{e.Choice}[/]\n");
 
                 dialogFactory.RegisterEvent(e);

@@ -33,9 +33,13 @@ public class SemanticContextBuilder
 
             foreach (var item in def.Definitions)
             {
-                if (item is UnnamedDefinition unnamed)
+                if (item is NamedDefinition named)
                 {
-                    node.Choices.Add(unnamed.Type.Value);
+                    node.Choices.Add((named.Type.Value, named.Name.Value));
+                } 
+                else if (item is UnnamedDefinition unnamed)
+                {
+                    node.Choices.Add((unnamed.Type.Value, unnamed.Type.Value));
                 }
             }
 

@@ -7,7 +7,7 @@ public record ChooseNode : IScenarioNode<ChoiceSelectedEvent>
     public string Name { get; set; } = "";
     public ChoiceList Choices { get; set; } = new();
 
-    public IEnumerable<string> TargetNodeNames => Choices;
+    public IEnumerable<string> TargetNodeNames => Choices.Select(c => c.NodeName);
 
     public ChoiceSelectedEvent GenerateEvent()
     {
