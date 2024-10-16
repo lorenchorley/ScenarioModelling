@@ -2,7 +2,7 @@
 
 namespace ScenarioModel.Expressions.SemanticTree;
 
-public abstract class Expression : IExpressionNode
+public abstract record Expression : IExpressionNode
 {
     public abstract object Accept(IExpressionVisitor visitor);
 }

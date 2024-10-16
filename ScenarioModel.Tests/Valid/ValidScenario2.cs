@@ -1,6 +1,6 @@
+using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.References;
 using ScenarioModel.ScenarioObjects;
-using ScenarioModel.SystemObjects.Expressions;
 using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.Tests.Valid;
@@ -36,14 +36,9 @@ public static class ValidScenario2
             [
                 new HasRelationExpression()
                 {
-                    Ref = new RelationReference()
-                    {
-                        RelationName = "R1"
-                    },
-                    RelatableObject = new EntityReference()
-                    {
-                        EntityName = "E1"
-                    }
+                    Name = "R1",
+                    Left = "E1",
+                    Right = "E2"
                 }
             ]
         };

@@ -1,5 +1,5 @@
 ﻿namespace ScenarioModel.Expressions.SemanticTree;
 
-public abstract class Value : Expression
+public abstract record Value : Expression
 {
 }

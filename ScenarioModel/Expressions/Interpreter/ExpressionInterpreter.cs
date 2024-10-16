@@ -1,5 +1,5 @@
 ﻿using GOLD;
-using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Parsers;
 using System.Text;
 
@@ -52,7 +52,7 @@ public partial class ExpressionInterpreter
             case ParseMessage.Accept:
                 // On a fini de parser, on récupère le résultat
 
-                result.Tree = (Definitions)_parser.CurrentReduction;
+                result.Tree = (Expression)_parser.CurrentReduction;
 
                 return false;
 
@@ -106,133 +106,234 @@ public partial class ExpressionInterpreter
         {
             case ExpressionProductionIndex.Nl_Newline:
                 // <nl> ::= NewLine <nl>
-                break;
+                return null;
 
             case ExpressionProductionIndex.Nl_Newline2:
                 // <nl> ::= NewLine
-                break;
+                return null;
 
             case ExpressionProductionIndex.Nlo_Newline:
                 // <nlo> ::= NewLine <nlo>
-                break;
+                return null;
 
             case ExpressionProductionIndex.Nlo:
                 // <nlo> ::= 
-                break;
+                return null;
 
             case ExpressionProductionIndex.String_Identifier:
                 // <String> ::= Identifier
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.String_Stringliteral:
                 // <String> ::= StringLiteral
-                break;
+                return ((string)r[0].Data).Trim('"');
 
             case ExpressionProductionIndex.Program:
-                // <Program> ::= <Exp> <nlo>
-                break;
+                // <Program> ::= <nlo> <Exp> <nlo>
+                return r.PassOn(1);
+
+            case ExpressionProductionIndex.Program2:
+                // <Program> ::= <nlo>
+                return new EmptyExpression();
 
             case ExpressionProductionIndex.Exp:
                 // <Exp> ::= <AndOr Exp>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Andorexp_And:
-                // <AndOr Exp> ::= <AndOr Exp> AND <Is Exp>
-                break;
+                // <AndOr Exp> ::= <Is Exp> AND <AndOr Exp>
+
+                return new AndExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
+
+
+            case ExpressionProductionIndex.Andorexp_Ampamp:
+                // <AndOr Exp> ::= <Is Exp> '&&' <AndOr Exp>
+
+                return new AndExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
+
 
             case ExpressionProductionIndex.Andorexp_Or:
-                // <AndOr Exp> ::= <AndOr Exp> OR <Is Exp>
-                break;
+                // <AndOr Exp> ::= <Is Exp> OR <AndOr Exp>
+
+                return new OrExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
+
+            case ExpressionProductionIndex.Andorexp_Pipepipe:
+                // <AndOr Exp> ::= <Is Exp> '||' <AndOr Exp>
+
+                return new OrExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
 
             case ExpressionProductionIndex.Andorexp:
                 // <AndOr Exp> ::= <Is Exp>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Isexp_Eqeq:
-                // <Is Exp> ::= <Is Exp> '==' <Value Exp>
-                break;
+                // <Is Exp> ::= <Value Exp> '==' <Is Exp>
+
+                return new EqualExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
 
             case ExpressionProductionIndex.Isexp_Ltgt:
-                // <Is Exp> ::= <Is Exp> '<>' <Value Exp>
-                break;
+                // <Is Exp> ::= <Value Exp> '<>' <Is Exp>
+
+                return new NotEqualExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
+
 
             case ExpressionProductionIndex.Isexp_Exclameq:
-                // <Is Exp> ::= <Is Exp> '!=' <Value Exp>
-                break;
+                // <Is Exp> ::= <Value Exp> '!=' <Is Exp>
+
+                return new NotEqualExpression()
+                {
+                    Left = (Expression)r[0].Data,
+                    Right = (Expression)r[2].Data
+                };
+
 
             case ExpressionProductionIndex.Isexp:
                 // <Is Exp> ::= <Value Exp>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Valueexp:
                 // <Value Exp> ::= <Value>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Valueexp2:
                 // <Value Exp> ::= <Function>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Valueexp3:
                 // <Value Exp> ::= <IsRelated>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Valueexp4:
                 // <Value Exp> ::= <IsNotRelated>
-                break;
+                return r.PassOn();
 
             case ExpressionProductionIndex.Valueexp_Lparen_Rparen:
                 // <Value Exp> ::= '(' <Exp> ')'
-                break;
+                return r.PassOn(1);
 
             case ExpressionProductionIndex.Function_Lparen_Rparen:
                 // <Function> ::= <String> '(' <Args> ')'
-                break;
+
+                return new FunctionExpression()
+                {
+                    Name = (string)r[0].Data,
+                    Arguments = (ArgumentList)r[2].Data
+                };
+
 
             case ExpressionProductionIndex.Args_Comma:
                 // <Args> ::= <Args> ',' <Exp>
-                break;
+                {
+                    var value = (ArgumentList)r[0].Data;
+
+                    value.ExpressionList.Add((Expression)r[2].Data);
+
+                    return value;
+                }
 
             case ExpressionProductionIndex.Args:
                 // <Args> ::= <Exp>
-                break;
+
+                return new ArgumentList()
+                {
+                    ExpressionList = [(Expression)r[0].Data]
+                };
 
             case ExpressionProductionIndex.Args2:
                 // <Args> ::= 
-                break;
+
+                return new ArgumentList();
 
             case ExpressionProductionIndex.Isrelated_Minusgt:
                 // <IsRelated> ::= <String> '->' <String>
-                break;
+
+                return new HasRelationExpression()
+                {
+                    Left = (string)r[0].Data,
+                    Right = (string)r[2].Data
+                };
 
             case ExpressionProductionIndex.Isrelated_Minusgt_Colon:
                 // <IsRelated> ::= <String> '->' <String> ':' <String>
-                break;
+
+                return new HasRelationExpression()
+                {
+                    Name = (string)r[4].Data,
+                    Left = (string)r[0].Data,
+                    Right = (string)r[2].Data
+                };
 
             case ExpressionProductionIndex.Isnotrelated_Minusexclamgt:
                 // <IsNotRelated> ::= <String> '-!>' <String>
-                break;
+
+                return new DoesNotHaveRelationExpression()
+                {
+                    Left = (string)r[0].Data,
+                    Right = (string)r[2].Data
+                };
 
             case ExpressionProductionIndex.Isnotrelated_Minusexclamgt_Colon:
                 // <IsNotRelated> ::= <String> '-!>' <String> ':' <String>
-                break;
+
+                return new DoesNotHaveRelationExpression()
+                {
+                    Name = (string)r[4].Data,
+                    Left = (string)r[0].Data,
+                    Right = (string)r[2].Data
+                };
 
             case ExpressionProductionIndex.Value:
                 // <Value> ::= <ValueComposite>
-                break;
+
+                return r.PassOn();
 
             case ExpressionProductionIndex.Valuecomposite_Dot:
                 // <ValueComposite> ::= <ValueComposite> '.' <String>
-                break;
+                {
+                    var value = (ValueComposite)r[0].Data;
+
+                    value.ValueList.Add((string)r[2].Data);
+
+                    return value;
+                }
 
             case ExpressionProductionIndex.Valuecomposite:
                 // <ValueComposite> ::= <String>
-                break;
+
+                return new ValueComposite()
+                {
+                    ValueList = [(string)r[0].Data]
+                };
 
             default:
-                throw new NotImplementedException("Case not handled : " + r.Parent.TableIndex());
+                throw new NotImplementedException("Case not handled : " + (ExpressionProductionIndex)r.Parent.TableIndex());
         }
 
-        throw new NotImplementedException("Case did not return value" + r.Parent.TableIndex());
+        throw new NotImplementedException("Case did not return value : " + (ExpressionProductionIndex)r.Parent.TableIndex());
     }
 
 }

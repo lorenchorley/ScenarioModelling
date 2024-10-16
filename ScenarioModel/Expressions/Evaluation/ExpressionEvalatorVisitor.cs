@@ -15,7 +15,7 @@ public class ExpressionEvalatorVisitor : IExpressionVisitor
         _system = system;
     }
 
-    public object VisitAndConstraint(AndExpression andConstraint)
+    public object VisitAnd(AndExpression andConstraint)
     {
         var leftResult = (bool)andConstraint.Left.Accept(this);
         var rightResult = (bool)andConstraint.Right.Accept(this);
@@ -23,7 +23,7 @@ public class ExpressionEvalatorVisitor : IExpressionVisitor
         return leftResult && rightResult;
     }
 
-    public object VisitOrConstraint(OrExpression orConstraint)
+    public object VisitOr(OrExpression orConstraint)
     {
         var leftResult = (bool)orConstraint.Left.Accept(this);
         var rightResult = (bool)orConstraint.Right.Accept(this);
@@ -31,32 +31,72 @@ public class ExpressionEvalatorVisitor : IExpressionVisitor
         return leftResult || rightResult;
     }
 
-    public object VisitHasRelationConstraint(HasRelationExpression hasRelationConstraint)
+    public object VisitHasRelation(HasRelationExpression hasRelationConstraint)
     {
-        Option<Relation> systemRelation = hasRelationConstraint.Ref.ResolveReference(_system);
+        //Option<Relation> systemRelation = hasRelationConstraint.Ref.ResolveReference(_system);
 
-        if (systemRelation.IsNone)
-        {
-            return false;
-        }
+        //if (systemRelation.IsNone)
+        //{
+        //    return false;
+        //}
 
-        var relatables = hasRelationConstraint.RelatableObject.ResolveReference(_system);
+        //var relatables = hasRelationConstraint.RelatableObject.ResolveReference(_system);
 
-        return relatables.Match(
-            relatable =>
-            {
-                foreach (var objectRelation in relatable.Relations)
-                {
-                    if (systemRelation.Case == objectRelation)
-                    {
-                        return true;
-                    }
-                }
+        //return relatables.Match(
+        //    relatable =>
+        //    {
+        //        foreach (var objectRelation in relatable.Relations)
+        //        {
+        //            if (systemRelation.Case == objectRelation)
+        //            {
+        //                return true;
+        //            }
+        //        }
 
-                return false;
-            },
-            () => false
-        );
+        //        return false;
+        //    },
+        //    () => false
+        //);
+        throw new NotImplementedException();
     }
 
+    public object VisitValueComposite(ValueComposite valueComposite)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitEmpty(EmptyExpression emptyExpression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitDoesNotHaveRelation(DoesNotHaveRelationExpression doesNotHaveRelationExpression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitArgumentList(ArgumentList argumentList)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitFunction(FunctionExpression functionExpression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitNotEqual(NotEqualExpression notEqualExpression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitEqual(EqualExpression equalExpression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitErroneousExpression(ErroneousExpression erroneousExpression)
+    {
+        throw new NotImplementedException();
+    }
 }

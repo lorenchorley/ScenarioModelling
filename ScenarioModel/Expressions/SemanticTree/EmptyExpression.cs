@@ -2,11 +2,8 @@
 
 namespace ScenarioModel.Expressions.SemanticTree;
 
-public record AndExpression : Expression
+public record EmptyExpression : Expression
 {
-    public Expression Left { get; set; }
-    public Expression Right { get; set; }
-
     public override object Accept(IExpressionVisitor visitor)
-        => visitor.VisitAnd(this);
+        => visitor.VisitEmpty(this);
 }

@@ -1,11 +1,11 @@
-﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Parsers;
 
 namespace ScenarioModel.Expressions.Interpreter;
 
-public class ExpressionParserResult : IParserResult<Definitions>
+public class ExpressionParserResult : IParserResult<Expression>
 {
-    public Definitions Tree { get; set; }
+    public Expression Tree { get; set; }
 
     public List<string> Errors { get; internal set; } = new();
 

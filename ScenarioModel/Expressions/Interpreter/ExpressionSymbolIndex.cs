@@ -7,33 +7,34 @@ public enum ExpressionSymbolIndex
     @Whitespace = 2,                           // Whitespace
     @Exclameq = 3,                             // '!='
     @Minusexclamgt = 4,                        // '-!>'
-    @Lparen = 5,                               // '('
-    @Rparen = 6,                               // ')'
-    @Comma = 7,                                // ','
-    @Dot = 8,                                  // '.'
-    @Colon = 9,                                // ':'
-    @Ltgt = 10,                                // '<>'
-    @Eqeq = 11,                                // '=='
-    @Minusgt = 12,                             // '->'
-    @And = 13,                                 // AND
-    @Identifier = 14,                          // Identifier
-    @Newline = 15,                             // NewLine
-    @Numberliteral = 16,                       // NumberLiteral
-    @Or = 17,                                  // OR
-    @Stringliteral = 18,                       // StringLiteral
-    @Andorexp = 19,                            // <AndOr Exp>
-    @Args = 20,                                // <Args>
-    @Exp = 21,                                 // <Exp>
-    @Function = 22,                            // <Function>
-    @Isexp = 23,                               // <Is Exp>
-    @Isnotrelated = 24,                        // <IsNotRelated>
-    @Isrelated = 25,                           // <IsRelated>
-    @Nl = 26,                                  // <nl>
-    @Nlo = 27,                                 // <nlo>
-    @Program = 28,                             // <Program>
-    @String = 29,                              // <String>
-    @Value = 30,                               // <Value>
-    @Valueexp = 31,                            // <Value Exp>
-    @Valuecomposite = 32                       // <ValueComposite>
+    @Ampamp = 5,                               // '&&'
+    @Lparen = 6,                               // '('
+    @Rparen = 7,                               // ')'
+    @Comma = 8,                                // ','
+    @Dot = 9,                                  // '.'
+    @Colon = 10,                               // ':'
+    @Pipepipe = 11,                            // '||'
+    @Ltgt = 12,                                // '<>'
+    @Eqeq = 13,                                // '=='
+    @Minusgt = 14,                             // '->'
+    @And = 15,                                 // AND
+    @Identifier = 16,                          // Identifier
+    @Newline = 17,                             // NewLine
+    @Or = 18,                                  // OR
+    @Stringliteral = 19,                       // StringLiteral
+    @Andorexp = 20,                            // <AndOr Exp>
+    @Args = 21,                                // <Args>
+    @Exp = 22,                                 // <Exp>
+    @Function = 23,                            // <Function>
+    @Isexp = 24,                               // <Is Exp>
+    @Isnotrelated = 25,                        // <IsNotRelated>
+    @Isrelated = 26,                           // <IsRelated>
+    @Nl = 27,                                  // <nl>
+    @Nlo = 28,                                 // <nlo>
+    @Program = 29,                             // <Program>
+    @String = 30,                              // <String>
+    @Value = 31,                               // <Value>
+    @Valueexp = 32,                            // <Value Exp>
+    @Valuecomposite = 33                       // <ValueComposite>
 }
 

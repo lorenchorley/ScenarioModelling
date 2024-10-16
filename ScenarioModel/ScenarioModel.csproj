@@ -8,10 +8,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Expressions\Grammar\ExpressionGrammar.egt" />
 	  <None Remove="Serialisation\HumanReadable\Grammar\HumanReadableGrammar.egt" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Expressions\Grammar\ExpressionGrammar.egt" />
 	  <EmbeddedResource Include="Serialisation\HumanReadable\Grammar\HumanReadableGrammar.egt" />
 	</ItemGroup>
 

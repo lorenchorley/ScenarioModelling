@@ -5,7 +5,7 @@ namespace ScenarioModel.Parsers;
 
 public class GoldEngineParserFactory
 {
-    public static Parser BuildParser(string embeddedRessource)
+    public static Parser BuildParser(string embeddedResource)
     {
         //On crée le parser
         Parser parser = new();
@@ -19,10 +19,22 @@ public class GoldEngineParserFactory
         //using Stream? stream = typeof(GoldParserFactory).Assembly.GetCall.GetManifestResourceStream(ressource);
 
         // On charge le fichier Embedded Ressource provenant de l'assembly appellant cette méthode.
-        using Stream? stream = Assembly.GetCallingAssembly().GetManifestResourceStream(embeddedRessource);
+        using Stream? stream = Assembly.GetCallingAssembly().GetManifestResourceStream(embeddedResource);
+
 
         if (stream == null)
-            throw new Exception("Le fichier grammaire du parser de filtre n'a pas été trouvé");
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            var list = assembly.GetManifestResourceNames();
+            string bulletPointList = string.Join("\n", list.Select(f => $" -> {f}"));
+
+            throw new Exception($"""
+                The parser grammar file was not found: {embeddedResource}
+                Here is the list of available resources in the target assembly '{assembly.FullName}'.
+                If the file is not present in this list, make sure to set the 'Build Action' to 'Embedded resource'.
+                {bulletPointList}
+                """);
+        }
 
         using BinaryReader reader = new BinaryReader(stream);
 
