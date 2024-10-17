@@ -22,6 +22,6 @@ public class InvalidSystemTests
 
         // Assert
         // ======
-        context.ValidationErrors.Should().HaveCount(1);
+        context.ValidationErrors.Should().HaveCount(3);
     }
 }

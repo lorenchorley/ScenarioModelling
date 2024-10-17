@@ -1,19 +1,20 @@
 ﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+using LanguageExt;
 using ScenarioModel.ScenarioObjects;
 using ScenarioModel.SystemObjects.States;
 
-namespace ScenarioModel.Serialisation.HumanReadable;
+namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
 
 public class StateTransitionStepProfile : ISemanticStepProfile
 {
-    public string Name => "Transition";
+    public string Name => "Transition".ToUpperInvariant();
 
-    public Func<Definition, bool>? Predicate => (Definition def) =>
+    public Func<Definition, bool>? Predicate => (def) =>
     {
         return def is TransitionDefinition;
     };
 
-    public IScenarioNode CreateAndConfigure(Definition def, Scenario scenario)
+    public IScenarioNode CreateAndConfigure(Definition def, Scenario scenario, Func<Definition, Option<IScenarioNode>> transformDefinition)
     {
         StateTransitionNode node = new();
 
@@ -27,16 +28,17 @@ public class StateTransitionStepProfile : ISemanticStepProfile
         {
             node.TransitionName = namedLink.Name.Value;
             //node. namedLink.Source
+            throw new NotImplementedException();
 
         }
         else if (def is UnnamedLinkDefinition unnamedLink)
         {
-
+            throw new NotImplementedException();
         }
         else if (def is TransitionDefinition transition)
         {
             node.TransitionName = transition.TransitionName.Value;
-
+            throw new NotImplementedException();
         }
 
         if (defs != null)

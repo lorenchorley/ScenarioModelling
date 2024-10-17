@@ -97,4 +97,9 @@ public class ExpressionEvalatorVisitor : IExpressionVisitor
     {
         throw new NotImplementedException();
     }
+
+    public object VisitBrackets(BracketsExpression bracketsExpression)
+    {
+        throw new NotImplementedException();
+    }
 }

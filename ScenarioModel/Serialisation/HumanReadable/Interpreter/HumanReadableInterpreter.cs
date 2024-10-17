@@ -52,7 +52,7 @@ public partial class HumanReadableInterpreter
             case ParseMessage.Accept:
                 // On a fini de parser, on récupère le résultat
 
-                result.Tree = (Definitions)_parser.CurrentReduction;
+                result.ParsedObject = (Definitions)_parser.CurrentReduction;
 
                 return false;
 
@@ -143,7 +143,7 @@ public partial class HumanReadableInterpreter
                 {
                     ExpressionText = new StringValue()
                     {
-                        Value = (string)r[0].Data
+                        Value = ((string)r[0].Data).TrimStart('<').TrimEnd('>')
                     }
                 };
 
@@ -258,7 +258,7 @@ public partial class HumanReadableInterpreter
                 {
                     Name = (StringValue)r[0].Data,
                     Block = (ExpressionBlock)r[1].Data,
-                    Definitions = ((Definitions?)r[6].Data) ?? new Definitions()
+                    Definitions = ((Definitions?)r[5].Data) ?? new Definitions()
                 };
 
             case HumanReadableProductionIndex.Expressiondefinition:

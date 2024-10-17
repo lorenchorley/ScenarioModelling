@@ -4,7 +4,7 @@ namespace ScenarioModel.ScenarioObjects;
 
 public record DialogNode : IScenarioNode<DialogEvent>
 {
-    public string Name { get; set; } = "";
+    public string Name { get; set; } = "Dialog";
     public string TextTemplate { get; set; } = "";
     public string? Character { get; set; } = null;
 

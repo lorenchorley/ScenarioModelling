@@ -5,7 +5,7 @@ namespace ScenarioModel.Serialisation.HumanReadable.Interpreter;
 
 public class HumanReadableParserResult : IParserResult<Definitions>
 {
-    public Definitions Tree { get; set; }
+    public Definitions ParsedObject { get; set; }
 
     public List<string> Errors { get; internal set; } = new();
 
@@ -19,6 +19,6 @@ public class HumanReadableParserResult : IParserResult<Definitions>
 
     public override string ToString()
     {
-        return Tree.ToString();
+        return ParsedObject.ToString();
     }
 }

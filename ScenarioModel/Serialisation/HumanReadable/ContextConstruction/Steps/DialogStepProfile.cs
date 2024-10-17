@@ -1,15 +1,16 @@
 ﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+using LanguageExt;
 using ScenarioModel.ScenarioObjects;
 
-namespace ScenarioModel.Serialisation.HumanReadable;
+namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
 
 public class DialogStepProfile : ISemanticStepProfile
 {
-    public string Name => "Dialog";
+    public string Name => "Dialog".ToUpperInvariant();
 
     public Func<Definition, bool>? Predicate => null;
 
-    public IScenarioNode CreateAndConfigure(Definition def, Scenario scenario)
+    public IScenarioNode CreateAndConfigure(Definition def, Scenario scenario, Func<Definition, Option<IScenarioNode>> transformDefinition)
     {
         if (def is not UnnamedDefinition unnamed)
         {

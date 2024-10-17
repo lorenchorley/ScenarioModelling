@@ -57,6 +57,13 @@ public class System
         get => Enumerable.Empty<Aspect>()
                          .Concat(Entities.SelectMany(x => x.Aspects));
     }
+    
+    public IEnumerable<IRelatable> AllRelatable
+    {
+        get => Enumerable.Empty<IRelatable>()
+                         .Concat(Entities)
+                         .Concat(Entities.SelectMany(x => x.Aspects));
+    }
 
     public bool HasState(string stateName)
     {

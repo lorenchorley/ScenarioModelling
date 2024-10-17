@@ -1,4 +1,5 @@
 ﻿using LanguageExt.Common;
+using ScenarioModel.Expressions.Validation;
 using ScenarioModel.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using ScenarioModel.SystemObjects.Entities;
@@ -23,7 +24,7 @@ public class HumanReadablePromptSerialiser : ISerialiser
 
         SemanticContextBuilder contextBuilder = new();
 
-        return contextBuilder.Build(result.Tree);
+        return contextBuilder.Build(result.ParsedObject);
     }
 
     public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
@@ -53,46 +54,71 @@ public class HumanReadablePromptSerialiser : ISerialiser
 
         foreach (var step in scenario.Steps)
         {
-            if (step is ITransitionNode transitionNode)
-            {
-                foreach (var target in transitionNode.TargetNodeNames)
-                {
-                    sb.AppendLine($"{_indent}{step.Name} -> {target}");
-                }
-
-                continue;
-            }
-
-            if (step is ChooseNode chooseNode)
-            {
-                WriteChooseNode(sb, chooseNode, _indent);
-                continue;
-            }
-
-            if (step is DialogNode dialogNode)
-            {
-                WriteDialogNode(sb, dialogNode, _indent);
-                continue;
-            }
-
-            if (step is JumpNode jumpNode)
-            {
-                WriteJumpNode(sb, jumpNode, _indent);
-                continue;
-            }
-
-            if (step is StateTransitionNode stateTransitionNode)
-            {
-                WriteStateTransitionNode(sb, scenario, stateTransitionNode, _indent);
-                continue;
-            }
-
-            // TODO expressions ?
-
-            throw new NotImplementedException($"Unhandle scenario node type : {step.GetType().Name}");
+            WriteScenarioStep(sb, scenario, step, _indent);
         }
 
         sb.AppendLine($"}}");
+        sb.AppendLine($"");
+    }
+
+    private void WriteScenarioStep(StringBuilder sb, Scenario scenario, IScenarioNode step, string indent)
+    {
+        if (step is ITransitionNode transitionNode)
+        {
+            foreach (var target in transitionNode.TargetNodeNames)
+            {
+                sb.AppendLine($"{indent}{step.Name} -> {target}");
+            }
+
+            return;
+        }
+
+        if (step is ChooseNode chooseNode)
+        {
+            WriteChooseNode(sb, chooseNode, indent);
+            return;
+        }
+
+        if (step is DialogNode dialogNode)
+        {
+            WriteDialogNode(sb, dialogNode, indent);
+            return;
+        }
+
+        if (step is JumpNode jumpNode)
+        {
+            WriteJumpNode(sb, jumpNode, indent);
+            return;
+        }
+
+        if (step is StateTransitionNode stateTransitionNode)
+        {
+            WriteStateTransitionNode(sb, scenario, stateTransitionNode, indent);
+            return;
+        }
+
+        if (step is IfNode ifNode)
+        {
+            WriteIfNode(sb, scenario, ifNode, indent);
+            return;
+        }
+
+        throw new NotImplementedException($"Unhandle scenario node type : {step.GetType().Name}");
+    }
+
+    private void WriteIfNode(StringBuilder sb, Scenario scenario, IfNode node, string indent)
+    {
+        ExpressionSerialisationVisitor visitor = new(scenario.System);
+        var result = (string)node.Expression.Accept(visitor);    
+
+        sb.AppendLine($"{indent}If <{result}> {{"); // TODO Serialise the expression correctly
+
+        foreach (var step in node.Steps)
+        {
+            WriteScenarioStep(sb, scenario, step, indent + _indent);
+        }
+
+        sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
     }
 

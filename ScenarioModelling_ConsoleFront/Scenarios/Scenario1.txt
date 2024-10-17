@@ -19,18 +19,18 @@ Scenario First {
         Text "Please choose an option"
     }
     Choose "C1" {
-        D2 "End"
-        PC "Choose again"
         ST1 "Change state and repeat"
+        PC "Choose again"
+        D2 "End"
+    }
+    Dialog "ST1" {
+        Text "Changing state... (E1 in state {E1.State})"
     }
     if <E1.State == "S1"> {
         Dialog {
             Character E1
             Text "Now leaving state one ! :O"
         }
-    }
-    Dialog "ST1" {
-        Text "Changing state... (E1 in state {E1.State})"
     }
     Transition {
         E1 : T2

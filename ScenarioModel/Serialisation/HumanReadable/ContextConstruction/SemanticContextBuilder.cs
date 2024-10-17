@@ -4,6 +4,7 @@ using LanguageExt.Common;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
+using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.States;
 
@@ -212,32 +213,39 @@ public class SemanticContextBuilder
     private Func<Definition, Option<IScenarioNode>> TransformStep(Scenario scenario)
         => (Definition definition) =>
         {
+            var tryTransformStep = TransformStep(scenario);
+
             foreach (var profilePred in _stepsByPredicate)
             {
                 if (profilePred.Key(definition))
                 {
-                    IScenarioNode value = profilePred.Value.CreateAndConfigure(definition, scenario);
-                    return Option<IScenarioNode>.Some(value);
+                    var step = profilePred.Value.CreateAndConfigure(definition, scenario, tryTransformStep);
+                    SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
+                    return Option<IScenarioNode>.Some(step);
                 }
             }
 
-            if (definition is not UnnamedDefinition unnamed)
+            if (definition is ExpressionDefinition expDef)
             {
-                return null;
+                if (_stepsByName.TryGetValue(expDef.Name.Value.ToUpperInvariant(), out ISemanticStepProfile? profile) && profile != null)
+                {
+                    var step = profile.CreateAndConfigure(definition, scenario, tryTransformStep);
+                    SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
+                    return Option<IScenarioNode>.Some(step);
+                }
             }
 
-            if (!_stepsByName.TryGetValue(unnamed.Type.Value, out ISemanticStepProfile? profile) || profile == null)
+            if (definition is UnnamedDefinition unnamed)
             {
-                throw new Exception("Unknown step type"); // TODO better
+                if (_stepsByName.TryGetValue(unnamed.Type.Value.ToUpperInvariant(), out ISemanticStepProfile? profile) && profile != null)
+                {
+                    var step = profile.CreateAndConfigure(definition, scenario, tryTransformStep);
+                    SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
+                    return Option<IScenarioNode>.Some(step);
+                }
             }
 
-            var step = profile.CreateAndConfigure(unnamed, scenario);
-
-            SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
-
-            //Console.WriteLine($"Created Step {step.Name}");
-
-            return Option<IScenarioNode>.Some(step);
+            return null;
         };
 
     private Option<Entity> TransformEntity(Definition definition, Context context)

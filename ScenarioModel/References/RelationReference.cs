@@ -1,16 +1,22 @@
 ﻿using LanguageExt;
+using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.References;
 
 public record RelationReference : IReference<SystemObjects.Relations.Relation>, IStatefulObjectReference
 {
-    public string? RelationName { get; set; } = null;
-    public string? FirstRelatableName { get; set; } = "";
-    public string? SecondRelatableName { get; set; } = "";
+    public string? RelationName { get; set; }
+    public ValueComposite? FirstRelatableName { get; set; }
+    public ValueComposite? SecondRelatableName { get; set; }
 
     public Option<SystemObjects.Relations.Relation> ResolveReference(System system)
     {
+        if (FirstRelatableName == null || SecondRelatableName == null)
+        {
+            throw new NotImplementedException();
+        }
+
         return system.AllRelations
                      .Find(x => x.Name.IsEqv(RelationName));
     }

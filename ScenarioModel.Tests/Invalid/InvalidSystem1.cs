@@ -16,7 +16,7 @@ public static class InvalidSystem1
             ],
             Constraints =
             [
-                new HasRelationExpression() { Name = "R1", Left = "E1", Right = "E2" } // R1 does not exist on an entity
+                new HasRelationExpression() { Name = "R1", Left = new ValueComposite() { ValueList = ["E1"] }, Right = new ValueComposite() { ValueList = ["E2"] } } // R1 does not exist on an entity
             ]
         };
     }

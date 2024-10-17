@@ -52,7 +52,7 @@ public partial class ExpressionInterpreter
             case ParseMessage.Accept:
                 // On a fini de parser, on récupère le résultat
 
-                result.Tree = (Expression)_parser.CurrentReduction;
+                result.ParsedObject = (Expression)_parser.CurrentReduction;
 
                 return false;
 
@@ -191,16 +191,6 @@ public partial class ExpressionInterpreter
                     Right = (Expression)r[2].Data
                 };
 
-            //case ExpressionProductionIndex.Isexp_Ltgt:
-            //    // <Is Exp> ::= <Value Exp> '<>' <Is Exp>
-
-            //    return new NotEqualExpression()
-            //    {
-            //        Left = (Expression)r[0].Data,
-            //        Right = (Expression)r[2].Data
-            //    };
-
-
             case ExpressionProductionIndex.Isexp_Exclameq:
                 // <Is Exp> ::= <Value Exp> '!=' <Is Exp>
 
@@ -233,7 +223,10 @@ public partial class ExpressionInterpreter
 
             case ExpressionProductionIndex.Valueexp_Lparen_Rparen:
                 // <Value Exp> ::= '(' <Exp> ')'
-                return r.PassOn(1);
+                return new BracketsExpression()
+                {
+                    Expression = (Expression)r[1].Data
+                };
 
             case ExpressionProductionIndex.Function_Lparen_Rparen:
                 // <Function> ::= <String> '(' <Args> ')'
@@ -269,41 +262,41 @@ public partial class ExpressionInterpreter
                 return new ArgumentList();
 
             case ExpressionProductionIndex.Isrelated_Minusquestiongt:
-                // <IsRelated> ::= <String> '-?>' <String>
+                // <IsRelated> ::= <ValueComposite> '-?>' <ValueComposite>
 
                 return new HasRelationExpression()
                 {
-                    Left = (string)r[0].Data,
-                    Right = (string)r[2].Data
+                    Left = (ValueComposite)r[0].Data,
+                    Right = (ValueComposite)r[2].Data
                 };
 
             case ExpressionProductionIndex.Isrelated_Minusquestiongt_Colon:
-                // <IsRelated> ::= <String> '-?>' <String> ':' <String>
+                // <IsRelated> ::= <ValueComposite> '-?>' <ValueComposite> ':' <String>
 
                 return new HasRelationExpression()
                 {
                     Name = (string)r[4].Data,
-                    Left = (string)r[0].Data,
-                    Right = (string)r[2].Data
+                    Left = (ValueComposite)r[0].Data,
+                    Right = (ValueComposite)r[2].Data
                 };
 
             case ExpressionProductionIndex.Isnotrelated_Minusexclamgt:
-                // <IsNotRelated> ::= <String> '-!>' <String>
+                // <IsNotRelated> ::= <ValueComposite> '-!>' <ValueComposite>
 
                 return new DoesNotHaveRelationExpression()
                 {
-                    Left = (string)r[0].Data,
-                    Right = (string)r[2].Data
+                    Left = (ValueComposite)r[0].Data,
+                    Right = (ValueComposite)r[2].Data
                 };
 
             case ExpressionProductionIndex.Isnotrelated_Minusexclamgt_Colon:
-                // <IsNotRelated> ::= <String> '-!>' <String> ':' <String>
+                // <IsNotRelated> ::= <ValueComposite> '-!>' <ValueComposite> ':' <String>
 
                 return new DoesNotHaveRelationExpression()
                 {
                     Name = (string)r[4].Data,
-                    Left = (string)r[0].Data,
-                    Right = (string)r[2].Data
+                    Left = (ValueComposite)r[0].Data,
+                    Right = (ValueComposite)r[2].Data
                 };
 
             case ExpressionProductionIndex.Value:

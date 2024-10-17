@@ -5,7 +5,7 @@ namespace ScenarioModel.Expressions.Interpreter;
 
 public class ExpressionParserResult : IParserResult<Expression>
 {
-    public Expression Tree { get; set; }
+    public Expression ParsedObject { get; set; }
 
     public List<string> Errors { get; internal set; } = new();
 
@@ -19,6 +19,6 @@ public class ExpressionParserResult : IParserResult<Expression>
 
     public override string ToString()
     {
-        return Tree.ToString();
+        return ParsedObject.ToString();
     }
 }

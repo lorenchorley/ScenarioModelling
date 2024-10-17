@@ -36,8 +36,8 @@ public static class ValidScenario2
                 new HasRelationExpression()
                 {
                     Name = "R1",
-                    Left = "E1",
-                    Right = "E2"
+                    Left = new ValueComposite() { ValueList = ["E1"] },
+                    Right = new ValueComposite() { ValueList = ["E2"] }
                 }
             ]
         };

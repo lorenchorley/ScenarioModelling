@@ -7,7 +7,7 @@ public record IfNode : IScenarioNode<IfBlockEvent>
 {
     public string Name { get; set; } = "If";
     public Expression Expression { get; set; } = null!;
-    public List<IScenarioNode> NodesInIfBlock { get; set; } = new();
+    public List<IScenarioNode> Steps { get; set; } = new();
 
     public IfBlockEvent GenerateEvent()
     {

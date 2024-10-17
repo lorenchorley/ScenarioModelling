@@ -1,6 +1,7 @@
 ﻿using ScenarioModel;
 using ScenarioModel.Execution.Dialog;
 using ScenarioModel.Execution.Events;
+using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
 using ScenarioModel.References;
 using ScenarioModel.ScenarioObjects;
@@ -147,6 +148,17 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
             else if (node is JumpNode jumpNode)
             {
                 var e = jumpNode.GenerateEvent();
+
+                dialogFactory.RegisterEvent(e);
+            }
+            else if (node is IfNode ifNode)
+            {
+                var e = ifNode.GenerateEvent();
+
+                ExpressionEvalatorVisitor visitor = new(context.System);
+
+                var result = ifNode.Expression.Accept(visitor);
+                e.IfBlockRun = true;
 
                 dialogFactory.RegisterEvent(e);
             }

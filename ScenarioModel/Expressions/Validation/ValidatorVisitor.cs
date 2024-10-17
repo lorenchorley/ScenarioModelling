@@ -16,77 +16,128 @@ public class ValidatorVisitor : IExpressionVisitor
         _system = system;
     }
 
-    public object VisitAnd(AndExpression andConstraint)
+    public object VisitAnd(AndExpression exp)
     {
-        return Errors;
+        throw new NotImplementedException();
     }
 
-    public object VisitOr(OrExpression orConstraint)
+    public object VisitOr(OrExpression exp)
     {
-        return Errors;
+        throw new NotImplementedException();
     }
 
-    public object VisitHasRelation(HasRelationExpression hasRelationExpression)
+    public object VisitHasRelation(HasRelationExpression exp)
     {
+        // Relation name must be valid in the given system even if not applied to something
         var reference = new RelationReference()
         {
-            RelationName = hasRelationExpression.Name,
-            FirstRelatableName = hasRelationExpression.Left,
-            SecondRelatableName = hasRelationExpression.Right
+            RelationName = exp.Name,
+            FirstRelatableName = exp.Left,
+            SecondRelatableName = exp.Right
         };
 
-        return reference.ResolveReference(_system).Match(
-            Some: relation => true,
-            None: () => false
-            );
+        if (reference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relation {exp.Name} not found in system"));
+
+        // Relatable object must exist in the system
+        var firstRelatableReference = new RelatableObjectReference()
+        {
+            Identifier = exp.Left
+        };
+
+        if (!firstRelatableReference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relatable object {exp.Left} not found in system"));
+
+        var secondRelatableReference = new RelatableObjectReference()
+        {
+            Identifier = exp.Right
+        };
+
+        if (!secondRelatableReference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relatable object {exp.Right} not found in system"));
+
+        return null;
     }
 
-    public object VisitValueComposite(ValueComposite valueComposite)
+    public object VisitValueComposite(ValueComposite value)
     {
-        throw new NotImplementedException();
+        var reference = new RelatableObjectReference()
+        {
+            Identifier = value
+        };
+
+        if (reference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relatable object {value} not found in system"));
+
+        return null;
     }
 
-    public object VisitEmpty(EmptyExpression emptyExpression)
+    public object VisitEmpty(EmptyExpression exp)
     {
-        throw new NotImplementedException();
+        Errors.Add(new ValidationError("Expression was empty"));
+
+        return null;
     }
 
-    public object VisitDoesNotHaveRelation(DoesNotHaveRelationExpression doesNotHaveRelationExpression)
+    public object VisitDoesNotHaveRelation(DoesNotHaveRelationExpression exp)
     {
+        // Relation name must be valid in the given system even if not applied to something
         var reference = new RelationReference()
         {
-            RelationName = doesNotHaveRelationExpression.Name,
-            FirstRelatableName = doesNotHaveRelationExpression.Left,
-            SecondRelatableName = doesNotHaveRelationExpression.Right
+            RelationName = exp.Name,
+            FirstRelatableName = exp.Left,
+            SecondRelatableName = exp.Right
         };
 
-        return reference.ResolveReference(_system).Match(
-            Some: relation => false,
-            None: () => true
-            );
+        if (reference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relation {exp.Name} not found in system"));
+
+        // Relatable object must exist in the system
+        var firstRelatableReference = new RelatableObjectReference()
+        {
+            Identifier = exp.Left
+        };
+
+        if (!firstRelatableReference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relatable object {exp.Left} not found in system"));
+
+        var secondRelatableReference = new RelatableObjectReference()
+        {
+            Identifier = exp.Right
+        };
+
+        if (!secondRelatableReference.ResolveReference(_system).IsNone)
+            Errors.Add(new ValidationError($"Relatable object {exp.Right} not found in system"));
+
+        return null;
     }
 
-    public object VisitArgumentList(ArgumentList argumentList)
+    public object VisitArgumentList(ArgumentList list)
     {
         throw new NotImplementedException();
     }
 
-    public object VisitFunction(FunctionExpression functionExpression)
+    public object VisitFunction(FunctionExpression exp)
     {
         throw new NotImplementedException();
     }
 
-    public object VisitNotEqual(NotEqualExpression notEqualExpression)
+    public object VisitNotEqual(NotEqualExpression exp)
     {
         throw new NotImplementedException();
     }
 
-    public object VisitEqual(EqualExpression equalExpression)
+    public object VisitEqual(EqualExpression exp)
     {
         throw new NotImplementedException();
     }
 
-    public object VisitErroneousExpression(ErroneousExpression erroneousExpression)
+    public object VisitErroneousExpression(ErroneousExpression exp)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitBrackets(BracketsExpression exp)
     {
         throw new NotImplementedException();
     }
