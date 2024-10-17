@@ -16,7 +16,7 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
     {
         _nodes.Add(node);
     }
-    
+
     public void AddRange(IEnumerable<T> nodes)
     {
         _nodes.AddRange(nodes);

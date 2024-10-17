@@ -10,5 +10,5 @@ public record ArgumentList : IExpressionNode
         => visitor.VisitArgumentList(this);
 
     override public string ToString()
-        => "ArgumentList [ " + string.Join(", ", ExpressionList) + " ]";
+        => "ArgumentList [ " + ExpressionList.CommaSeparatedList() + " ]";
 }

@@ -14,7 +14,7 @@ public static class ValidScenario1
             Steps = new()
             {
                 new DialogNode() { Name = "D1", TextTemplate = "Hello" },
-                new ChooseNode() { Name = "C1", Choices = [ "ST1", "D1" ] },
+                new ChooseNode() { Name = "C1", Choices = [ ("ST1", "ST1"), ("D1", "D1") ] },
                 new StateTransitionNode() { Name = "ST1", StatefulObject = new EntityReference() { EntityName = "E1" }, TransitionName = "S1" },
                 new DialogNode() { Name = "D2", TextTemplate = "Bubye" },
             }

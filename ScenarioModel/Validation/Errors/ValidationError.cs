@@ -6,6 +6,6 @@ public class ValidationError(string message)
 
     public override string ToString()
     {
-        return GetType().Name + " : " +  Message;
+        return GetType().Name + " : " + Message;
     }
 }

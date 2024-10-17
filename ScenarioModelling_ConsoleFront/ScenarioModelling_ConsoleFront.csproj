@@ -16,10 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Scenarios\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Update="Scenarios\Updater.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Scenarios\Scenario1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

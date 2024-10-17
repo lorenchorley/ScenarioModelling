@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.SystemObjects.States;
 
-namespace ScenarioModel.Serialisation.HumanReadable;
+namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
 
 public class DefinitionAutoNamer(string Prefix)
 {

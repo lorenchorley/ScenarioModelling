@@ -9,21 +9,22 @@ public enum HumanReadableSymbolIndex
     @Lbrace = 4,                               // '{'
     @Rbrace = 5,                               // '}'
     @Minusgt = 6,                              // '->'
-    @Identifier = 7,                           // Identifier
-    @Newline = 8,                              // NewLine
-    @Numberliteral = 9,                        // NumberLiteral
+    @Expressionblock = 7,                      // ExpressionBlock
+    @Identifier = 8,                           // Identifier
+    @Newline = 9,                              // NewLine
     @Stringliteral = 10,                       // StringLiteral
     @Definition = 11,                          // <Definition>
     @Definitions = 12,                         // <Definitions>
-    @Id = 13,                                  // <ID>
-    @Nameddefinition = 14,                     // <NamedDefinition>
-    @Namedlink = 15,                           // <NamedLink>
-    @Nl = 16,                                  // <nl>
-    @Nlo = 17,                                 // <nlo>
-    @Program = 18,                             // <Program>
-    @String = 19,                              // <String>
-    @Transition = 20,                          // <Transition>
-    @Unnameddefinition = 21,                   // <UnnamedDefinition>
-    @Unnamedlink = 22                          // <UnnamedLink>
+    @Expressionblock2 = 13,                    // <ExpressionBlock>
+    @Expressiondefinition = 14,                // <ExpressionDefinition>
+    @Nameddefinition = 15,                     // <NamedDefinition>
+    @Namedlink = 16,                           // <NamedLink>
+    @Nl = 17,                                  // <nl>
+    @Nlo = 18,                                 // <nlo>
+    @Program = 19,                             // <Program>
+    @String = 20,                              // <String>
+    @Transition = 21,                          // <Transition>
+    @Unnameddefinition = 22,                   // <UnnamedDefinition>
+    @Unnamedlink = 23                          // <UnnamedLink>
 }
 

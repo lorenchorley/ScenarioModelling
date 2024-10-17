@@ -3,6 +3,7 @@ using LanguageExt;
 using LanguageExt.Common;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.ScenarioObjects;
+using ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.States;
 
@@ -17,125 +18,8 @@ public class SemanticContextBuilder
     private readonly DefinitionAutoNamer _relationNamer = new("R");
     private readonly DefinitionAutoNamer _stateNamer = new("S");
 
-    private interface IStepProfile
-    {
-        string Name { get; }
-        IScenarioNode CreateAndConfigure(UnnamedDefinition def, Scenario scenario);
-    }
-
-    private class ChooseStepProfile : IStepProfile
-    {
-        public string Name => "Choose";
-
-        public IScenarioNode CreateAndConfigure(UnnamedDefinition def, Scenario scenario)
-        {
-            ChooseNode node = new();
-
-            foreach (var item in def.Definitions)
-            {
-                if (item is NamedDefinition named)
-                {
-                    node.Choices.Add((named.Type.Value, named.Name.Value));
-                } 
-                else if (item is UnnamedDefinition unnamed)
-                {
-                    node.Choices.Add((unnamed.Type.Value, unnamed.Type.Value));
-                }
-            }
-
-            return node;
-        }
-    }
-
-    private class DialogStepProfile : IStepProfile
-    {
-        public string Name => "Dialog";
-
-        public IScenarioNode CreateAndConfigure(UnnamedDefinition def, Scenario scenario)
-        {
-            DialogNode node = new();
-
-            foreach (var item in def.Definitions)
-            {
-                if (item is NamedDefinition named)
-                {
-                    if (named.Type.Value.IsEqv("Text"))
-                    {
-                        node.TextTemplate = named.Name.Value;
-                        continue;
-                    }
-                    
-                    if (named.Type.Value.IsEqv("Character") || named.Type.Value.IsEqv("Char"))
-                    {
-                        node.TextTemplate = named.Name.Value;
-                        continue;
-                    }
-                }
-            }
-
-            return node;
-        }
-    }
-
-    private class StateTransitionStepProfile : IStepProfile
-    {
-        public string Name => "Transition";
-
-        public IScenarioNode CreateAndConfigure(UnnamedDefinition def, Scenario scenario)
-        {
-            StateTransitionNode node = new();
-
-            foreach (var item in def.Definitions)
-            {
-                if (item is TransitionDefinition transitionDefinition)
-                {
-                    node.TransitionName = transitionDefinition.TransitionName.Value;
-
-                    IStateful? stateful = scenario.System.AllStateful.FirstOrDefault(e => e.Name.IsEqv(transitionDefinition.Type));
-                    if (stateful != null)
-                    {
-                        node.StatefulObject = stateful.GenerateReference();
-                        break;
-                    }
-                }
-            }
-
-            if (node.StatefulObject == null)
-            {
-                throw new Exception("Stateful object not set on transition node");
-            }
-
-            return node;
-        }
-    }
-    
-    private class JumpStepProfile : IStepProfile
-    {
-        public string Name => "Jump";
-
-        public IScenarioNode CreateAndConfigure(UnnamedDefinition def, Scenario scenario)
-        {
-            JumpNode node = new();
-
-            foreach (var item in def.Definitions)
-            {
-                if (item is UnnamedDefinition unnamedDefinition)
-                {
-                    node.Target = unnamedDefinition.Type.Value;
-                    break;
-                }
-            }
-
-            if (string.IsNullOrEmpty(node.Target))
-            {
-                throw new Exception("Target not set on jump node");
-            }
-
-            return node;
-        }
-    }
-
-    private readonly Dictionary<string, IStepProfile> _stepTypes = new();
+    private readonly Dictionary<string, ISemanticStepProfile> _stepsByName = new();
+    private readonly Dictionary<Func<Definition, bool>, ISemanticStepProfile> _stepsByPredicate = new();
 
     public SemanticContextBuilder()
     {
@@ -143,17 +27,32 @@ public class SemanticContextBuilder
         RegisterStepProfile(new DialogStepProfile());
         RegisterStepProfile(new StateTransitionStepProfile());
         RegisterStepProfile(new JumpStepProfile());
+        RegisterStepProfile(new IfStepProfile());
     }
 
     public Result<Context> Build(List<Definition> tree)
     {
         Context context = Context.New();
 
-        context.System.Entities.AddRange(tree.Choose(def => TransformEntity(def, context)));
-        context.System.EntityTypes.AddRange(tree.Choose(TransformEntityType));
-        context.System.StateMachines.AddRange(tree.Choose(TransformStateMachine));
-        context.System.Constraints.AddRange(tree.Choose(TransformConstraint));
-        context.Scenarios.AddRange(tree.Choose(TransformScenario(context.System)));
+        var (entities, remaining1) = tree.PartitionByChoose(def => TransformEntity(def, context));
+        context.System.Entities.AddRange(entities);
+
+        var (entityTypes, remaining2) = remaining1.PartitionByChoose(TransformEntityType);
+        context.System.EntityTypes.AddRange(entityTypes);
+
+        var (stateMachines, remaining3) = remaining2.PartitionByChoose(TransformStateMachine);
+        context.System.StateMachines.AddRange(stateMachines);
+
+        var (constraints, remaining4) = remaining3.PartitionByChoose(TransformConstraint);
+        context.System.Constraints.AddRange(constraints);
+
+        var (scenarios, remaining5) = remaining4.PartitionByChoose(TransformScenario(context.System));
+        context.Scenarios.AddRange(scenarios);
+
+        if (remaining5.Any())
+        {
+            throw new Exception($"Unknown definitions not taken into account : {remaining5.CommaSeparatedList()}");
+        }
 
         context.System.StateMachines.ForEach(sm => ValidateStateMachineStates(sm, context));
         context.System.Entities.ForEach(e => ValdiateEntity(e, context));
@@ -230,7 +129,7 @@ public class SemanticContextBuilder
                 if (state == null)
                 {
                     state = new State() { Name = transition.SourceState, StateMachine = type };
-                    
+
                     //Console.WriteLine($"Created State {state.Name}");
                 }
 
@@ -272,9 +171,13 @@ public class SemanticContextBuilder
         }
     }
 
-    private void RegisterStepProfile(IStepProfile profile)
+    private void RegisterStepProfile(ISemanticStepProfile profile)
     {
-        _stepTypes.Add(profile.Name, profile);
+        if (!string.IsNullOrEmpty(profile.Name))
+            _stepsByName.Add(profile.Name, profile);
+
+        if (profile.Predicate != null)
+            _stepsByPredicate.Add(profile.Predicate, profile);
     }
 
     private Func<Definition, Option<Scenario>> TransformScenario(System system)
@@ -301,9 +204,7 @@ public class SemanticContextBuilder
                 System = system
             };
 
-            value.Steps.AddRange(named.Definitions.Choose(TransformStep(value)));
-
-            //Console.WriteLine($"Created Scenario {value.Name}");
+            value.Steps.AddRange(named.Definitions.ChooseAndAssertAllSelected(TransformStep(value), "Unknown step types not taken into account : {0}"));
 
             return value;
         };
@@ -311,12 +212,21 @@ public class SemanticContextBuilder
     private Func<Definition, Option<IScenarioNode>> TransformStep(Scenario scenario)
         => (Definition definition) =>
         {
+            foreach (var profilePred in _stepsByPredicate)
+            {
+                if (profilePred.Key(definition))
+                {
+                    IScenarioNode value = profilePred.Value.CreateAndConfigure(definition, scenario);
+                    return Option<IScenarioNode>.Some(value);
+                }
+            }
+
             if (definition is not UnnamedDefinition unnamed)
             {
                 return null;
             }
 
-            if (!_stepTypes.TryGetValue(unnamed.Type.Value, out IStepProfile? profile) || profile == null)
+            if (!_stepsByName.TryGetValue(unnamed.Type.Value, out ISemanticStepProfile? profile) || profile == null)
             {
                 throw new Exception("Unknown step type"); // TODO better
             }
@@ -342,7 +252,6 @@ public class SemanticContextBuilder
             return null;
         }
 
-
         EntityType? type = unnamed.Definitions.Choose(TransformEntityType).FirstOrDefault();
         if (type == null)
         {
@@ -350,16 +259,27 @@ public class SemanticContextBuilder
             context.System.EntityTypes.Add(type);
         }
 
+        var (relations, remaining1) = unnamed.Definitions.PartitionByChoose(TransformRelation);
+        var (states, remaining2) = remaining1.PartitionByChoose(TransformState);
+
+
         Entity value = new()
         {
-            Relations = unnamed.Definitions.Choose(TransformRelation).ToList(),
-            State = unnamed.Definitions.Choose(TransformState).FirstOrDefault(),
+            Relations = relations.ToList(),
+            State = states.FirstOrDefault(),
             EntityType = type,
         };
 
         value.Aspects = unnamed.Definitions.Choose(TransformAspect(value)).ToList();
 
+        value.CharacterStyle = unnamed.Definitions.Choose(TransformCharacterStyle).FirstOrDefault() ?? "";
+
         SetNameOrRecordForAutoNaming(definition, value, _entityNamer);
+
+        if (states.Count() > 1)
+        {
+            throw new Exception($"More than one state was set on entity {value.Name ?? "<unnamed>"} of type {type?.Name ?? "<unnnamed>"} : {states.Select(s => s.Name).CommaSeparatedList()}");
+        }
 
         //Console.WriteLine($"Created Entity {value.Name}");
 
@@ -510,6 +430,21 @@ public class SemanticContextBuilder
         if (definition is not UnnamedLinkDefinition unnamed)
         {
             return null;
+        }
+
+        return null;
+    }
+
+    private Option<string> TransformCharacterStyle(Definition definition)
+    {
+        if (definition is not NamedDefinition named)
+        {
+            return null;
+        }
+
+        if (named.Type.IsEqv("CharacterStyle"))
+        {
+            return named.Name.Value;
         }
 
         return null;

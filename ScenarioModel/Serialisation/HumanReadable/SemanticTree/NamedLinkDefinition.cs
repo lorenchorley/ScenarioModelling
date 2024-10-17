@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
 
 public record NamedLinkDefinition : UnnamedLinkDefinition
 {

@@ -128,112 +128,84 @@
 //                // <String> ::= StringLiteral
 //                break;
 
+//            case ProductionIndex.Expressionblock_Expressionblock:                 
+//                // <ExpressionBlock> ::= ExpressionBlock
+//                break;
+
 //            case ProductionIndex.Program:                 
-//                // <Program> ::= <nlo> <Exp> <nlo>
+//                // <Program> ::= <Definitions>
 //                break;
 
-//            case ProductionIndex.Program2:                 
-//                // <Program> ::= <nlo>
+//            case ProductionIndex.Definitions:                 
+//                // <Definitions> ::= <Definitions> <Definition>
 //                break;
 
-//            case ProductionIndex.Exp:                 
-//                // <Exp> ::= <AndOr Exp>
+//            case ProductionIndex.Definitions2:                 
+//                // <Definitions> ::= <nlo>
 //                break;
 
-//            case ProductionIndex.Andorexp_And:                 
-//                // <AndOr Exp> ::= <AndOr Exp> AND <Is Exp>
+//            case ProductionIndex.Definition:                 
+//                // <Definition> ::= <NamedDefinition>
 //                break;
 
-//            case ProductionIndex.Andorexp_Ampamp:                 
-//                // <AndOr Exp> ::= <AndOr Exp> '&&' <Is Exp>
+//            case ProductionIndex.Definition2:                 
+//                // <Definition> ::= <UnnamedDefinition>
 //                break;
 
-//            case ProductionIndex.Andorexp_Or:                 
-//                // <AndOr Exp> ::= <AndOr Exp> OR <Is Exp>
+//            case ProductionIndex.Definition3:                 
+//                // <Definition> ::= <NamedLink>
 //                break;
 
-//            case ProductionIndex.Andorexp_Pipepipe:                 
-//                // <AndOr Exp> ::= <AndOr Exp> '||' <Is Exp>
+//            case ProductionIndex.Definition4:                 
+//                // <Definition> ::= <UnnamedLink>
 //                break;
 
-//            case ProductionIndex.Andorexp:                 
-//                // <AndOr Exp> ::= <Is Exp>
+//            case ProductionIndex.Definition5:                 
+//                // <Definition> ::= <Transition>
 //                break;
 
-//            case ProductionIndex.Isexp_Eqeq:                 
-//                // <Is Exp> ::= <Is Exp> '==' <Value Exp>
+//            case ProductionIndex.Definition6:                 
+//                // <Definition> ::= <ExpressionDefinition>
 //                break;
 
-//            case ProductionIndex.Isexp_Exclameq:                 
-//                // <Is Exp> ::= <Is Exp> '!=' <Value Exp>
+//            case ProductionIndex.Nameddefinition_Lbrace_Rbrace:                 
+//                // <NamedDefinition> ::= <String> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 //                break;
 
-//            case ProductionIndex.Isexp:                 
-//                // <Is Exp> ::= <Value Exp>
+//            case ProductionIndex.Nameddefinition:                 
+//                // <NamedDefinition> ::= <String> <String> <nl>
 //                break;
 
-//            case ProductionIndex.Valueexp:                 
-//                // <Value Exp> ::= <Value>
+//            case ProductionIndex.Unnameddefinition_Lbrace_Rbrace:                 
+//                // <UnnamedDefinition> ::= <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 //                break;
 
-//            case ProductionIndex.Valueexp2:                 
-//                // <Value Exp> ::= <Function>
+//            case ProductionIndex.Unnameddefinition:                 
+//                // <UnnamedDefinition> ::= <String> <nl>
 //                break;
 
-//            case ProductionIndex.Valueexp3:                 
-//                // <Value Exp> ::= <IsRelated>
+//            case ProductionIndex.Unnamedlink_Minusgt:                 
+//                // <UnnamedLink> ::= <String> '->' <String> <nl>
 //                break;
 
-//            case ProductionIndex.Valueexp4:                 
-//                // <Value Exp> ::= <IsNotRelated>
+//            case ProductionIndex.Namedlink_Minusgt_Colon:                 
+//                // <NamedLink> ::= <String> '->' <String> ':' <String> <nl>
 //                break;
 
-//            case ProductionIndex.Valueexp_Lparen_Rparen:                 
-//                // <Value Exp> ::= '(' <Exp> ')'
+//            case ProductionIndex.Expressiondefinition_Lbrace_Rbrace:                 
+//                // <ExpressionDefinition> ::= <String> <ExpressionBlock> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
 //                break;
 
-//            case ProductionIndex.Function_Lparen_Rparen:                 
-//                // <Function> ::= <String> '(' <Args> ')'
+//            case ProductionIndex.Expressiondefinition:                 
+//                // <ExpressionDefinition> ::= <String> <ExpressionBlock> <nl>
 //                break;
 
-//            case ProductionIndex.Args_Comma:                 
-//                // <Args> ::= <Args> ',' <Exp>
+//            case ProductionIndex.Expressiondefinition2:                 
+//                // <ExpressionDefinition> ::= <ExpressionBlock> <nl>
 //                break;
 
-//            case ProductionIndex.Args:                 
-//                // <Args> ::= <Exp>
-//                break;
-
-//            case ProductionIndex.Args2:                 
-//                // <Args> ::= 
-//                break;
-
-//            case ProductionIndex.Isrelated_Minusquestiongt:                 
-//                // <IsRelated> ::= <String> '-?>' <String>
-//                break;
-
-//            case ProductionIndex.Isrelated_Minusquestiongt_Colon:                 
-//                // <IsRelated> ::= <String> '-?>' <String> ':' <String>
-//                break;
-
-//            case ProductionIndex.Isnotrelated_Minusexclamgt:                 
-//                // <IsNotRelated> ::= <String> '-!>' <String>
-//                break;
-
-//            case ProductionIndex.Isnotrelated_Minusexclamgt_Colon:                 
-//                // <IsNotRelated> ::= <String> '-!>' <String> ':' <String>
-//                break;
-
-//            case ProductionIndex.Value:                 
-//                // <Value> ::= <ValueComposite>
-//                break;
-
-//            case ProductionIndex.Valuecomposite_Dot:                 
-//                // <ValueComposite> ::= <ValueComposite> '.' <String>
-//                break;
-
-//            case ProductionIndex.Valuecomposite:                 
-//                // <ValueComposite> ::= <String>
+//            case ProductionIndex.Transition_Colon:                 
+//                // <Transition> ::= <String> ':' <String> <nl>
 //                break;
 
 //        }  //switch

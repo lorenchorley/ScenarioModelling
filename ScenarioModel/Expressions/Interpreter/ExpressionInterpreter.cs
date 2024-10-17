@@ -191,14 +191,14 @@ public partial class ExpressionInterpreter
                     Right = (Expression)r[2].Data
                 };
 
-            case ExpressionProductionIndex.Isexp_Ltgt:
-                // <Is Exp> ::= <Value Exp> '<>' <Is Exp>
+            //case ExpressionProductionIndex.Isexp_Ltgt:
+            //    // <Is Exp> ::= <Value Exp> '<>' <Is Exp>
 
-                return new NotEqualExpression()
-                {
-                    Left = (Expression)r[0].Data,
-                    Right = (Expression)r[2].Data
-                };
+            //    return new NotEqualExpression()
+            //    {
+            //        Left = (Expression)r[0].Data,
+            //        Right = (Expression)r[2].Data
+            //    };
 
 
             case ExpressionProductionIndex.Isexp_Exclameq:
@@ -268,8 +268,8 @@ public partial class ExpressionInterpreter
 
                 return new ArgumentList();
 
-            case ExpressionProductionIndex.Isrelated_Minusgt:
-                // <IsRelated> ::= <String> '->' <String>
+            case ExpressionProductionIndex.Isrelated_Minusquestiongt:
+                // <IsRelated> ::= <String> '-?>' <String>
 
                 return new HasRelationExpression()
                 {
@@ -277,8 +277,8 @@ public partial class ExpressionInterpreter
                     Right = (string)r[2].Data
                 };
 
-            case ExpressionProductionIndex.Isrelated_Minusgt_Colon:
-                // <IsRelated> ::= <String> '->' <String> ':' <String>
+            case ExpressionProductionIndex.Isrelated_Minusquestiongt_Colon:
+                // <IsRelated> ::= <String> '-?>' <String> ':' <String>
 
                 return new HasRelationExpression()
                 {

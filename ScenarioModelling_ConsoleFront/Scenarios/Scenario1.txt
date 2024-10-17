@@ -1,6 +1,6 @@
 Entity E1 {
     State S1
-    TextColor "Red"
+    CharacterStyle "Red"
 }
 
 Entity E2 {}
@@ -23,11 +23,17 @@ Scenario First {
         PC "Choose again"
         ST1 "Change state and repeat"
     }
+    if <E1.State == "S1"> {
+        Dialog {
+            Character E1
+            Text "Now leaving state one ! :O"
+        }
+    }
     Dialog "ST1" {
         Text "Changing state... (E1 in state {E1.State})"
     }
     Transition {
-        E1 : T1
+        E1 : T2
     }
     Jump {
         PC

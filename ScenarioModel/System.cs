@@ -2,7 +2,6 @@
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.Relations;
 using ScenarioModel.SystemObjects.States;
-using System.Linq;
 
 namespace ScenarioModel;
 
@@ -37,7 +36,7 @@ public class System
                          .Cast<State>()
                          .Distinct();
     }
-    
+
     public IEnumerable<IStateful> AllStateful
     {
         get => Enumerable.Empty<IStateful>()
@@ -52,7 +51,7 @@ public class System
                          .Concat(Entities.SelectMany(x => x.Relations))
                          .Concat(Entities.SelectMany(e => e.Aspects).SelectMany(a => a.Relations));
     }
-    
+
     public IEnumerable<Aspect> AllAspects
     {
         get => Enumerable.Empty<Aspect>()

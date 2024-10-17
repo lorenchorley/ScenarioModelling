@@ -136,6 +136,17 @@ public partial class HumanReadableInterpreter
                     Value = ((string)r[0].Data).Trim('"')
                 };
 
+            case HumanReadableProductionIndex.Expressionblock_Expressionblock:
+                // <ExpressionBlock> ::= ExpressionBlock
+
+                return new ExpressionBlock()
+                {
+                    ExpressionText = new StringValue()
+                    {
+                        Value = (string)r[0].Data
+                    }
+                };
+
             case HumanReadableProductionIndex.Program:
                 // <Program> ::= <Definitions>
 
@@ -179,6 +190,10 @@ public partial class HumanReadableInterpreter
 
             case HumanReadableProductionIndex.Definition5:
                 // <Definition> ::= <Transition>
+                return r.PassOn();
+
+            case HumanReadableProductionIndex.Definition6:
+                // <Definition> ::= <ExpressionDefinition>
                 return r.PassOn();
 
             case HumanReadableProductionIndex.Nameddefinition_Lbrace_Rbrace:
@@ -234,6 +249,33 @@ public partial class HumanReadableInterpreter
                     Source = (StringValue)r[0].Data,
                     Destination = (StringValue)r[2].Data,
                     Name = (StringValue)r[4].Data
+                };
+
+            case HumanReadableProductionIndex.Expressiondefinition_Lbrace_Rbrace:
+                // <ExpressionDefinition> ::= <String> <ExpressionBlock> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+
+                return new ExpressionDefinition()
+                {
+                    Name = (StringValue)r[0].Data,
+                    Block = (ExpressionBlock)r[1].Data,
+                    Definitions = ((Definitions?)r[6].Data) ?? new Definitions()
+                };
+
+            case HumanReadableProductionIndex.Expressiondefinition:
+                // <ExpressionDefinition> ::= <String> <ExpressionBlock> <nl>
+
+                return new ExpressionDefinition()
+                {
+                    Name = (StringValue)r[0].Data,
+                    Block = (ExpressionBlock)r[1].Data
+                };
+
+            case HumanReadableProductionIndex.Expressiondefinition2:
+                // <ExpressionDefinition> ::= <ExpressionBlock> <nl>
+
+                return new ExpressionDefinition()
+                {
+                    Block = (ExpressionBlock)r[0].Data
                 };
 
             case HumanReadableProductionIndex.Transition_Colon:

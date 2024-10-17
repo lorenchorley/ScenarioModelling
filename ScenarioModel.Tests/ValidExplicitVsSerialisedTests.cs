@@ -1,5 +1,5 @@
 using FluentAssertions;
-using ScenarioModel.Serialisation.HumanReadable;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Tests.Valid;
 
 namespace ScenarioModel.Tests;
@@ -15,7 +15,7 @@ public class ValidExplicitVsSerialisedTests
         // =======
         var explicitContext =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiserV1>()
+                   .UseSerialiser<HumanReadablePromptSerialiser>()
                    .LoadSystem(ValidScenario1.System, out System system)
                    .LoadScenario(ValidScenario1.Scenario, out Scenario scenario)
                    .Initialise();
@@ -24,8 +24,8 @@ public class ValidExplicitVsSerialisedTests
 
         var fromSerialisedContext =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiserV1>()
-                   .LoadContext<HumanReadablePromptSerialiserV1>(ValidScenario1.SerialisedContext)
+                   .UseSerialiser<HumanReadablePromptSerialiser>()
+                   .LoadContext<HumanReadablePromptSerialiser>(ValidScenario1.SerialisedContext)
                    .Initialise();
 
         fromSerialisedContext.ValidationErrors.Should().BeEmpty();
@@ -33,12 +33,12 @@ public class ValidExplicitVsSerialisedTests
 
         // Act
         // ===
-        StoryRunResult resultFromExplicit = 
+        StoryRunResult resultFromExplicit =
             explicitContext.Scenarios
                            .Where(s => s.Name == nameof(ValidScenario1))
                            .First()
                            .StartAtStep("S1");
-        
+
         StoryRunResult resultFromSerialised =
             fromSerialisedContext.Scenarios
                            .Where(s => s.Name == nameof(ValidScenario1))
@@ -49,8 +49,8 @@ public class ValidExplicitVsSerialisedTests
         // Assert
         // ======
 
-        var explicitContextSerialised = explicitContext.Serialise<HumanReadablePromptSerialiserV1>();
-        var fromSerialisedContextReserialised = fromSerialisedContext.Serialise<HumanReadablePromptSerialiserV1>();
+        var explicitContextSerialised = explicitContext.Serialise<HumanReadablePromptSerialiser>();
+        var fromSerialisedContextReserialised = fromSerialisedContext.Serialise<HumanReadablePromptSerialiser>();
         explicitContextSerialised.Should().Be(fromSerialisedContextReserialised);
 
         // Check final state of system

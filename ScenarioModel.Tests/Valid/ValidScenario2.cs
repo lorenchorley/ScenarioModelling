@@ -1,5 +1,4 @@
 using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.References;
 using ScenarioModel.ScenarioObjects;
 using ScenarioModel.SystemObjects.States;
 
@@ -14,7 +13,7 @@ public static class ValidScenario2
             Name = nameof(ValidScenario2),
             Steps = new()
             {
-                new ChooseNode() { Name = "A1", Choices = [ "A2", "A1" ] },
+                new ChooseNode() { Name = "A1", Choices = [ ("A2", "A2"), ("A1", "A1") ] },
             }
         };
     }

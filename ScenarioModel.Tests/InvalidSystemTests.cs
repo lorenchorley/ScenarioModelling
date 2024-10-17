@@ -1,5 +1,5 @@
 using FluentAssertions;
-using ScenarioModel.Serialisation.HumanReadable;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Tests.Valid;
 
 namespace ScenarioModel.Tests;
@@ -15,7 +15,7 @@ public class InvalidSystemTests
         // ==============
         var context =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiserV1>()
+                   .UseSerialiser<HumanReadablePromptSerialiser>()
                    .LoadSystem(InvalidSystem1.System, out System system)
                    .Initialise();
 

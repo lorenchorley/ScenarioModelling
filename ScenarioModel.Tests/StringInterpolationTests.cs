@@ -1,9 +1,7 @@
 using FluentAssertions;
 using ScenarioModel.Interpolation;
-using ScenarioModel.Serialisation.HumanReadable;
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.States;
-using ScenarioModel.Tests.Valid;
 
 namespace ScenarioModel.Tests;
 

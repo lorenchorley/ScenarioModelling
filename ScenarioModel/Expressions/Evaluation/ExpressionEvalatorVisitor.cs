@@ -1,7 +1,5 @@
-﻿using LanguageExt;
-using ScenarioModel.Expressions.SemanticTree;
+﻿using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
-using Relation = ScenarioModel.SystemObjects.Relations.Relation;
 
 namespace ScenarioModel.Expressions.Evaluation;
 

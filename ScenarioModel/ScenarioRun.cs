@@ -1,5 +1,4 @@
-﻿using ScenarioModel.Collections;
-using ScenarioModel.Execution.Events;
+﻿using ScenarioModel.Execution.Events;
 using ScenarioModel.ScenarioObjects;
 
 namespace ScenarioModel;
@@ -54,7 +53,7 @@ public class ScenarioRun
 
             return CurrentNode;
         }
-        
+
         if (CurrentNode is JumpNode jumpNode)
         {
             // The last event must be a choice event

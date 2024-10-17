@@ -1,11 +1,11 @@
 ﻿namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
 
-public record StringValue
+public record ExpressionBlock
 {
-    public string Value { get; init; } = null!;
+    public StringValue ExpressionText { get; init; } = null!;
 
     public override string ToString()
     {
-        return Value;
+        return $"<{ExpressionText}>";
     }
 }

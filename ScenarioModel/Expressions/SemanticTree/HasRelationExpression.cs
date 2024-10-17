@@ -1,5 +1,4 @@
 ﻿using ScenarioModel.Expressions.Traversal;
-using ScenarioModel.References;
 
 namespace ScenarioModel.Expressions.SemanticTree;
 

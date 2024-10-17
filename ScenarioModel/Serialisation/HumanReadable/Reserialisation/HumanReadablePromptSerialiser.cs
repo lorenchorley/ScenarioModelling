@@ -1,14 +1,13 @@
-﻿using LanguageExt;
-using LanguageExt.Common;
+﻿using LanguageExt.Common;
 using ScenarioModel.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using ScenarioModel.SystemObjects.Entities;
 using ScenarioModel.SystemObjects.States;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 
-public class HumanReadablePromptSerialiserV1 : ISerialiser
+public class HumanReadablePromptSerialiser : ISerialiser
 {
     const string _indent = "  ";
 
@@ -81,10 +80,40 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
                 WriteJumpNode(sb, jumpNode, _indent);
                 continue;
             }
+
+            if (step is StateTransitionNode stateTransitionNode)
+            {
+                WriteStateTransitionNode(sb, scenario, stateTransitionNode, _indent);
+                continue;
+            }
+
+            // TODO expressions ?
+
+            throw new NotImplementedException($"Unhandle scenario node type : {step.GetType().Name}");
         }
 
         sb.AppendLine($"}}");
         sb.AppendLine($"");
+    }
+
+    private static void WriteStateTransitionNode(StringBuilder sb, Scenario scenario, StateTransitionNode stateTransitionNode, string indent)
+    {
+        if (stateTransitionNode.StatefulObject == null)
+        {
+            throw new Exception($"Stateful object not set on transition: {stateTransitionNode.Name}");
+        }
+
+        var stateful = stateTransitionNode.StatefulObject.ResolveReference(scenario.System);
+
+        var obj = stateful.Match(
+            Some: s => s,
+            None: () => throw new Exception($"Stateful object not found: {stateTransitionNode.StatefulObject}"));
+
+        sb.AppendLine($"{_indent}Transition {{");
+
+        sb.AppendLine($"{_indent}{indent}{obj.Name} : {stateTransitionNode.TransitionName}");
+
+        sb.AppendLine($"{_indent}}}");
     }
 
     private static void WriteChooseNode(StringBuilder sb, ChooseNode node, string indent)
@@ -99,13 +128,13 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
     }
-    
+
     private static void WriteDialogNode(StringBuilder sb, DialogNode node, string indent)
     {
         sb.AppendLine($"{indent}Dialog {node.Name} {{");
 
         sb.AppendLine($"{indent}{_indent}Text {node.TextTemplate}");
-        
+
         if (node.Character != null)
         {
             sb.AppendLine($"{indent}{_indent}Character {node.Character}");
@@ -114,7 +143,7 @@ public class HumanReadablePromptSerialiserV1 : ISerialiser
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
     }
-    
+
     private static void WriteJumpNode(StringBuilder sb, JumpNode node, string indent)
     {
         sb.AppendLine($"{indent}Jump {node.Name} {{");

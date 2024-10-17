@@ -1,4 +1,3 @@
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ScenarioModel.Tests;

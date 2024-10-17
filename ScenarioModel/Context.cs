@@ -1,7 +1,6 @@
 ﻿using LanguageExt.Common;
 using ScenarioModel.Serialisation;
 using ScenarioModel.Validation;
-using System.Text;
 
 namespace ScenarioModel;
 

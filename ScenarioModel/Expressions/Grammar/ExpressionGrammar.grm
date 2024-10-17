@@ -59,7 +59,6 @@ StringLiteral = '"' {StringCharacter}* '"'
         
 <Is Exp>
        ::= <Is Exp> '==' <Value Exp>
-        |  <Is Exp> '<>' <Value Exp>
         |  <Is Exp> '!=' <Value Exp>
         |  <Value Exp>
 
@@ -76,8 +75,8 @@ StringLiteral = '"' {StringCharacter}* '"'
         |  <Exp>
         |
 
-<IsRelated> ::= <String> '->' <String>
-             |  <String> '->' <String> ':' <String>
+<IsRelated> ::= <String> '-?>' <String>
+             |  <String> '-?>' <String> ':' <String>
              
 <IsNotRelated> ::= <String> '-!>' <String>
                 |  <String> '-!>' <String> ':' <String>                

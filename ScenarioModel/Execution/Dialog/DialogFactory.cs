@@ -28,7 +28,7 @@ public class DialogFactory : IEventFactory
     public Scenario StartScenario(string name)
     {
         _scenario = _context.Scenarios.FirstOrDefault(s => s.Name == name);
-        
+
         if (_scenario == null)
         {
             throw new InvalidOperationException($"No scenario with name {name}");
@@ -49,7 +49,7 @@ public class DialogFactory : IEventFactory
 
         return _scenarioRun.NextNode();
     }
-    
+
     public void RegisterEvent(IScenarioEvent @event)
     {
         if (_scenario == null || _scenarioRun == null)

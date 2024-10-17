@@ -1,5 +1,4 @@
-﻿using LanguageExt.ClassInstances.Pred;
-using System.Text;
+﻿using System.Text;
 
 namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
 

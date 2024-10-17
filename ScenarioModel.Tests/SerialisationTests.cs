@@ -1,7 +1,7 @@
 using FluentAssertions;
 using LanguageExt.Common;
 using ScenarioModel.Serialisation;
-using ScenarioModel.Serialisation.HumanReadable;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Tests.Valid;
 using System.Diagnostics;
 
@@ -21,7 +21,7 @@ public class SerialisationTests
             ValidScenario1.SerialisedContext
         ];
 
-        TestDeserialiseSerialiseContextForSerialiser<HumanReadablePromptSerialiserV1>(contexts);
+        TestDeserialiseSerialiseContextForSerialiser<HumanReadablePromptSerialiser>(contexts);
         //TestSerialiseDeserialiseSystemsForSerialiser<YamlSerialiserV1>(systems);
     }
 

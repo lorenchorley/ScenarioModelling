@@ -1,6 +1,4 @@
-﻿using YamlDotNet.Core.Tokens;
-
-namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿namespace Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
 
 public record UnnamedDefinition : Definition
 {

@@ -91,13 +91,6 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
         ),
         new(
-            "<>",
-            @"A <> B",
-            """
-            NotEqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
-            """
-        ),
-        new(
             "!= ==",
             @"A != B == C",
             """
@@ -155,14 +148,14 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
         ),
         new(
             "Related",
-            @"A -> B",
+            @"A -?> B",
             """
             HasRelationExpression { Name = , Left = A, Right = B }
             """
         ),
         new(
             "Related with named relation",
-            @"A -> B : ""Relation name""",
+            @"A -?> B : ""Relation name""",
             """
             HasRelationExpression { Name = Relation name, Left = A, Right = B }
             """
@@ -179,6 +172,20 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             @"A -!> B : ""Relation name""",
             """
             DoesNotHaveRelationExpression { Name = Relation name, Left = A, Right = B }
+            """
+        ),
+        new(
+            "-?> and",
+            @"A -?> B and C",
+            """
+            AndExpression { Left = HasRelationExpression { Name = , Left = A, Right = B }, Right = ValueComposite { C } }
+            """
+        ),
+        new(
+            "and -?>",
+            @"A and B -?> C",
+            """
+            AndExpression { Left = ValueComposite { A }, Right = HasRelationExpression { Name = , Left = B, Right = C } }
             """
         ),
     };

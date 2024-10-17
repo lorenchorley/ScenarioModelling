@@ -3,7 +3,7 @@ using ScenarioModel.Expressions.Validation;
 
 namespace ScenarioModel.Validation;
 
-public class ConstraintValidator :  IValidator<Expression>
+public class ConstraintValidator : IValidator<Expression>
 {
     private readonly System _system;
     private readonly ValidatorVisitor _visitor;
@@ -16,8 +16,8 @@ public class ConstraintValidator :  IValidator<Expression>
 
     public ValidationErrors Validate(Expression constraint)
     {
-        constraint.Accept(_visitor);    
-        
+        constraint.Accept(_visitor);
+
         return _visitor.Errors;
     }
 }

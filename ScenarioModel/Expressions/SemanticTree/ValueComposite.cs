@@ -10,5 +10,5 @@ public record ValueComposite : Value
         => visitor.VisitValueComposite(this);
 
     override public string ToString()
-        => "ValueComposite { " + string.Join(", ", ValueList) + " }";
+        => "ValueComposite { " + ValueList.CommaSeparatedList() + " }";
 }

@@ -4,11 +4,14 @@ using ScenarioModel.Execution.Events;
 using ScenarioModel.Interpolation;
 using ScenarioModel.References;
 using ScenarioModel.ScenarioObjects;
-using ScenarioModel.Serialisation.HumanReadable;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.SystemObjects.States;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.Diagnostics.CodeAnalysis;
+
+// colors
+// https://spectreconsole.net/appendix/colors
 
 public class ManualRunCommand : Command<ManualRunCommand.Settings>
 {
@@ -33,13 +36,13 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
 
         Context context =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiserV1>()
-                   .LoadContext<HumanReadablePromptSerialiserV1>(scenarioText)
+                   .UseSerialiser<HumanReadablePromptSerialiser>()
+                   .LoadContext<HumanReadablePromptSerialiser>(scenarioText)
                    .Initialise();
 
         StringInterpolator interpolator = new(context.System);
 
-        AnsiConsole.Markup($"[blue]{context.Serialise<HumanReadablePromptSerialiserV1>()}[/]");
+        AnsiConsole.Markup($"[blue]{context.Serialise<HumanReadablePromptSerialiser>()}[/]");
 
         DialogFactory dialogFactory = new(context);
         var scenario = dialogFactory.StartScenario(settings.ScenarioName ?? "");
@@ -66,6 +69,18 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
 
                 text = interpolator.ReplaceInterpolations(text);
 
+                if (!string.IsNullOrEmpty(dialogNode.Character))
+                {
+                    var characterEntity = context.System.Entities.Where(e => e.Name.IsEqv(dialogNode.Character)).FirstOrDefault();
+
+                    if (characterEntity == null)
+                    {
+                        throw new Exception($"Character {dialogNode.Character} not found on of dialog {dialogNode.Name}");
+                    }
+
+                    AnsiConsole.MarkupLine($"[{characterEntity.CharacterStyle}]{dialogNode.Character}[/]");
+                }
+
                 AnsiConsole.Markup($"[green]{text}[/]\n");
 
                 e.Text = text;
@@ -74,7 +89,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
             }
             else if (node is ChooseNode chooseNode)
             {
-                AnsiConsole.Markup($"[blue]Options : {string.Join(", ", chooseNode.TargetNodeNames)}[/]\n");
+                AnsiConsole.Markup($"[blue]Options : {chooseNode.TargetNodeNames.CommaSeparatedList()}[/]\n");
 
                 var e = chooseNode.GenerateEvent();
 
@@ -95,7 +110,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
             {
                 var e = transitionNode.GenerateEvent();
 
-                IStateful statefulObject = 
+                IStateful statefulObject =
                     transitionNode.StatefulObject
                                   ?.ResolveReference(context.System)
                                   .Match(
@@ -106,14 +121,21 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
 
                 if (statefulObject.State == null)
                 {
-                    throw new Exception("State not set on entity that is transitionning");
+                    if (statefulObject is INameful nameful)
+                    {
+                        throw new Exception($"Attempted state transition {transitionNode.TransitionName} on {nameful.Name} but no state set initially");
+                    }
+                    else
+                    {
+                        throw new Exception($"Attempted state transition {transitionNode.TransitionName} on object but no state set initially");
+                    }
                 }
 
                 e.InitialState = new StateReference() { StateName = statefulObject.State.Name };
 
                 if (!statefulObject.State.TryTransition(transitionNode.TransitionName, statefulObject))
                 {
-                    throw new Exception("Transition failed");
+                    throw new Exception($"State transition failed, no such transition {transitionNode.TransitionName} on state {statefulObject.State.Name} of type {statefulObject.State.StateMachine.Name}");
                 }
 
                 e.FinalState = new StateReference() { StateName = statefulObject.State.Name };

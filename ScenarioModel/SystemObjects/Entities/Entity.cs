@@ -11,7 +11,7 @@ public record Entity : IStateful, IRelatable, INameful
     public List<Relation> Relations { get; set; } = new();
     public List<Aspect> Aspects { get; set; } = new();
     public State? State { get; set; }
-    public string TextColor { get; set; } = "";
+    public string CharacterStyle { get; set; } = "";
 
     public IStatefulObjectReference GenerateReference()
     {

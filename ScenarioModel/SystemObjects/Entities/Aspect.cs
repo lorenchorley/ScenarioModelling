@@ -6,8 +6,8 @@ namespace ScenarioModel.SystemObjects.Entities;
 
 public record Aspect : IStateful, IRelatable
 {
-    public string Name 
-    { 
+    public string Name
+    {
         get => Entity.Name + "." + AspectType.Name;
     }
 

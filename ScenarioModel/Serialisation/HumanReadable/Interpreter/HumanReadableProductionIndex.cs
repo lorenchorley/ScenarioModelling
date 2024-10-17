@@ -9,19 +9,24 @@ public enum HumanReadableProductionIndex
     @Nlo = 3,                                  // <nlo> ::= 
     @String_Identifier = 4,                    // <String> ::= Identifier
     @String_Stringliteral = 5,                 // <String> ::= StringLiteral
-    @Program = 6,                              // <Program> ::= <Definitions>
-    @Definitions = 7,                          // <Definitions> ::= <Definitions> <Definition>
-    @Definitions2 = 8,                         // <Definitions> ::= <nlo>
-    @Definition = 9,                          // <Definition> ::= <NamedDefinition>
-    @Definition2 = 10,                         // <Definition> ::= <UnnamedDefinition>
-    @Definition3 = 11,                         // <Definition> ::= <NamedLink>
-    @Definition4 = 12,                         // <Definition> ::= <UnnamedLink>
-    @Definition5 = 13,                         // <Definition> ::= <Transition>
-    @Nameddefinition_Lbrace_Rbrace = 14,       // <NamedDefinition> ::= <String> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
-    @Nameddefinition = 15,                     // <NamedDefinition> ::= <String> <String> <nl>
-    @Unnameddefinition_Lbrace_Rbrace = 16,     // <UnnamedDefinition> ::= <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
-    @Unnameddefinition = 17,                   // <UnnamedDefinition> ::= <String> <nl>
-    @Unnamedlink_Minusgt = 18,                 // <UnnamedLink> ::= <String> '->' <String> <nl>
-    @Namedlink_Minusgt_Colon = 19,             // <NamedLink> ::= <String> '->' <String> ':' <String> <nl>
-    @Transition_Colon = 20                     // <Transition> ::= <String> ':' <String> <nl>
+    @Expressionblock_Expressionblock = 6,      // <ExpressionBlock> ::= ExpressionBlock
+    @Program = 7,                              // <Program> ::= <Definitions>
+    @Definitions = 8,                          // <Definitions> ::= <Definitions> <Definition>
+    @Definitions2 = 9,                         // <Definitions> ::= <nlo>
+    @Definition = 10,                          // <Definition> ::= <NamedDefinition>
+    @Definition2 = 11,                         // <Definition> ::= <UnnamedDefinition>
+    @Definition3 = 12,                         // <Definition> ::= <NamedLink>
+    @Definition4 = 13,                         // <Definition> ::= <UnnamedLink>
+    @Definition5 = 14,                         // <Definition> ::= <Transition>
+    @Definition6 = 15,                         // <Definition> ::= <ExpressionDefinition>
+    @Nameddefinition_Lbrace_Rbrace = 16,       // <NamedDefinition> ::= <String> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+    @Nameddefinition = 17,                     // <NamedDefinition> ::= <String> <String> <nl>
+    @Unnameddefinition_Lbrace_Rbrace = 18,     // <UnnamedDefinition> ::= <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+    @Unnameddefinition = 19,                   // <UnnamedDefinition> ::= <String> <nl>
+    @Unnamedlink_Minusgt = 20,                 // <UnnamedLink> ::= <String> '->' <String> <nl>
+    @Namedlink_Minusgt_Colon = 21,             // <NamedLink> ::= <String> '->' <String> ':' <String> <nl>
+    @Expressiondefinition_Lbrace_Rbrace = 22,  // <ExpressionDefinition> ::= <String> <ExpressionBlock> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+    @Expressiondefinition = 23,                // <ExpressionDefinition> ::= <String> <ExpressionBlock> <nl>
+    @Expressiondefinition2 = 24,               // <ExpressionDefinition> ::= <ExpressionBlock> <nl>
+    @Transition_Colon = 25                     // <Transition> ::= <String> ':' <String> <nl>
 }

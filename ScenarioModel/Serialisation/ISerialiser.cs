@@ -1,5 +1,4 @@
-﻿using LanguageExt;
-using LanguageExt.Common;
+﻿using LanguageExt.Common;
 
 namespace ScenarioModel.Serialisation;
 
