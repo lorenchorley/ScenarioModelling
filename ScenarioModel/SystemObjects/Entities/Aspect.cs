@@ -8,7 +8,7 @@ public record Aspect : IStateful, IRelatable
 {
     public string Name
     {
-        get => Entity.Name + "." + AspectType.Name;
+        get => AspectType.Name;
     }
 
     public AspectType AspectType { get; set; } = null!;

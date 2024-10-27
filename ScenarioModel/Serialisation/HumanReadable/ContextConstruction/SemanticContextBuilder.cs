@@ -2,6 +2,7 @@
 using LanguageExt;
 using LanguageExt.Common;
 using ScenarioModel.Expressions.SemanticTree;
+using ScenarioModel.References;
 using ScenarioModel.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
@@ -15,7 +16,7 @@ public class SemanticContextBuilder
     private readonly DefinitionAutoNamer _entityNamer = new("E");
     private readonly DefinitionAutoNamer _entityTypeNamer = new("ET");
     private readonly DefinitionAutoNamer _aspectTypeNamer = new("AT");
-    private readonly DefinitionAutoNamer _stateTypeNamer = new("SM");
+    private readonly DefinitionAutoNamer _stateMachineNamer = new("SM");
     private readonly DefinitionAutoNamer _relationNamer = new("R");
     private readonly DefinitionAutoNamer _stateNamer = new("S");
 
@@ -47,12 +48,15 @@ public class SemanticContextBuilder
         var (constraints, remaining4) = remaining3.PartitionByChoose(TransformConstraint);
         context.System.Constraints.AddRange(constraints);
 
-        var (scenarios, remaining5) = remaining4.PartitionByChoose(TransformScenario(context.System));
+        var (relations, remaining5) = remaining4.PartitionByChoose(TransformRelation);
+        context.System.TopLevelRelations.AddRange(relations);
+
+        var (scenarios, remainingLast) = remaining5.PartitionByChoose(TransformScenario(context.System));
         context.Scenarios.AddRange(scenarios);
 
-        if (remaining5.Any())
+        if (remainingLast.Any())
         {
-            throw new Exception($"Unknown definitions not taken into account : {remaining5.CommaSeparatedList()}");
+            throw new Exception($"Unknown definitions not taken into account : {remainingLast.CommaSeparatedList()}");
         }
 
         context.System.StateMachines.ForEach(sm => ValidateStateMachineStates(sm, context));
@@ -63,7 +67,7 @@ public class SemanticContextBuilder
         _entityNamer.NameUnnamedObjects(context.System.Entities);
         _entityTypeNamer.NameUnnamedObjects(context.System.EntityTypes);
         _aspectTypeNamer.NameUnnamedObjects(context.System.AspectTypes);
-        _stateTypeNamer.NameUnnamedObjects(context.System.StateMachines);
+        _stateMachineNamer.NameUnnamedObjects(context.System.StateMachines);
         _relationNamer.NameUnnamedObjects(context.System.AllRelations);
         _stateNamer.NameUnnamedObjects(context.System.AllStates);
 
@@ -76,13 +80,20 @@ public class SemanticContextBuilder
 
         //Console.WriteLine($"Created EntityType {entity.EntityType.Name}");
 
-        if (entity.EntityType.StateType == null)
+        if (entity.EntityType.StateMachine == null)
         {
             if (entity.State != null)
             {
                 StateMachine? stateMachine = context.System.StateMachines.FirstOrDefault(sm => sm.States.Any(s => s.Name.IsEqv(entity.State.Name)));
-                entity.EntityType.StateType = stateMachine;
-                entity.State.StateMachine = stateMachine ?? entity.State.StateMachine;
+                entity.EntityType.StateMachine = stateMachine;
+                //entity.State.StateMachine = stateMachine ?? entity.State.StateMachine;
+
+                if (stateMachine != null)
+                {
+                    // Use the state instance on the state machine so there aren't several instances floating around
+                    string stateName = entity.State.Name;
+                    entity.State = stateMachine.States.First(s => s.Name.IsEqv(stateName));
+                }
             }
         }
     }
@@ -109,7 +120,7 @@ public class SemanticContextBuilder
 
             if (state.StateMachine == null)
             {
-                state.StateMachine = _stateTypeNamer.AddUnnamedDefinition(new StateMachine());
+                state.StateMachine = _stateMachineNamer.AddUnnamedDefinition(new StateMachine());
 
                 //Console.WriteLine($"Created StateMachine {state.StateMachine.Name}");
             }
@@ -308,7 +319,7 @@ public class SemanticContextBuilder
 
         EntityType value = new()
         {
-            StateType = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault(),
+            StateMachine = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault(),
         };
 
         SetNameOrRecordForAutoNaming(definition, value, _entityTypeNamer);
@@ -335,20 +346,24 @@ public class SemanticContextBuilder
             States = unnamed.Definitions.Choose(TransformState).ToList()
         };
 
-        SetNameOrRecordForAutoNaming(definition, value, _stateTypeNamer);
+        SetNameOrRecordForAutoNaming(definition, value, _stateMachineNamer);
 
         foreach (var subdef in unnamed.Definitions)
         {
-            if (subdef is NamedLinkDefinition transition)
+            if (subdef is UnnamedLinkDefinition transition)
             {
                 Transition item = new()
                 {
                     SourceState = transition.Source.Value,
                     DestinationState = transition.Destination.Value,
-                    Name = transition.Name.Value
                 };
 
                 //Console.WriteLine($"Created Transition {item.Name}");
+
+                if (subdef is NamedLinkDefinition nammedTransition)
+                {
+                    item.Name = nammedTransition.Name.Value;
+                }
 
                 value.Transitions.Add(item);
             }
@@ -371,9 +386,11 @@ public class SemanticContextBuilder
             return null;
         }
 
+        throw new NotImplementedException("TransformAspectType");
+
         AspectType value = new()
         {
-            StateType = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault() ?? _stateTypeNamer.AddUnnamedDefinition(new StateMachine())
+            StateMachine = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault() ?? _stateMachineNamer.AddUnnamedDefinition(new StateMachine())
         };
 
         SetNameOrRecordForAutoNaming(definition, value, _aspectTypeNamer);
@@ -386,12 +403,12 @@ public class SemanticContextBuilder
     private Func<Definition, Option<Aspect>> TransformAspect(Entity entity)
         => (Definition definition) =>
         {
-            if (definition is not UnnamedDefinition unnamed)
+            if (definition is not NamedDefinition named)
             {
                 return null;
             }
 
-            if (!unnamed.Type.Value.Equals("Aspect", StringComparison.OrdinalIgnoreCase))
+            if (!named.Type.Value.Equals("Aspect", StringComparison.OrdinalIgnoreCase))
             {
                 return null;
             }
@@ -399,9 +416,9 @@ public class SemanticContextBuilder
             Aspect value = new()
             {
                 Entity = entity,
-                Relations = unnamed.Definitions.Choose(TransformRelation).ToList(),
-                State = unnamed.Definitions.Choose(TransformState).FirstOrDefault(),
-                AspectType = unnamed.Definitions.Choose(TransformAspectType).FirstOrDefault() ?? _aspectTypeNamer.AddUnnamedDefinition(new AspectType())
+                Relations = named.Definitions.Choose(TransformRelation).ToList(),
+                State = named.Definitions.Choose(TransformState).FirstOrDefault(),
+                AspectType = named.Definitions.Choose(TransformAspectType).FirstOrDefault() ?? new AspectType() { Name = named.Name.Value }
             };
 
             //Console.WriteLine($"Created Aspect {value.Name}");
@@ -423,7 +440,7 @@ public class SemanticContextBuilder
 
         State value = new()
         {
-            //StateType = unnamed.Definitions.Choose(TransformStateType).FirstOrDefault() ?? _stateTypeNamer.AddUnnamedDefinition(new StateType())
+            //StateMachine = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault() ?? _stateMachineNamer.AddUnnamedDefinition(new StateMachine())
         };
 
         SetNameOrRecordForAutoNaming(definition, value, _stateNamer);
@@ -440,7 +457,28 @@ public class SemanticContextBuilder
             return null;
         }
 
-        return null;
+        SystemObjects.Relations.Relation value = new()
+        {
+            LeftEntity = new RelatableObjectReference()
+            {
+                Identifier = new()
+                {
+                    ValueList = unnamed.Source.Value.Split('.').ToList()
+                }
+            },
+            RightEntity = new RelatableObjectReference()
+            {
+                Identifier = new()
+                {
+                    ValueList = unnamed.Destination.Value.Split('.').ToList()
+                }
+            },
+            // TODO State
+        };
+
+        SetLinkNameOrRecordForAutoNaming(definition, value, _stateNamer);
+
+        return value;
     }
 
     private Option<string> TransformCharacterStyle(Definition definition)
@@ -466,6 +504,18 @@ public class SemanticContextBuilder
     private void SetNameOrRecordForAutoNaming(Definition definition, INameful value, DefinitionAutoNamer autoNamer)
     {
         if (definition is NamedDefinition named)
+        {
+            value.Name = named.Name.Value;
+        }
+        else
+        {
+            autoNamer.AddUnnamedDefinition(value);
+        }
+    }
+
+    private void SetLinkNameOrRecordForAutoNaming(Definition definition, INameful value, DefinitionAutoNamer autoNamer)
+    {
+        if (definition is NamedLinkDefinition named)
         {
             value.Name = named.Name.Value;
         }

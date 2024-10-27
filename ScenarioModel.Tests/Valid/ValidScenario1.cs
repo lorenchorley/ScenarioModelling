@@ -41,28 +41,42 @@ public static class ValidScenario1
     public static string SerialisedContext
     {
         get => """
-            Entity "E1" 
-            {
-                State S1
+            Entity E1 {
+              EntityType ET1
+              State S1
             }
 
-            Entity E2
+            Entity E2 {
+              EntityType ET2
+            }
 
-            SM "SM1" {
-                S1 -> S2
+            EntityType ET1 {
+              SM SM1
+            }
+
+            EntityType ET2 {
+            }
+
+            SM SM1 {
+              State S1
+              State S2
+              S1 -> S2
             }
 
             Scenario ValidScenario1 {
-                Dialog "D1" {
-                    Text "Hello"
-                }
-                Choose "C1" {
-                    D2
-                    C1
-                }
-                Dialog "D2" {
-                    Text "Bubye"
-                }
+              Dialog D1 {
+                Text Hello
+              }
+
+              Choose C1 {
+                D2
+                C1
+              }
+
+              Dialog D2 {
+                Text Bubye
+              }
+
             }
             """;
     }

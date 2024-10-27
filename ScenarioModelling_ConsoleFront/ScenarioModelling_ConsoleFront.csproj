@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Scenarios\Scenario2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Scenarios\Updater.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

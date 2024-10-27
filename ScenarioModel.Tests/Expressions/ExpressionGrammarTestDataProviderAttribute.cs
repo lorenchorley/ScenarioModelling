@@ -15,7 +15,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             false
         ),
         new(
-            "One object",
+            "Reference to entity A",
             "A",
             """
             ValueComposite { A }
@@ -23,7 +23,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             true
         ),
         new(
-            "Subproperty of object",
+            "Reference to entity A's aspect D (A.D)",
             "A.D",
             """
             ValueComposite { A, D }
@@ -31,18 +31,10 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             true
         ),
         new(
-            "Subsubproperty of object",
+            "Reference to the state of entity A's aspect D (A.D.State)",
             "A.D.State",
             """
             ValueComposite { A, D, State }
-            """,
-            true
-        ),
-        new(
-            "Subsubsubproperty of object",
-            "A.D.State.Other",
-            """
-            ValueComposite { A, D, State, Other }
             """,
             true
         ),

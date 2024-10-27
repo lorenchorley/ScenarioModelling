@@ -16,7 +16,7 @@ public class SystemValidator : IValidator<System>
         // Everything is valid
 
         ValidateEntityTypes(system, validationErrors);
-        ValidateStateTypes(system, validationErrors);
+        ValidateStateMachines(system, validationErrors);
         ValidateStates(system, validationErrors);
         ValidateRelations(system, validationErrors);
         ValidateConstraints(system, validationErrors);
@@ -38,7 +38,7 @@ public class SystemValidator : IValidator<System>
         }
     }
 
-    private void ValidateStateTypes(System system, ValidationErrors validationErrors)
+    private void ValidateStateMachines(System system, ValidationErrors validationErrors)
     {
         // Uniqueness of state type names
         var names = system.StateMachines.GroupBy(s => s.Name);
@@ -47,9 +47,9 @@ public class SystemValidator : IValidator<System>
             validationErrors.AddIf(name.Count() > 1, new NameNotUnique($"State type name {name.Key} is not unique. {name.Count()} instances found."));
         }
 
-        foreach (var stateType in system.StateMachines)
+        foreach (var stateMachine in system.StateMachines)
         {
-            _stateValidator.ValidateType(stateType);
+            _stateValidator.ValidateType(stateMachine);
         }
     }
 
@@ -59,7 +59,11 @@ public class SystemValidator : IValidator<System>
         var names = system.AllStates.GroupBy(s => s.Name);
         foreach (var name in names)
         {
-            validationErrors.AddIf(name.Count() > 1, new NameNotUnique($"State name {name.Key} is not unique. {name.Count()} instances found."));
+            // Determine if there are multiple instances of the class in this list
+            int uniqueInstances = name.UniqueObjectInstanceCount();
+
+            //var uniqueReferencesToName = name.ToList().DistinctBy(s => s.StateMachine);
+            validationErrors.AddIf(uniqueInstances > 1, new NameNotUnique($"State name {name.Key} is not unique. {name.Count()} instances found."));
         }
 
         foreach (var state in system.AllStates)

@@ -243,29 +243,29 @@ public class HumanReadablePromptSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}EntityType {AddQuotes(entityType.Name)} {{");
 
-        if (entityType.StateType != null)
+        if (entityType.StateMachine != null)
         {
-            sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateType.Name)}");
+            sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateMachine.Name)}");
         }
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
     }
 
-    private static void WriteStateMachine(StringBuilder sb, string indent, StateMachine stateType)
+    private static void WriteStateMachine(StringBuilder sb, string indent, StateMachine stateMachine)
     {
-        sb.AppendLine($"{indent}SM {AddQuotes(stateType.Name)} {{");
+        sb.AppendLine($"{indent}SM {AddQuotes(stateMachine.Name)} {{");
 
-        foreach (var state in stateType.States)
+        foreach (var state in stateMachine.States)
         {
             WriteSMState(sb, indent + _indent, state);
         }
 
-        foreach (var state in stateType.States)
+        foreach (var state in stateMachine.States)
         {
             foreach (var transition in state.Transitions)
             {
-                WriteSMTransition(sb, indent + _indent, stateType.States, state, transition);
+                WriteSMTransition(sb, indent + _indent, stateMachine.States, state, transition);
             }
         }
 
@@ -281,7 +281,14 @@ public class HumanReadablePromptSerialiser : ISerialiser
 
     private static void WriteSMTransition(StringBuilder sb, string indent, List<State> states, State state, Transition transition)
     {
-        sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState} : {transition.Name}");
+        if (string.IsNullOrEmpty(transition.Name))
+        {
+            sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState}");
+        }
+        else
+        {
+            sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState} : {transition.Name}");
+        }
     }
 
     //private static void WriteAspect(StringBuilder sb, string indent, AspectType aspectType)

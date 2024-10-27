@@ -43,7 +43,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
 
         StringInterpolator interpolator = new(context.System);
 
-        AnsiConsole.Markup($"[blue]{context.Serialise<HumanReadablePromptSerialiser>()}[/]");
+        //AnsiConsole.Markup($"[blue]{context.Serialise<HumanReadablePromptSerialiser>()}[/]");
 
         DialogFactory dialogFactory = new(context);
         var scenario = dialogFactory.StartScenario(settings.ScenarioName ?? "");
@@ -159,6 +159,10 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
 
                 var result = ifNode.Expression.Accept(visitor);
                 e.IfBlockRun = true;
+
+                // TODO How to start the if block?
+                // Should be managed by DialogFactory by checking the last event
+                throw new NotImplementedException();
 
                 dialogFactory.RegisterEvent(e);
             }

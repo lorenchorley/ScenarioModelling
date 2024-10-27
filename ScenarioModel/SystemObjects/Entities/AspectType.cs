@@ -5,5 +5,5 @@ namespace ScenarioModel.SystemObjects.Entities;
 public record AspectType : INameful
 {
     public string Name { get; set; } = "";
-    public StateMachine StateType { get; set; } = null!;
+    public StateMachine StateMachine { get; set; } = null!;
 }

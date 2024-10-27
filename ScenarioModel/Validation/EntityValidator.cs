@@ -14,7 +14,7 @@ public class EntityValidator : IValidator<Entity>, ITypeValidator<EntityType>
     {
         ValidationErrors validationErrors = new();
 
-        // Initial state is of type StateType
+        // Initial state is of type StateMachine
 
         return validationErrors;
     }

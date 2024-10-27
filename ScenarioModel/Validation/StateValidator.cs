@@ -17,7 +17,7 @@ public class StateValidator : IValidator<State>, ITypeValidator<StateMachine>
         return validationErrors;
     }
 
-    public ValidationErrors ValidateType(StateMachine stateType)
+    public ValidationErrors ValidateType(StateMachine stateMachine)
     {
         ValidationErrors validationErrors = new();
 

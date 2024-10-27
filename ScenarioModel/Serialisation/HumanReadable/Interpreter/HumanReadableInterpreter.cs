@@ -227,7 +227,7 @@ public partial class HumanReadableInterpreter
             case HumanReadableProductionIndex.Unnameddefinition:
                 // <UnnamedDefinition> ::= <String> <nl>
 
-                return new NamedDefinition()
+                return new UnnamedDefinition()
                 {
                     Type = (StringValue)r[0].Data
                 };

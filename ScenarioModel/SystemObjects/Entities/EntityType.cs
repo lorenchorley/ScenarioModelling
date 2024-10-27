@@ -8,6 +8,6 @@ namespace ScenarioModel.SystemObjects.Entities;
 public record EntityType : IStatefulType, INameful
 {
     public string Name { get; set; } = "";
-    public StateMachine? StateType { get; set; }
+    public StateMachine? StateMachine { get; set; }
     //public List<AspectType> AspectTypes { get; set; } = new();
 }

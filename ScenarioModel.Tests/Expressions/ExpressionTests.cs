@@ -18,6 +18,7 @@ public class ExpressionTests
         }
         Entity B
         Entity C
+        B -> C
         """;
 
     [DataTestMethod]

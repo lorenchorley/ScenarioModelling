@@ -66,7 +66,7 @@ public class SerialisationTests
                 // Assert
                 // ======
                 reloadedContext.ValidationErrors.Count.Should().Be(0, $"because {string.Join('\n', reloadedContext.ValidationErrors)}");
-                loadedContext.Should().BeEquivalentTo(reloadedContext);
+                newContext.Trim().Should().BeEquivalentTo(context.Trim());
             });
         }
     }

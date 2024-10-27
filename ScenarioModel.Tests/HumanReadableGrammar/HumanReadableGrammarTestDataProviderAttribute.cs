@@ -77,7 +77,7 @@ public class HumanReadableGrammarTestDataProviderAttribute : Attribute, ITestDat
             Entity
             """ ,
             """
-            Definition\(Entity, \)
+            Definition\(Entity, _\)
             """
         ),
         new(
@@ -141,27 +141,27 @@ public class HumanReadableGrammarTestDataProviderAttribute : Attribute, ITestDat
             """
         ),
         new(
-            "Empty StateType",
+            "Empty state machine",
             """
-            StateType "ST1" 
+            StateMachine "ST1" 
             {
                 
             }
             """,
             """
-            Definition\(StateType, ST1\)
+            Definition\(StateMachine, ST1\)
             """
         ),
         new(
-            "StateType with two states and a transition",
+            "State machine with two states and a transition",
             """
-            StateType "ST1" 
+            StateMachine "ST1" 
             {
                 S1 -> S2
             }
             """,
             """
-            Definition\(StateType, ST1\) { Link\(S1 -> S2\) }
+            Definition\(StateMachine, ST1\) { Link\(S1 -> S2\) }
             """
         ),
         new(
@@ -199,7 +199,7 @@ public class HumanReadableGrammarTestDataProviderAttribute : Attribute, ITestDat
 
             """,
             """
-            Definition\(a, \) Definition\(a, \) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\)
+            Definition\(a, _\) Definition\(a, _\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\) Definition\(a, b\)
             """
         ),
     };

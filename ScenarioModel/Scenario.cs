@@ -41,8 +41,8 @@ public class Scenario
                 // Check if the state already exists in the system
                 if (!System.HasState(stateTransitionAction.TransitionName))
                 {
-                    var stateType = new StateMachine() { Name = stateTransitionAction.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionAction.TransitionName } } };
-                    System.StateMachines.Add(stateType);
+                    var stateMachine = new StateMachine() { Name = stateTransitionAction.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionAction.TransitionName } } };
+                    System.StateMachines.Add(stateMachine);
                 }
 
                 break;

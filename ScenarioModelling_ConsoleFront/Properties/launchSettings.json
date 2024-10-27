@@ -11,6 +11,10 @@
     "Updater - No update": {
       "commandName": "Project",
       "commandLineArgs": "run \".\\Scenarios\\Updater.txt\" \"No update\""
+    },
+    "Scenario2 First": {
+      "commandName": "Project",
+      "commandLineArgs": "run \".\\Scenarios\\Scenario2.txt\" First"
     }
   }
 }

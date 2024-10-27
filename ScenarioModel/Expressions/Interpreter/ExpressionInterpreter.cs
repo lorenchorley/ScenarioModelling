@@ -200,7 +200,6 @@ public partial class ExpressionInterpreter
                     Right = (Expression)r[2].Data
                 };
 
-
             case ExpressionProductionIndex.Isexp:
                 // <Is Exp> ::= <Value Exp>
                 return r.PassOn();
@@ -236,7 +235,6 @@ public partial class ExpressionInterpreter
                     Name = (string)r[0].Data,
                     Arguments = (ArgumentList)r[2].Data
                 };
-
 
             case ExpressionProductionIndex.Args_Comma:
                 // <Args> ::= <Args> ',' <Exp>

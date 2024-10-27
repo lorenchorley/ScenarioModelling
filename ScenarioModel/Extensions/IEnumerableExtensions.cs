@@ -1,5 +1,6 @@
 ﻿using LanguageExt;
 using System.Diagnostics;
+using System.Xml;
 
 public static class IEnumerableExtensions
 {
@@ -37,4 +38,41 @@ public static class IEnumerableExtensions
 
         return (chosen, remaining);
     }
+
+    /// <summary>
+    /// Determines how many unique object instances are in a list using ReferenceEquals
+    /// </summary>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    [DebuggerNonUserCode]
+    public static int UniqueObjectInstanceCount(this IEnumerable<object> list)
+    {
+        List<object> unique = new();
+
+        foreach (object obj in list)
+        {
+            if (unique.Any(u => ReferenceEquals(u, obj)))
+                continue;
+
+            unique.Add(obj);
+        }
+
+        return unique.Count;
+    }
+
+    public static IEnumerable<T> DistinctByReference<T>(this IEnumerable<T> list)
+    {
+        List<T> distinct = new();
+
+        foreach (T item in list)
+        {
+            if (distinct.Any(d => ReferenceEquals(d, item)))
+                continue;
+
+            distinct.Add(item);
+        }
+
+        return distinct;
+    }
+
 }

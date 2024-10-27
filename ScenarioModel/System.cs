@@ -12,14 +12,15 @@ public class System
     public List<Entity> Entities { get; set; } = new();
     public List<StateMachine> StateMachines { get; set; } = new();
     public List<Expression> Constraints { get; set; } = new();
+    public List<Relation> TopLevelRelations { get; set; } = new();
 
     public void Initialise()
     {
-        foreach (var stateType in StateMachines)
+        foreach (var stateMachine in StateMachines)
         {
-            foreach (var state in stateType.States)
+            foreach (var state in stateMachine.States)
             {
-                state.StateMachine = stateType;
+                state.StateMachine = stateMachine;
 
             }
         }
@@ -34,7 +35,7 @@ public class System
                          .Concat(StateMachines.SelectMany(x => x.States))
                          .Where(s => s != null)
                          .Cast<State>()
-                         .Distinct();
+                         .DistinctByReference();
     }
 
     public IEnumerable<IStateful> AllStateful
@@ -48,6 +49,7 @@ public class System
     public IEnumerable<Relation> AllRelations
     {
         get => Enumerable.Empty<Relation>()
+                         .Concat(TopLevelRelations)
                          .Concat(Entities.SelectMany(x => x.Relations))
                          .Concat(Entities.SelectMany(e => e.Aspects).SelectMany(a => a.Relations));
     }
@@ -68,5 +70,48 @@ public class System
     public bool HasState(string stateName)
     {
         return AllStates.Any(s => s.Name.IsEqv(stateName));
+    }
+
+    /// <summary>
+    /// Not finished yet, not all cases covered !
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    internal object ResolveValue(ValueComposite value)
+    {
+        if (value.ValueList.Count == 0)
+        {
+            throw new Exception("Value cannot be empty");
+        }
+
+        string first = value.ValueList[0];
+
+        Entity? entity = Entities.FirstOrDefault(e => e.Name.IsEqv(first));
+
+        if (entity != null)
+        {
+            if (value.ValueList.Count == 1)
+            {
+                return entity;
+            }
+
+            if (value.ValueList[1].IsEqv("State"))
+            {
+                return entity.State.Name;
+            }
+
+            // TODO aspects and other cases
+        }
+
+        // TODO other cases
+
+        if (value.ValueList.Count == 1)
+        {
+            // we can suppose it's just a string
+            return value.ValueList[0];
+        }
+
+        throw new Exception("Unsupported value");
     }
 }
