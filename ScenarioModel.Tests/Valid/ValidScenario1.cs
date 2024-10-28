@@ -1,6 +1,6 @@
+using ScenarioModel.Objects.Scenario;
+using ScenarioModel.Objects.System.States;
 using ScenarioModel.References;
-using ScenarioModel.ScenarioObjects;
-using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.Tests.Valid;
 

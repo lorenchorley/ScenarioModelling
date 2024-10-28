@@ -60,11 +60,11 @@ public class ExpressionTests
 
         System system =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiser>()
-                   .LoadContext<HumanReadablePromptSerialiser>(_system)
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext<HumanReadableSerialiser>(_system)
                    .Initialise().System;
 
-        ValidatorVisitor visitor = new(system);
+        ExpressionValidator visitor = new(system);
 
         var result = interpreter.Parse(text);
 
@@ -90,11 +90,11 @@ public class ExpressionTests
 
         System system =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiser>()
-                   .LoadContext<HumanReadablePromptSerialiser>(_system)
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext<HumanReadableSerialiser>(_system)
                    .Initialise().System;
 
-        ExpressionSerialisationVisitor visitor = new(system);
+        ExpressionSerialiser visitor = new(system);
 
         var parsedExpression = interpreter.Parse(text);
 

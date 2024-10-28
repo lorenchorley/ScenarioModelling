@@ -1,12 +1,10 @@
 ﻿using ScenarioModel;
 using ScenarioModel.Execution.Dialog;
 using ScenarioModel.Execution.Events;
-using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
-using ScenarioModel.References;
-using ScenarioModel.ScenarioObjects;
+using ScenarioModel.Objects.Scenario;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModel.SystemObjects.States;
+using ScenarioModelling_ConsoleFront.NodeHandlers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.Diagnostics.CodeAnalysis;
@@ -28,159 +26,86 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
 
     public override int Execute([NotNull] CommandContext commandContext, [NotNull] Settings settings)
     {
+        string scenarioText = ReadScenarioTest(settings);
+        string filePath = DetermineFilePath(settings);
+
+        // Create the context from the scenario text
+        Context context =
+            Context.New()
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .SetResourceFolder(filePath)
+                   .LoadContext<HumanReadableSerialiser>(scenarioText)
+                   .Initialise();
+
+        DialogExecutor dialogFactory = new(context);
+        StringInterpolator interpolator = new(context.System);
+        DialogNodeHandler dialogNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
+        StateTransitionNodeHandler stateTransitionNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
+        JumpNodeHandler jumpNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
+        IfNodeHandler ifNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
+        ChooseNodeHandler chooseNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
+
+        // Initialize the scenario
+        var scenarioRun = dialogFactory.StartScenario(settings.ScenarioName ?? "");
+
+        // Generate first node
+        var node = dialogFactory.NextNode();
+
+        while (node != null)
+        {
+            if (!dialogFactory.IsLastEventOfType<JumpEvent>())
+            {
+                // Custom style for jump events
+                AnsiConsole.Write(new Rule { Style = "grey dim" });
+            }
+
+            switch (node)
+            {
+                case DialogNode dialogNode:
+                    dialogNodeHandler.Manage(dialogNode);
+                    break;
+                case ChooseNode chooseNode:
+                    chooseNodeHandler.Manage(chooseNode);
+                    break;
+                case StateTransitionNode transitionNode:
+                    stateTransitionNodeHandler.Manage(transitionNode);
+                    break;
+                case JumpNode jumpNode:
+                    jumpNodeHandler.Manage(jumpNode);
+                    break;
+                case IfNode ifNode:
+                    ifNodeHandler.Manage(ifNode);
+                    break;
+                default:
+                    throw new Exception($"Unknown node type : {node.GetType().Name}");
+            }
+
+            // Generate the next node from the previous state
+            node = dialogFactory.NextNode();
+        }
+
+        return 0;
+    }
+
+    private static string DetermineFilePath(Settings settings)
+    {
+        string? filePath = Path.GetDirectoryName(Path.GetFullPath(settings.File ?? ""));
+
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            throw new Exception($"Could not determine path to given file : '{settings.File}'");
+        }
+
+        return filePath;
+    }
+
+    private static string ReadScenarioTest(Settings settings)
+    {
         if (!File.Exists(settings.File))
         {
             throw new FileNotFoundException($"File not found: {settings.File}");
         }
 
-        var scenarioText = File.ReadAllText(settings.File);
-
-        Context context =
-            Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiser>()
-                   .LoadContext<HumanReadablePromptSerialiser>(scenarioText)
-                   .Initialise();
-
-        StringInterpolator interpolator = new(context.System);
-
-        //AnsiConsole.Markup($"[blue]{context.Serialise<HumanReadablePromptSerialiser>()}[/]");
-
-        DialogFactory dialogFactory = new(context);
-        var scenario = dialogFactory.StartScenario(settings.ScenarioName ?? "");
-
-        var node = dialogFactory.NextNode();
-
-        while (true)
-        {
-            if (!dialogFactory.IsLastEventOfType<JumpEvent>())
-            {
-                AnsiConsole.Write(new Rule { Style = "grey dim" });
-            }
-
-            if (node is DialogNode dialogNode)
-            {
-                if (dialogFactory.IsLastEventOfType<DialogEvent>())
-                {
-                    Console.ReadKey(); // Put a pause between dialogs
-                }
-
-                var e = dialogNode.GenerateEvent();
-
-                string text = dialogNode.TextTemplate;
-
-                text = interpolator.ReplaceInterpolations(text);
-
-                if (!string.IsNullOrEmpty(dialogNode.Character))
-                {
-                    var characterEntity = context.System.Entities.Where(e => e.Name.IsEqv(dialogNode.Character)).FirstOrDefault();
-
-                    if (characterEntity == null)
-                    {
-                        throw new Exception($"Character {dialogNode.Character} not found on of dialog {dialogNode.Name}");
-                    }
-
-                    AnsiConsole.MarkupLine($"[{characterEntity.CharacterStyle}]{dialogNode.Character}[/]");
-                }
-
-                AnsiConsole.Markup($"[green]{text}[/]\n");
-
-                e.Text = text;
-
-                dialogFactory.RegisterEvent(e);
-            }
-            else if (node is ChooseNode chooseNode)
-            {
-                AnsiConsole.Markup($"[blue]Options : {chooseNode.TargetNodeNames.CommaSeparatedList()}[/]\n");
-
-                var e = chooseNode.GenerateEvent();
-
-                // Prompt for input
-                var promptResult = AnsiConsole.Prompt(new SelectionPrompt<string>()
-                    .Title("Select an option")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-                    .AddChoices(chooseNode.Choices.Select(n => n.Text))
-                );
-
-                e.Choice = chooseNode.Choices.Where(n => n.Text.IsEqv(promptResult)).Select(s => s.NodeName).First();
-                AnsiConsole.Markup($"[blue]{e.Choice}[/]\n");
-
-                dialogFactory.RegisterEvent(e);
-            }
-            else if (node is StateTransitionNode transitionNode)
-            {
-                var e = transitionNode.GenerateEvent();
-
-                IStateful statefulObject =
-                    transitionNode.StatefulObject
-                                  ?.ResolveReference(context.System)
-                                  .Match(
-                                        Some: obj => obj,
-                                        None: () => throw new Exception("Stateful object not found")
-                                    )
-                                  ?? throw new Exception("StatefulObject was null");
-
-                if (statefulObject.State == null)
-                {
-                    if (statefulObject is INameful nameful)
-                    {
-                        throw new Exception($"Attempted state transition {transitionNode.TransitionName} on {nameful.Name} but no state set initially");
-                    }
-                    else
-                    {
-                        throw new Exception($"Attempted state transition {transitionNode.TransitionName} on object but no state set initially");
-                    }
-                }
-
-                e.InitialState = new StateReference() { StateName = statefulObject.State.Name };
-
-                if (!statefulObject.State.TryTransition(transitionNode.TransitionName, statefulObject))
-                {
-                    throw new Exception($"State transition failed, no such transition {transitionNode.TransitionName} on state {statefulObject.State.Name} of type {statefulObject.State.StateMachine.Name}");
-                }
-
-                e.FinalState = new StateReference() { StateName = statefulObject.State.Name };
-
-                AnsiConsole.Markup($"[white]{e.StatefulObject} : {e.InitialState} -> {e.FinalState} (Via transition : {e.TransitionName})[/]\n");
-
-                dialogFactory.RegisterEvent(e);
-            }
-            else if (node is JumpNode jumpNode)
-            {
-                var e = jumpNode.GenerateEvent();
-
-                dialogFactory.RegisterEvent(e);
-            }
-            else if (node is IfNode ifNode)
-            {
-                var e = ifNode.GenerateEvent();
-
-                ExpressionEvalatorVisitor visitor = new(context.System);
-
-                var result = ifNode.Expression.Accept(visitor);
-                e.IfBlockRun = true;
-
-                // TODO How to start the if block?
-                // Should be managed by DialogFactory by checking the last event
-                throw new NotImplementedException();
-
-                dialogFactory.RegisterEvent(e);
-            }
-            else
-            {
-                throw new Exception($"Unknown node type : {node.GetType().Name}");
-            }
-
-            //AnsiConsole.Markup($"\n[darkgreen]Event: {Markup.Escape(dialogFactory.GetLastEvent().ToString())}[/]\n");
-            node = dialogFactory.NextNode();
-            if (node == null)
-            {
-                // End
-                break;
-            }
-
-        }
-
-        return 0;
+        return File.ReadAllText(settings.File);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
-using ScenarioModel.SystemObjects.Entities;
-using ScenarioModel.SystemObjects.Relations;
-using ScenarioModel.SystemObjects.States;
+using ScenarioModel.Objects.System.Entities;
+using ScenarioModel.Objects.System.Relations;
+using ScenarioModel.Objects.System.States;
 
 namespace ScenarioModel.References;
 

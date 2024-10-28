@@ -1,5 +1,5 @@
 ﻿using GOLD;
-using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using ScenarioModel.Parsers;
 using System.Text;
 

@@ -1,9 +1,9 @@
-﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using LanguageExt;
 using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
-using ScenarioModel.ScenarioObjects;
 using System.Net.WebSockets;
+using ScenarioModel.Objects.Scenario;
 
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
 
@@ -35,7 +35,7 @@ public class IfStepProfile : ISemanticStepProfile
 
         node.Expression = result.ParsedObject;
 
-        ValidatorVisitor visitor = new(scenario.System);
+        ExpressionValidator visitor = new(scenario.System);
         node.Expression.Accept(visitor);
 
         if (visitor.Errors.Any())

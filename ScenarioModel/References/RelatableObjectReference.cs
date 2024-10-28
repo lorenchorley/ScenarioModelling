@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.SystemObjects.Entities;
-using ScenarioModel.SystemObjects.Relations;
+using ScenarioModel.Objects.System.Entities;
+using ScenarioModel.Objects.System.Relations;
 
 namespace ScenarioModel.References;
 

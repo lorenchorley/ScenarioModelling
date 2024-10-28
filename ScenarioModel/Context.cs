@@ -172,4 +172,11 @@ public class Context
 
         return this;
     }
+
+    public Context SetResourceFolder(string v)
+    {
+        // TODO
+
+        return this;
+    }
 }

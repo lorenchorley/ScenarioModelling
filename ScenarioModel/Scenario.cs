@@ -1,6 +1,7 @@
 ﻿using ScenarioModel.Collections;
-using ScenarioModel.ScenarioObjects;
-using ScenarioModel.SystemObjects.States;
+using ScenarioModel.Execution;
+using ScenarioModel.Objects.Scenario;
+using ScenarioModel.Objects.System.States;
 
 namespace ScenarioModel;
 

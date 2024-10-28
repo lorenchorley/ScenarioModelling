@@ -60,6 +60,7 @@ public static class IEnumerableExtensions
         return unique.Count;
     }
 
+    [DebuggerNonUserCode]
     public static IEnumerable<T> DistinctByReference<T>(this IEnumerable<T> list)
     {
         List<T> distinct = new();

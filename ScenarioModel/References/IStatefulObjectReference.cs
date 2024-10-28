@@ -1,4 +1,4 @@
-﻿using ScenarioModel.SystemObjects.States;
+﻿using ScenarioModel.Objects.System.States;
 
 namespace ScenarioModel.References;
 

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using ScenarioModel.Interpolation;
-using ScenarioModel.SystemObjects.Entities;
-using ScenarioModel.SystemObjects.States;
+using ScenarioModel.Objects.System.Entities;
+using ScenarioModel.Objects.System.States;
 
 namespace ScenarioModel.Tests;
 

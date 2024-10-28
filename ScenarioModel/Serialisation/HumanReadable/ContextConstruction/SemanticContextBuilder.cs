@@ -1,13 +1,14 @@
-﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using LanguageExt;
 using LanguageExt.Common;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.References;
-using ScenarioModel.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
-using ScenarioModel.SystemObjects.Entities;
-using ScenarioModel.SystemObjects.States;
+using ScenarioModel.Objects.Scenario;
+using ScenarioModel.Objects.System;
+using ScenarioModel.Objects.System.Entities;
+using ScenarioModel.Objects.System.States;
 
 namespace ScenarioModel.Serialisation.HumanReadable;
 
@@ -450,14 +451,14 @@ public class SemanticContextBuilder
         return value;
     }
 
-    private Option<SystemObjects.Relations.Relation> TransformRelation(Definition definition)
+    private Option<Objects.System.Relations.Relation> TransformRelation(Definition definition)
     {
         if (definition is not UnnamedLinkDefinition unnamed)
         {
             return null;
         }
 
-        SystemObjects.Relations.Relation value = new()
+        Objects.System.Relations.Relation value = new()
         {
             LeftEntity = new RelatableObjectReference()
             {

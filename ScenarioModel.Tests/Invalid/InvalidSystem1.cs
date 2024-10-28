@@ -1,6 +1,6 @@
 using ScenarioModel.Expressions.SemanticTree;
+using ScenarioModel.Objects.System.Relations;
 using ScenarioModel.References;
-using ScenarioModel.SystemObjects.Relations;
 
 namespace ScenarioModel.Tests.Valid;
 

@@ -1,4 +1,4 @@
-﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using ScenarioModel.Parsers;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Interpreter;

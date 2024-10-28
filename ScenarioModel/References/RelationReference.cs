@@ -1,16 +1,16 @@
 ﻿using LanguageExt;
 using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.SystemObjects.States;
+using ScenarioModel.Objects.System.States;
 
 namespace ScenarioModel.References;
 
-public record RelationReference : IReference<SystemObjects.Relations.Relation>, IStatefulObjectReference
+public record RelationReference : IReference<Objects.System.Relations.Relation>, IStatefulObjectReference
 {
     public string? RelationName { get; set; }
     public ValueComposite? FirstRelatableName { get; set; }
     public ValueComposite? SecondRelatableName { get; set; }
 
-    public Option<SystemObjects.Relations.Relation> ResolveReference(System system)
+    public Option<Objects.System.Relations.Relation> ResolveReference(System system)
     {
         if (FirstRelatableName == null || SecondRelatableName == null)
         {

@@ -1,5 +1,5 @@
-﻿using ScenarioModel.References;
-using ScenarioModel.ScenarioObjects;
+﻿using ScenarioModel.Objects.Scenario;
+using ScenarioModel.References;
 
 namespace ScenarioModel.Execution.Events;
 

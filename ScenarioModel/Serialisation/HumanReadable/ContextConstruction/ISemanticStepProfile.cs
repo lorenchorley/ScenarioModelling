@@ -1,6 +1,6 @@
-﻿using Isagri.Reporting.StimulSoftMigration.Quid.RequestFilters.SemanticTree;
+﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using LanguageExt;
-using ScenarioModel.ScenarioObjects;
+using ScenarioModel.Objects.Scenario;
 
 namespace ScenarioModel.Serialisation.HumanReadable;
 

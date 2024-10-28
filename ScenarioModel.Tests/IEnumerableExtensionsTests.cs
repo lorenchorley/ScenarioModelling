@@ -1,14 +1,11 @@
 using FluentAssertions;
-using ScenarioModel.Interpolation;
-using ScenarioModel.SystemObjects.Entities;
-using ScenarioModel.SystemObjects.States;
 
 namespace ScenarioModel.Tests;
 
 [TestClass]
 public class IEnumerableExtensionsTests
 {
-    
+
     [TestMethod]
     [TestCategory("IEnumerable Extensions")]
     public void AllStates_ReturnsAllStates()

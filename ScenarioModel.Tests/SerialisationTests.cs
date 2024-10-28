@@ -21,7 +21,7 @@ public class SerialisationTests
             ValidScenario1.SerialisedContext
         ];
 
-        TestDeserialiseSerialiseContextForSerialiser<HumanReadablePromptSerialiser>(contexts);
+        TestDeserialiseSerialiseContextForSerialiser<HumanReadableSerialiser>(contexts);
         //TestSerialiseDeserialiseSystemsForSerialiser<YamlSerialiserV1>(systems);
     }
 

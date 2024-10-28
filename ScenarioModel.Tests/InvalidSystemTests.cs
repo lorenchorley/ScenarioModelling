@@ -15,7 +15,7 @@ public class InvalidSystemTests
         // ==============
         var context =
             Context.New()
-                   .UseSerialiser<HumanReadablePromptSerialiser>()
+                   .UseSerialiser<HumanReadableSerialiser>()
                    .LoadSystem(InvalidSystem1.System, out System system)
                    .Initialise();
 
