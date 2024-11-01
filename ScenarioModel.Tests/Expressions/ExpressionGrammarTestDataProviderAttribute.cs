@@ -20,7 +20,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             ValueComposite { A }
             """,
-            true
+            true,
+            "A"
         ),
         new(
             "Reference to entity A's aspect D (A.D)",
@@ -28,7 +29,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             ValueComposite { A, D }
             """,
-            true
+            true,
+            ExpectedEvaluation: "A.D"
         ),
         new(
             "Reference to the state of entity A's aspect D (A.D.State)",
@@ -36,7 +38,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             ValueComposite { A, D, State }
             """,
-            true
+            true,
+            ExpectedEvaluation: "DState"
         ),
         new(
             "A string",
@@ -44,7 +47,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             ValueComposite { A string }
             """,
-            true
+            true,
+            ExpectedEvaluation: "A string"
         ),
         new(
             "And",
@@ -84,7 +88,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             EqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
             """,
-            true
+            true,
+            ExpectedEvaluation: false
         ),
         new(
             "!=",
@@ -92,7 +97,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             NotEqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
             """,
-            true
+            true,
+            ExpectedEvaluation: true
         ),
         new(
             "!= ==",
@@ -164,7 +170,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             HasRelationExpression { Name = , Left = ValueComposite { A }, Right = ValueComposite { B } }
             """,
-            true
+            true,
+            ExpectedEvaluation: false
         ),
         new(
             "Related with named relation",
@@ -172,7 +179,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             HasRelationExpression { Name = Relation name, Left = ValueComposite { A }, Right = ValueComposite { B } }
             """,
-            true
+            true,
+            ExpectedEvaluation: false
         ),
         new(
             "Not related",
@@ -180,7 +188,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             DoesNotHaveRelationExpression { Name = , Left = ValueComposite { A }, Right = ValueComposite { B } }
             """,
-            true
+            true,
+            ExpectedEvaluation: true
         ),
         new(
             "Not related with named relation",
@@ -188,7 +197,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """
             DoesNotHaveRelationExpression { Name = Relation name, Left = ValueComposite { A }, Right = ValueComposite { B } }
             """,
-            true
+            true,
+            ExpectedEvaluation: false
         ),
         new(
             "-?> and",
@@ -209,7 +219,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
     };
 
     public IEnumerable<object[]> GetData(MethodInfo methodInfo)
-        => TestData.Select(t => new object[] { t.Name, t.Expression, t.Expected, t.IsValid });
+        => TestData.Select(t => new object[] { t.Name, t.Expression, t.Expected, t.IsValid, t.ExpectedEvaluation });
 
     public string GetDisplayName(MethodInfo methodInfo, object[] data)
         => data?[0]?.ToString() ?? "";

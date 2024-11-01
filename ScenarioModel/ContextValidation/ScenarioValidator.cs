@@ -3,16 +3,16 @@
 public class ScenarioValidator : IValidator<Scenario>
 {
     private SystemValidator _systemValidator = new();
-    private StepGraphValidator _stepGraphValidator = new();
+    private GraphValidator _nodeGraphValidator = new();
 
     public ValidationErrors Validate(Scenario scenario)
     {
         ValidationErrors validationErrors = new();
 
         // Name is unique among scenarios
-        // InitialStep is in the step graph
+        // InitialNode is in the graph
 
-        validationErrors.Incorporate(_stepGraphValidator.Validate(scenario.Steps));
+        validationErrors.Incorporate(_nodeGraphValidator.Validate(scenario.Graph.PrimarySubGraph));
         //validationErrors.Incorporate(_systemValidator.Validate(scenario.System));
 
         return validationErrors;

@@ -1,8 +1,11 @@
 ﻿using ScenarioModel;
+using ScenarioModel.Execution;
 using ScenarioModel.Execution.Dialog;
 using ScenarioModel.Execution.Events;
+using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
-using ScenarioModel.Objects.Scenario;
+using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling_ConsoleFront.NodeHandlers;
 using Spectre.Console;
@@ -37,25 +40,28 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
                    .LoadContext<HumanReadableSerialiser>(scenarioText)
                    .Initialise();
 
-        DialogExecutor dialogFactory = new(context);
+        DialogExecutor executor = new(context);
         StringInterpolator interpolator = new(context.System);
-        DialogNodeHandler dialogNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
-        StateTransitionNodeHandler stateTransitionNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
-        JumpNodeHandler jumpNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
-        IfNodeHandler ifNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
-        ChooseNodeHandler chooseNodeHandler = new() { DialogFactory = dialogFactory, Interpolator = interpolator, Context = context };
+        ExpressionEvalator evalator = new(context.System);
+        EventGenerationDependencies dependencies = new EventGenerationDependencies(interpolator, evalator, executor, context);
+
+        DialogNodeHandler dialogNodeHandler = new() { Dependencies = dependencies };
+        StateTransitionNodeHandler stateTransitionNodeHandler = new() { Dependencies = dependencies };
+        JumpNodeHandler jumpNodeHandler = new() { Dependencies = dependencies };
+        IfNodeHandler ifNodeHandler = new() { Dependencies = dependencies };
+        ChooseNodeHandler chooseNodeHandler = new() { Dependencies = dependencies };
 
         // Initialize the scenario
-        var scenarioRun = dialogFactory.StartScenario(settings.ScenarioName ?? "");
+        var scenarioRun = executor.StartScenario(settings.ScenarioName ?? "");
 
         // Generate first node
-        var node = dialogFactory.NextNode();
+        var node = executor.NextNode();
 
         while (node != null)
         {
-            if (!dialogFactory.IsLastEventOfType<JumpEvent>())
+            if (!executor.IsLastEventOfType<JumpEvent>())
             {
-                // Custom style for jump events
+                // Custom style for non-jump events
                 AnsiConsole.Write(new Rule { Style = "grey dim" });
             }
 
@@ -81,7 +87,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
             }
 
             // Generate the next node from the previous state
-            node = dialogFactory.NextNode();
+            node = executor.NextNode();
         }
 
         return 0;

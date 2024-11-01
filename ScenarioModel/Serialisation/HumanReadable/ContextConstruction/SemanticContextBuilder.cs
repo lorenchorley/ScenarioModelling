@@ -1,14 +1,15 @@
-﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
-using LanguageExt;
+﻿using LanguageExt;
 using LanguageExt.Common;
+using ScenarioModel.Collections;
 using ScenarioModel.Expressions.SemanticTree;
+using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
-using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.Steps;
-using ScenarioModel.Objects.Scenario;
-using ScenarioModel.Objects.System;
-using ScenarioModel.Objects.System.Entities;
-using ScenarioModel.Objects.System.States;
+using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
+using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 namespace ScenarioModel.Serialisation.HumanReadable;
 
@@ -21,16 +22,16 @@ public class SemanticContextBuilder
     private readonly DefinitionAutoNamer _relationNamer = new("R");
     private readonly DefinitionAutoNamer _stateNamer = new("S");
 
-    private readonly Dictionary<string, ISemanticStepProfile> _stepsByName = new();
-    private readonly Dictionary<Func<Definition, bool>, ISemanticStepProfile> _stepsByPredicate = new();
+    private readonly Dictionary<string, ISemanticNodeProfile> _stepsByName = new();
+    private readonly Dictionary<Func<Definition, bool>, ISemanticNodeProfile> _stepsByPredicate = new();
 
     public SemanticContextBuilder()
     {
-        RegisterStepProfile(new ChooseStepProfile());
-        RegisterStepProfile(new DialogStepProfile());
-        RegisterStepProfile(new StateTransitionStepProfile());
-        RegisterStepProfile(new JumpStepProfile());
-        RegisterStepProfile(new IfStepProfile());
+        RegisterStepProfile(new ChooseNodeProfile());
+        RegisterStepProfile(new DialogNodeProfile());
+        RegisterStepProfile(new StateTransitionNodeProfile());
+        RegisterStepProfile(new JumpNodeProfile());
+        RegisterStepProfile(new IfNodeProfile());
     }
 
     public Result<Context> Build(List<Definition> tree)
@@ -184,7 +185,7 @@ public class SemanticContextBuilder
         }
     }
 
-    private void RegisterStepProfile(ISemanticStepProfile profile)
+    private void RegisterStepProfile(ISemanticNodeProfile profile)
     {
         if (!string.IsNullOrEmpty(profile.Name))
             _stepsByName.Add(profile.Name, profile);
@@ -217,21 +218,22 @@ public class SemanticContextBuilder
                 System = system
             };
 
-            value.Steps.AddRange(named.Definitions.ChooseAndAssertAllSelected(TransformStep(value), "Unknown step types not taken into account : {0}"));
+            var tryTransform = TryTransformDefinitionToNode(value);
+            value.Graph.PrimarySubGraph.NodeSequence.AddRange(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, value.Graph.PrimarySubGraph), "Unknown step types not taken into account : {0}"));
 
             return value;
         };
 
-    private Func<Definition, Option<IScenarioNode>> TransformStep(Scenario scenario)
-        => (Definition definition) =>
+    private Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> TryTransformDefinitionToNode(Scenario scenario)
+        => (Definition definition, SemiLinearSubGraph<IScenarioNode> currentSubgraph) =>
         {
-            var tryTransformStep = TransformStep(scenario);
+            var tryTransform = TryTransformDefinitionToNode(scenario);
 
             foreach (var profilePred in _stepsByPredicate)
             {
                 if (profilePred.Key(definition))
                 {
-                    var step = profilePred.Value.CreateAndConfigure(definition, scenario, tryTransformStep);
+                    var step = profilePred.Value.CreateAndConfigure(definition, scenario, currentSubgraph, tryTransform);
                     SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
                     return Option<IScenarioNode>.Some(step);
                 }
@@ -239,9 +241,9 @@ public class SemanticContextBuilder
 
             if (definition is ExpressionDefinition expDef)
             {
-                if (_stepsByName.TryGetValue(expDef.Name.Value.ToUpperInvariant(), out ISemanticStepProfile? profile) && profile != null)
+                if (_stepsByName.TryGetValue(expDef.Name.Value.ToUpperInvariant(), out ISemanticNodeProfile? profile) && profile != null)
                 {
-                    var step = profile.CreateAndConfigure(definition, scenario, tryTransformStep);
+                    var step = profile.CreateAndConfigure(definition, scenario, currentSubgraph, tryTransform);
                     SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
                     return Option<IScenarioNode>.Some(step);
                 }
@@ -249,9 +251,9 @@ public class SemanticContextBuilder
 
             if (definition is UnnamedDefinition unnamed)
             {
-                if (_stepsByName.TryGetValue(unnamed.Type.Value.ToUpperInvariant(), out ISemanticStepProfile? profile) && profile != null)
+                if (_stepsByName.TryGetValue(unnamed.Type.Value.ToUpperInvariant(), out ISemanticNodeProfile? profile) && profile != null)
                 {
-                    var step = profile.CreateAndConfigure(definition, scenario, tryTransformStep);
+                    var step = profile.CreateAndConfigure(definition, scenario, currentSubgraph, tryTransform);
                     SetNameOrRecordForAutoNaming(definition, step, _entityNamer);
                     return Option<IScenarioNode>.Some(step);
                 }
@@ -451,14 +453,14 @@ public class SemanticContextBuilder
         return value;
     }
 
-    private Option<Objects.System.Relations.Relation> TransformRelation(Definition definition)
+    private Option<ScenarioModel.Objects.SystemObjects.Relations.Relation> TransformRelation(Definition definition)
     {
         if (definition is not UnnamedLinkDefinition unnamed)
         {
             return null;
         }
 
-        Objects.System.Relations.Relation value = new()
+        ScenarioModel.Objects.SystemObjects.Relations.Relation value = new()
         {
             LeftEntity = new RelatableObjectReference()
             {

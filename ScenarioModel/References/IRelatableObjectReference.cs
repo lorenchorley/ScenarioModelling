@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Objects.System.Relations;
+﻿using ScenarioModel.Objects.SystemObjects.Relations;
 
 namespace ScenarioModel.References;
 

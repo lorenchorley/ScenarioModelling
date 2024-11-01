@@ -1,41 +1,41 @@
-using ScenarioModel.Objects.Scenario;
-using ScenarioModel.Objects.System.States;
+using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.References;
 
 namespace ScenarioModel.Tests.Valid;
 
 public static class ValidScenario1
 {
-    public static Scenario Scenario
-    {
-        get => new()
-        {
-            Name = nameof(ValidScenario1),
-            Steps = new()
-            {
-                new DialogNode() { Name = "D1", TextTemplate = "Hello" },
-                new ChooseNode() { Name = "C1", Choices = [ ("ST1", "ST1"), ("D1", "D1") ] },
-                new StateTransitionNode() { Name = "ST1", StatefulObject = new EntityReference() { EntityName = "E1" }, TransitionName = "S1" },
-                new DialogNode() { Name = "D2", TextTemplate = "Bubye" },
-            }
-        };
-    }
+    //public static Scenario Scenario
+    //{
+    //    get => new()
+    //    {
+    //        Name = nameof(ValidScenario1),
+    //        Graph = new()
+    //        {
+    //            new DialogNode() { Name = "D1", TextTemplate = "Hello" },
+    //            new ChooseNode() { Name = "C1", Choices = [ ("ST1", "ST1"), ("D1", "D1") ] },
+    //            new StateTransitionNode() { Name = "ST1", StatefulObject = new EntityReference() { EntityName = "E1" }, TransitionName = "S1" },
+    //            new DialogNode() { Name = "D2", TextTemplate = "Bubye" },
+    //        }
+    //    };
+    //}
 
-    public static System System
-    {
-        get => new()
-        {
-            Entities = new()
-            {
-                new() { Name = "E1", State = new() { Name = "S1" } },
-                new() { Name = "E2" },
-            },
-            StateMachines = new()
-            {
-                new() { Name = "ST1", States = [ new() { Name = "S1", Transitions = [new Transition() { SourceState = "S1", DestinationState = "S2", Name = "T1" }] }, new() { Name = "S2" }] },
-            }
-        };
-    }
+    //public static System System
+    //{
+    //    get => new()
+    //    {
+    //        Entities = new()
+    //        {
+    //            new() { Name = "E1", State = new() { Name = "S1" } },
+    //            new() { Name = "E2" },
+    //        },
+    //        StateMachines = new()
+    //        {
+    //            new() { Name = "ST1", States = [ new() { Name = "S1", Transitions = [new Transition() { SourceState = "S1", DestinationState = "S2", Name = "T1" }] }, new() { Name = "S2" }] },
+    //        }
+    //    };
+    //}
 
     // Important to have one of each type of thing here to test de/reserialisation
     public static string SerialisedContext

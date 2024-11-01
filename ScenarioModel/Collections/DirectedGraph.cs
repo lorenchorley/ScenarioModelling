@@ -1,44 +1,83 @@
-﻿using ScenarioModel.Objects.Scenario;
-using ScenarioModel.Objects.System;
+﻿using ScenarioModel.Objects.ScenarioObjects.Interfaces;
+using ScenarioModel.Objects.SystemObjects;
 using System.Collections;
 
 namespace ScenarioModel.Collections;
 
-public interface IDirectedGraphNode : INameful
+public interface IDirectedGraphNode<T> : INameful where T : IDirectedGraphNode<T>
 {
+    IEnumerable<SemiLinearSubGraph<T>> TargetSubgraphs();
 }
 
-public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
+public class SemiLinearSubGraph<T> where T : IDirectedGraphNode<T>
 {
-    private readonly List<T> _nodes = new();
-
-    public void Add(T node)
-    {
-        _nodes.Add(node);
-    }
-
-    public void AddRange(IEnumerable<T> nodes)
-    {
-        _nodes.AddRange(nodes);
-    }
+    public List<T> NodeSequence { get; private set; } = new();
+    public SemiLinearSubGraph<T>? ParentSubGraph { get; set; }
+    public T? ParentSubGraphEntryPoint { get; set; }
 
     public T? GetNextInSequence(T node)
     {
-        var index = _nodes.IndexOf(node);
+        var index = NodeSequence.IndexOf(node); // Could be better
 
-        if (index == -1 || index == _nodes.Count - 1)
+        if (index == -1 || index == NodeSequence.Count - 1)
         {
             return default;
         }
 
-        return _nodes[index + 1];
+        return NodeSequence[index + 1];
     }
 
-    public DirectedGraphValidationResult Validate()
-    {
-        var brokenLinks = new List<(IDirectedGraphNode node, string intended)>();
+}
 
-        foreach (var node in _nodes)
+public class DirectedGraph<T> where T : IDirectedGraphNode<T>
+{
+    public SemiLinearSubGraph<T> PrimarySubGraph { get; private set; } = new();
+
+    public void Add(T node)
+    {
+        PrimarySubGraph.NodeSequence.Add(node);
+    }
+
+    public void AddRange(IEnumerable<T> nodes)
+    {
+        PrimarySubGraph.NodeSequence.AddRange(nodes);
+    }
+
+    public T? Find(Func<T, bool> predicate)
+    {
+        return FindOnSubgraph(PrimarySubGraph, predicate);
+    }
+    
+    private T? FindOnSubgraph(SemiLinearSubGraph<T> subgraph, Func<T, bool> predicate)
+    {
+        T? result = subgraph.NodeSequence.FirstOrDefault(predicate);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        foreach (var node in subgraph.NodeSequence)
+        {
+            foreach (var targetSubgraph in node.TargetSubgraphs())
+            {
+                result = FindOnSubgraph(targetSubgraph, predicate);
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+        }
+
+        return default;
+    }
+
+    public DirectedGraphValidationResult<T> Validate()
+    {
+        var brokenLinks = new List<(IDirectedGraphNode<T> node, string intended)>();
+
+        foreach (var node in PrimarySubGraph.NodeSequence)
         {
             if (node is not ITransitionNode transitionNode)
             {
@@ -47,7 +86,7 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
 
             foreach (var targetNode in transitionNode.TargetNodeNames)
             {
-                if (!_nodes.Any(n => n.Name.IsEqv(targetNode)))
+                if (!PrimarySubGraph.NodeSequence.Any(n => n.Name.IsEqv(targetNode)))
                 {
                     brokenLinks.Add((node, targetNode));
                 }
@@ -56,36 +95,27 @@ public class DirectedGraph<T> : IEnumerable<T> where T : IDirectedGraphNode
 
         if (brokenLinks.Count > 0)
         {
-            return DirectedGraphValidationResult.BrokenLinks(brokenLinks);
+            return DirectedGraphValidationResult<T>.BrokenLinks(brokenLinks);
         }
         else
         {
-            return DirectedGraphValidationResult.Valid();
+            return DirectedGraphValidationResult<T>.Valid();
         }
     }
 
-    public IEnumerator<T> GetEnumerator()
-    {
-        return _nodes.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _nodes.GetEnumerator();
-    }
 }
 
-public interface DirectedGraphValidationResult
+public interface DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
 {
-    public static DirectedGraphValidationResult BrokenLinks(List<(IDirectedGraphNode node, string intendedTarget)> value) => new BrokenLinks(value);
-    public static DirectedGraphValidationResult Valid() => new Valid();
+    public static DirectedGraphValidationResult<T> BrokenLinks(List<(IDirectedGraphNode<T> node, string intendedTarget)> value) => new BrokenLinks<T>(value);
+    public static DirectedGraphValidationResult<T> Valid() => new Valid<T>();
 }
 
-public class BrokenLinks(List<(IDirectedGraphNode node, string intendedTarget)> links) : DirectedGraphValidationResult
+public class BrokenLinks<T>(List<(IDirectedGraphNode<T> node, string intendedTarget)> links) : DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
 {
-    public List<(IDirectedGraphNode node, string intendedTarget)> Links { get; } = links;
+    public List<(IDirectedGraphNode<T> node, string intendedTarget)> Links { get; } = links;
 }
 
-public class Valid : DirectedGraphValidationResult
+public class Valid<T> : DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
 {
 }

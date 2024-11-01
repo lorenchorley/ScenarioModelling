@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.System.Constraints;
+using ScenarioModel.Objects.SystemObjects.Constraints;
 
 namespace ScenarioModel.References;
 

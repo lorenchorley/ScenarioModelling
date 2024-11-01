@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.System.States;
+using ScenarioModel.Objects.SystemObjects.States;
 
 namespace ScenarioModel.References;
 

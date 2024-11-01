@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Objects.Scenario;
+﻿using ScenarioModel.Objects.ScenarioObjects;
 
 namespace ScenarioModel.Execution.Events;
 
-public record IfBlockEvent : IScenarioEvent
+public record IfBlockEvent : IScenarioEvent<IfNode>
 {
     public bool IfBlockRun { get; set; }
-    public IScenarioNode ProducerNode { get; init; } = null!;
+    public IfNode ProducerNode { get; init; } = null!;
 }

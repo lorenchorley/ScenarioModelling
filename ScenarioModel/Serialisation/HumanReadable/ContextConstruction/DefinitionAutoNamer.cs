@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.System;
+using ScenarioModel.Objects.SystemObjects;
 
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction;
 

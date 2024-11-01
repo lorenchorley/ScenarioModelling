@@ -1,12 +1,12 @@
 ﻿using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
+using ScenarioModel.Objects.SystemObjects.Entities;
 
 namespace ScenarioModel.Expressions.Evaluation;
 
 public class ExpressionEvalator : IExpressionVisitor
 {
     private readonly System _system;
-    private bool _currentEvaluationResult;
 
     public ExpressionEvalator(System system)
     {
@@ -85,10 +85,10 @@ public class ExpressionEvalator : IExpressionVisitor
 
     public object VisitNotEqual(NotEqualExpression exp)
     {
-        var leftResult = (bool)exp.Left.Accept(this);
-        var rightResult = (bool)exp.Right.Accept(this);
+        object leftResult = exp.Left.Accept(this);
+        object rightResult = exp.Right.Accept(this);
 
-        return leftResult != rightResult;
+        return !AreEqual(leftResult, rightResult);
     }
 
     public object VisitEqual(EqualExpression exp)
@@ -96,6 +96,11 @@ public class ExpressionEvalator : IExpressionVisitor
         object leftResult = exp.Left.Accept(this);
         object rightResult = exp.Right.Accept(this);
 
+        return AreEqual(leftResult, rightResult);
+    }
+
+    private bool AreEqual(object leftResult, object rightResult)
+    {
         if (leftResult == null)
             throw new Exception("Left side of the equal expression is null");
 
@@ -103,13 +108,8 @@ public class ExpressionEvalator : IExpressionVisitor
             throw new Exception("Right side of the equal expression is null");
 
         if (leftResult.GetType() != rightResult.GetType())
-            throw new Exception("Comparing two different types, the result will always be false");
+            throw new Exception("Cannot compare values of different types");
 
-        return CheckEquality(leftResult, rightResult);
-    }
-
-    private object CheckEquality(object leftResult, object rightResult)
-    {
         if (leftResult.GetType() == typeof(bool))
         {
             return leftResult == rightResult;
@@ -120,17 +120,22 @@ public class ExpressionEvalator : IExpressionVisitor
             return ((string)leftResult).IsEqv((string)rightResult);
         }
 
-        if (leftResult.GetType() == typeof(ValueComposite))
+        if (leftResult is ValueComposite leftValue && 
+            rightResult is ValueComposite rightValue)
         {
-            ValueComposite leftValue = (ValueComposite)leftResult;
-            ValueComposite rightValue = (ValueComposite)rightResult;
-
             // Resolve values
             var leftValueResolved = _system.ResolveValue(leftValue);
             var rightValueResolved = _system.ResolveValue(rightValue);
 
-            return CheckEquality(leftValueResolved, rightValueResolved);
+            return AreEqual(leftValueResolved, rightValueResolved);
         }
+        
+        if (leftResult is Entity leftEntity && 
+            rightResult is Entity rightEntity)
+        {
+            return leftEntity.Name.IsEqv(rightEntity.Name);
+        }
+        
 
         throw new Exception($"Unsupported type for equal expression : {leftResult.GetType().Name}");
     }

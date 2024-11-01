@@ -1,5 +1,7 @@
-﻿using ScenarioModel.Execution.Events;
-using ScenarioModel.Objects.Scenario;
+﻿using ScenarioModel.Collections;
+using ScenarioModel.Execution.Events;
+using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 
 namespace ScenarioModel.Execution;
 
@@ -11,6 +13,61 @@ namespace ScenarioModel.Execution;
 
 // What makes relations special?
 
+public class GraphScope
+{
+    public IScenarioNode? CurrentNode { get; set; }
+    public SemiLinearSubGraph<IScenarioNode> CurrentSubGraph { get; set; }
+    public DirectedGraph<IScenarioNode> Graph { get; }
+
+    public GraphScope(DirectedGraph<IScenarioNode> graph)
+    {
+        Graph = graph;
+        CurrentSubGraph = graph.PrimarySubGraph;
+        CurrentNode = graph.PrimarySubGraph.NodeSequence.FirstOrDefault();
+    }
+
+    public IScenarioNode? GetNextInSequence(IScenarioNode node)
+    {
+        CurrentNode = CurrentSubGraph.GetNextInSequence(node);
+
+        if (CurrentNode is not null)
+        {
+            return CurrentNode;
+        }
+
+        if (CurrentSubGraph.ParentSubGraph is null)
+        {
+            return null;
+        }
+
+        if (CurrentSubGraph.ParentSubGraphEntryPoint is null)
+        {
+            throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
+        }
+
+        // Go back up one subgraph and continue to the next node after the departure point
+        var parentSubGraphRentryNode = CurrentSubGraph.ParentSubGraphEntryPoint;
+        CurrentSubGraph = CurrentSubGraph.ParentSubGraph;
+        CurrentNode = CurrentSubGraph.GetNextInSequence(parentSubGraphRentryNode);
+
+        return CurrentNode;
+    }
+
+    public void EnterSubGraph(SemiLinearSubGraph<IScenarioNode> subGraph)
+    {
+        CurrentSubGraph = subGraph;
+        CurrentNode = subGraph.NodeSequence.FirstOrDefault();
+    }
+
+    public void EnterSubGraphOnNode(SemiLinearSubGraph<IScenarioNode> subGraph, IScenarioNode node)
+    {
+        if (!subGraph.NodeSequence.Contains(node))
+            throw new Exception("Node not found in subgraph");
+
+        CurrentSubGraph = subGraph;
+        CurrentNode = node;
+    }
+}
 
 /// <summary>
 /// A story is an instance or a play through of a scenario.
@@ -19,64 +76,81 @@ public class ScenarioRun
 {
     public Scenario Scenario { get; init; } = null!;
     public List<IScenarioEvent> Events { get; set; } = new();
-    public IScenarioNode? CurrentNode { get; set; }
+    public Stack<GraphScope> GraphScopeStack { get; set; } = new();
 
     public void Init()
     {
+        GraphScopeStack.Push(new GraphScope(Scenario.Graph));
     }
 
     public IScenarioNode? NextNode()
     {
-        if (CurrentNode == null)
+        if (GraphScopeStack.Count == 0)
+            return null;
+
+        var currentEvent = Events.LastOrDefault();
+        var currentScopeNode = GraphScopeStack.Peek().CurrentNode;
+
+        switch (currentScopeNode)
         {
-            return CurrentNode = Scenario.Steps.First();
+            case ChooseNode chooseNode:
+                // The last event must be a choice event
+                if (currentEvent is null ||
+                    currentEvent is not ChoiceSelectedEvent choiceEvent)
+                    throw new Exception($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
+
+                // Find the next node based on the choice
+                currentScopeNode =
+                    GraphScopeStack.Peek()
+                                   .Graph
+                                   .Find(s => s.Name.IsEqv(choiceEvent.Choice));
+
+                if (currentScopeNode is null)
+                    throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
+
+                GraphScopeStack.Peek().CurrentNode = currentScopeNode;
+
+                return currentScopeNode;
+
+            case JumpNode jumpNode:
+                // The last event must be a jump event
+                if (currentEvent is null ||
+                    currentEvent is not JumpEvent jumpEvent)
+                    throw new Exception($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
+
+                // Find the next node based on the choice
+                currentScopeNode =
+                    GraphScopeStack.Peek()
+                                   .Graph
+                                   .Find(s => s.Name.IsEqv(jumpEvent.Target));
+
+                if (currentScopeNode is null)
+                    throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
+
+                GraphScopeStack.Peek().CurrentNode = currentScopeNode;
+
+                return currentScopeNode;
+
+            case IfNode ifNode:
+                // The last event must be an if event
+                if (currentEvent is null ||
+                    currentEvent is not IfBlockEvent ifEvent)
+                    throw new Exception($"No {nameof(IfBlockEvent)} was registered after mananging a {nameof(IfNode)}");
+
+                if (ifEvent.IfBlockRun)
+                {
+                    GraphScopeStack.Peek().EnterSubGraph(ifEvent.ProducerNode.SubGraph);
+                    return GraphScopeStack.Peek().CurrentNode; // Automatically the first node in the subgraph
+                }
+                else
+                {
+                    // Otherwise advance past the if node
+                    return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
+                }
+
+            default:
+                return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
         }
-
-        if (CurrentNode is ChooseNode chooseNode)
-        {
-            // The last event must be a choice event
-            var lastEvent = Events.LastOrDefault();
-
-            if (lastEvent is null)
-                throw new Exception("No choice event found");
-
-            if (lastEvent is not ChoiceSelectedEvent choiceEvent)
-                throw new Exception("Last event is not a choice event");
-
-            // Find the next node based on the choice
-            CurrentNode = Scenario.Steps
-                                  .Where(s => s.Name.IsEqv(choiceEvent.Choice))
-                                  .FirstOrDefault();
-
-            if (CurrentNode is null)
-                throw new Exception($"Choice not found in graph : {choiceEvent.Choice}");
-
-            return CurrentNode;
-        }
-
-        if (CurrentNode is JumpNode jumpNode)
-        {
-            // The last event must be a choice event
-            var lastEvent = Events.LastOrDefault();
-
-            if (lastEvent is null)
-                throw new Exception("No jump event found");
-
-            if (lastEvent is not JumpEvent jumpEvent)
-                throw new Exception("Last event is not a jump event");
-
-            // Find the next node based on the choice
-            CurrentNode = Scenario.Steps
-                                  .Where(s => s.Name.IsEqv(jumpEvent.Target))
-                                  .FirstOrDefault();
-
-            if (CurrentNode is null)
-                throw new Exception($"Node corresponding to jump target not found in graph : {jumpEvent.Target}");
-
-            return CurrentNode;
-        }
-
-        return CurrentNode = Scenario.Steps.GetNextInSequence(CurrentNode);
     }
 
     public void RegisterEvent(IScenarioEvent @event)

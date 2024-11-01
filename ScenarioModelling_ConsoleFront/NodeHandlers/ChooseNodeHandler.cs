@@ -1,5 +1,6 @@
 ﻿using ScenarioModel.Execution.Events;
-using ScenarioModel.Objects.Scenario;
+using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 using Spectre.Console;
 
 namespace ScenarioModelling_ConsoleFront.NodeHandlers;
@@ -8,7 +9,7 @@ internal class ChooseNodeHandler : NodeHandler<ChooseNode, ChoiceSelectedEvent>
 {
     public override void Handle(ChooseNode node, ChoiceSelectedEvent e)
     {
-        AnsiConsole.Markup($"[blue]Options : {node.TargetNodeNames.CommaSeparatedList()}[/]\n");
+        AnsiConsole.Markup($"[blue]Options : {node.Choices.CommaSeparatedList()}[/]\n");
 
         // Prompt for input
         var promptResult = AnsiConsole.Prompt(new SelectionPrompt<string>()
@@ -19,6 +20,7 @@ internal class ChooseNodeHandler : NodeHandler<ChooseNode, ChoiceSelectedEvent>
         );
 
         e.Choice = node.Choices.Where(n => n.Text.IsEqv(promptResult)).Select(s => s.NodeName).First();
+
         AnsiConsole.Markup($"[blue]{e.Choice}[/]\n");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.System.Entities;
-using ScenarioModel.Objects.System.Relations;
-using ScenarioModel.Objects.System.States;
+using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.Objects.SystemObjects.Relations;
+using ScenarioModel.Objects.SystemObjects.States;
 
 namespace ScenarioModel;
 
@@ -59,7 +59,7 @@ public class System
         get => Enumerable.Empty<Aspect>()
                          .Concat(Entities.SelectMany(x => x.Aspects));
     }
-    
+
     public IEnumerable<IRelatable> AllRelatable
     {
         get => Enumerable.Empty<IRelatable>()

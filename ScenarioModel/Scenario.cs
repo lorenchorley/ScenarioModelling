@@ -1,7 +1,8 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution;
-using ScenarioModel.Objects.Scenario;
-using ScenarioModel.Objects.System.States;
+using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.SystemObjects.States;
 
 namespace ScenarioModel;
 
@@ -20,12 +21,12 @@ public class Scenario
 {
     public string Name { get; set; } = "";
     public System System { get; set; } = new();
-    public DirectedGraph<IScenarioNode> Steps { get; set; } = new();
+    public DirectedGraph<IScenarioNode> Graph { get; set; } = new();
 
     public void Initialise(Context context)
     {
-        // Complete system with entities, states etc from the steps before initialising the system
-        foreach (var action in Steps)
+        // Complete system with entities, states etc from the nodes before initialising the system
+        foreach (var action in Graph.PrimarySubGraph.NodeSequence)
         {
             CompleteSystemWithObjectsFrom(action);
         }
@@ -50,11 +51,11 @@ public class Scenario
         }
     }
 
-    public StoryRunResult StartAtStep(string stepName)
+    public StoryRunResult StartAtNode(string nodeName)
     {
         ScenarioRun story = new() { Scenario = this };
 
-        IScenarioNode? initialAction = Steps.FirstOrDefault(step => step.Name == stepName);
+        IScenarioNode? initialAction = Graph.PrimarySubGraph.NodeSequence.FirstOrDefault(step => step.Name == nodeName);
 
         return StoryRunResult.Successful(story);
     }

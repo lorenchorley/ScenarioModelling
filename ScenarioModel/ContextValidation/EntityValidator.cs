@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Objects.System.Entities;
+﻿using ScenarioModel.Objects.SystemObjects.Entities;
 
 namespace ScenarioModel.Validation;
 

@@ -46,7 +46,7 @@ public partial class HumanReadableInterpreter
         switch (response)
         {
             case ParseMessage.Reduction:
-                _parser.CurrentReduction = Interpret(result, (Reduction)_parser.CurrentReduction);
+                _parser.CurrentReduction = Interpret(result, (Reduction)_parser.CurrentReduction, _parser.CurrentPosition().Line);
                 break;
 
             case ParseMessage.Accept:
@@ -99,7 +99,7 @@ public partial class HumanReadableInterpreter
         return source.Substring(start, end - start);
     }
 
-    private static object? Interpret(HumanReadableParserResult result, Reduction r)
+    private static object? Interpret(HumanReadableParserResult result, Reduction r, int line)
     {
         HumanReadableProductionIndex productionIndex = (HumanReadableProductionIndex)r.Parent.TableIndex();
         switch ((HumanReadableProductionIndex)r.Parent.TableIndex())
@@ -203,7 +203,8 @@ public partial class HumanReadableInterpreter
                 {
                     Type = (StringValue)r[0].Data,
                     Name = (StringValue)r[1].Data,
-                    Definitions = (Definitions)r[5].Data
+                    Definitions = (Definitions)r[5].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Nameddefinition:
@@ -212,7 +213,8 @@ public partial class HumanReadableInterpreter
                 return new NamedDefinition()
                 {
                     Type = (StringValue)r[0].Data,
-                    Name = (StringValue)r[1].Data
+                    Name = (StringValue)r[1].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Unnameddefinition_Lbrace_Rbrace:
@@ -221,7 +223,8 @@ public partial class HumanReadableInterpreter
                 return new UnnamedDefinition()
                 {
                     Type = (StringValue)r[0].Data,
-                    Definitions = (Definitions)r[4].Data
+                    Definitions = (Definitions)r[4].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Unnameddefinition:
@@ -229,7 +232,8 @@ public partial class HumanReadableInterpreter
 
                 return new UnnamedDefinition()
                 {
-                    Type = (StringValue)r[0].Data
+                    Type = (StringValue)r[0].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Unnamedlink_Minusgt:
@@ -238,7 +242,8 @@ public partial class HumanReadableInterpreter
                 return new UnnamedLinkDefinition()
                 {
                     Source = (StringValue)r[0].Data,
-                    Destination = (StringValue)r[2].Data
+                    Destination = (StringValue)r[2].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Namedlink_Minusgt_Colon:
@@ -248,7 +253,8 @@ public partial class HumanReadableInterpreter
                 {
                     Source = (StringValue)r[0].Data,
                     Destination = (StringValue)r[2].Data,
-                    Name = (StringValue)r[4].Data
+                    Name = (StringValue)r[4].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Expressiondefinition_Lbrace_Rbrace:
@@ -258,7 +264,8 @@ public partial class HumanReadableInterpreter
                 {
                     Name = (StringValue)r[0].Data,
                     Block = (ExpressionBlock)r[1].Data,
-                    Definitions = ((Definitions?)r[5].Data) ?? new Definitions()
+                    Definitions = ((Definitions?)r[5].Data) ?? new Definitions(),
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Expressiondefinition:
@@ -267,7 +274,8 @@ public partial class HumanReadableInterpreter
                 return new ExpressionDefinition()
                 {
                     Name = (StringValue)r[0].Data,
-                    Block = (ExpressionBlock)r[1].Data
+                    Block = (ExpressionBlock)r[1].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Expressiondefinition2:
@@ -275,7 +283,8 @@ public partial class HumanReadableInterpreter
 
                 return new ExpressionDefinition()
                 {
-                    Block = (ExpressionBlock)r[0].Data
+                    Block = (ExpressionBlock)r[0].Data,
+                    Line = line
                 };
 
             case HumanReadableProductionIndex.Transition_Colon:
@@ -284,7 +293,8 @@ public partial class HumanReadableInterpreter
                 return new TransitionDefinition()
                 {
                     Type = (StringValue)r[0].Data,
-                    TransitionName = (StringValue)r[2].Data
+                    TransitionName = (StringValue)r[2].Data,
+                    Line = line
                 };
 
             default:

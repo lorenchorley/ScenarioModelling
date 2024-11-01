@@ -1,4 +1,5 @@
 using FluentAssertions;
+using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
@@ -19,12 +20,13 @@ public class ExpressionTests
         Entity B
         Entity C
         B -> C
+
         """;
 
     [DataTestMethod]
     [TestCategory("Expressions"), TestCategory("Grammar")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionGrammarTests(string name, string text, string expected, bool isValid)
+    public void ExpressionGrammarTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
     {
         // Arrange 
         // =======
@@ -52,7 +54,7 @@ public class ExpressionTests
     [DataTestMethod]
     [TestCategory("Expressions"), TestCategory("Grammar")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionValidationTests(string name, string text, string expected, bool isValid)
+    public void ExpressionValidationTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
     {
         // Arrange 
         // =======
@@ -82,7 +84,7 @@ public class ExpressionTests
     [DataTestMethod]
     [TestCategory("Expressions"), TestCategory("Serialisation")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionSerialisationTests(string name, string text, string expected, bool isValid)
+    public void ExpressionSerialisationTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
     {
         // Arrange 
         // =======
@@ -118,4 +120,48 @@ public class ExpressionTests
 
         Assert.AreEqual(expectedCleaned, actualCleaned);
     }
+
+    [DataTestMethod]
+    [TestCategory("Expressions"), TestCategory("Evaluation")]
+    [ExpressionGrammarTestDataProvider]
+    public void ExpressionEvaluationTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
+    {
+        // Arrange 
+        // =======
+        if (!isValid)
+        {
+            return;
+        }
+
+        ExpressionInterpreter interpreter = new();
+
+        System system =
+            Context.New()
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext<HumanReadableSerialiser>(_system)
+                   .Initialise().System;
+
+        ExpressionEvalator evalator = new(system);
+
+        var parsedExpression = interpreter.Parse(text);
+
+        if (parsedExpression.HasErrors)
+        {
+            Assert.Inconclusive();
+        }
+
+
+        // Act
+        // ===
+        var result = parsedExpression.ParsedObject.Accept(evalator);
+
+
+        // Assert
+        // ======
+        Assert.IsNotNull(result, "Valid expression must evaluated to non null value");
+
+        result.Should().Be(evaluatedExpression);
+
+    }
+
 }

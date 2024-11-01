@@ -25,9 +25,9 @@ Scenario First {
     Transition Change {
         Actor : ChangeName
     }
-    if <Actor.State == "Alice"> {
+    if <Actor.State != "Alice"> {
         Dialog {
-            Character E1
+            Character Actor
             Text "I am now Alice ! "
         }
     }

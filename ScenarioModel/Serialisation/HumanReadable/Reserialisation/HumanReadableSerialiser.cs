@@ -1,9 +1,11 @@
 ﻿using LanguageExt.Common;
 using ScenarioModel.Expressions.Validation;
-using ScenarioModel.Objects.Scenario;
-using ScenarioModel.Objects.System.Entities;
-using ScenarioModel.Objects.System.Relations;
-using ScenarioModel.Objects.System.States;
+using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioObjects.Interfaces;
+using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.Objects.SystemObjects.Relations;
+using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using System.Text;
 
@@ -53,70 +55,70 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"Scenario {scenario.Name} {{");
 
-        foreach (var step in scenario.Steps)
+        foreach (var node in scenario.Graph.PrimarySubGraph.NodeSequence)
         {
-            WriteScenarioStep(sb, scenario, step, _indent);
+            WriteScenarioNode(sb, scenario, node, _indent);
         }
 
         sb.AppendLine($"}}");
         sb.AppendLine($"");
     }
 
-    private void WriteScenarioStep(StringBuilder sb, Scenario scenario, IScenarioNode step, string indent)
+    private void WriteScenarioNode(StringBuilder sb, Scenario scenario, IScenarioNode node, string indent)
     {
-        if (step is ITransitionNode transitionNode)
+        if (node is ITransitionNode transitionNode)
         {
             foreach (var target in transitionNode.TargetNodeNames)
             {
-                sb.AppendLine($"{indent}{step.Name} -> {target}");
+                sb.AppendLine($"{indent}{node.Name} -> {target}");
             }
 
             return;
         }
 
-        if (step is ChooseNode chooseNode)
+        if (node is ChooseNode chooseNode)
         {
             WriteChooseNode(sb, chooseNode, indent);
             return;
         }
 
-        if (step is DialogNode dialogNode)
+        if (node is DialogNode dialogNode)
         {
             WriteDialogNode(sb, dialogNode, indent);
             return;
         }
 
-        if (step is JumpNode jumpNode)
+        if (node is JumpNode jumpNode)
         {
             WriteJumpNode(sb, jumpNode, indent);
             return;
         }
 
-        if (step is StateTransitionNode stateTransitionNode)
+        if (node is StateTransitionNode stateTransitionNode)
         {
             WriteStateTransitionNode(sb, scenario, stateTransitionNode, indent);
             return;
         }
 
-        if (step is IfNode ifNode)
+        if (node is IfNode ifNode)
         {
             WriteIfNode(sb, scenario, ifNode, indent);
             return;
         }
 
-        throw new NotImplementedException($"Unhandle scenario node type : {step.GetType().Name}");
+        throw new NotImplementedException($"Unhandle scenario node type : {node.GetType().Name}");
     }
 
     private void WriteIfNode(StringBuilder sb, Scenario scenario, IfNode node, string indent)
     {
         ExpressionSerialiser visitor = new(scenario.System);
-        var result = (string)node.Expression.Accept(visitor);    
+        var result = (string)node.Condition.Accept(visitor);    
 
         sb.AppendLine($"{indent}If <{result}> {{"); // TODO Serialise the expression correctly
 
-        foreach (var step in node.Steps)
+        foreach (var step in node.SubGraph.NodeSequence)
         {
-            WriteScenarioStep(sb, scenario, step, indent + _indent);
+            WriteScenarioNode(sb, scenario, step, indent + _indent);
         }
 
         sb.AppendLine($"{indent}}}");
@@ -147,9 +149,12 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Choose {node.Name} {{");
 
-        foreach (var option in node.TargetNodeNames)
+        foreach (var option in node.Choices)
         {
-            sb.AppendLine($"{indent}{_indent}{option}");
+            if (string.IsNullOrEmpty(option.Text))
+                sb.AppendLine($"{indent}{_indent}{option.NodeName}");
+            else
+                sb.AppendLine($"{indent}{_indent}{option.NodeName} {option.Text}");
         }
 
         sb.AppendLine($"{indent}}}");
@@ -163,9 +168,7 @@ public class HumanReadableSerialiser : ISerialiser
         sb.AppendLine($"{indent}{_indent}Text {node.TextTemplate}");
 
         if (node.Character != null)
-        {
             sb.AppendLine($"{indent}{_indent}Character {node.Character}");
-        }
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -204,14 +207,10 @@ public class HumanReadableSerialiser : ISerialiser
         sb.AppendLine($"{indent}Entity {AddQuotes(entity.Name)} {{");
 
         if (entity.EntityType != null)
-        {
             sb.AppendLine($"{indent}{_indent}EntityType {entity.EntityType.Name}");
-        }
 
         if (entity.State != null)
-        {
             WriteSMState(sb, indent + _indent, entity.State);
-        }
 
         foreach (var aspectType in entity.Aspects)
         {
@@ -245,9 +244,7 @@ public class HumanReadableSerialiser : ISerialiser
         sb.AppendLine($"{indent}EntityType {AddQuotes(entityType.Name)} {{");
 
         if (entityType.StateMachine != null)
-        {
             sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateMachine.Name)}");
-        }
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -276,37 +273,17 @@ public class HumanReadableSerialiser : ISerialiser
 
     private static void WriteSMState(StringBuilder sb, string indent, State state)
     {
-        //sb.AppendLine($"{indent}State {state.Name} {{ SM {state.StateMachine.Name} }}");
         sb.AppendLine($"{indent}State {AddQuotes(state.Name)}");
     }
 
     private static void WriteSMTransition(StringBuilder sb, string indent, List<State> states, State state, Transition transition)
     {
         if (string.IsNullOrEmpty(transition.Name))
-        {
             sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState}");
-        }
         else
-        {
             sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState} : {transition.Name}");
-        }
     }
-
-    //private static void WriteAspect(StringBuilder sb, string indent, AspectType aspectType)
-    //{
-    //    sb.AppendLine($"{indent}AspectType {AddQuotes(aspectType.Name)} {{");
-
-    //    sb.AppendLine($"{indent}}}");
-    //    sb.AppendLine($"");
-    //}
 
     private static string AddQuotes(string str)
-    {
-        if (str.Contains(' '))
-        {
-            return $"\"{str}\"";
-        }
-
-        return str;
-    }
+        => str.Contains(' ') ? $@"""{str}""" : str;
 }

@@ -1,13 +1,13 @@
 ﻿using LanguageExt;
 using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.System.Entities;
-using ScenarioModel.Objects.System.Relations;
+using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.Objects.SystemObjects.Relations;
 
 namespace ScenarioModel.References;
 
 public class RelatableObjectReference : IRelatableObjectReference, IReference
 {
-    public ValueComposite Identifier { get; set; }
+    public ValueComposite Identifier { get; set; } = null!;
 
     public Option<IRelatable> ResolveReference(System system)
     {
