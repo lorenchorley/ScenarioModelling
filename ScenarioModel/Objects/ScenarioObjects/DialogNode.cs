@@ -1,13 +1,18 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
 namespace ScenarioModel.Objects.ScenarioObjects;
 
+[NodeLike<IScenarioNode, DialogNode>]
 public record DialogNode : ScenarioNode<DialogEvent>
 {
+    [NodeLikeProperty]
     public string TextTemplate { get; set; } = "";
+
+    [NodeLikeProperty]
     public string? Character { get; set; } = null;
 
     public DialogNode()
@@ -32,4 +37,6 @@ public record DialogNode : ScenarioNode<DialogEvent>
 
     public override IEnumerable<SemiLinearSubGraph<IScenarioNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IScenarioNode>>();
+
+    public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
 }

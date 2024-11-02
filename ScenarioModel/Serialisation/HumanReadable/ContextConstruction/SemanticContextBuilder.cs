@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using LanguageExt.Common;
 using ScenarioModel.Collections;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.SystemObjects;
@@ -27,11 +28,15 @@ public class SemanticContextBuilder
 
     public SemanticContextBuilder()
     {
-        RegisterStepProfile(new ChooseNodeProfile());
-        RegisterStepProfile(new DialogNodeProfile());
-        RegisterStepProfile(new StateTransitionNodeProfile());
-        RegisterStepProfile(new JumpNodeProfile());
-        RegisterStepProfile(new IfNodeProfile());
+        NodeExhaustiveness.AssertExhaustivelyImplemented<ISemanticNodeProfile>();
+
+        NodeExhaustiveness.DoForEachNodeType(
+            ChooseNode: () => RegisterStepProfile(new ChooseNodeProfile()),
+            DialogNode: () => RegisterStepProfile(new DialogNodeProfile()),
+            IfNode: () => RegisterStepProfile(new IfNodeProfile()),
+            JumpNode: () => RegisterStepProfile(new JumpNodeProfile()),
+            StateTransitionNode: () => RegisterStepProfile(new StateTransitionNodeProfile())
+        );
     }
 
     public Result<Context> Build(List<Definition> tree)

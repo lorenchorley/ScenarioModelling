@@ -1,7 +1,3 @@
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.SystemObjects.States;
-using ScenarioModel.References;
-
 namespace ScenarioModel.Tests.Valid;
 
 public static class ValidScenario1

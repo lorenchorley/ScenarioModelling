@@ -1,15 +1,19 @@
-﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
-using LanguageExt;
-using ScenarioModel.Objects.ScenarioObjects;
+﻿using LanguageExt;
 using ScenarioModel.Collections;
+using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
+[NodeLike<ISemanticNodeProfile, DialogNode>]
 public class DialogNodeProfile : ISemanticNodeProfile
 {
+    [NodeLikeProperty]
     public string Name => "Dialog".ToUpperInvariant();
 
+    [NodeLikeProperty]
     public Func<Definition, bool>? Predicate => null;
 
     public IScenarioNode CreateAndConfigure(Definition def, Scenario scenario, SemiLinearSubGraph<IScenarioNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> transformDefinition)

@@ -1,6 +1,5 @@
 ﻿using LanguageExt;
 using System.Diagnostics;
-using System.Xml;
 
 public static class IEnumerableExtensions
 {

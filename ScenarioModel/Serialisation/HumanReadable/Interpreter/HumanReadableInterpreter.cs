@@ -1,6 +1,6 @@
 ﻿using GOLD;
-using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using ScenarioModel.Parsers;
+using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 using System.Text;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Interpreter;

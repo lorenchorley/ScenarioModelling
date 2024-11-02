@@ -1,16 +1,20 @@
-﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
-using LanguageExt;
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.SystemObjects.States;
+﻿using LanguageExt;
 using ScenarioModel.Collections;
+using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
+[NodeLike<ISemanticNodeProfile, StateTransitionNode>]
 public class StateTransitionNodeProfile : ISemanticNodeProfile
 {
+    [NodeLikeProperty]
     public string Name => "Transition".ToUpperInvariant();
 
+    [NodeLikeProperty]
     public Func<Definition, bool>? Predicate => (def) =>
     {
         return def is TransitionDefinition;

@@ -1,5 +1,5 @@
-﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
-using ScenarioModel.Parsers;
+﻿using ScenarioModel.Parsers;
+using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Interpreter;
 

@@ -1,6 +1,5 @@
 ﻿using ScenarioModel.Objects.ScenarioObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects;
-using System.Collections;
 
 namespace ScenarioModel.Collections;
 
@@ -47,7 +46,7 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
     {
         return FindOnSubgraph(PrimarySubGraph, predicate);
     }
-    
+
     private T? FindOnSubgraph(SemiLinearSubGraph<T> subgraph, Func<T, bool> predicate)
     {
         T? result = subgraph.NodeSequence.FirstOrDefault(predicate);

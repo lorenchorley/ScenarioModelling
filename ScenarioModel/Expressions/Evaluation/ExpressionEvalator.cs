@@ -120,7 +120,7 @@ public class ExpressionEvalator : IExpressionVisitor
             return ((string)leftResult).IsEqv((string)rightResult);
         }
 
-        if (leftResult is ValueComposite leftValue && 
+        if (leftResult is ValueComposite leftValue &&
             rightResult is ValueComposite rightValue)
         {
             // Resolve values
@@ -129,13 +129,13 @@ public class ExpressionEvalator : IExpressionVisitor
 
             return AreEqual(leftValueResolved, rightValueResolved);
         }
-        
-        if (leftResult is Entity leftEntity && 
+
+        if (leftResult is Entity leftEntity &&
             rightResult is Entity rightEntity)
         {
             return leftEntity.Name.IsEqv(rightEntity.Name);
         }
-        
+
 
         throw new Exception($"Unsupported type for equal expression : {leftResult.GetType().Name}");
     }

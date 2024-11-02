@@ -4,6 +4,7 @@ using ScenarioModel.Execution.Events;
 using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
 using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Data;
@@ -71,7 +72,7 @@ public class ScenarioRunTests
         DialogExecutor executor = new(context);
         StringInterpolator interpolator = new(context.System);
         ExpressionEvalator evalator = new(context.System);
-        EventGenerationDependencies dependencies = new EventGenerationDependencies(interpolator, evalator, executor, context);
+        EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
 
         Queue<string> choices = new();
         choices.Enqueue("Change name and repeat");
@@ -87,34 +88,37 @@ public class ScenarioRunTests
         var scenarioRun = executor.StartScenario("First");
 
         // Generate first node
-        var node = executor.NextNode();
+        IScenarioNode? node = null;
 
-        while (node != null)
+        while ((node = executor.NextNode()) != null)
         {
             IScenarioEvent e = node.GenerateUntypedEvent(dependencies);
 
-            switch (node)
-            {
-                case DialogNode dialogNode:
-                    break;
-                case ChooseNode chooseNode:
+            node.ToOneOf().Switch(
+                (ChooseNode chooseNode) =>
+                {
                     string selection = choices.Dequeue();
-                    ((ChoiceSelectedEvent)e).Choice = chooseNode.Choices.Where(n => n.Text.IsEqv(selection)).Select(s => s.NodeName).First(); ;
-                    break;
-                case StateTransitionNode transitionNode:
-                    break;
-                case JumpNode jumpNode:
-                    break;
-                case IfNode ifNode:
-                    break;
-                default:
-                    throw new Exception($"Unknown node type : {node.GetType().Name}");
-            }
+                    ((ChoiceSelectedEvent)e).Choice = chooseNode.Choices.Where(n => n.Text.IsEqv(selection)).Select(s => s.NodeName).First();
+                },
+                (DialogNode dialogNode) =>
+                {
+                    // Do nothing
+                },
+                (IfNode ifNode) =>
+                {
+                    // Do nothing
+                },
+                (JumpNode jumpNode) =>
+                {
+                    // Do nothing
+                },
+                (StateTransitionNode transitionNode) =>
+                {
+                    // Do nothing
+                }
+            );
 
             executor.RegisterEvent(e);
-
-            // Generate the next node from the previous state
-            node = executor.NextNode();
         }
 
 
@@ -122,10 +126,10 @@ public class ScenarioRunTests
         // ======
         scenarioRun.Events
                    .OfType<DialogEvent>()
-                   .Select(d => d.Text)
+                   .Select(d => d.Text.Trim())
                    .ToList()
                    .Should()
-                   .BeEquivalentTo(["My name is Bob", "My name is Alice", "I am now Alice ! ", "My name is Bob", "My name is Alice", "Bubye (Actor called Alice in the end)"]);
+                   .BeEquivalentTo(["My name is Bob", "My name is Alice", "I am now Alice !", "My name is Bob", "My name is Alice", "Bubye (Actor called Alice in the end)"]);
 
 
 

@@ -1,6 +1,5 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution;
-using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.SystemObjects.States;
 
@@ -32,23 +31,23 @@ public class Scenario
         }
     }
 
-    private void CompleteSystemWithObjectsFrom(IScenarioNode action)
+    private void CompleteSystemWithObjectsFrom(IScenarioNode node)
     {
-        switch (action)
-        {
-            case ChooseNode chooseAction:
-                break;
-            case StateTransitionNode stateTransitionAction:
-
+        node.ToOneOf().Switch(
+            chooseNode => { },
+            dialogNode => { },
+            ifNode => { },
+            jumpNode => { },
+            stateTransitionNode =>
+            {
                 // Check if the state already exists in the system
-                if (!System.HasState(stateTransitionAction.TransitionName))
+                if (!System.HasState(stateTransitionNode.TransitionName))
                 {
-                    var stateMachine = new StateMachine() { Name = stateTransitionAction.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionAction.TransitionName } } };
+                    var stateMachine = new StateMachine() { Name = stateTransitionNode.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionNode.TransitionName } } };
                     System.StateMachines.Add(stateMachine);
                 }
-
-                break;
-        }
+            }
+        );
     }
 
     public StoryRunResult StartAtNode(string nodeName)

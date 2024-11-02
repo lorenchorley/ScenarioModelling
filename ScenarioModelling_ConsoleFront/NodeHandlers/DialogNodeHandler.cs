@@ -1,10 +1,12 @@
 ﻿using ScenarioModel.Execution.Events;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 using Spectre.Console;
 
 namespace ScenarioModelling_ConsoleFront.NodeHandlers;
 
+[NodeLike<INodeHandler, DialogNode>]
 internal class DialogNodeHandler : NodeHandler<DialogNode, DialogEvent>
 {
     public override void Handle(DialogNode node, DialogEvent e)

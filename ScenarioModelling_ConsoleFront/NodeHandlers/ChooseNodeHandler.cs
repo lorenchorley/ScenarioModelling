@@ -1,10 +1,12 @@
 ﻿using ScenarioModel.Execution.Events;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 using Spectre.Console;
 
 namespace ScenarioModelling_ConsoleFront.NodeHandlers;
 
+[NodeLike<INodeHandler, ChooseNode>]
 internal class ChooseNodeHandler : NodeHandler<ChooseNode, ChoiceSelectedEvent>
 {
     public override void Handle(ChooseNode node, ChoiceSelectedEvent e)

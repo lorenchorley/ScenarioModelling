@@ -3,7 +3,12 @@ using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
 namespace ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
-internal abstract class NodeHandler<T, E>
+
+internal interface INodeHandler
+{
+}
+
+internal abstract class NodeHandler<T, E> : INodeHandler
     where T : ScenarioNode<E>
     where E : IScenarioEvent
 {

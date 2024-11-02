@@ -1,17 +1,21 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
-using ScenarioModel.Interpolation;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
-using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.References;
 
 namespace ScenarioModel.Objects.ScenarioObjects;
 
+[NodeLike<IScenarioNode, StateTransitionNode>]
 public record StateTransitionNode : ScenarioNode<StateChangeEvent>
 {
+    [NodeLikeProperty]
     public IStatefulObjectReference? StatefulObject { get; set; }
+
+    [NodeLikeProperty]
     public string TransitionName { get; set; } = "";
 
     public StateTransitionNode()
@@ -64,4 +68,6 @@ public record StateTransitionNode : ScenarioNode<StateChangeEvent>
 
     public override IEnumerable<SemiLinearSubGraph<IScenarioNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IScenarioNode>>();
+
+    public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
 }

@@ -91,65 +91,81 @@ public class ScenarioRun
         var currentEvent = Events.LastOrDefault();
         var currentScopeNode = GraphScopeStack.Peek().CurrentNode;
 
-        switch (currentScopeNode)
+        if (currentScopeNode is null)
+            return ManageDefaultCase(currentScopeNode);
+
+        return currentScopeNode.ToOneOf().Match(
+            (ChooseNode _) => ManangeChoseNode(currentEvent),
+            (DialogNode _) => ManageDefaultCase(currentScopeNode),
+            (IfNode _) => ManageIfNode(currentEvent, currentScopeNode),
+            (JumpNode _) => ManageJumpNode(currentEvent),
+            (StateTransitionNode _) => ManageDefaultCase(currentScopeNode)
+            );
+    }
+
+    private IScenarioNode? ManageDefaultCase(IScenarioNode? currentScopeNode)
+    {
+        return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
+    }
+
+    private IScenarioNode ManangeChoseNode(IScenarioEvent? currentEvent)
+    {
+        // The last event must be a choice event
+        if (currentEvent is null ||
+            currentEvent is not ChoiceSelectedEvent choiceEvent)
+            throw new Exception($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
+
+        // Find the next node based on the choice
+        IScenarioNode? currentScopeNode =
+            GraphScopeStack.Peek()
+                           .Graph
+                           .Find(s => s.Name.IsEqv(choiceEvent.Choice));
+
+        if (currentScopeNode is null)
+            throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
+
+        GraphScopeStack.Peek().CurrentNode = currentScopeNode;
+
+        return currentScopeNode;
+    }
+
+    private IScenarioNode ManageJumpNode(IScenarioEvent? currentEvent)
+    {
+        // The last event must be a jump event
+        if (currentEvent is null ||
+            currentEvent is not JumpEvent jumpEvent)
+            throw new Exception($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
+
+        // Find the next node based on the choice
+        IScenarioNode? currentScopeNode =
+            GraphScopeStack.Peek()
+                           .Graph
+                           .Find(s => s.Name.IsEqv(jumpEvent.Target));
+
+        if (currentScopeNode is null)
+            throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
+
+        GraphScopeStack.Peek().CurrentNode = currentScopeNode;
+
+        return currentScopeNode;
+    }
+
+    private IScenarioNode? ManageIfNode(IScenarioEvent? currentEvent, IScenarioNode? currentScopeNode)
+    {
+        // The last event must be an if event
+        if (currentEvent is null ||
+            currentEvent is not IfBlockEvent ifEvent)
+            throw new Exception($"No {nameof(IfBlockEvent)} was registered after mananging a {nameof(IfNode)}");
+
+        if (ifEvent.IfBlockRun)
         {
-            case ChooseNode chooseNode:
-                // The last event must be a choice event
-                if (currentEvent is null ||
-                    currentEvent is not ChoiceSelectedEvent choiceEvent)
-                    throw new Exception($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
-
-                // Find the next node based on the choice
-                currentScopeNode =
-                    GraphScopeStack.Peek()
-                                   .Graph
-                                   .Find(s => s.Name.IsEqv(choiceEvent.Choice));
-
-                if (currentScopeNode is null)
-                    throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
-
-                GraphScopeStack.Peek().CurrentNode = currentScopeNode;
-
-                return currentScopeNode;
-
-            case JumpNode jumpNode:
-                // The last event must be a jump event
-                if (currentEvent is null ||
-                    currentEvent is not JumpEvent jumpEvent)
-                    throw new Exception($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
-
-                // Find the next node based on the choice
-                currentScopeNode =
-                    GraphScopeStack.Peek()
-                                   .Graph
-                                   .Find(s => s.Name.IsEqv(jumpEvent.Target));
-
-                if (currentScopeNode is null)
-                    throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
-
-                GraphScopeStack.Peek().CurrentNode = currentScopeNode;
-
-                return currentScopeNode;
-
-            case IfNode ifNode:
-                // The last event must be an if event
-                if (currentEvent is null ||
-                    currentEvent is not IfBlockEvent ifEvent)
-                    throw new Exception($"No {nameof(IfBlockEvent)} was registered after mananging a {nameof(IfNode)}");
-
-                if (ifEvent.IfBlockRun)
-                {
-                    GraphScopeStack.Peek().EnterSubGraph(ifEvent.ProducerNode.SubGraph);
-                    return GraphScopeStack.Peek().CurrentNode; // Automatically the first node in the subgraph
-                }
-                else
-                {
-                    // Otherwise advance past the if node
-                    return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
-                }
-
-            default:
-                return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
+            GraphScopeStack.Peek().EnterSubGraph(ifEvent.ProducerNode.SubGraph);
+            return GraphScopeStack.Peek().CurrentNode; // Automatically the first node in the subgraph
+        }
+        else
+        {
+            // Otherwise advance past the if node
+            return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using ScenarioModel.Collections;
+﻿using OneOf;
+using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 using ScenarioModel.Objects.SystemObjects;
@@ -9,6 +10,14 @@ public interface IScenarioNode : IDirectedGraphNode<IScenarioNode>, INameful
 {
     int? Line { get; set; }
     IScenarioEvent GenerateUntypedEvent(EventGenerationDependencies dependencies);
+    OneOfIScenaroNode ToOneOf();
+}
+
+public class OneOfIScenaroNode : OneOfBase<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode>
+{
+    public OneOfIScenaroNode(OneOf<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode> input) : base(input)
+    {
+    }
 }
 
 public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
@@ -27,4 +36,6 @@ public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
     {
         get => Line.HasValue ? $"(Near line {Line.Value})" : "";
     }
+
+    public abstract OneOfIScenaroNode ToOneOf();
 }

@@ -1,13 +1,13 @@
 ﻿using ScenarioModel;
-using ScenarioModel.Execution;
 using ScenarioModel.Execution.Dialog;
 using ScenarioModel.Execution.Events;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
-using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling_ConsoleFront.NodeHandlers;
+using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.Diagnostics.CodeAnalysis;
@@ -45,6 +45,8 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
         ExpressionEvalator evalator = new(context.System);
         EventGenerationDependencies dependencies = new EventGenerationDependencies(interpolator, evalator, executor, context);
 
+        NodeExhaustiveness.AssertExhaustivelyImplemented<INodeHandler>();
+
         DialogNodeHandler dialogNodeHandler = new() { Dependencies = dependencies };
         StateTransitionNodeHandler stateTransitionNodeHandler = new() { Dependencies = dependencies };
         JumpNodeHandler jumpNodeHandler = new() { Dependencies = dependencies };
@@ -65,26 +67,13 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
                 AnsiConsole.Write(new Rule { Style = "grey dim" });
             }
 
-            switch (node)
-            {
-                case DialogNode dialogNode:
-                    dialogNodeHandler.Manage(dialogNode);
-                    break;
-                case ChooseNode chooseNode:
-                    chooseNodeHandler.Manage(chooseNode);
-                    break;
-                case StateTransitionNode transitionNode:
-                    stateTransitionNodeHandler.Manage(transitionNode);
-                    break;
-                case JumpNode jumpNode:
-                    jumpNodeHandler.Manage(jumpNode);
-                    break;
-                case IfNode ifNode:
-                    ifNodeHandler.Manage(ifNode);
-                    break;
-                default:
-                    throw new Exception($"Unknown node type : {node.GetType().Name}");
-            }
+            node.ToOneOf().Switch(
+                chooseNodeHandler.Manage,
+                dialogNodeHandler.Manage,
+                ifNodeHandler.Manage,
+                jumpNodeHandler.Manage,
+                stateTransitionNodeHandler.Manage
+            );
 
             // Generate the next node from the previous state
             node = executor.NextNode();

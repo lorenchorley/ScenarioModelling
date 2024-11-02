@@ -76,43 +76,19 @@ public class HumanReadableSerialiser : ISerialiser
             return;
         }
 
-        if (node is ChooseNode chooseNode)
-        {
-            WriteChooseNode(sb, chooseNode, indent);
-            return;
-        }
-
-        if (node is DialogNode dialogNode)
-        {
-            WriteDialogNode(sb, dialogNode, indent);
-            return;
-        }
-
-        if (node is JumpNode jumpNode)
-        {
-            WriteJumpNode(sb, jumpNode, indent);
-            return;
-        }
-
-        if (node is StateTransitionNode stateTransitionNode)
-        {
-            WriteStateTransitionNode(sb, scenario, stateTransitionNode, indent);
-            return;
-        }
-
-        if (node is IfNode ifNode)
-        {
-            WriteIfNode(sb, scenario, ifNode, indent);
-            return;
-        }
-
-        throw new NotImplementedException($"Unhandle scenario node type : {node.GetType().Name}");
+        node.ToOneOf().Switch(
+            (ChooseNode chooseNode) => WriteChooseNode(sb, chooseNode, indent),
+            (DialogNode dialogNode) => WriteDialogNode(sb, dialogNode, indent),
+            (IfNode ifNode) => WriteIfNode(sb, scenario, ifNode, indent),
+            (JumpNode jumpNode) => WriteJumpNode(sb, jumpNode, indent),
+            (StateTransitionNode stateTransitionNode) => WriteStateTransitionNode(sb, scenario, stateTransitionNode, indent)
+        );
     }
 
     private void WriteIfNode(StringBuilder sb, Scenario scenario, IfNode node, string indent)
     {
         ExpressionSerialiser visitor = new(scenario.System);
-        var result = (string)node.Condition.Accept(visitor);    
+        var result = (string)node.Condition.Accept(visitor);
 
         sb.AppendLine($"{indent}If <{result}> {{"); // TODO Serialise the expression correctly
 
