@@ -36,7 +36,7 @@ public class Scenario
         node.ToOneOf().Switch(
             chooseNode => { },
             dialogNode => { },
-            ifNode => { },
+            ifNode => { }, // TODO Subgraph objects ?
             jumpNode => { },
             stateTransitionNode =>
             {
@@ -46,7 +46,8 @@ public class Scenario
                     var stateMachine = new StateMachine() { Name = stateTransitionNode.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionNode.TransitionName } } };
                     System.StateMachines.Add(stateMachine);
                 }
-            }
+            },
+            whileNode => { } // TODO Subgraph objects ?
         );
     }
 

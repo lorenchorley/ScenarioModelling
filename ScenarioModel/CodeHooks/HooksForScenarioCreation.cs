@@ -2,14 +2,8 @@
 
 namespace ScenarioModel.CodeHooks;
 
-public class HooksForScenarioCreation(Context Context) : Hooks
+public class HooksForScenarioCreation(Context context) : Hooks(context)
 {
-    public override ScenarioHookDefinition? DeclareScenarioStart(string name)
-    {
-        return _scenarioDefintion = new ScenarioHookDefinition(name, Context);
-    }
-
-
 }
 
 

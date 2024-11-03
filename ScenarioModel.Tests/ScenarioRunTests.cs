@@ -14,7 +14,7 @@ namespace ScenarioModel.Tests;
 [TestClass]
 public class ScenarioRunTests
 {
-    private string _scenarioText = """
+    private string _chooseJumpAndIfScenario = """
         Entity Actor {
             State Bob
             CharacterStyle "Red"
@@ -45,7 +45,7 @@ public class ScenarioRunTests
             if <Actor.State != "Alice"> {
                 Dialog {
                     Character Actor
-                    Text "I am now Alice ! "
+                    Text "I am now Alice !"
                 }
             }
             Jump {
@@ -59,14 +59,14 @@ public class ScenarioRunTests
 
     [TestMethod]
     [TestCategory("ScenarioRuns")]
-    public void ScenarioWithChooseAndIfTest()
+    public void ScenarioWithChooseJumpAndIfTest()
     {
         // Arrange
         // =======
         Context context =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .LoadContext<HumanReadableSerialiser>(_chooseJumpAndIfScenario)
                    .Initialise();
 
         DialogExecutor executor = new(context);
@@ -100,22 +100,11 @@ public class ScenarioRunTests
                     string selection = choices.Dequeue();
                     ((ChoiceSelectedEvent)e).Choice = chooseNode.Choices.Where(n => n.Text.IsEqv(selection)).Select(s => s.NodeName).First();
                 },
-                (DialogNode dialogNode) =>
-                {
-                    // Do nothing
-                },
-                (IfNode ifNode) =>
-                {
-                    // Do nothing
-                },
-                (JumpNode jumpNode) =>
-                {
-                    // Do nothing
-                },
-                (StateTransitionNode transitionNode) =>
-                {
-                    // Do nothing
-                }
+                (DialogNode dialogNode) => { },
+                (IfNode ifNode) => { },
+                (JumpNode jumpNode) => { },
+                (StateTransitionNode transitionNode) => { },
+                (WhileNode whileNode) => { }
             );
 
             executor.RegisterEvent(e);
@@ -130,6 +119,110 @@ public class ScenarioRunTests
                    .ToList()
                    .Should()
                    .BeEquivalentTo(["My name is Bob", "My name is Alice", "I am now Alice !", "My name is Bob", "My name is Alice", "Bubye (Actor called Alice in the end)"]);
+
+
+
+    }private string _loopScenario = """
+        Entity Actor {
+            State "Amy Stake"
+            CharacterStyle "Red"
+        }
+
+        SM Name {
+            "Amy Stake" -> "Brock Lee" : ChangeName
+            "Brock Lee" -> "Clara Nett" : ChangeName
+            "Clara Nett" -> "Dee Zaster" : ChangeName
+        }
+
+        Scenario NameSwappingPuns {
+            Dialog SayName {
+                Character Actor
+                Text "Hi, this is {Actor.State}"
+            }
+            While <Actor.State != "Dee Zaster"> {
+                if <Actor.State == "Amy Stake"> {
+                    Dialog {
+                        Character Actor
+                        Text "Amy's name was well chosen"
+                    }
+                }
+                if <Actor.State == "Brock Lee"> {
+                    Dialog {
+                        Character Actor
+                        Text "Brock didn't like his vegies"
+                    }
+                }
+                if <Actor.State == "Clara Nett"> {
+                    Dialog {
+                        Character Actor
+                        Text "Clara hated music"
+                    }
+                }
+                Transition Change {
+                    Actor : ChangeName
+                }
+            }
+            if <Actor.State == "Dee Zaster"> {
+                Dialog {
+                    Character Actor
+                    Text "Well, that went well !"
+                }
+            }
+        }
+        """;
+
+    [TestMethod]
+    [TestCategory("ScenarioRuns")]
+    public void ScenarioWithLoopTest()
+    {
+        // Arrange
+        // =======
+        Context context =
+            Context.New()
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext<HumanReadableSerialiser>(_loopScenario)
+                   .Initialise();
+
+        DialogExecutor executor = new(context);
+        StringInterpolator interpolator = new(context.System);
+        ExpressionEvalator evalator = new(context.System);
+        EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
+
+
+        // Act
+        // ===
+
+        // Initialize the scenario
+        var scenarioRun = executor.StartScenario("NameSwappingPuns");
+
+        // Generate first node
+        IScenarioNode? node = null;
+
+        while ((node = executor.NextNode()) != null)
+        {
+            IScenarioEvent e = node.GenerateUntypedEvent(dependencies);
+
+            node.ToOneOf().Switch(
+                (ChooseNode chooseNode) => { },
+                (DialogNode dialogNode) => { },
+                (IfNode ifNode) => { },
+                (JumpNode jumpNode) => { },
+                (StateTransitionNode transitionNode) => { },
+                (WhileNode whileNode) => { }
+            );
+
+            executor.RegisterEvent(e);
+        }
+
+
+        // Assert
+        // ======
+        scenarioRun.Events
+                   .OfType<DialogEvent>()
+                   .Select(d => d.Text.Trim())
+                   .ToList()
+                   .Should()
+                   .BeEquivalentTo(["Hi, this is Amy Stake", "Amy's name was well chosen", "Brock didn't like his vegies", "Clara hated music", "Well, that went well !"]);
 
 
 

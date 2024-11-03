@@ -12,10 +12,10 @@ namespace ScenarioModel.Objects.ScenarioObjects;
 [NodeLike<IScenarioNode, StateTransitionNode>]
 public record StateTransitionNode : ScenarioNode<StateChangeEvent>
 {
-    [NodeLikeProperty]
+    [NodeLikeProperty(serialise: false)]
     public IStatefulObjectReference? StatefulObject { get; set; }
 
-    [NodeLikeProperty]
+    [NodeLikeProperty(serialise: false)]
     public string TransitionName { get; set; } = "";
 
     public StateTransitionNode()
@@ -54,14 +54,14 @@ public record StateTransitionNode : ScenarioNode<StateChangeEvent>
             }
         }
 
-        e.InitialState = new StateReference() { StateName = statefulObject.State.Name };
+        e.InitialState = new StateReference() { StateName = statefulObject.State.ResolvedValue.Name };
 
-        if (!statefulObject.State.TryTransition(TransitionName, statefulObject))
+        if (!statefulObject.State.ResolvedValue.TryTransition(TransitionName, statefulObject))
         {
-            throw new Exception($"State transition failed, no such transition {TransitionName} on state {statefulObject.State.Name} of type {statefulObject.State.StateMachine.Name}");
+            throw new Exception($"State transition failed, no such transition {TransitionName} on state {statefulObject.State.ResolvedValue.Name} of type {statefulObject.State.ResolvedValue.StateMachine.Name}");
         }
 
-        e.FinalState = new StateReference() { StateName = statefulObject.State.Name };
+        e.FinalState = new StateReference() { StateName = statefulObject.State.ResolvedValue.Name };
 
         return e;
     }

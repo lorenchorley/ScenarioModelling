@@ -16,7 +16,7 @@ public class ScenarioHookDefinition
 
         if (scenario == null)
         {
-            scenario = new Scenario() { Name = Name };
+            scenario = new Scenario() { Name = Name, System = Context.System };
             Context.Scenarios.Add(scenario);
         }
 

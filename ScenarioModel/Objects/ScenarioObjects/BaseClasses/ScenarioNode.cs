@@ -13,9 +13,9 @@ public interface IScenarioNode : IDirectedGraphNode<IScenarioNode>, INameful
     OneOfIScenaroNode ToOneOf();
 }
 
-public class OneOfIScenaroNode : OneOfBase<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode>
+public class OneOfIScenaroNode : OneOfBase<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode, WhileNode>
 {
-    public OneOfIScenaroNode(OneOf<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode> input) : base(input)
+    public OneOfIScenaroNode(OneOf<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode, WhileNode> input) : base(input)
     {
     }
 }
@@ -34,7 +34,7 @@ public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
 
     public string? LineInformation
     {
-        get => Line.HasValue ? $"(Near line {Line.Value})" : "";
+        get => Line.HasValue ? $" (Near line {Line.Value})" : "";
     }
 
     public abstract OneOfIScenaroNode ToOneOf();

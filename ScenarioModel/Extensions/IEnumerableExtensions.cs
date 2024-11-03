@@ -10,7 +10,7 @@ public static class IEnumerableExtensions
 
         if (remaining.Any())
         {
-            throw new Exception(string.Format(messageTemplate, remaining.CommaSeparatedList()));
+            throw new Exception(string.Format(messageTemplate, remaining.CommaSeparatedList()) + "\nTry registering a new ISemanticNodeProfile that corresponds to this definition");
         }
 
         return chosen;

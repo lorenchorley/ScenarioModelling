@@ -2,6 +2,7 @@
 using ScenarioModel.Objects.SystemObjects.Entities;
 using ScenarioModel.Objects.SystemObjects.Relations;
 using ScenarioModel.Objects.SystemObjects.States;
+using System.Linq;
 
 namespace ScenarioModel;
 
@@ -29,9 +30,9 @@ public class System
     public IEnumerable<State> AllStates
     {
         get => Enumerable.Empty<State?>()
-                         .Concat(Entities.Select(e => e.State))
-                         .Concat(AllAspects.Select(e => e.State))
-                         .Concat(AllRelations.Select(e => e.State))
+                         .Concat(Entities.Select(e => e.State.ResolvedValue))
+                         .Concat(AllAspects.Select(e => e.State.ResolvedValue))
+                         .Concat(AllRelations.Select(e => e.State.ResolvedValue))
                          .Concat(StateMachines.SelectMany(x => x.States))
                          .Where(s => s != null)
                          .Cast<State>()
@@ -98,7 +99,7 @@ public class System
 
             if (value.ValueList[1].IsEqv("State"))
             {
-                return entity.State.Name;
+                return entity.State.ResolvedValue.Name;
             }
 
             // TODO aspects and other cases

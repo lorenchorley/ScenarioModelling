@@ -7,8 +7,8 @@ using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
 namespace ScenarioModel.Objects.ScenarioObjects;
 
-[NodeLike<IScenarioNode, IfNode>]
-public record IfNode : ScenarioNode<IfBlockEvent>
+[NodeLike<IScenarioNode, WhileNode>]
+public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>
 {
     [NodeLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
@@ -16,23 +16,26 @@ public record IfNode : ScenarioNode<IfBlockEvent>
     [NodeLikeProperty(serialise: false)]
     public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = new();
 
-    public IfNode()
+    public WhileNode()
     {
-        Name = "If";
+        Name = "While";
     }
 
-    public override IfBlockEvent GenerateEvent(EventGenerationDependencies dependencies)
+    public override WhileLoopConditionCheckEvent GenerateEvent(EventGenerationDependencies dependencies)
     {
-        IfBlockEvent e = new IfBlockEvent() { ProducerNode = this };
+        WhileLoopConditionCheckEvent e = new()
+        {
+            ProducerNode = this,
+        };
 
         var result = Condition.Accept(dependencies.Evaluator);
 
         if (result is not bool shouldExecuteBlock)
         {
-            throw new Exception($"If condition {Condition} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
+            throw new Exception($"While loop condition {Condition} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
         }
 
-        e.IfBlockRun = shouldExecuteBlock;
+        e.LoopBlockRun = shouldExecuteBlock;
 
         return e;
     }

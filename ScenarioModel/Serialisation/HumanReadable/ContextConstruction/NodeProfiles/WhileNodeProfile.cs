@@ -5,15 +5,16 @@ using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
-[NodeLike<ISemanticNodeProfile, IfNode>]
-public class IfNodeProfile : ISemanticNodeProfile
+[NodeLike<ISemanticNodeProfile, WhileNode>]
+public class WhileNodeProfile : ISemanticNodeProfile
 {
     [NodeLikeProperty]
-    public string Name => "If".ToUpperInvariant();
+    public string Name => "While".ToUpperInvariant();
 
     [NodeLikeProperty]
     public Func<Definition, bool>? Predicate => null;
@@ -25,7 +26,7 @@ public class IfNodeProfile : ISemanticNodeProfile
             throw new Exception("If node must be expression definition");
         }
 
-        IfNode node = new();
+        WhileNode node = new();
         node.Line = def.Line;
 
         ExpressionInterpreter interpreter = new();
@@ -36,7 +37,7 @@ public class IfNodeProfile : ISemanticNodeProfile
 
         if (result.HasErrors)
         {
-            throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node{node.LineInformation} : \n{result.Errors.CommaSeparatedList()}");
+            throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on while node{node.LineInformation} : \n{result.Errors.CommaSeparatedList()}");
         }
 
         node.Condition = result.ParsedObject;
@@ -46,7 +47,7 @@ public class IfNodeProfile : ISemanticNodeProfile
 
         if (visitor.Errors.Any())
         {
-            throw new Exception($"Expression on if node{node.LineInformation} was not valid : \n" + visitor.Errors.CommaSeparatedList());
+            throw new Exception($"Expression on while node{node.LineInformation} was not valid : \n" + visitor.Errors.CommaSeparatedList());
         }
 
         node.SubGraph.ParentSubGraph = currentSubgraph;

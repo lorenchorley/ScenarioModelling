@@ -1,12 +1,30 @@
-﻿namespace ScenarioModel.CodeHooks.HookDefinitions;
+﻿using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.References;
+using System.Security.Cryptography.X509Certificates;
 
-public class EntityHookDefinition(string Name)
+namespace ScenarioModel.CodeHooks.HookDefinitions;
+
+public class EntityHookDefinition(System System, string Name)
 {
-    public string? State { get; private set; }
+    private Entity? _entity = null;
 
-    public EntityHookDefinition SetState(string state)
+    public string? StateName { get; private set; }
+
+    public EntityHookDefinition SetState(string stateName)
     {
-        State = state;
+        StateName = stateName;
+
+        if (!string.IsNullOrEmpty(StateName))
+            GetEntity().State.Set(new StateReference() { StateName = StateName });
+
         return this;
+    }
+
+    internal Entity GetEntity()
+    {
+        return _entity = _entity ?? new Entity(System)
+        {
+            Name = Name,
+        };
     }
 }

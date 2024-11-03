@@ -5,29 +5,29 @@ using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions;
 
-public delegate bool IfHook(bool result);
+public delegate bool WhileHook(bool result);
 
-[NodeLike<INodeHookDefinition, IfNode>]
-public class IfHookDefinition(string Condition) : INodeHookDefinition
+[NodeLike<INodeHookDefinition, WhileNode>]
+public class WhileHookDefinition(string Condition) : INodeHookDefinition
 {
     [NodeLikeProperty]
-    public List<bool> RecordedIfEvents { get; } = new();
+    public List<bool> RecordedWhileLoopEvents { get; } = new();
 
-    private bool IfHook(bool result)
+    private bool WhileHook(bool result)
     {
-        RecordedIfEvents.Add(result);
+        RecordedWhileLoopEvents.Add(result);
         return result;
     }
 
-    public IfHookDefinition GetConditionHook(out IfHook ifHook)
+    public WhileHookDefinition GetConditionHook(out WhileHook whileHook)
     {
-        ifHook = IfHook;
+        whileHook = WhileHook;
         return this;
     }
 
     public IScenarioNode GetNode()
     {
-        IfNode node = new();
+        WhileNode node = new();
 
         // Parse the expression before adding it to the node
         ExpressionInterpreter interpreter = new();
@@ -35,7 +35,7 @@ public class IfHookDefinition(string Condition) : INodeHookDefinition
 
         if (result.HasErrors)
         {
-            throw new Exception($@"Unable to parse expression ""{Condition}"" on if declaration : \n{result.Errors.CommaSeparatedList()}");
+            throw new Exception($@"Unable to parse expression ""{Condition}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
         }
 
         node.Condition = result.ParsedObject;

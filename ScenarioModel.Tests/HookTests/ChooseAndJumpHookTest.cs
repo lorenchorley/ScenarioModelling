@@ -1,13 +1,14 @@
 using FluentAssertions;
 using ScenarioModel.CodeHooks;
 using ScenarioModel.CodeHooks.HookDefinitions;
+using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModel.Tests.HookTests;
 
 [TestClass]
-public class HookTests
+public class ChooseAndJumpHookTest
 {
     private string _scenarioText = """
         Entity Actor {
@@ -69,7 +70,7 @@ public class HookTests
         Debug.WriteLine($"My name is {ActorName}");
 
 
-        hooks.DeclareChoose("Change name and repeat", "Ciao")
+        hooks.DeclareChoose(new ChoiceList() { ("Change name and repeat", ""), ("Ciao", "") }) // TODO
              .GetConditionHook(out ChooseHook chooseCondition)
              .SetId("LoopStart")
              .WithJump("Change name and repeat", "Change")
@@ -125,6 +126,14 @@ public class HookTests
         choices.Enqueue("Change name and repeat");
         choices.Enqueue("Ciao");
 
+        var deserialisedContext =
+            Context.New()
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .Initialise()
+                   .Serialise<HumanReadableSerialiser>()
+                   .Match(v => v, e => throw e);
+
 
         // Act
         // ===
@@ -145,11 +154,14 @@ public class HookTests
         // ======
         generatedScenario.Should().NotBeNull();
 
-        var serialisedResult = context.Serialise<HumanReadableSerialiser>();
-        serialisedResult.IsSuccess.Should().Be(true);
+        var serialisedResult =
+            context.Serialise<HumanReadableSerialiser>()
+                   .Match(v => v, e => throw e);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised context :");
-        serialisedResult.IfSucc(v => Debug.WriteLine(v));
+        Debug.WriteLine(serialisedResult);
+
+        serialisedResult.Should().Be(deserialisedContext);
     }
 }

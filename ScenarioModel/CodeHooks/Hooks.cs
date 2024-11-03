@@ -1,5 +1,6 @@
 ﻿using ScenarioModel.CodeHooks.HookDefinitions;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
 namespace ScenarioModel.CodeHooks;
 
@@ -11,19 +12,42 @@ public abstract class Hooks
 
     protected readonly Stack<DefinitionScope> _scopeStack = new();
 
+    public Context Context { get; }
+
     protected DefinitionScope CurrentScope
     {
         get => _scopeStack.Peek();
     }
+    
+    protected Scenario Scenario
+    {
+        get => _scenarioDefintion?.GetScenario()
+                                 ?? throw new ArgumentNullException();
+    }
+    
+    protected System System
+    {
+        get => Scenario.System;
+    }
 
-    protected Hooks()
+    protected Hooks(Context context)
     {
         NodeExhaustiveness.AssertExhaustivelyImplemented<INodeHookDefinition>();
 
-        _scopeStack.Push(new DefinitionScope());
+        Context = context;
     }
 
-    public abstract ScenarioHookDefinition? DeclareScenarioStart(string name);
+    public virtual ScenarioHookDefinition? DeclareScenarioStart(string name)
+    {
+        _scenarioDefintion = new ScenarioHookDefinition(name, Context);
+
+        _scopeStack.Push(new DefinitionScope()
+        {
+            SubGraph = Scenario.Graph.PrimarySubGraph
+        });
+
+        return _scenarioDefintion;
+    }
 
     public Scenario DeclareScenarioEnd()
     {
@@ -44,16 +68,18 @@ public abstract class Hooks
         return nodeDef;
     }
 
-    public virtual ChooseHookDefinition DeclareChoose(params string[] choices)
+    public virtual ChooseHookDefinition DeclareChoose(params ChoiceList choices)
     {
-        ChooseHookDefinition nodeDef = new(choices);
+        ChooseHookDefinition nodeDef = new();
+        nodeDef.Choices.AddRange(choices);
+
         CurrentScope.AddNodeDefintion(nodeDef);
         return nodeDef;
     }
 
-    public virtual StateTransitionHookDefinition DeclareTransition(string actor, string transition)
+    public virtual StateTransitionHookDefinition DeclareTransition(string statefulObjectName, string transition)
     {
-        StateTransitionHookDefinition nodeDef = new(actor);
+        StateTransitionHookDefinition nodeDef = new(statefulObjectName, transition);
         CurrentScope.AddNodeDefintion(nodeDef);
         return nodeDef;
     }
@@ -72,10 +98,20 @@ public abstract class Hooks
         return nodeDef;
     }
 
+    public virtual WhileHookDefinition DeclareWhileBranch(string condition)
+    {
+        WhileHookDefinition nodeDef = new(condition);
+        CurrentScope.AddNodeDefintion(nodeDef);
+        return nodeDef;
+    }
+
     public EntityHookDefinition DefineEntity(string name)
     {
-        EntityHookDefinition nodeDef = new(name);
+        EntityHookDefinition nodeDef = new(System, name);
         _entityDefintions.Add(nodeDef);
+
+        Scenario.System.Entities.Add(nodeDef.GetEntity());
+
         return nodeDef;
     }
 
@@ -83,6 +119,9 @@ public abstract class Hooks
     {
         StateMachineHookDefinition nodeDef = new(name);
         _stateMachineDefintions.Add(nodeDef);
+
+        Scenario.System.StateMachines.Add(nodeDef.GetStateMachine());
+
         return nodeDef;
     }
 }

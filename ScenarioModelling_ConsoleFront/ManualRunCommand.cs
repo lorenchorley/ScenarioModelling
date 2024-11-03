@@ -52,6 +52,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
         JumpNodeHandler jumpNodeHandler = new() { Dependencies = dependencies };
         IfNodeHandler ifNodeHandler = new() { Dependencies = dependencies };
         ChooseNodeHandler chooseNodeHandler = new() { Dependencies = dependencies };
+        WhileNodeHandler whileNodeHandler = new() { Dependencies = dependencies };
 
         // Initialize the scenario
         var scenarioRun = executor.StartScenario(settings.ScenarioName ?? "");
@@ -72,7 +73,8 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
                 dialogNodeHandler.Manage,
                 ifNodeHandler.Manage,
                 jumpNodeHandler.Manage,
-                stateTransitionNodeHandler.Manage
+                stateTransitionNodeHandler.Manage,
+                whileNodeHandler.Manage
             );
 
             // Generate the next node from the previous state

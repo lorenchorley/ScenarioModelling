@@ -9,7 +9,7 @@ namespace ScenarioModel.Objects.ScenarioObjects;
 [NodeLike<IScenarioNode, ChooseNode>]
 public record ChooseNode : ScenarioNode<ChoiceSelectedEvent>
 {
-    [NodeLikeProperty]
+    [NodeLikeProperty(serialise: false)]
     public ChoiceList Choices { get; set; } = new();
 
     public ChooseNode()

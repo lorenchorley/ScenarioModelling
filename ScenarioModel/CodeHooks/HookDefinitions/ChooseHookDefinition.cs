@@ -1,18 +1,20 @@
 ﻿using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions;
 
 public delegate bool ChooseHook(bool result);
 
 [NodeLike<INodeHookDefinition, ChooseNode>]
-public class ChooseHookDefinition(string[] Choices) : INodeHookDefinition
+public class ChooseHookDefinition : INodeHookDefinition
 {
     [NodeLikeProperty]
     public string? Id { get; private set; }
 
     [NodeLikeProperty]
-    public List<(string nodeId, string choiceName)> Jumps { get; } = new();
+    public ChoiceList Choices { get; } = new();
 
     [NodeLikeProperty]
     public List<bool> RecordedChooseEvents { get; } = new();
@@ -37,7 +39,16 @@ public class ChooseHookDefinition(string[] Choices) : INodeHookDefinition
 
     public ChooseHookDefinition WithJump(string nodeId, string choiceName)
     {
-        Jumps.Add((nodeId, choiceName));
+        Choices.Add((nodeId, choiceName));
         return this;
+    }
+
+    public IScenarioNode GetNode()
+    {
+        return new ChooseNode()
+        {
+            Choices = Choices,
+            Name = Id ?? "" // Not sure
+        };
     }
 }

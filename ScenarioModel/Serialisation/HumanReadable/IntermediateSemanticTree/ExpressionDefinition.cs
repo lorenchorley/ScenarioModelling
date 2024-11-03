@@ -10,11 +10,11 @@ public record ExpressionDefinition : Definition
     {
         if (Definitions.Count > 0)
         {
-            return $"ExpressionDefinition({Name}){Block.ExpressionText} {{ {Definitions} }}";
+            return $"ExpressionDefinition({Name}, <{Block.ExpressionText}>) {{ {Definitions} }}";
         }
         else
         {
-            return $"ExpressionDefinition({Name}){Block.ExpressionText}";
+            return $"ExpressionDefinition({Name}, <{Block.ExpressionText}>)";
         }
     }
 }

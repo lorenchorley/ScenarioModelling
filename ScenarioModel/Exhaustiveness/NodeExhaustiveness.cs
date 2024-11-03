@@ -1,4 +1,6 @@
 ﻿using ScenarioModel.Objects.ScenarioObjects;
+using System.Collections.Generic;
+using System.Text;
 
 namespace ScenarioModel.Exhaustiveness;
 
@@ -10,21 +12,52 @@ public static class NodeExhaustiveness
         typeof(DialogNode),
         typeof(IfNode),
         typeof(JumpNode),
-        typeof(StateTransitionNode)
+        typeof(StateTransitionNode),
+        typeof(WhileNode)
     ];
 
     public static void DoForEachNodeType(
-        Action ChooseNode,
-        Action DialogNode,
-        Action IfNode,
-        Action JumpNode,
-        Action StateTransitionNode)
+        Action chooseNode,
+        Action dialogNode,
+        Action ifNode,
+        Action jumpNode,
+        Action stateTransitionNode,
+        Action whileNode)
     {
-        ChooseNode();
-        DialogNode();
-        IfNode();
-        JumpNode();
-        StateTransitionNode();
+        chooseNode();
+        dialogNode();
+        ifNode();
+        jumpNode();
+        stateTransitionNode();
+        whileNode();
+    }
+
+    public static void DoForEachNodeProperty<TNode>(TNode node, Action<string, object?> callback)
+    {
+        var type = typeof(TNode);
+        var properties =
+            type.GetProperties()
+                .Select(p => (Property: p, Attribute: (NodeLikePropertyAttribute?)p.GetCustomAttributes(typeof(NodeLikePropertyAttribute), false).FirstOrDefault()))
+                .Where(a => a.Attribute != null)
+                .Select(a => (a.Property, Attribute: a.Attribute!))
+                .Where(a => a.Attribute.Serialise);
+
+        foreach (var property in properties)
+        {
+            var propertyName = property.Attribute.SerialisedName ?? property.Property.Name;
+            var propertyValue = property.Property.GetValue(node);
+
+            if (property.Attribute.DoNotSerialiseIfNullOrEmpty)
+            {
+                if (propertyValue is null)
+                    continue;
+
+                if (propertyValue is string s && string.IsNullOrEmpty(s))
+                    continue;
+            }
+
+            callback(propertyName, propertyValue);
+        }
     }
 
     public static void AssertExhaustivelyImplemented<TBaseClass>(Type[]? replacementCompleteTypeList = null)
@@ -97,19 +130,21 @@ public static class NodeExhaustiveness
         return taggedTypes.Select(t => (Type: t.Type, NodeLikeAttribute: t.NodeLikeAttribute!, GenericBaseType: t.GenericBaseType!, GenericTargetType: t.GenericTargetType!))
                           .ToArray();
     }
+
+    
 }
 
 public class ExhaustivenessException : Exception
 {
     public Type[] Types { get; }
 
-    public ExhaustivenessException(string message, IEnumerable<Type> types) : base(message)
+    public ExhaustivenessException(string message, IEnumerable<Type> types) : base(TransformMessage(message, types))
     {
         Types = types.ToArray();
     }
 
-    public override string ToString()
+    public static string TransformMessage(string message, IEnumerable<Type> types)
     {
-        return $"{Message} : {string.Join(", ", Types.Select(t => t.Name))}";
+        return $"{message} : {string.Join(", ", types.Select(t => t.Name))}";
     }
 }

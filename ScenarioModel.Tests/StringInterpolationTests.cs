@@ -2,26 +2,18 @@ using FluentAssertions;
 using ScenarioModel.Interpolation;
 using ScenarioModel.Objects.SystemObjects.Entities;
 using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 
 namespace ScenarioModel.Tests;
 
 [TestClass]
 public class StringInterpolationTests
 {
-    private readonly System _system = new System()
-    {
-        Entities = new List<Entity>()
-        {
-            new Entity()
-            {
-                Name = "E1",
-                State = new State()
-                {
-                    Name = "S1"
-                }
-            }
-        },
-    };
+    private string _scenarioText = """
+        Entity E1 {
+            State S1
+        }
+        """;
 
     [DataTestMethod]
     [TestCategory("Interpolation")]
@@ -31,7 +23,14 @@ public class StringInterpolationTests
     {
         // Arrange 
         // =======
-        StringInterpolator stringInterpolator = new StringInterpolator(_system);
+
+        Context context =
+            Context.New()
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .Initialise();
+
+        StringInterpolator stringInterpolator = new StringInterpolator(context.System);
 
 
         // Act

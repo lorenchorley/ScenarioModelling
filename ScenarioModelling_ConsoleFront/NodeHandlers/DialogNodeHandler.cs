@@ -22,7 +22,7 @@ internal class DialogNodeHandler : NodeHandler<DialogNode, DialogEvent>
 
             if (characterEntity == null)
             {
-                throw new Exception($"Character {node.Character} not found on dialog {node.Name} {node.LineInformation}");
+                throw new Exception($"Character {node.Character} not found on dialog {node.Name}{node.LineInformation}");
             }
 
             AnsiConsole.MarkupLine($"[{characterEntity.CharacterStyle}]{node.Character}[/]");

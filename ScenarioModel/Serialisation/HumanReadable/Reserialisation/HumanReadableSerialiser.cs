@@ -1,4 +1,5 @@
 ﻿using LanguageExt.Common;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
@@ -81,14 +82,35 @@ public class HumanReadableSerialiser : ISerialiser
             (DialogNode dialogNode) => WriteDialogNode(sb, dialogNode, indent),
             (IfNode ifNode) => WriteIfNode(sb, scenario, ifNode, indent),
             (JumpNode jumpNode) => WriteJumpNode(sb, jumpNode, indent),
-            (StateTransitionNode stateTransitionNode) => WriteStateTransitionNode(sb, scenario, stateTransitionNode, indent)
+            (StateTransitionNode stateTransitionNode) => WriteStateTransitionNode(sb, scenario, stateTransitionNode, indent),
+            (WhileNode whileNode) => WriteWhileNode(sb, scenario, whileNode, indent)
         );
+    }
+
+    private void WriteWhileNode(StringBuilder sb, Scenario scenario, WhileNode node, string indent)
+    {
+        ExpressionSerialiser visitor = new(scenario.System);
+        var result = (string)node.Condition.Accept(visitor);
+
+        sb.AppendLine($"{indent}While <{result}> {{"); // TODO Serialise the expression correctly
+
+        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+
+        foreach (var step in node.SubGraph.NodeSequence)
+        {
+            WriteScenarioNode(sb, scenario, step, indent + _indent);
+        }
+
+        sb.AppendLine($"{indent}}}");
+        sb.AppendLine($"");
     }
 
     private void WriteIfNode(StringBuilder sb, Scenario scenario, IfNode node, string indent)
     {
         ExpressionSerialiser visitor = new(scenario.System);
         var result = (string)node.Condition.Accept(visitor);
+
+        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
 
         sb.AppendLine($"{indent}If <{result}> {{"); // TODO Serialise the expression correctly
 
@@ -105,7 +127,7 @@ public class HumanReadableSerialiser : ISerialiser
     {
         if (stateTransitionNode.StatefulObject == null)
         {
-            throw new Exception($"Stateful object not set on transition: {stateTransitionNode.Name}");
+            throw new Exception($"Stateful object not set on transition: {stateTransitionNode}");
         }
 
         var stateful = stateTransitionNode.StatefulObject.ResolveReference(scenario.System);
@@ -125,6 +147,8 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Choose {node.Name} {{");
 
+        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+
         foreach (var option in node.Choices)
         {
             if (string.IsNullOrEmpty(option.Text))
@@ -141,10 +165,12 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Dialog {node.Name} {{");
 
-        sb.AppendLine($"{indent}{_indent}Text {node.TextTemplate}");
+        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
 
-        if (node.Character != null)
-            sb.AppendLine($"{indent}{_indent}Character {node.Character}");
+        //sb.AppendLine($"{indent}{_indent}Text {node.TextTemplate}");
+
+        //if (node.Character != null)
+        //    sb.AppendLine($"{indent}{_indent}Character {node.Character}");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -154,7 +180,8 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Jump {node.Name} {{");
 
-        sb.AppendLine($"{indent}{_indent}{node.Target}");
+        NodeExhaustiveness.DoForEachNodeProperty<JumpNode>(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        //sb.AppendLine($"{indent}{_indent}{node.Target}");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -185,8 +212,8 @@ public class HumanReadableSerialiser : ISerialiser
         if (entity.EntityType != null)
             sb.AppendLine($"{indent}{_indent}EntityType {entity.EntityType.Name}");
 
-        if (entity.State != null)
-            WriteSMState(sb, indent + _indent, entity.State);
+        if (entity.State.ResolvedValue != null)
+            WriteSMState(sb, indent + _indent, entity.State.ResolvedValue);
 
         foreach (var aspectType in entity.Aspects)
         {

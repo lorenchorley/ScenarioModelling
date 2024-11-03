@@ -1,4 +1,7 @@
-﻿namespace ScenarioModel.CodeHooks.HookDefinitions;
+﻿using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.References;
+
+namespace ScenarioModel.CodeHooks.HookDefinitions;
 
 public class StateMachineHookDefinition(string Name)
 {
@@ -8,5 +11,22 @@ public class StateMachineHookDefinition(string Name)
     {
         transitions.Add((statefulInitial, statefulFinal, transitionName));
         return this;
+    }
+
+    internal StateMachine GetStateMachine()
+    {
+        StateMachine stateMachine = new()
+        {
+            Name = Name,
+        };
+
+        stateMachine.Transitions = transitions.Select(t => new Transition()
+        {
+            SourceState = t.statefulInitial,
+            DestinationState = t.statefulFinal,
+            Name = t.transitionName
+        }).ToList();
+
+        return stateMachine;
     }
 }

@@ -75,7 +75,7 @@ public class StringInterpolator(System System)
                 throw new SyntaxErrorException($"Entity not found: {entityName}");
             }
 
-            return entity.State?.Name ?? "Not set";
+            return entity.State.ResolvedValue?.Name ?? "Not set";
         }
 
         throw new Exception($"Property not found: {propertyName}");

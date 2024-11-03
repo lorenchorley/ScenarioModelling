@@ -31,11 +31,12 @@ public class SemanticContextBuilder
         NodeExhaustiveness.AssertExhaustivelyImplemented<ISemanticNodeProfile>();
 
         NodeExhaustiveness.DoForEachNodeType(
-            ChooseNode: () => RegisterStepProfile(new ChooseNodeProfile()),
-            DialogNode: () => RegisterStepProfile(new DialogNodeProfile()),
-            IfNode: () => RegisterStepProfile(new IfNodeProfile()),
-            JumpNode: () => RegisterStepProfile(new JumpNodeProfile()),
-            StateTransitionNode: () => RegisterStepProfile(new StateTransitionNodeProfile())
+            chooseNode: () => RegisterStepProfile(new ChooseNodeProfile()),
+            dialogNode: () => RegisterStepProfile(new DialogNodeProfile()),
+            ifNode: () => RegisterStepProfile(new IfNodeProfile()),
+            jumpNode: () => RegisterStepProfile(new JumpNodeProfile()),
+            stateTransitionNode: () => RegisterStepProfile(new StateTransitionNodeProfile()),
+            whileNode: () => RegisterStepProfile(new WhileNodeProfile())
         );
     }
 
@@ -43,19 +44,19 @@ public class SemanticContextBuilder
     {
         Context context = Context.New();
 
-        var (entities, remaining1) = tree.PartitionByChoose(def => TransformEntity(def, context));
+        var (entities, remaining1) = tree.PartitionByChoose(d => TransformEntity(context.System, d, context));
         context.System.Entities.AddRange(entities);
 
-        var (entityTypes, remaining2) = remaining1.PartitionByChoose(TransformEntityType);
+        var (entityTypes, remaining2) = remaining1.PartitionByChoose(d => TransformEntityType(context.System, d));
         context.System.EntityTypes.AddRange(entityTypes);
 
-        var (stateMachines, remaining3) = remaining2.PartitionByChoose(TransformStateMachine);
+        var (stateMachines, remaining3) = remaining2.PartitionByChoose(d => TransformStateMachine(context.System, d));
         context.System.StateMachines.AddRange(stateMachines);
 
-        var (constraints, remaining4) = remaining3.PartitionByChoose(TransformConstraint);
+        var (constraints, remaining4) = remaining3.PartitionByChoose(d => TransformConstraint(context.System, d));
         context.System.Constraints.AddRange(constraints);
 
-        var (relations, remaining5) = remaining4.PartitionByChoose(TransformRelation);
+        var (relations, remaining5) = remaining4.PartitionByChoose(d => TransformRelation(context.System, d));
         context.System.TopLevelRelations.AddRange(relations);
 
         var (scenarios, remainingLast) = remaining5.PartitionByChoose(TransformScenario(context.System));
@@ -89,17 +90,18 @@ public class SemanticContextBuilder
 
         if (entity.EntityType.StateMachine == null)
         {
-            if (entity.State != null)
+            State? state = entity.State.ResolvedValue;
+            if (state != null)
             {
-                StateMachine? stateMachine = context.System.StateMachines.FirstOrDefault(sm => sm.States.Any(s => s.Name.IsEqv(entity.State.Name)));
+                StateMachine? stateMachine = context.System.StateMachines.FirstOrDefault(sm => sm.States.Any(s => s.Name.IsEqv(state.Name)));
                 entity.EntityType.StateMachine = stateMachine;
                 //entity.State.StateMachine = stateMachine ?? entity.State.StateMachine;
 
                 if (stateMachine != null)
                 {
                     // Use the state instance on the state machine so there aren't several instances floating around
-                    string stateName = entity.State.Name;
-                    entity.State = stateMachine.States.First(s => s.Name.IsEqv(stateName));
+                    string stateName = state.Name;
+                    entity.State.Set(stateMachine.States.First(s => s.Name.IsEqv(stateName)));
                 }
             }
         }
@@ -107,7 +109,7 @@ public class SemanticContextBuilder
 
     private void ValidateState(IStateful stateful, Context context)
     {
-        State? state = stateful.State;
+        State? state = stateful.State.ResolvedValue;
 
         if (state == null)
         {
@@ -224,7 +226,7 @@ public class SemanticContextBuilder
             };
 
             var tryTransform = TryTransformDefinitionToNode(value);
-            value.Graph.PrimarySubGraph.NodeSequence.AddRange(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, value.Graph.PrimarySubGraph), "Unknown step types not taken into account : {0}"));
+            value.Graph.PrimarySubGraph.NodeSequence.AddRange(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, value.Graph.PrimarySubGraph), "Unknown node types not taken into account : {0}"));
 
             return value;
         };
@@ -267,7 +269,7 @@ public class SemanticContextBuilder
             return null;
         };
 
-    private Option<Entity> TransformEntity(Definition definition, Context context)
+    private Option<Entity> TransformEntity(System system, Definition definition, Context context)
     {
         if (definition is not UnnamedDefinition unnamed)
         {
@@ -279,26 +281,25 @@ public class SemanticContextBuilder
             return null;
         }
 
-        EntityType? type = unnamed.Definitions.Choose(TransformEntityType).FirstOrDefault();
+        EntityType? type = unnamed.Definitions.Choose(d => TransformEntityType(system, d)).FirstOrDefault();
         if (type == null)
         {
             type = _entityTypeNamer.AddUnnamedDefinition(new EntityType());
             context.System.EntityTypes.Add(type);
         }
 
-        var (relations, remaining1) = unnamed.Definitions.PartitionByChoose(TransformRelation);
+        var (relations, remaining1) = unnamed.Definitions.PartitionByChoose(d => TransformRelation(system, d));
         var (states, remaining2) = remaining1.PartitionByChoose(TransformState);
 
 
-        Entity value = new()
+        Entity value = new(context.System)
         {
             Relations = relations.ToList(),
-            State = states.FirstOrDefault(),
             EntityType = type,
         };
 
+        value.State.Set(states.FirstOrDefault());
         value.Aspects = unnamed.Definitions.Choose(TransformAspect(value)).ToList();
-
         value.CharacterStyle = unnamed.Definitions.Choose(TransformCharacterStyle).FirstOrDefault() ?? "";
 
         SetNameOrRecordForAutoNaming(definition, value, _entityNamer);
@@ -313,7 +314,7 @@ public class SemanticContextBuilder
         return value;
     }
 
-    private Option<EntityType> TransformEntityType(Definition definition)
+    private Option<EntityType> TransformEntityType(System system, Definition definition)
     {
         if (definition is not UnnamedDefinition unnamed)
         {
@@ -327,7 +328,7 @@ public class SemanticContextBuilder
 
         EntityType value = new()
         {
-            StateMachine = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault(),
+            StateMachine = unnamed.Definitions.Choose(d => TransformStateMachine(system, d)).FirstOrDefault(),
         };
 
         SetNameOrRecordForAutoNaming(definition, value, _entityTypeNamer);
@@ -337,7 +338,7 @@ public class SemanticContextBuilder
         return value;
     }
 
-    private Option<StateMachine> TransformStateMachine(Definition definition)
+    private Option<StateMachine> TransformStateMachine(System system, Definition definition)
     {
         if (definition is not UnnamedDefinition unnamed)
         {
@@ -382,7 +383,7 @@ public class SemanticContextBuilder
         return value;
     }
 
-    private Option<AspectType> TransformAspectType(Definition definition)
+    private Option<AspectType> TransformAspectType(System system, Definition definition)
     {
         if (definition is not UnnamedDefinition unnamed)
         {
@@ -398,7 +399,7 @@ public class SemanticContextBuilder
 
         AspectType value = new()
         {
-            StateMachine = unnamed.Definitions.Choose(TransformStateMachine).FirstOrDefault() ?? _stateMachineNamer.AddUnnamedDefinition(new StateMachine())
+            StateMachine = unnamed.Definitions.Choose(d => TransformStateMachine(system, d)).FirstOrDefault() ?? _stateMachineNamer.AddUnnamedDefinition(new StateMachine())
         };
 
         SetNameOrRecordForAutoNaming(definition, value, _aspectTypeNamer);
@@ -421,13 +422,14 @@ public class SemanticContextBuilder
                 return null;
             }
 
-            Aspect value = new()
+            Aspect value = new(entity.System)
             {
                 Entity = entity,
-                Relations = named.Definitions.Choose(TransformRelation).ToList(),
-                State = named.Definitions.Choose(TransformState).FirstOrDefault(),
-                AspectType = named.Definitions.Choose(TransformAspectType).FirstOrDefault() ?? new AspectType() { Name = named.Name.Value }
+                Relations = named.Definitions.Choose(d => TransformRelation(entity.System, d)).ToList(),
+                AspectType = named.Definitions.Choose(d => TransformAspectType(entity.System, d)).FirstOrDefault() ?? new AspectType() { Name = named.Name.Value }
             };
+
+            value.State.Set(named.Definitions.Choose(TransformState).FirstOrDefault());
 
             //Console.WriteLine($"Created Aspect {value.Name}");
 
@@ -458,14 +460,14 @@ public class SemanticContextBuilder
         return value;
     }
 
-    private Option<ScenarioModel.Objects.SystemObjects.Relations.Relation> TransformRelation(Definition definition)
+    private Option<ScenarioModel.Objects.SystemObjects.Relations.Relation> TransformRelation(System system, Definition definition)
     {
         if (definition is not UnnamedLinkDefinition unnamed)
         {
             return null;
         }
 
-        ScenarioModel.Objects.SystemObjects.Relations.Relation value = new()
+        ScenarioModel.Objects.SystemObjects.Relations.Relation value = new(system)
         {
             LeftEntity = new RelatableObjectReference()
             {
@@ -504,7 +506,7 @@ public class SemanticContextBuilder
         return null;
     }
 
-    private Option<Expression> TransformConstraint(Definition definition)
+    private Option<Expression> TransformConstraint(System system, Definition definition)
     {
         return null;
     }

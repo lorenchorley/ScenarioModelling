@@ -9,10 +9,10 @@ namespace ScenarioModel.Objects.ScenarioObjects;
 [NodeLike<IScenarioNode, DialogNode>]
 public record DialogNode : ScenarioNode<DialogEvent>
 {
-    [NodeLikeProperty]
+    [NodeLikeProperty(serialisedName: "Text")]
     public string TextTemplate { get; set; } = "";
 
-    [NodeLikeProperty]
+    [NodeLikeProperty(doNotSerialiseIfNullOrEmpty : true)]
     public string? Character { get; set; } = null;
 
     public DialogNode()

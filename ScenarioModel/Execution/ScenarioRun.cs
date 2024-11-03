@@ -26,8 +26,13 @@ public class GraphScope
         CurrentNode = graph.PrimarySubGraph.NodeSequence.FirstOrDefault();
     }
 
-    public IScenarioNode? GetNextInSequence(IScenarioNode node)
+    public IScenarioNode? GetNextInSequence(IScenarioNode? node)
     {
+        if (node == null)
+        {
+            throw new ArgumentNullException(nameof(node));
+        }
+
         CurrentNode = CurrentSubGraph.GetNextInSequence(node);
 
         if (CurrentNode is not null)
@@ -95,11 +100,12 @@ public class ScenarioRun
             return ManageDefaultCase(currentScopeNode);
 
         return currentScopeNode.ToOneOf().Match(
-            (ChooseNode _) => ManangeChoseNode(currentEvent),
-            (DialogNode _) => ManageDefaultCase(currentScopeNode),
-            (IfNode _) => ManageIfNode(currentEvent, currentScopeNode),
-            (JumpNode _) => ManageJumpNode(currentEvent),
-            (StateTransitionNode _) => ManageDefaultCase(currentScopeNode)
+            (ChooseNode node) => ManangeChoseNode(currentEvent, node),
+            (DialogNode node) => ManageDefaultCase(currentScopeNode),
+            (IfNode node) => ManageIfNode(currentEvent, node),
+            (JumpNode node) => ManageJumpNode(currentEvent, node),
+            (StateTransitionNode node) => ManageDefaultCase(currentScopeNode),
+            (WhileNode node) => ManageWhileNode(currentEvent, node)
             );
     }
 
@@ -108,7 +114,7 @@ public class ScenarioRun
         return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
     }
 
-    private IScenarioNode ManangeChoseNode(IScenarioEvent? currentEvent)
+    private IScenarioNode ManangeChoseNode(IScenarioEvent? currentEvent, ChooseNode chooseNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -129,7 +135,7 @@ public class ScenarioRun
         return currentScopeNode;
     }
 
-    private IScenarioNode ManageJumpNode(IScenarioEvent? currentEvent)
+    private IScenarioNode ManageJumpNode(IScenarioEvent? currentEvent, JumpNode jumpNode)
     {
         // The last event must be a jump event
         if (currentEvent is null ||
@@ -166,6 +172,25 @@ public class ScenarioRun
         {
             // Otherwise advance past the if node
             return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
+        }
+    }
+    
+    private IScenarioNode? ManageWhileNode(IScenarioEvent? currentEvent, WhileNode whileNode)
+    {
+        // The last event must be an while event
+        if (currentEvent is null ||
+            currentEvent is not WhileLoopConditionCheckEvent whileEvent)
+            throw new Exception($"No {nameof(WhileLoopConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
+
+        if (whileEvent.LoopBlockRun)
+        {
+            GraphScopeStack.Peek().EnterSubGraph(whileEvent.ProducerNode.SubGraph);
+            return GraphScopeStack.Peek().CurrentNode; // Automatically the first node in the subgraph
+        }
+        else
+        {
+            // Otherwise advance past the while node
+            return GraphScopeStack.Peek().GetNextInSequence(whileNode);
         }
     }
 

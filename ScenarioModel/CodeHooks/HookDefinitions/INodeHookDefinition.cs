@@ -1,6 +1,8 @@
-﻿namespace ScenarioModel.CodeHooks.HookDefinitions;
+﻿using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+
+namespace ScenarioModel.CodeHooks.HookDefinitions;
 
 public interface INodeHookDefinition
 {
-
+    IScenarioNode GetNode();
 }

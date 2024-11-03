@@ -17,7 +17,7 @@ public record State : INameful
 
         // TODO Constraints
 
-        stateful.State = StateMachine.States.First(s => s.Name.IsEqv(transition.DestinationState));
+        stateful.State.Set(StateMachine.States.First(s => s.Name.IsEqv(transition.DestinationState)));
 
         // TODO Effects
 

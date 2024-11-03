@@ -1,10 +1,11 @@
-﻿using ScenarioModel.Objects.SystemObjects.Relations;
+﻿using ScenarioModel.Objects.SystemObjects.Properties;
+using ScenarioModel.Objects.SystemObjects.Relations;
 using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.References;
 
 namespace ScenarioModel.Objects.SystemObjects.Entities;
 
-public record Aspect : IStateful, IRelatable
+public record Aspect(System System) : IStateful, IRelatable
 {
     public string Name
     {
@@ -14,7 +15,7 @@ public record Aspect : IStateful, IRelatable
     public AspectType AspectType { get; set; } = null!;
     public Entity Entity { get; set; } = null!;
     public List<Relation> Relations { get; set; } = new();
-    public State? State { get; set; }
+    public NullableStateProperty State { get; } = new(System);
 
     public IStatefulObjectReference GenerateReference()
     {
