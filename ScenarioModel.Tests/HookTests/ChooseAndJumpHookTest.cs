@@ -1,6 +1,6 @@
 using FluentAssertions;
 using ScenarioModel.CodeHooks;
-using ScenarioModel.CodeHooks.HookDefinitions;
+using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
@@ -51,15 +51,18 @@ public class ChooseAndJumpHookTest
         }
         """;
 
-    void ProducerMethod(Hooks hooks, Queue<string> choices)
+    void ProducerMethod(ScenarioHookOrchestrator hooks, Queue<string> choices)
     {
-        hooks.DefineEntity("Actor")
-             .SetState("Bob");
+        hooks.DefineSystem(configuration => {
+            configuration.DefineEntity("Actor")
+                         .SetState("Bob");
 
-        hooks.DefineStateMachine("Name")
-             .WithTransition("Bob", "Alice", "ChangeName")
-             .WithTransition("Alice", "Bob", "ChangeName");
+            configuration.DefineStateMachine("Name")
+                         .WithTransition("Bob", "Alice", "ChangeName")
+                         .WithTransition("Alice", "Bob", "ChangeName");
+        });
 
+        
         string ActorName = "Bob";
 
 
@@ -118,7 +121,7 @@ public class ChooseAndJumpHookTest
                    .UseSerialiser<HumanReadableSerialiser>()
                    .Initialise();
 
-        Hooks hooks = new HooksForScenarioCreation(context);
+        ScenarioHookOrchestrator hooks = new ScenarioHookOrchestratorForConstruction(context);
 
         Queue<string> choices = new();
         choices.Enqueue("Change name and repeat");

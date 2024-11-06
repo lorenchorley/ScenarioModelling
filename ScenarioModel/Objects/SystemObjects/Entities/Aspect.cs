@@ -15,10 +15,15 @@ public record Aspect(System System) : IStateful, IRelatable
     public AspectType AspectType { get; set; } = null!;
     public Entity Entity { get; set; } = null!;
     public List<Relation> Relations { get; set; } = new();
-    public NullableStateProperty State { get; } = new(System);
+    public StateProperty State { get; } = new(System);
 
     public IStatefulObjectReference GenerateReference()
     {
         return new EntityAspectReference() { AspectName = Name };
+    }
+
+    public bool IsEqv(Aspect other)
+    {
+        return true; // TODO
     }
 }

@@ -12,7 +12,7 @@ public record DialogNode : ScenarioNode<DialogEvent>
     [NodeLikeProperty(serialisedName: "Text")]
     public string TextTemplate { get; set; } = "";
 
-    [NodeLikeProperty(doNotSerialiseIfNullOrEmpty : true)]
+    [NodeLikeProperty(doNotSerialiseIfNullOrEmpty: true)]
     public string? Character { get; set; } = null;
 
     public DialogNode()

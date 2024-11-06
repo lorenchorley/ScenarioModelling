@@ -2,7 +2,7 @@
 
 namespace ScenarioModel.CodeHooks;
 
-public class HooksForSimulationOnExistingContext(Context context) : Hooks(context)
+public class ScenarioHookOrchestratorForValidation(Context context) : ScenarioHookOrchestrator(context)
 {
     public override ScenarioHookDefinition? DeclareScenarioStart(string name)
     {
@@ -13,7 +13,4 @@ public class HooksForSimulationOnExistingContext(Context context) : Hooks(contex
 
         return base.DeclareScenarioStart(name);
     }
-
 }
-
-

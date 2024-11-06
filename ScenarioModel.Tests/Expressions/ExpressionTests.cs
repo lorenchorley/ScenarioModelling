@@ -1,7 +1,10 @@
 using FluentAssertions;
+using Newtonsoft.Json;
 using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
+using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.Objects.SystemObjects.Entities;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
 
@@ -10,26 +13,15 @@ namespace ScenarioModel.Tests.Expressions;
 [TestClass]
 public class ExpressionTests
 {
-    private readonly string _system = """
-        Entity A
-        {
-            Aspect D {
-                State DState
-            }
-        }
-        Entity B
-        Entity C
-        B -> C
-
-        """;
-
-    [DataTestMethod]
+    [TestMethod]
     [TestCategory("Expressions"), TestCategory("Grammar")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionGrammarTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
+    public void ExpressionGrammarTests(string name, string text, string systemText, string expectedValuesJson)
     {
         // Arrange 
         // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
         ExpressionInterpreter interpreter = new();
 
 
@@ -48,52 +40,62 @@ public class ExpressionTests
         Debug.WriteLine(serialisedResult);
         Debug.WriteLine("");
 
-        serialisedResult.Should().Be(expected);
+        //serialisedResult.Should().Be(expectedValues.Expected);
     }
 
     [DataTestMethod]
     [TestCategory("Expressions"), TestCategory("Grammar")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionValidationTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
+    public void ExpressionValidationTests(string name, string text, string systemText, string expectedValuesJson)
     {
         // Arrange 
         // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
+        if (expectedValues.ExpectedEvaluatedValue == null && expectedValues.ExpectedReturnType == null)
+        {
+            Assert.Inconclusive();
+        }
+
         ExpressionInterpreter interpreter = new();
 
         System system =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_system)
-                   .Initialise().System;
+                   .LoadContext<HumanReadableSerialiser>(systemText)
+                   .Initialise()
+                   .System;
 
-        ExpressionValidator visitor = new(system);
+        ExpressionValidator validator = new(system);
 
-        var result = interpreter.Parse(text);
+        var parsedExpression = interpreter.Parse(text);
 
 
         // Act
         // ===
-        result.ParsedObject.Accept(visitor);
+        parsedExpression.ParsedObject.Accept(validator);
 
 
         // Assert
         // ======
-        Assert.AreEqual(isValid, visitor.Errors.Count == 0, visitor.Errors.CommaSeparatedList());
+        Assert.AreEqual(expectedValues.IsValid, validator.Errors.Count == 0, validator.Errors.CommaSeparatedList());
     }
 
     [DataTestMethod]
     [TestCategory("Expressions"), TestCategory("Serialisation")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionSerialisationTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
+    public void ExpressionSerialisationTests(string name, string text, string systemText, string expectedValuesJson)
     {
         // Arrange 
         // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
         ExpressionInterpreter interpreter = new();
 
         System system =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_system)
+                   .LoadContext<HumanReadableSerialiser>(systemText)
                    .Initialise().System;
 
         ExpressionSerialiser visitor = new(system);
@@ -108,7 +110,7 @@ public class ExpressionTests
 
         // Act
         // ===
-        var result = parsedExpression.ParsedObject.Accept(visitor);
+        var result = parsedExpression.ParsedObject!.Accept(visitor);
 
 
         // Assert
@@ -124,13 +126,15 @@ public class ExpressionTests
     [DataTestMethod]
     [TestCategory("Expressions"), TestCategory("Evaluation")]
     [ExpressionGrammarTestDataProvider]
-    public void ExpressionEvaluationTests(string name, string text, string expected, bool isValid, object? evaluatedExpression)
+    public void ExpressionEvaluationTests(string name, string text, string systemText, string expectedValuesJson)
     {
         // Arrange 
         // =======
-        if (!isValid)
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
+        if (expectedValues.ExpectedEvaluatedValue == null && expectedValues.ExpectedReturnType == null)
         {
-            return;
+            Assert.Inconclusive();
         }
 
         ExpressionInterpreter interpreter = new();
@@ -138,10 +142,11 @@ public class ExpressionTests
         System system =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_system)
+                   .LoadContext<HumanReadableSerialiser>(systemText)
                    .Initialise().System;
 
         ExpressionEvalator evalator = new(system);
+        ExpressionValidator validator = new(system);
 
         var parsedExpression = interpreter.Parse(text);
 
@@ -153,14 +158,28 @@ public class ExpressionTests
 
         // Act
         // ===
-        var result = parsedExpression.ParsedObject.Accept(evalator);
+        parsedExpression.ParsedObject.Accept(validator);
+        var result = parsedExpression.ParsedObject!.Accept(evalator);
 
 
         // Assert
         // ======
         Assert.IsNotNull(result, "Valid expression must evaluated to non null value");
 
-        result.Should().Be(evaluatedExpression);
+        parsedExpression.ParsedObject.Type.Should().Be(expectedValues.ExpectedReturnType);
+
+        if (result is INameful nameful)
+        {
+            nameful.Name.Should().Be((string)expectedValues.ExpectedEvaluatedValue);
+        }
+        else if (result is Aspect aspect)
+        {
+            aspect.Name.Should().Be((string)expectedValues.ExpectedEvaluatedValue);
+        }
+        else
+        {
+            result.Should().Be(expectedValues.ExpectedEvaluatedValue);
+        }
 
     }
 

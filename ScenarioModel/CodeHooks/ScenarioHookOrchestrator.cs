@@ -1,14 +1,13 @@
 ﻿using ScenarioModel.CodeHooks.HookDefinitions;
+using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
 namespace ScenarioModel.CodeHooks;
 
-public abstract class Hooks
+public abstract class ScenarioHookOrchestrator
 {
     protected ScenarioHookDefinition? _scenarioDefintion;
-    protected List<EntityHookDefinition> _entityDefintions = new();
-    protected List<StateMachineHookDefinition> _stateMachineDefintions = new();
 
     protected readonly Stack<DefinitionScope> _scopeStack = new();
 
@@ -18,19 +17,19 @@ public abstract class Hooks
     {
         get => _scopeStack.Peek();
     }
-    
+
     protected Scenario Scenario
     {
         get => _scenarioDefintion?.GetScenario()
                                  ?? throw new ArgumentNullException();
     }
-    
+
     protected System System
     {
         get => Scenario.System;
     }
 
-    protected Hooks(Context context)
+    protected ScenarioHookOrchestrator(Context context)
     {
         NodeExhaustiveness.AssertExhaustivelyImplemented<INodeHookDefinition>();
 
@@ -100,28 +99,14 @@ public abstract class Hooks
 
     public virtual WhileHookDefinition DeclareWhileBranch(string condition)
     {
-        WhileHookDefinition nodeDef = new(condition);
-        CurrentScope.AddNodeDefintion(nodeDef);
+        WhileHookDefinition nodeDef = new(condition, CurrentScope);
         return nodeDef;
     }
 
-    public EntityHookDefinition DefineEntity(string name)
+    public void DefineSystem(Action<SystemHookDefinition> configure)
     {
-        EntityHookDefinition nodeDef = new(System, name);
-        _entityDefintions.Add(nodeDef);
-
-        Scenario.System.Entities.Add(nodeDef.GetEntity());
-
-        return nodeDef;
-    }
-
-    public StateMachineHookDefinition DefineStateMachine(string name)
-    {
-        StateMachineHookDefinition nodeDef = new(name);
-        _stateMachineDefintions.Add(nodeDef);
-
-        Scenario.System.StateMachines.Add(nodeDef.GetStateMachine());
-
-        return nodeDef;
+        SystemHookDefinition systemHookDefinition = new(Context);
+        configure(systemHookDefinition);
+        systemHookDefinition.Initialise();
     }
 }

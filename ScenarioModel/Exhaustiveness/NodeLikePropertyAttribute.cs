@@ -8,14 +8,14 @@ public class NodeLikePropertyAttribute : Attribute
 
     public NodeLikePropertyAttribute()
     {
-         
+
     }
 
     public NodeLikePropertyAttribute(bool serialise = true)
     {
         Serialise = serialise;
     }
-    
+
     public NodeLikePropertyAttribute(string? serialisedName = null, bool doNotSerialiseIfNullOrEmpty = true)
     {
         SerialisedName = serialisedName;

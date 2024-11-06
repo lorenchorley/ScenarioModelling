@@ -1,7 +1,6 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
-using ScenarioModel.Objects.SystemObjects.States;
 
 namespace ScenarioModel;
 
@@ -41,11 +40,11 @@ public class Scenario
             stateTransitionNode =>
             {
                 // Check if the state already exists in the system
-                if (!System.HasState(stateTransitionNode.TransitionName))
-                {
-                    var stateMachine = new StateMachine() { Name = stateTransitionNode.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionNode.TransitionName } } };
-                    System.StateMachines.Add(stateMachine);
-                }
+                //if (!System.HasState(stateTransitionNode.TransitionName))
+                //{
+                //    var stateMachine = new StateMachine() { Name = stateTransitionNode.TransitionName + "_Type", States = new() { new State() { Name = stateTransitionNode.TransitionName } } };
+                //    System.StateMachines.Add(stateMachine);
+                //}
             },
             whileNode => { } // TODO Subgraph objects ?
         );

@@ -3,19 +3,31 @@ using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions;
+namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 public delegate bool WhileHook(bool result);
 
 [NodeLike<INodeHookDefinition, WhileNode>]
-public class WhileHookDefinition(string Condition) : INodeHookDefinition
+public class WhileHookDefinition(string Condition, DefinitionScope CurrentScope) : INodeHookDefinition
 {
     [NodeLikeProperty]
     public List<bool> RecordedWhileLoopEvents { get; } = new();
 
+    private int _whileLoopCount = 0;
+
     private bool WhileHook(bool result)
     {
         RecordedWhileLoopEvents.Add(result);
+
+        if (_whileLoopCount == 0)
+        {
+            CurrentScope.AddNodeDefintion(this);
+        }
+        else
+        {
+            CurrentScope.SetCurrentNodeDefintion(this);
+        }
+
         return result;
     }
 
@@ -25,9 +37,16 @@ public class WhileHookDefinition(string Condition) : INodeHookDefinition
         return this;
     }
 
+    private WhileNode? _node;
+
     public IScenarioNode GetNode()
     {
-        WhileNode node = new();
+        if (_node is not null)
+        {
+            return _node;
+        }
+
+        _node = new();
 
         // Parse the expression before adding it to the node
         ExpressionInterpreter interpreter = new();
@@ -38,8 +57,8 @@ public class WhileHookDefinition(string Condition) : INodeHookDefinition
             throw new Exception($@"Unable to parse expression ""{Condition}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
         }
 
-        node.Condition = result.ParsedObject;
+        _node.Condition = result.ParsedObject;
 
-        return node;
+        return _node;
     }
 }

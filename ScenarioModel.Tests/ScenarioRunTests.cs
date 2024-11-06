@@ -122,7 +122,8 @@ public class ScenarioRunTests
 
 
 
-    }private string _loopScenario = """
+    }
+    private string _loopScenario = """
         Entity Actor {
             State "Amy Stake"
             CharacterStyle "Red"

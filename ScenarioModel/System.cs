@@ -2,6 +2,7 @@
 using ScenarioModel.Objects.SystemObjects.Entities;
 using ScenarioModel.Objects.SystemObjects.Relations;
 using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.References;
 using System.Linq;
 
 namespace ScenarioModel;
@@ -9,7 +10,7 @@ namespace ScenarioModel;
 public class System
 {
     public List<EntityType> EntityTypes { get; set; } = new();
-    public List<AspectType> AspectTypes { get; set; } = new();
+    //public List<AspectType> AspectTypes { get; set; } = new();
     public List<Entity> Entities { get; set; } = new();
     public List<StateMachine> StateMachines { get; set; } = new();
     public List<Expression> Constraints { get; set; } = new();
@@ -17,12 +18,12 @@ public class System
 
     public void Initialise()
     {
+        // Coherency check
         foreach (var stateMachine in StateMachines)
         {
             foreach (var state in stateMachine.States)
             {
                 state.StateMachine = stateMachine;
-
             }
         }
     }
@@ -30,13 +31,23 @@ public class System
     public IEnumerable<State> AllStates
     {
         get => Enumerable.Empty<State?>()
-                         .Concat(Entities.Select(e => e.State.ResolvedValue))
-                         .Concat(AllAspects.Select(e => e.State.ResolvedValue))
-                         .Concat(AllRelations.Select(e => e.State.ResolvedValue))
+                         .Concat(Entities.Select(e => e.State.OnlyCompleteValue))
+                         .Concat(AllAspects.Select(e => e.State.OnlyCompleteValue))
+                         .Concat(AllRelations.Select(e => e.State.OnlyCompleteValue))
                          .Concat(StateMachines.SelectMany(x => x.States))
                          .Where(s => s != null)
                          .Cast<State>()
                          .DistinctByReference();
+    }
+    
+    public IEnumerable<StateReference> AllStateReferences
+    {
+        get => Enumerable.Empty<StateReference?>()
+                         .Concat(Entities.Select(e => e.State.OnlyReference))
+                         .Concat(AllAspects.Select(e => e.State.OnlyReference))
+                         .Concat(AllRelations.Select(e => e.State.OnlyReference))
+                         .Where(s => s != null)
+                         .Cast<StateReference>();
     }
 
     public IEnumerable<IStateful> AllStateful
@@ -45,6 +56,13 @@ public class System
                          .Concat(Entities)
                          .Concat(AllAspects)
                          .Concat(AllRelations);
+    }
+
+    public IEnumerable<IRelatable> AllRelatable
+    {
+        get => Enumerable.Empty<IRelatable>()
+                         .Concat(Entities)
+                         .Concat(Entities.SelectMany(x => x.Aspects));
     }
 
     public IEnumerable<Relation> AllRelations
@@ -59,18 +77,6 @@ public class System
     {
         get => Enumerable.Empty<Aspect>()
                          .Concat(Entities.SelectMany(x => x.Aspects));
-    }
-
-    public IEnumerable<IRelatable> AllRelatable
-    {
-        get => Enumerable.Empty<IRelatable>()
-                         .Concat(Entities)
-                         .Concat(Entities.SelectMany(x => x.Aspects));
-    }
-
-    public bool HasState(string stateName)
-    {
-        return AllStates.Any(s => s.Name.IsEqv(stateName));
     }
 
     /// <summary>

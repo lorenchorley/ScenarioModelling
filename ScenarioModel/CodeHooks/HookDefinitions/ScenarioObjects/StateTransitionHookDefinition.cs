@@ -2,9 +2,8 @@
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.References;
-using System.Security.AccessControl;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions;
+namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 [NodeLike<INodeHookDefinition, StateTransitionNode>]
 public class StateTransitionHookDefinition(string StatefulObjectName, string Transition) : INodeHookDefinition

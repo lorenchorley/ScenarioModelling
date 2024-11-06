@@ -2,7 +2,7 @@
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions;
+namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 [NodeLike<INodeHookDefinition, JumpNode>]
 public class JumpHookDefinition(string Name) : INodeHookDefinition

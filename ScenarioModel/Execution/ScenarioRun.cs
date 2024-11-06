@@ -174,7 +174,7 @@ public class ScenarioRun
             return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
         }
     }
-    
+
     private IScenarioNode? ManageWhileNode(IScenarioEvent? currentEvent, WhileNode whileNode)
     {
         // The last event must be an while event

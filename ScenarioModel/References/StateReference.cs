@@ -9,7 +9,7 @@ public record StateReference : IReference<State>
 
     public Option<State> ResolveReference(System system)
     {
-        throw new NotImplementedException();
+        return system.AllStates.Find(s => s.Name.IsEqv(StateName));
     }
 
     override public string ToString() => $"{StateName}";

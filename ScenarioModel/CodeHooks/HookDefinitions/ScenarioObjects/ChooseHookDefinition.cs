@@ -3,7 +3,7 @@ using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 using ScenarioModel.Objects.ScenarioObjects.DataClasses;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions;
+namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 public delegate bool ChooseHook(bool result);
 

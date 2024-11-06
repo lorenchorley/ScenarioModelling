@@ -3,7 +3,7 @@ using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions;
+namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 public delegate bool IfHook(bool result);
 

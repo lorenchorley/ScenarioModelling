@@ -5,7 +5,6 @@ using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Objects.ScenarioObjects;
 using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
-using ScenarioModel.Objects.SystemObjects.States;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;

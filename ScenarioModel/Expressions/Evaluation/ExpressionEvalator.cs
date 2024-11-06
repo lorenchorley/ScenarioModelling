@@ -1,6 +1,9 @@
 ﻿using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
 using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.Objects.SystemObjects.Relations;
+using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.References;
 
 namespace ScenarioModel.Expressions.Evaluation;
 
@@ -60,7 +63,55 @@ public class ExpressionEvalator : IExpressionVisitor
 
     public object VisitValueComposite(ValueComposite value)
     {
-        return value;
+        var reference = new GenericObjectReference()
+        {
+            Identifier = value
+        };
+
+        var referencedValue = reference.ResolveReference(_system);
+        if (referencedValue.IsNone)
+        {
+            if (value.ValueList.Count > 1)
+            {
+                throw new Exception("Relatable object not found in system");
+            }
+
+            string stringValue = value.ValueList[0];
+
+            if (stringValue.IsEqv("true"))
+            {
+                return true;
+            }
+            else if (stringValue.IsEqv("false"))
+            {
+                return false;
+            }
+            else
+            {
+                return stringValue;
+            }
+        }
+
+        if (referencedValue.Case is Entity entity)
+        {
+            return entity;
+        }
+        else if (referencedValue.Case is Aspect aspect)
+        {
+            return aspect;
+        }
+        else if (referencedValue.Case is Relation relation)
+        {
+            return relation;
+        }
+        else if (referencedValue.Case is State state)
+        {
+            return state;
+        }
+        else
+        {
+            throw new Exception("Unsupported type for value composite");
+        }
     }
 
     public object VisitEmpty(EmptyExpression exp)
@@ -107,8 +158,17 @@ public class ExpressionEvalator : IExpressionVisitor
         if (rightResult == null)
             throw new Exception("Right side of the equal expression is null");
 
+        if (leftResult is State state1 && rightResult is string str1)
+        {
+            return CompareStateAndString(state1, str1);
+        }
+        else if (rightResult is State state2 && leftResult is string str2)
+        {
+            return CompareStateAndString(state2, str2);
+        }
+
         if (leftResult.GetType() != rightResult.GetType())
-            throw new Exception("Cannot compare values of different types");
+            throw new Exception($"Cannot compare values of different types ({leftResult.GetType().Name}, {rightResult.GetType().Name})");
 
         if (leftResult.GetType() == typeof(bool))
         {
@@ -140,6 +200,11 @@ public class ExpressionEvalator : IExpressionVisitor
         throw new Exception($"Unsupported type for equal expression : {leftResult.GetType().Name}");
     }
 
+    private bool CompareStateAndString(State state, string str)
+    {
+        return str.IsEqv(state.Name);
+    }
+
     public object VisitErroneousExpression(ErroneousExpression exp)
     {
         throw new NotImplementedException();
@@ -147,6 +212,6 @@ public class ExpressionEvalator : IExpressionVisitor
 
     public object VisitBrackets(BracketsExpression exp)
     {
-        throw new NotImplementedException();
+        return exp.Expression.Accept(this);
     }
 }
