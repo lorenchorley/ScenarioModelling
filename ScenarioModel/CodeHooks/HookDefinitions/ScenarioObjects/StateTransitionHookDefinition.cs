@@ -1,12 +1,12 @@
 ﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.References;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 [NodeLike<INodeHookDefinition, StateTransitionNode>]
-public class StateTransitionHookDefinition(string StatefulObjectName, string Transition) : INodeHookDefinition
+public class StateTransitionHookDefinition(System System, string StatefulObjectName, string Transition) : INodeHookDefinition
 {
     [NodeLikeProperty]
     public string? Id { get; private set; }
@@ -17,7 +17,7 @@ public class StateTransitionHookDefinition(string StatefulObjectName, string Tra
         {
             // Not sure
             Name = Id ?? "",
-            StatefulObject = new GenericStatefulObjectReference(StatefulObjectName),
+            StatefulObject = new StatefulObjectReference(System) { Name = StatefulObjectName },
             TransitionName = Transition
         };
     }

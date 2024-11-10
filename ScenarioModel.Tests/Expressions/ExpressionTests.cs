@@ -4,7 +4,7 @@ using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Entities;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
 
@@ -62,7 +62,7 @@ public class ExpressionTests
         System system =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(systemText)
+                   .LoadContext(systemText)
                    .Initialise()
                    .System;
 
@@ -95,7 +95,7 @@ public class ExpressionTests
         System system =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(systemText)
+                   .LoadContext(systemText)
                    .Initialise().System;
 
         ExpressionSerialiser visitor = new(system);
@@ -142,7 +142,7 @@ public class ExpressionTests
         System system =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(systemText)
+                   .LoadContext(systemText)
                    .Initialise().System;
 
         ExpressionEvalator evalator = new(system);
@@ -168,7 +168,7 @@ public class ExpressionTests
 
         parsedExpression.ParsedObject.Type.Should().Be(expectedValues.ExpectedReturnType);
 
-        if (result is INameful nameful)
+        if (result is IIdentifiable nameful)
         {
             nameful.Name.Should().Be((string)expectedValues.ExpectedEvaluatedValue);
         }

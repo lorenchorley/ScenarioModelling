@@ -1,9 +1,7 @@
 ﻿using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
-using ScenarioModel.Objects.SystemObjects.Entities;
-using ScenarioModel.Objects.SystemObjects.Relations;
-using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Validation;
 
@@ -65,25 +63,25 @@ public class ExpressionValidator : IExpressionVisitor
             Errors.Add(new ValidationError($"Object type (Left) in Has Relation Expression is not a relatable object type : {exp.Left.Type}"));
 
         // Relatable object must exist in the system
-        var firstRelatableReference = new RelatableObjectReference()
+        var firstRelatableReference = new CompositeValueObjectReference(_system)
         {
             Identifier = exp.Left
         };
 
-        if (firstRelatableReference.ResolveReference(_system).IsNone)
+        if (firstRelatableReference.ResolveReference().IsNone)
             Errors.Add(new ValidationError($"Relatable object {exp.Left} not found in system"));
 
 
         if (exp.Right.Type != ExpressionValueType.Relation)
             Errors.Add(new ValidationError($"Relation name (Right) in Has Relation Expression does not resolve to a relation : {exp.Right.Type}"));
 
-        var secondRelatableReference = new RelatableObjectReference()
+        var secondRelatableReference = new CompositeValueObjectReference(_system)
         {
             Identifier = exp.Right
         };
 
         // Reference object must exist in the system
-        if (secondRelatableReference.ResolveReference(_system).IsNone)
+        if (secondRelatableReference.ResolveReference().IsNone)
             Errors.Add(new ValidationError($"Relatable object {exp.Right} not found in system"));
 
         return this;
@@ -116,39 +114,39 @@ public class ExpressionValidator : IExpressionVisitor
             Errors.Add(new ValidationError($"Object type (Left) in Does Not Have Relation Expression is not a relatable object type : {exp.Left.Type}"));
 
         // Relatable object must exist in the system
-        var firstRelatableReference = new RelatableObjectReference()
+        var firstRelatableReference = new CompositeValueObjectReference(_system)
         {
             Identifier = exp.Left
         };
 
         // The relatable object must exist in the system
-        if (firstRelatableReference.ResolveReference(_system).IsNone)
+        if (firstRelatableReference.ResolveReference().IsNone)
             Errors.Add(new ValidationError($"Relatable object {exp.Left} not found in system"));
 
 
         if (exp.Right.Type != ExpressionValueType.Relation)
             Errors.Add(new ValidationError($"Relation name (Right) in Does Not Have Relation Expression does not resolve to a relation : {exp.Right.Type}"));
 
-        var secondRelatableReference = new RelatableObjectReference()
+        var secondRelatableReference = new CompositeValueObjectReference(_system)
         {
             Identifier = exp.Right
         };
 
         // The relatable object must exist in the system
-        if (secondRelatableReference.ResolveReference(_system).IsNone)
+        if (secondRelatableReference.ResolveReference().IsNone)
             Errors.Add(new ValidationError($"Relatable object {exp.Right} not found in system"));
 
         return this;
     }
 
-    public object VisitValueComposite(ValueComposite value)
+    public object VisitCompositeValue(CompositeValue value)
     {
-        var reference = new GenericObjectReference()
+        var reference = new CompositeValueObjectReference(_system)
         {
             Identifier = value
         };
 
-        var referencedValue = reference.ResolveReference(_system);
+        var referencedValue = reference.ResolveReference();
         if (referencedValue.IsNone)
         {
             if (value.ValueList.Count > 1)

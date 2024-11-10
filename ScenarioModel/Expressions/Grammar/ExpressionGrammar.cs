@@ -225,15 +225,15 @@
 //                break;
 
 //            case ProductionIndex.Value:                 
-//                // <Value> ::= <ValueComposite>
+//                // <Value> ::= <CompositeValue>
 //                break;
 
 //            case ProductionIndex.Valuecomposite_Dot:                 
-//                // <ValueComposite> ::= <ValueComposite> '.' <String>
+//                // <CompositeValue> ::= <CompositeValue> '.' <String>
 //                break;
 
 //            case ProductionIndex.Valuecomposite:                 
-//                // <ValueComposite> ::= <String>
+//                // <CompositeValue> ::= <String>
 //                break;
 
 //        }  //switch

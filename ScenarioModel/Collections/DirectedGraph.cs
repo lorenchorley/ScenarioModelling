@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Objects.ScenarioObjects.Interfaces;
-using ScenarioModel.Objects.SystemObjects;
+﻿using ScenarioModel.Objects.ScenarioNodes.Interfaces;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
 
 namespace ScenarioModel.Collections;
 
-public interface IDirectedGraphNode<T> : INameful where T : IDirectedGraphNode<T>
+public interface IDirectedGraphNode<T> : IIdentifiable where T : IDirectedGraphNode<T>
 {
     IEnumerable<SemiLinearSubGraph<T>> TargetSubgraphs();
 }

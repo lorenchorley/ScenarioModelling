@@ -1,5 +1,6 @@
-﻿using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+﻿using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.References;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.Execution.Events;
 

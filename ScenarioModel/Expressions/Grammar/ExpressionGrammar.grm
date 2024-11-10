@@ -75,13 +75,13 @@ StringLiteral = '"' {StringCharacter}* '"'
         |  <Exp>
         |
 
-<IsRelated> ::= <ValueComposite> '-?>' <ValueComposite>
-             |  <ValueComposite> '-?>' <ValueComposite> ':' <String>
+<IsRelated> ::= <CompositeValue> '-?>' <CompositeValue>
+             |  <CompositeValue> '-?>' <CompositeValue> ':' <String>
              
-<IsNotRelated> ::= <ValueComposite> '-!>' <ValueComposite>
-                |  <ValueComposite> '-!>' <ValueComposite> ':' <String>                
+<IsNotRelated> ::= <CompositeValue> '-!>' <CompositeValue>
+                |  <CompositeValue> '-!>' <CompositeValue> ':' <String>                
         
-<Value> ::= <ValueComposite>
+<Value> ::= <CompositeValue>
 
-<ValueComposite> ::= <ValueComposite> '.' <String>
+<CompositeValue> ::= <CompositeValue> '.' <String>
                   |  <String>

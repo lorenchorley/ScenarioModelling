@@ -4,7 +4,7 @@ using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
-using ScenarioModel.Objects.ScenarioObjects.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling_ConsoleFront.NodeHandlers;
 using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
@@ -37,7 +37,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
                    .SetResourceFolder(filePath)
-                   .LoadContext<HumanReadableSerialiser>(scenarioText)
+                   .LoadContext(scenarioText)
                    .Initialise();
 
         DialogExecutor executor = new(context);

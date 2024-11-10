@@ -1,7 +1,7 @@
 ﻿using ScenarioModel.CodeHooks.HookDefinitions;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Collections;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.CodeHooks;
 

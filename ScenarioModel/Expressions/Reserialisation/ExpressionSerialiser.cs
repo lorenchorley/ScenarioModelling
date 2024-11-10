@@ -26,7 +26,7 @@ public class ExpressionSerialiser : IExpressionVisitor
         return $"{leftResult} OR {rightResult}";
     }
 
-    public object VisitValueComposite(ValueComposite value)
+    public object VisitCompositeValue(CompositeValue value)
     {
         return string.Join(".", value.ValueList.Select(AddQuotesIfNecessary));
     }

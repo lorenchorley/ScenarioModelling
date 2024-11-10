@@ -1,16 +1,19 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.References;
 
-public record StateReference : IReference<State>
+public record StateReference(System System) : IReference<State>
 {
-    public string StateName { get; set; } = "";
+    public string Name { get; set; } = "";
+    public Type Type => typeof(State);
 
-    public Option<State> ResolveReference(System system)
-    {
-        return system.AllStates.Find(s => s.Name.IsEqv(StateName));
-    }
+    public Option<State> ResolveReference()
+        => System.States.Find(s => s.IsEqv(this));
 
-    override public string ToString() => $"{StateName}";
+    public bool IsResolvable() => ResolveReference().IsSome;
+
+    override public string ToString() => Name;
+
 }

@@ -32,7 +32,7 @@ public enum ExpressionProductionIndex
     @Isrelated_Minusquestiongt_Colon = 27,     // <IsRelated> ::= <String> '-?>' <String> ':' <String>
     @Isnotrelated_Minusexclamgt = 28,          // <IsNotRelated> ::= <String> '-!>' <String>
     @Isnotrelated_Minusexclamgt_Colon = 29,    // <IsNotRelated> ::= <String> '-!>' <String> ':' <String>
-    @Value = 30,                               // <Value> ::= <ValueComposite>
-    @Valuecomposite_Dot = 31,                  // <ValueComposite> ::= <ValueComposite> '.' <String>
-    @Valuecomposite = 32                       // <ValueComposite> ::= <String>
+    @Value = 30,                               // <Value> ::= <CompositeValue>
+    @Valuecomposite_Dot = 31,                  // <CompositeValue> ::= <CompositeValue> '.' <String>
+    @Valuecomposite = 32                       // <CompositeValue> ::= <String>
 }

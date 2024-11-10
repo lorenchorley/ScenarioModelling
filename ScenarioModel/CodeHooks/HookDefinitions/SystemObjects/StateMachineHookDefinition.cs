@@ -1,34 +1,37 @@
-﻿using ScenarioModel.Objects.SystemObjects.States;
+﻿using ScenarioModel.ContextConstruction;
+using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.SystemObjects;
 
 public class StateMachineHookDefinition : IObjectHookDefinition
 {
+    private readonly System _system;
+    private readonly Instanciator _instanciator;
+
     public HookExecutionMode HookExecutionMode { get; set; }
     public StateMachine StateMachine { get; private set; }
 
+    // Not sure that this is necessary
     public List<(string statefulInitial, string statefulFinal, string transitionName)> transitions = new();
-
-    public StateMachineHookDefinition(System system, string name)
+    
+    public StateMachineHookDefinition(System system, Instanciator instanciator, string name)
     {
+        _system = system;
+        _instanciator = instanciator;
+    
         // Either create a new one or find an existing one in the provided system
-        StateMachine = new StateMachineReference() { StateMachineName = name }
-            .ResolveReference(system)
-            .Match(
-                Some: e => e,
-                None: () => New(system, name));
+        StateMachine = _instanciator.GetOrNew<StateMachine, StateMachineReference>(name);
+        //StateMachine = new StateMachineReference(_system) { Name = name }
+        //    .ResolveReference()
+        //    .Match(
+        //        Some: e => e,
+        //        None: () => _instanciator.New<StateMachine>(name: name));
     }
-
-    private StateMachine New(System system, string name)
-        => new StateMachine(system)
-        {
-            Name = name
-        };
 
     public StateMachineHookDefinition WithState(string state)
     {
-        TryAddState(state);
+        StateMachine.States.TryAddReference(new StateReference(_system) { Name = state });
 
         return this;
     }
@@ -38,27 +41,16 @@ public class StateMachineHookDefinition : IObjectHookDefinition
         transitions.Add((statefulInitial, statefulFinal, transitionName));
 
         // Keep the tracked object up to date
-        StateMachine.Transitions.Add(new Transition()
-        {
-            SourceState = statefulInitial,
-            DestinationState = statefulFinal,
-            Name = transitionName
-        });
+        var transition = _instanciator.New<Transition>(transitionName);
+        StateMachine.Transitions.TryAddReference(transition.GenerateReference());
 
-        TryAddState(statefulInitial);
-        TryAddState(statefulFinal);
+        StateReference source = new StateReference(_system) { Name = statefulInitial };
+        StateReference destination = new StateReference(_system) { Name = statefulFinal };
+        transition.SourceState.SetReference(source);
+        transition.DestinationState.SetReference(destination);
+        StateMachine.States.TryAddReference(source);
+        StateMachine.States.TryAddReference(destination);
 
         return this;
-    }
-
-    private void TryAddState(string statefulFinal)
-    {
-        if (!StateMachine.States.Any(s => s.Name.IsEqv(statefulFinal)))
-        {
-            StateMachine.States.Add(new State()
-            {
-                Name = statefulFinal
-            });
-        }
     }
 }

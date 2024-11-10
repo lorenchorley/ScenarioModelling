@@ -34,6 +34,6 @@ public enum ExpressionSymbolIndex
     @String = 29,                              // <String>
     @Value = 30,                               // <Value>
     @Valueexp = 31,                            // <Value Exp>
-    @Valuecomposite = 32                       // <ValueComposite>
+    @Compositevalue = 32                       // <CompositeValue>
 }
 

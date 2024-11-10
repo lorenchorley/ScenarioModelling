@@ -50,7 +50,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Reference to entity A",
             "A",
             """
-            ValueComposite { A }
+            CompositeValue { A }
             """,
             true,
             ExpectedEvaluatedValue: "A",
@@ -60,7 +60,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Reference to entity A's aspect D (A.D)",
             "A.D",
             """
-            ValueComposite { A, D }
+            CompositeValue { A, D }
             """,
             true,
             ExpectedEvaluatedValue: "D",
@@ -70,7 +70,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Reference to the state of entity A's aspect D (A.D.State)",
             "A.D.State",
             """
-            ValueComposite { A, D, State }
+            CompositeValue { A, D, State }
             """,
             true,
             ExpectedEvaluatedValue: "DState",
@@ -80,7 +80,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "A string",
             @"""A string""",
             """
-            ValueComposite { A string }
+            CompositeValue { A string }
             """,
             true,
             ExpectedEvaluatedValue: "A string",
@@ -90,7 +90,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "And",
             @"A and B",
             """
-            AndExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
+            AndExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true
         ),
@@ -98,7 +98,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "And (2)",
             @"true and false",
             """
-            AndExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }
+            AndExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -108,7 +108,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Or",
             @"A or B",
             """
-            OrExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
+            OrExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true
         ),
@@ -116,7 +116,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Or (2)",
             @"true or false",
             """
-            OrExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }
+            OrExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -126,7 +126,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Or and",
             @"A or B and C",
             """
-            AndExpression { Left = OrExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { C } }
+            AndExpression { Left = OrExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -134,7 +134,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Or and (2)",
             @"true or false and true",
             """
-            AndExpression { Left = OrExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }, Right = ValueComposite { true } }
+            AndExpression { Left = OrExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -144,7 +144,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "And or",
             @"A and B or C",
             """
-            OrExpression { Left = AndExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { C } }
+            OrExpression { Left = AndExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -152,7 +152,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "And or (2)",
             @"true and false or true",
             """
-            OrExpression { Left = AndExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }, Right = ValueComposite { true } }
+            OrExpression { Left = AndExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -162,7 +162,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "==",
             @"A == B",
             """
-            EqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
+            EqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -172,7 +172,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "!=",
             @"A != B",
             """
-            NotEqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }
+            NotEqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -182,7 +182,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "!= ==",
             @"A != B == C",
             """
-            EqualExpression { Left = NotEqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { C } }
+            EqualExpression { Left = NotEqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -190,7 +190,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "!= == (2)",
             @"true != false == true",
             """
-            EqualExpression { Left = NotEqualExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }, Right = ValueComposite { true } }
+            EqualExpression { Left = NotEqualExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -200,7 +200,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "== !=",
             @"A == B != C",
             """
-            NotEqualExpression { Left = EqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { C } }
+            NotEqualExpression { Left = EqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -208,7 +208,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "== != (2)",
             @"true == false != true",
             """
-            NotEqualExpression { Left = EqualExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }, Right = ValueComposite { true } }
+            NotEqualExpression { Left = EqualExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -218,7 +218,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "And ==",
             @"A and B == C",
             """
-            AndExpression { Left = ValueComposite { A }, Right = EqualExpression { Left = ValueComposite { B }, Right = ValueComposite { C } } }
+            AndExpression { Left = CompositeValue { A }, Right = EqualExpression { Left = CompositeValue { B }, Right = CompositeValue { C } } }
             """,
             true
         ),
@@ -226,7 +226,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "And == (2)",
             @"true and false == true",
             """
-            AndExpression { Left = ValueComposite { true }, Right = EqualExpression { Left = ValueComposite { false }, Right = ValueComposite { true } } }
+            AndExpression { Left = CompositeValue { true }, Right = EqualExpression { Left = CompositeValue { false }, Right = CompositeValue { true } } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -236,7 +236,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "== and",
             @"A == B and C",
             """
-            AndExpression { Left = EqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { C } }
+            AndExpression { Left = EqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -244,7 +244,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "== and (2)",
             @"true == false and true",
             """
-            AndExpression { Left = EqualExpression { Left = ValueComposite { true }, Right = ValueComposite { false } }, Right = ValueComposite { true } }
+            AndExpression { Left = EqualExpression { Left = CompositeValue { true }, Right = CompositeValue { false } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -254,7 +254,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "(==) and",
             @"(A == B) and C",
             """
-            AndExpression { Left = BracketsExpression { Expression = EqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } } }, Right = ValueComposite { C } }
+            AndExpression { Left = BracketsExpression { Expression = EqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -262,7 +262,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "(==) and (2)",
             @"(A == B) and true",
             """
-            AndExpression { Left = BracketsExpression { Expression = EqualExpression { Left = ValueComposite { A }, Right = ValueComposite { B } } }, Right = ValueComposite { true } }
+            AndExpression { Left = BracketsExpression { Expression = EqualExpression { Left = CompositeValue { A }, Right = CompositeValue { B } } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -272,7 +272,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "== (and)",
             @"A == (B and C)",
             """
-            EqualExpression { Left = ValueComposite { A }, Right = BracketsExpression { Expression = AndExpression { Left = ValueComposite { B }, Right = ValueComposite { C } } } }
+            EqualExpression { Left = CompositeValue { A }, Right = BracketsExpression { Expression = AndExpression { Left = CompositeValue { B }, Right = CompositeValue { C } } } }
             """,
             true
         ),
@@ -280,7 +280,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "== (and) (2)",
             @"true == (false and true)",
             """
-            EqualExpression { Left = ValueComposite { true }, Right = BracketsExpression { Expression = AndExpression { Left = ValueComposite { false }, Right = ValueComposite { true } } } }
+            EqualExpression { Left = CompositeValue { true }, Right = BracketsExpression { Expression = AndExpression { Left = CompositeValue { false }, Right = CompositeValue { true } } } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -290,7 +290,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Function not - 1 param",
             @"customfunction(A)",
             """
-            FunctionExpression { Name = customfunction, Arguments = ArgumentList [ ValueComposite { A } ] }
+            FunctionExpression { Name = customfunction, Arguments = ArgumentList [ CompositeValue { A } ] }
             """,
             true
             // TODO
@@ -299,7 +299,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "Function - 2 params",
             @"customfunction(A, B != C, A.D)",
             """
-            FunctionExpression { Name = customfunction, Arguments = ArgumentList [ ValueComposite { A }, NotEqualExpression { Left = ValueComposite { B }, Right = ValueComposite { C } }, ValueComposite { A, D } ] }
+            FunctionExpression { Name = customfunction, Arguments = ArgumentList [ CompositeValue { A }, NotEqualExpression { Left = CompositeValue { B }, Right = CompositeValue { C } }, CompositeValue { A, D } ] }
             """,
             true
             // TODO
@@ -308,7 +308,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "A related to B",
             @"A -?> B",
             """
-            HasRelationExpression { Name = , Left = ValueComposite { A }, Right = ValueComposite { B } }
+            HasRelationExpression { Name = , Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -318,7 +318,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "B related to C",
             @"B -?> C",
             """
-            HasRelationExpression { Name = , Left = ValueComposite { B }, Right = ValueComposite { C } }
+            HasRelationExpression { Name = , Left = CompositeValue { B }, Right = CompositeValue { C } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -328,7 +328,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "A related to B with named relation",
             @"A -?> B : ""Relation name""",
             """
-            HasRelationExpression { Name = Relation name, Left = ValueComposite { A }, Right = ValueComposite { B } }
+            HasRelationExpression { Name = Relation name, Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -338,7 +338,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "B related to A with named relation",
             @"A -?> B : ""Relation name""",
             """
-            HasRelationExpression { Name = Relation name, Left = ValueComposite { B }, Right = ValueComposite { A } }
+            HasRelationExpression { Name = Relation name, Left = CompositeValue { B }, Right = CompositeValue { A } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -348,7 +348,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "A not related to B",
             @"A -!> B",
             """
-            DoesNotHaveRelationExpression { Name = , Left = ValueComposite { A }, Right = ValueComposite { B } }
+            DoesNotHaveRelationExpression { Name = , Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -358,7 +358,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "B not related to A",
             @"B -!> A",
             """
-            DoesNotHaveRelationExpression { Name = , Left = ValueComposite { B }, Right = ValueComposite { A } }
+            DoesNotHaveRelationExpression { Name = , Left = CompositeValue { B }, Right = CompositeValue { A } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -368,7 +368,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "A not related to B with named relation",
             @"A -!> B : ""Relation name""",
             """
-            DoesNotHaveRelationExpression { Name = Relation name, Left = ValueComposite { A }, Right = ValueComposite { B } }
+            DoesNotHaveRelationExpression { Name = Relation name, Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: true,
@@ -378,7 +378,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "B not related to A with named relation",
             @"B -!> A : ""Relation name""",
             """
-            DoesNotHaveRelationExpression { Name = Relation name, Left = ValueComposite { B }, Right = ValueComposite { A } }
+            DoesNotHaveRelationExpression { Name = Relation name, Left = CompositeValue { B }, Right = CompositeValue { A } }
             """,
             true,
             ExpectedEvaluatedValue: false,
@@ -388,7 +388,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "-?> and",
             @"A -?> B and C",
             """
-            AndExpression { Left = HasRelationExpression { Name = , Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { C } }
+            AndExpression { Left = HasRelationExpression { Name = , Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { C } }
             """,
             true
         ),
@@ -396,7 +396,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "-?> and (2)",
             @"A -?> B and true",
             """
-            AndExpression { Left = HasRelationExpression { Name = , Left = ValueComposite { A }, Right = ValueComposite { B } }, Right = ValueComposite { true } }
+            AndExpression { Left = HasRelationExpression { Name = , Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { true } }
             """,
             true,
             ExpectedEvaluatedValue: false, // TODO
@@ -406,7 +406,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "and -?>",
             @"A and B -?> C",
             """
-            AndExpression { Left = ValueComposite { A }, Right = HasRelationExpression { Name = , Left = ValueComposite { B }, Right = ValueComposite { C } } }
+            AndExpression { Left = CompositeValue { A }, Right = HasRelationExpression { Name = , Left = CompositeValue { B }, Right = CompositeValue { C } } }
             """,
             true
         ),
@@ -414,7 +414,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             "and -?> (2)",
             @"true and B -?> C",
             """
-            AndExpression { Left = ValueComposite { true }, Right = HasRelationExpression { Name = , Left = ValueComposite { B }, Right = ValueComposite { C } } }
+            AndExpression { Left = CompositeValue { true }, Right = HasRelationExpression { Name = , Left = CompositeValue { B }, Right = CompositeValue { C } } }
             """,
             true,
             ExpectedEvaluatedValue: false, // TODO

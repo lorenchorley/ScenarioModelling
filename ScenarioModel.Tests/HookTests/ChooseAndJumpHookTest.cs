@@ -1,7 +1,7 @@
 using FluentAssertions;
 using ScenarioModel.CodeHooks;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
-using ScenarioModel.Objects.ScenarioObjects.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
 
@@ -53,7 +53,8 @@ public class ChooseAndJumpHookTest
 
     void ProducerMethod(ScenarioHookOrchestrator hooks, Queue<string> choices)
     {
-        hooks.DefineSystem(configuration => {
+        hooks.DefineSystem(configuration =>
+        {
             configuration.DefineEntity("Actor")
                          .SetState("Bob");
 
@@ -62,7 +63,7 @@ public class ChooseAndJumpHookTest
                          .WithTransition("Alice", "Bob", "ChangeName");
         });
 
-        
+
         string ActorName = "Bob";
 
 
@@ -111,7 +112,7 @@ public class ChooseAndJumpHookTest
     }
 
     [TestMethod]
-    [TestCategory("Hooks")]
+    [TestCategory("CodeHooks")]
     public void ScenarioWithChooseAndIfTest()
     {
         // Arrange
@@ -132,9 +133,9 @@ public class ChooseAndJumpHookTest
         var deserialisedContext =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .LoadContext(_scenarioText)
                    .Initialise()
-                   .Serialise<HumanReadableSerialiser>()
+                   .Serialise()
                    .Match(v => v, e => throw e);
 
 
@@ -158,7 +159,7 @@ public class ChooseAndJumpHookTest
         generatedScenario.Should().NotBeNull();
 
         var serialisedResult =
-            context.Serialise<HumanReadableSerialiser>()
+            context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");

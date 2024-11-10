@@ -1,6 +1,6 @@
 ﻿using ScenarioModel.Execution.Events;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
-using ScenarioModel.Objects.ScenarioObjects.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 
 namespace ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 

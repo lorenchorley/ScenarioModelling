@@ -3,9 +3,9 @@ using ScenarioModel.Execution.Dialog;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
-using ScenarioModel.Objects.ScenarioObjects.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Data;
 
@@ -66,7 +66,7 @@ public class ScenarioRunTests
         Context context =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_chooseJumpAndIfScenario)
+                   .LoadContext(_chooseJumpAndIfScenario)
                    .Initialise();
 
         DialogExecutor executor = new(context);
@@ -181,7 +181,7 @@ public class ScenarioRunTests
         Context context =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_loopScenario)
+                   .LoadContext(_loopScenario)
                    .Initialise();
 
         DialogExecutor executor = new(context);

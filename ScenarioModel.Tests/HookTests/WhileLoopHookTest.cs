@@ -153,7 +153,7 @@ public class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("Hooks")]
+    [TestCategory("CodeHooks")]
     public void ScenarioWithWhileLoop_ConstructionTest()
     {
         // Arrange
@@ -168,9 +168,9 @@ public class WhileLoopHookTest
         var deserialisedContext =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .LoadContext(_scenarioText)
                    .Initialise()
-                   .Serialise<HumanReadableSerialiser>()
+                   .Serialise()
                    .Match(v => v, e => throw e);
 
 
@@ -194,7 +194,7 @@ public class WhileLoopHookTest
         generatedScenario.Should().NotBeNull();
 
         var serialisedResult =
-            context.Serialise<HumanReadableSerialiser>()
+            context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");
@@ -205,7 +205,7 @@ public class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("Hooks")]
+    [TestCategory("CodeHooks")]
     public void ScenarioWithWhileLoop_ValidationTest()
     {
         // Arrange
@@ -218,9 +218,9 @@ public class WhileLoopHookTest
         var deserialisedContext =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .LoadContext(_scenarioText)
                    .Initialise()
-                   .Serialise<HumanReadableSerialiser>()
+                   .Serialise()
                    .Match(v => v, e => throw e);
 
         ScenarioHookOrchestratorForValidation hooks = new ScenarioHookOrchestratorForValidation(context);
@@ -244,7 +244,7 @@ public class WhileLoopHookTest
         // Assert
         // ======
         var serialisedResult =
-            context.Serialise<HumanReadableSerialiser>()
+            context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");

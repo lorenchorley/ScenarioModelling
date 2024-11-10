@@ -1,12 +1,10 @@
 ﻿using LanguageExt.Common;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.Validation;
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
-using ScenarioModel.Objects.ScenarioObjects.Interfaces;
-using ScenarioModel.Objects.SystemObjects.Entities;
-using ScenarioModel.Objects.SystemObjects.Relations;
-using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Objects.ScenarioNodes;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.Interfaces;
+using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using System.Text;
 
@@ -26,9 +24,12 @@ public class HumanReadableSerialiser : ISerialiser
             return new Result<Context>(new Exception(string.Join('\n', result.Errors)));
         }
 
-        SemanticContextBuilder contextBuilder = new();
+        DeserialisationContextBuilder contextBuilder = new();
 
-        return contextBuilder.Build(result.ParsedObject);
+        ContextBuilderInputs inputs = new();
+        inputs.TopLevelOfDefinitionTree.AddRange(result.ParsedObject!);
+
+        return contextBuilder.Build(inputs);
     }
 
     public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
@@ -130,7 +131,7 @@ public class HumanReadableSerialiser : ISerialiser
             throw new Exception($"Stateful object not set on transition: {stateTransitionNode}");
         }
 
-        var stateful = stateTransitionNode.StatefulObject.ResolveReference(scenario.System);
+        var stateful = stateTransitionNode.StatefulObject.ResolveReference();
 
         var obj = stateful.Match(
             Some: s => s,
@@ -180,7 +181,7 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Jump {node.Name} {{");
 
-        NodeExhaustiveness.DoForEachNodeProperty<JumpNode>(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
         //sb.AppendLine($"{indent}{_indent}{node.Target}");
 
         sb.AppendLine($"{indent}}}");
@@ -247,7 +248,7 @@ public class HumanReadableSerialiser : ISerialiser
         sb.AppendLine($"{indent}EntityType {AddQuotes(entityType.Name)} {{");
 
         if (entityType.StateMachine != null)
-            sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateMachine.Name)}");
+            sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateMachine.Name ?? "")}");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
@@ -279,7 +280,7 @@ public class HumanReadableSerialiser : ISerialiser
         sb.AppendLine($"{indent}State {AddQuotes(state.Name)}");
     }
 
-    private static void WriteSMTransition(StringBuilder sb, string indent, List<State> states, State state, Transition transition)
+    private static void WriteSMTransition(StringBuilder sb, string indent, IEnumerable<State> states, State state, Transition transition)
     {
         if (string.IsNullOrEmpty(transition.Name))
             sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState}");

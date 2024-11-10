@@ -1,6 +1,7 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
 
 namespace ScenarioModel;
 
@@ -15,9 +16,11 @@ namespace ScenarioModel;
 /// <summary>
 /// A scenario is all the possibilities of a story, yet to be played out.
 /// </summary>
-public class Scenario
+public class Scenario : IIdentifiable
 {
     public string Name { get; set; } = "";
+    public Type Type => typeof(Scenario);
+
     public System System { get; set; } = new();
     public DirectedGraph<IScenarioNode> Graph { get; set; } = new();
 

@@ -1,28 +1,43 @@
 ﻿using LanguageExt;
 using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
+using ScenarioModel.References.Interfaces;
+
+using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel.References;
 
-public record RelationReference : IReference<ScenarioModel.Objects.SystemObjects.Relations.Relation>, IStatefulObjectReference
+public record RelationReference : IReference<Relation>, IStatefulObjectReference
 {
-    public string? RelationName { get; set; }
-    public ValueComposite? FirstRelatableName { get; set; }
-    public ValueComposite? SecondRelatableName { get; set; }
+    private readonly System _system;
 
-    public Option<ScenarioModel.Objects.SystemObjects.Relations.Relation> ResolveReference(System system)
+    public string Name { get; set; } = "";
+    public Type Type => typeof(Relation);
+
+    public CompositeValue? FirstRelatableName { get; set; }
+    public CompositeValue? SecondRelatableName { get; set; }
+
+    public RelationReference(System system)
+    {
+        _system = system;
+    }
+
+    public Option<Relation> ResolveReference()
     {
         if (FirstRelatableName == null || SecondRelatableName == null)
         {
             throw new NotImplementedException();
         }
 
-        return system.AllRelations
-                     .Find(x => x.Name.IsEqv(RelationName));
+        return _system.Relations
+                      .Find(x => x.IsEqv(this));
     }
 
-    Option<IStateful> IReference<IStateful>.ResolveReference(System system)
-        => ResolveReference(system).Map(x => (IStateful)x);
+    Option<IStateful> IReference<IStateful>.ResolveReference()
+        => ResolveReference().Map(x => (IStateful)x);
 
-    override public string ToString() => $"{RelationName}";
+    public bool IsResolvable() => ResolveReference().IsSome;
+
+    override public string ToString() => $"{Name}";
+
 }

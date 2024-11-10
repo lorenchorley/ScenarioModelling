@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Objects.ScenarioObjects;
+﻿using ScenarioModel.Objects.ScenarioNodes;
 
 namespace ScenarioModel.Execution.Events;
 

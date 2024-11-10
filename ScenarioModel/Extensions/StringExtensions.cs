@@ -27,8 +27,23 @@ public static class StringExtensions
         return string.Join(", ", list);
     }
 
+    public static string DotSeparatedList(this IEnumerable<string> list)
+    {
+        return string.Join(".", list);
+    }
+
+    public static string BulletPointList(this IEnumerable<string> list)
+    {
+        return string.Join("", list.Select(i => $"\n * {i}"));
+    }
+
     public static string CommaSeparatedList<T>(this IEnumerable<T> list)
     {
         return string.Join(", ", list.Select(s => s?.ToString() ?? "null"));
+    }
+
+    public static string DotSeparatedList<T>(this IEnumerable<T> list)
+    {
+        return string.Join(".", list.Select(s => s?.ToString() ?? "null"));
     }
 }

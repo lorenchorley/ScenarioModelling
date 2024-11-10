@@ -1,8 +1,6 @@
 ﻿using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
-using ScenarioModel.Objects.SystemObjects.Entities;
-using ScenarioModel.Objects.SystemObjects.Relations;
-using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 
 namespace ScenarioModel.Expressions.Evaluation;
@@ -61,14 +59,14 @@ public class ExpressionEvalator : IExpressionVisitor
         throw new NotImplementedException();
     }
 
-    public object VisitValueComposite(ValueComposite value)
+    public object VisitCompositeValue(CompositeValue value)
     {
-        var reference = new GenericObjectReference()
+        var reference = new CompositeValueObjectReference(_system)
         {
             Identifier = value
         };
 
-        var referencedValue = reference.ResolveReference(_system);
+        var referencedValue = reference.ResolveReference();
         if (referencedValue.IsNone)
         {
             if (value.ValueList.Count > 1)
@@ -180,8 +178,8 @@ public class ExpressionEvalator : IExpressionVisitor
             return ((string)leftResult).IsEqv((string)rightResult);
         }
 
-        if (leftResult is ValueComposite leftValue &&
-            rightResult is ValueComposite rightValue)
+        if (leftResult is CompositeValue leftValue &&
+            rightResult is CompositeValue rightValue)
         {
             // Resolve values
             var leftValueResolved = _system.ResolveValue(leftValue);

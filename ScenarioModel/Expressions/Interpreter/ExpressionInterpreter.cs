@@ -260,52 +260,52 @@ public partial class ExpressionInterpreter
                 return new ArgumentList();
 
             case ExpressionProductionIndex.Isrelated_Minusquestiongt:
-                // <IsRelated> ::= <ValueComposite> '-?>' <ValueComposite>
+                // <IsRelated> ::= <CompositeValue> '-?>' <CompositeValue>
 
                 return new HasRelationExpression()
                 {
-                    Left = (ValueComposite)r[0].Data,
-                    Right = (ValueComposite)r[2].Data
+                    Left = (CompositeValue)r[0].Data,
+                    Right = (CompositeValue)r[2].Data
                 };
 
             case ExpressionProductionIndex.Isrelated_Minusquestiongt_Colon:
-                // <IsRelated> ::= <ValueComposite> '-?>' <ValueComposite> ':' <String>
+                // <IsRelated> ::= <CompositeValue> '-?>' <CompositeValue> ':' <String>
 
                 return new HasRelationExpression()
                 {
                     Name = (string)r[4].Data,
-                    Left = (ValueComposite)r[0].Data,
-                    Right = (ValueComposite)r[2].Data
+                    Left = (CompositeValue)r[0].Data,
+                    Right = (CompositeValue)r[2].Data
                 };
 
             case ExpressionProductionIndex.Isnotrelated_Minusexclamgt:
-                // <IsNotRelated> ::= <ValueComposite> '-!>' <ValueComposite>
+                // <IsNotRelated> ::= <CompositeValue> '-!>' <CompositeValue>
 
                 return new DoesNotHaveRelationExpression()
                 {
-                    Left = (ValueComposite)r[0].Data,
-                    Right = (ValueComposite)r[2].Data
+                    Left = (CompositeValue)r[0].Data,
+                    Right = (CompositeValue)r[2].Data
                 };
 
             case ExpressionProductionIndex.Isnotrelated_Minusexclamgt_Colon:
-                // <IsNotRelated> ::= <ValueComposite> '-!>' <ValueComposite> ':' <String>
+                // <IsNotRelated> ::= <CompositeValue> '-!>' <CompositeValue> ':' <String>
 
                 return new DoesNotHaveRelationExpression()
                 {
                     Name = (string)r[4].Data,
-                    Left = (ValueComposite)r[0].Data,
-                    Right = (ValueComposite)r[2].Data
+                    Left = (CompositeValue)r[0].Data,
+                    Right = (CompositeValue)r[2].Data
                 };
 
             case ExpressionProductionIndex.Value:
-                // <Value> ::= <ValueComposite>
+                // <Value> ::= <CompositeValue>
 
                 return r.PassOn();
 
             case ExpressionProductionIndex.Valuecomposite_Dot:
-                // <ValueComposite> ::= <ValueComposite> '.' <String>
+                // <CompositeValue> ::= <CompositeValue> '.' <String>
                 {
-                    var value = (ValueComposite)r[0].Data;
+                    var value = (CompositeValue)r[0].Data;
 
                     value.ValueList.Add((string)r[2].Data);
 
@@ -313,9 +313,9 @@ public partial class ExpressionInterpreter
                 }
 
             case ExpressionProductionIndex.Valuecomposite:
-                // <ValueComposite> ::= <String>
+                // <CompositeValue> ::= <String>
 
-                return new ValueComposite()
+                return new CompositeValue()
                 {
                     ValueList = [(string)r[0].Data]
                 };

@@ -1,4 +1,6 @@
-﻿namespace ScenarioModel.Serialisation.HumanReadable.SemanticTree;
+﻿using ScenarioModel.Expressions.SemanticTree;
+
+namespace ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
 public record UnnamedLinkDefinition : Definition
 {

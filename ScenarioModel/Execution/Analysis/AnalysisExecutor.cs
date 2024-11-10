@@ -1,5 +1,5 @@
 ﻿using ScenarioModel.Execution.Events;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.Execution.Analysis;
 

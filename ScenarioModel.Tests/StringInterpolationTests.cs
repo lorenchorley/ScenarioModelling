@@ -25,7 +25,7 @@ public class StringInterpolationTests
         Context context =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext<HumanReadableSerialiser>(_scenarioText)
+                   .LoadContext(_scenarioText)
                    .Initialise();
 
         StringInterpolator stringInterpolator = new StringInterpolator(context.System);

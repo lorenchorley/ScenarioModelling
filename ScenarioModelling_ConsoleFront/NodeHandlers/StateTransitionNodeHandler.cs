@@ -1,6 +1,6 @@
 ﻿using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioObjects;
+using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 using Spectre.Console;
 

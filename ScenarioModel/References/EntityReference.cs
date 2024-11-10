@@ -1,24 +1,26 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.SystemObjects.Entities;
-using ScenarioModel.Objects.SystemObjects.Relations;
-using ScenarioModel.Objects.SystemObjects.States;
+using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.References;
 
-public record EntityReference : IReference<Entity>, IRelatableObjectReference, IStatefulObjectReference
+public record EntityReference(System System) : IReference<Entity>, IRelatableObjectReference, IStatefulObjectReference
 {
-    public string EntityName { get; set; } = "";
+    public string Name { get; set; } = "";
+    public Type Type => typeof(Entity);
 
-    public Option<Entity> ResolveReference(System system)
-    {
-        return system.Entities.Find(x => x.Name.IsEqv(EntityName));
-    }
+    public Option<Entity> ResolveReference()
+        => System.Entities.Find(x => x.IsEqv(this));
 
-    Option<IRelatable> IReference<IRelatable>.ResolveReference(System system)
-        => ResolveReference(system).Map(x => (IRelatable)x);
+    Option<IRelatable> IReference<IRelatable>.ResolveReference()
+        => ResolveReference().Map(x => (IRelatable)x);
 
-    Option<IStateful> IReference<IStateful>.ResolveReference(System system)
-        => ResolveReference(system).Map(x => (IStateful)x);
+    Option<IStateful> IReference<IStateful>.ResolveReference()
+        => ResolveReference().Map(x => (IStateful)x);
 
-    override public string ToString() => $"{EntityName}";
+    public bool IsResolvable() => ResolveReference().IsSome;
+
+    override public string ToString() => $"{Name}";
+
 }

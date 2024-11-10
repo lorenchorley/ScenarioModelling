@@ -1,7 +1,7 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.Execution;
 

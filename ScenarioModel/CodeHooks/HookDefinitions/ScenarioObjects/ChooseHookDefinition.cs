@@ -1,7 +1,7 @@
 ﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioObjects;
-using ScenarioModel.Objects.ScenarioObjects.BaseClasses;
-using ScenarioModel.Objects.ScenarioObjects.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 

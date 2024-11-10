@@ -36,8 +36,8 @@
 //                new HasRelationExpression()
 //                {
 //                    Name = "R1",
-//                    Left = new ValueComposite() { ValueList = ["E1"] },
-//                    Right = new ValueComposite() { ValueList = ["E2"] }
+//                    Left = new CompositeValue() { ValueList = ["E1"] },
+//                    Right = new CompositeValue() { ValueList = ["E2"] }
 //                }
 //            ]
 //        };

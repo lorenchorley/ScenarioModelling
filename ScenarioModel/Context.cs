@@ -27,11 +27,17 @@ public class Context
     }
 
     public Context LoadContext<T>(string serialisedContext) where T : ISerialiser
+        => LoadContext(typeof(T), serialisedContext);
+
+    public Context LoadContext(string serialisedContext)
+        => LoadContext(Serialisers.Single().GetType(), serialisedContext);
+
+    private Context LoadContext(Type serialiserType, string serialisedContext)
     {
-        var serialiser = Serialisers.FirstOrDefault(s => s.GetType() == typeof(T));
+        var serialiser = Serialisers.FirstOrDefault(s => s.GetType() == serialiserType);
         if (serialiser == null)
         {
-            throw new Exception("Serialiser not found : " + typeof(T).Name);
+            throw new Exception("Serialiser not found : " + serialiserType.Name);
         }
 
         var result = serialiser.DeserialiseExtraContextIntoExisting(serialisedContext, this);
@@ -133,7 +139,7 @@ public class Context
             scenario.Initialise(this);
         }
 
-        System.Initialise();
+        System.ValidateAndInitialise();
 
         Validate();
 
@@ -151,11 +157,17 @@ public class Context
     }
 
     public Result<string> Serialise<T>() where T : ISerialiser
+        => Serialise(typeof(T));
+
+    public Result<string> Serialise()
+        => Serialise(Serialisers.Single().GetType());
+
+    private Result<string> Serialise(Type serialiserType)
     {
-        var serialiser = Serialisers.FirstOrDefault(s => s.GetType() == typeof(T));
+        var serialiser = Serialisers.FirstOrDefault(s => s.GetType() == serialiserType);
         if (serialiser == null)
         {
-            throw new Exception("Serialiser not found : " + typeof(T).Name);
+            throw new Exception("Serialiser not found : " + serialiserType.Name);
         }
 
         return serialiser.SerialiseContext(this);

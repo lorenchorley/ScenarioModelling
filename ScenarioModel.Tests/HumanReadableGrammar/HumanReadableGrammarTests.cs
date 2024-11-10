@@ -25,7 +25,7 @@ public class HumanReadableGrammarTests
         // ======
         result.HasErrors.Should().BeFalse(because: string.Join("\n", result.Errors));
 
-        string serialisedResult = result.ParsedObject.ToString();
+        string serialisedResult = result.ParsedObject!.ToString();
 
         Debug.WriteLine("Result :");
         Debug.WriteLine(result);

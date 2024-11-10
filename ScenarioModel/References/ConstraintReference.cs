@@ -1,16 +1,19 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.SystemObjects.Constraints;
+using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.References;
 
-public record ConstraintReference : IReference<Constraint>
+public record ConstraintReference(System System) : IReference<Constraint>
 {
-    public string ConstraintName { get; set; } = "";
+    public string Name { get; set; } = "";
+    public Type Type => typeof(Constraint);
 
-    public Option<Constraint> ResolveReference(System system)
-    {
-        throw new NotImplementedException();
-    }
+    public Option<Constraint> ResolveReference()
+        => System.Constraints.Find(x => x.IsEqv(this));
 
-    override public string ToString() => $"{ConstraintName}";
+    public bool IsResolvable() => ResolveReference().IsSome;
+
+    override public string ToString() => $"{Name}";
+
 }

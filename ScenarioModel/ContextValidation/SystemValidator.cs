@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Objects.SystemObjects.Relations;
+﻿using ScenarioModel.Objects.SystemObjects;
 
 namespace ScenarioModel.Validation;
 
@@ -56,7 +56,7 @@ public class SystemValidator : IValidator<System>
     private void ValidateStates(System system, ValidationErrors validationErrors)
     {
         // Uniqueness of state names
-        var names = system.AllStates.GroupBy(s => s.Name);
+        var names = system.States.GroupBy(s => s.Name);
         foreach (var name in names)
         {
             // Determine if there are multiple instances of the class in this list
@@ -66,7 +66,7 @@ public class SystemValidator : IValidator<System>
             validationErrors.AddIf(uniqueInstances > 1, new NameNotUnique($"State name {name.Key} is not unique. {name.Count()} instances found."));
         }
 
-        foreach (var state in system.AllStates)
+        foreach (var state in system.States)
         {
             _stateValidator.Validate(state);
         }
@@ -86,7 +86,7 @@ public class SystemValidator : IValidator<System>
 
         foreach (var constraint in system.Constraints)
         {
-            validationErrors.Incorporate(validator.Validate(constraint));
+            validationErrors.Incorporate(validator.Validate(constraint.Condition));
         }
     }
 }

@@ -1,69 +1,29 @@
 ﻿using LanguageExt;
-using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects.Entities;
-using ScenarioModel.Objects.SystemObjects.Relations;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.References;
 
-public class RelatableObjectReference : IRelatableObjectReference, IReference
+public class RelatableObjectReference : IRelatableObjectReference
 {
-    public ValueComposite Identifier { get; set; } = null!;
+    private readonly System _system;
 
-    public Option<IRelatable> ResolveReference(System system)
+    public string Name { get; set; } = "";
+    public Type Type
+        => ResolveReference().Match(
+            Some: x => x.Type,
+            None: () => throw new Exception($"Could not resolve relatable object {Name}")
+            );
+
+    public bool IsResolvable() => ResolveReference().IsSome;
+
+    public RelatableObjectReference(System _system)
     {
-        if (Identifier.ValueList.Count == 0)
-        {
-            throw new ArgumentException();
-        }
-
-        return FirstLevel(system);
+        this._system = _system;
     }
 
-    /// <summary>
-    /// The first position has to be an entity name
-    /// </summary>
-    /// <param name="system"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    private Option<IRelatable> FirstLevel(System system)
-    {
-        var value = Identifier.ValueList[0];
+    public Option<IRelatable> ResolveReference()
+        => _system.AllRelatable
+                  .Find(e => e.Name.IsEqv(Name)); // Must only search by name, because the Type property depends on resolving the reference in this type of reference
 
-        var entity = system.Entities.Find(e => e.Name.IsEqv(value));
-
-        if (entity == null)
-        {
-            return null;
-        }
-
-        if (Identifier.ValueList.Count == 1)
-        {
-            return entity;
-        }
-        else
-        {
-            return EntityAccessor(system, entity);
-        }
-    }
-
-    /// <summary>
-    /// The second level when an entity is the first, can only be an aspect
-    /// </summary>
-    /// <param name="system"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    private Option<IRelatable> EntityAccessor(System system, Entity entity)
-    {
-        var accessor = Identifier.ValueList[1];
-
-        var aspect = entity.Aspects.Find(f => f.Name.IsEqv(accessor));
-        if (aspect != null)
-        {
-            return aspect;
-        }
-
-        return null;
-    }
 }
