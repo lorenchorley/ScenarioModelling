@@ -8,24 +8,23 @@ using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, Transition>]
-public class TransitionTransformer(System System, Instanciator Instanciator) : IDefinitionToObjectTransformer<Transition, TransitionReference>
+public class TransitionTransformer(System System, Instanciator Instanciator) : DefinitionToObjectTransformer<Transition, TransitionReference>
 {
     /// <summary>
     /// Should return a reference. The instance should be recorded to the system by the class itself
     /// </summary>
     /// <param name="def"></param>
     /// <returns></returns>
-    public Option<TransitionReference> Transform(Definition def)
+    protected override Option<TransitionReference> Transform(Definition def, TransformationType type)
     {
         if (def is not UnnamedDefinition unnamed)
-        {
             return null;
-        }
 
         if (!unnamed.Type.Value.IsEqv("Transition"))
-        {
             return null;
-        }
+
+        if (type != TransformationType.Property)
+            throw new Exception("A transition must always be the propert of another object");
 
         Transition value = Instanciator.New<Transition>(definition: def);
 
@@ -51,7 +50,7 @@ public class TransitionTransformer(System System, Instanciator Instanciator) : I
         //}
     }
 
-    public void Validate(Transition obj)
+    public override void Validate(Transition obj)
     {
         //foreach (var state in type.States)
         //{

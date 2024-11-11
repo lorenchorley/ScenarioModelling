@@ -43,7 +43,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
         CreateObjectsFromUnresolvableReferences();
 
         // Name all unnamed objects
-        NameUnnamedObjects();
+        //NameUnnamedObjects(); // Should be done as we go in the tranform step
 
         // Validate all objects
         ValidateObjects();
@@ -117,10 +117,10 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
         }
     }
 
-    public void NameUnnamedObjects()
-    {
+    //public void NameUnnamedObjects()
+    //{
 
-    }
+    //}
 
     public void ValidateObjects()
     {

@@ -8,14 +8,14 @@ using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, Constraint>]
-public class ConstraintTransformer(System System, Instanciator Instanciator) : IDefinitionToObjectTransformer<Constraint, ConstraintReference>
+public class ConstraintTransformer(System System, Instanciator Instanciator) : DefinitionToObjectTransformer<Constraint, ConstraintReference>
 {
-    public Option<ConstraintReference> Transform(Definition def)
+    protected override Option<ConstraintReference> Transform(Definition def, TransformationType type)
     {
         return null;
     }
 
-    public void Validate(Constraint obj)
+    public override void Validate(Constraint obj)
     {
     }
 }

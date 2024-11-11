@@ -84,7 +84,7 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
         CreateObjectsFromUnresolvableReferences();
 
         // Name all unnamed objects
-        NameUnnamedObjects();
+        //NameUnnamedObjects(); // Done as we go
 
         // Validate all objects
         ValidateObjects();
@@ -150,31 +150,31 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
 
     public void Transform(ContextBuilderInputs inputs)
     {
-        var (entities, remaining1) = inputs.TopLevelOfDefinitionTree.PartitionByChoose(_entityTransformer.Transform);
-        var (entityTypes, remaining2) = remaining1.PartitionByChoose(_entityTypeTransformer.Transform);
-        var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.Transform);
-        var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.Transform);
-        var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.Transform);
-        var (scenarios, remainingLast) = remaining5.PartitionByChoose(_scenarioTransformer.Transform);
+        var (entities, remaining1) = inputs.TopLevelOfDefinitionTree.PartitionByChoose(_entityTransformer.TransformAsObject);
+        var (entityTypes, remaining2) = remaining1.PartitionByChoose(_entityTypeTransformer.TransformAsObject);
+        var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
+        var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
+        var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
+        var (scenarios, remainingLast) = remaining5.PartitionByChoose(_scenarioTransformer.TransformAsObject);
         _context.Scenarios.AddRange(scenarios);
 
         _remainingLast.AddRange(remainingLast);
     }
 
-    public void NameUnnamedObjects()
-    {
-        var allIdentifiable =
-            Enumerable.Empty<IIdentifiable>()
-                      .Concat(_context.System.Entities)
-                      .Concat(_context.System.EntityTypes)
-                      .Concat(_context.System.States)
-                      .Concat(_context.System.StateMachines)
-                      .Concat(_context.System.Transitions)
-                      .Concat(_context.System.Aspects)
-                      .Concat(_context.System.Relations)
-                      .Concat(_context.System.Constraints);
-        // TODO
-    }
+    //public void NameUnnamedObjects()
+    //{
+    //    var allIdentifiable =
+    //        Enumerable.Empty<IIdentifiable>()
+    //                  .Concat(_context.System.Entities)
+    //                  .Concat(_context.System.EntityTypes)
+    //                  .Concat(_context.System.States)
+    //                  .Concat(_context.System.StateMachines)
+    //                  .Concat(_context.System.Transitions)
+    //                  .Concat(_context.System.Aspects)
+    //                  .Concat(_context.System.Relations)
+    //                  .Concat(_context.System.Constraints);
+    //    // TODO
+    //}
 
     public void ValidateObjects()
     {

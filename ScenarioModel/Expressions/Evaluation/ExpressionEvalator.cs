@@ -30,33 +30,73 @@ public class ExpressionEvalator : IExpressionVisitor
         return leftResult || rightResult;
     }
 
-    public object VisitHasRelation(HasRelationExpression hasRelationConstraint)
+    public object VisitHasRelation(HasRelationExpression exp)
     {
-        //Option<Relation> systemRelation = hasRelationConstraint.Ref.ResolveReference(_system);
+        CompositeValueObjectReference leftReference = new(_system)
+        {
+            Identifier = exp.Left
+        };
 
-        //if (systemRelation.IsNone)
-        //{
-        //    return false;
-        //}
+        CompositeValueObjectReference rightReference = new(_system)
+        {
+            Identifier = exp.Right
+        };
 
-        //var relatables = hasRelationConstraint.RelatableObject.ResolveReference(_system);
+        var leftValueResolved = leftReference.ResolveReference();
+        var rightValueResolved = rightReference.ResolveReference();
 
-        //return relatables.Match(
-        //    relatable =>
-        //    {
-        //        foreach (var objectRelation in relatable.Relations)
-        //        {
-        //            if (systemRelation.Case == objectRelation)
-        //            {
-        //                return true;
-        //            }
-        //        }
+        if (leftValueResolved.IsNone)
+        {
+            throw new Exception($"Relatable object not found in system : {exp.Left}");
+        }
 
-        //        return false;
-        //    },
-        //    () => false
-        //);
-        throw new NotImplementedException();
+        if (rightValueResolved.IsNone)
+        {
+            throw new Exception($"Relatable object not found in system : {exp.Right}");
+        }
+
+        RelationReference relationReference = new RelationReference(_system)
+        {
+            Name = exp.Name ?? "",
+            Left = exp.Left,
+            Right = exp.Right
+        };
+
+        return relationReference.ResolveReference().IsSome;
+    }
+    public object VisitDoesNotHaveRelation(DoesNotHaveRelationExpression exp)
+    {
+        CompositeValueObjectReference leftReference = new(_system)
+        {
+            Identifier = exp.Left
+        };
+
+        CompositeValueObjectReference rightReference = new(_system)
+        {
+            Identifier = exp.Right
+        };
+
+        var leftValueResolved = leftReference.ResolveReference();
+        var rightValueResolved = rightReference.ResolveReference();
+
+        if (leftValueResolved.IsNone)
+        {
+            throw new Exception($"Relatable object not found in system : {exp.Left}");
+        }
+
+        if (rightValueResolved.IsNone)
+        {
+            throw new Exception($"Relatable object not found in system : {exp.Right}");
+        }
+
+        RelationReference relationReference = new RelationReference(_system)
+        {
+            Name = exp.Name ?? "",
+            Left = exp.Left,
+            Right = exp.Right
+        };
+
+        return relationReference.ResolveReference().IsNone;
     }
 
     public object VisitCompositeValue(CompositeValue value)
@@ -66,8 +106,8 @@ public class ExpressionEvalator : IExpressionVisitor
             Identifier = value
         };
 
-        var referencedValue = reference.ResolveReference();
-        if (referencedValue.IsNone)
+        var resolvedValue = reference.ResolveReference();
+        if (resolvedValue.IsNone)
         {
             if (value.ValueList.Count > 1)
             {
@@ -90,19 +130,19 @@ public class ExpressionEvalator : IExpressionVisitor
             }
         }
 
-        if (referencedValue.Case is Entity entity)
+        if (resolvedValue.Case is Entity entity)
         {
             return entity;
         }
-        else if (referencedValue.Case is Aspect aspect)
+        else if (resolvedValue.Case is Aspect aspect)
         {
             return aspect;
         }
-        else if (referencedValue.Case is Relation relation)
+        else if (resolvedValue.Case is Relation relation)
         {
             return relation;
         }
-        else if (referencedValue.Case is State state)
+        else if (resolvedValue.Case is State state)
         {
             return state;
         }
@@ -113,11 +153,6 @@ public class ExpressionEvalator : IExpressionVisitor
     }
 
     public object VisitEmpty(EmptyExpression exp)
-    {
-        throw new NotImplementedException();
-    }
-
-    public object VisitDoesNotHaveRelation(DoesNotHaveRelationExpression exp)
     {
         throw new NotImplementedException();
     }

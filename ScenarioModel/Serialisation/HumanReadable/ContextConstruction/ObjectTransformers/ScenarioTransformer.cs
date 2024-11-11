@@ -9,12 +9,12 @@ using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, Scenario>]
-public class ScenarioTransformer(System System, Instanciator Instanciator) : IDefinitionToObjectTransformer<Scenario, Scenario>
+public class ScenarioTransformer(System System, Instanciator Instanciator) : DefinitionToObjectTransformer<Scenario, Scenario>
 {
     public Dictionary<string, IDefinitionToNodeTransformer> NodeProfilesByName { get; init; }
     public Dictionary<Func<Definition, bool>, IDefinitionToNodeTransformer> NodeProfilesByPredicate { get; init; }
 
-    public Option<Scenario> Transform(Definition def)
+    protected override Option<Scenario> Transform(Definition def, TransformationType type)
     {
         if (def is not NamedDefinition named)
         {
@@ -27,9 +27,10 @@ public class ScenarioTransformer(System System, Instanciator Instanciator) : IDe
         }
 
         if (!named.Type.Value.IsEqv("Scenario"))
-        {
             return null;
-        }
+
+        if (type == TransformationType.Property)
+            throw new InvalidOperationException("Scenarios should not be properties");
 
         Scenario value = Instanciator.New<Scenario>(definition: def);
 
@@ -86,7 +87,7 @@ public class ScenarioTransformer(System System, Instanciator Instanciator) : IDe
             return null;
         };
 
-    public void Validate(Scenario obj)
+    public override void Validate(Scenario obj)
     {
     }
 }

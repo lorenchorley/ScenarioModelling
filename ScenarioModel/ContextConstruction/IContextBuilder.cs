@@ -7,6 +7,6 @@ public interface IContextBuilder<TInputs> where TInputs : IContextBuilderInputs
     Result<Context> Build(TInputs inputs);
     void Transform(TInputs inputs);
     void CreateObjectsFromUnresolvableReferences();
-    void NameUnnamedObjects();
+    //void NameUnnamedObjects();
     void ValidateObjects();
 }

@@ -283,9 +283,9 @@ public class HumanReadableSerialiser : ISerialiser
     private static void WriteSMTransition(StringBuilder sb, string indent, IEnumerable<State> states, State state, Transition transition)
     {
         if (string.IsNullOrEmpty(transition.Name))
-            sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState}");
+            sb.AppendLine($@"{indent}""{transition.SourceState.ResolvedValue?.Name ?? ""}"" -> ""{transition.DestinationState.ResolvedValue?.Name ?? ""}""");
         else
-            sb.AppendLine($"{indent}{transition.SourceState} -> {transition.DestinationState} : {transition.Name}");
+            sb.AppendLine($@"{indent}""{transition.SourceState.ResolvedValue?.Name ?? ""}"" -> ""{transition.DestinationState.ResolvedValue?.Name ?? ""}"" : {transition.Name}");
     }
 
     private static string AddQuotes(string str)

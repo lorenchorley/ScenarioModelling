@@ -8,33 +8,32 @@ using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, Aspect>]
-public class AspectTransformer(System System, Instanciator Instanciator, StateTransformer StateTransformer, RelationTransformer RelationTransformer) : IDefinitionToObjectTransformer<Aspect, AspectReference, EntityReference>
+public class AspectTransformer(System System, Instanciator Instanciator, StateTransformer StateTransformer, RelationTransformer RelationTransformer) : DefinitionToObjectTransformer<Aspect, AspectReference, EntityReference>
 {
-    public Option<AspectReference> Transform(Definition def, EntityReference entity)
+    protected override Option<AspectReference> Transform(Definition def, EntityReference entity, TransformationType type)
     {
         if (def is not NamedDefinition named)
-        {
             return null;
-        }
 
         if (!named.Type.Value.IsEqv("Aspect"))
-        {
             return null;
-        }
+
+        if (type == TransformationType.Property)
+            throw new Exception("Aspect should not be properties of other objects");
 
         Aspect value = Instanciator.New<Aspect>(definition: def);
 
         value.Entity.SetReference(entity);
-        value.Relations.TryAddReferenceRange(named.Definitions.Choose(RelationTransformer.Transform).ToList());
+        value.Relations.TryAddReferenceRange(named.Definitions.Choose(RelationTransformer.TransformAsProperty).ToList());
         //value.AspectType = named.Definitions.Choose(d => TransformAspectType(System, d)).FirstOrDefault() ?? new AspectType(System) { Name = named.Name.Value }
 
-        value.State.SetReference(named.Definitions.Choose(StateTransformer.Transform).FirstOrDefault());
+        value.State.SetReference(named.Definitions.Choose(StateTransformer.TransformAsProperty).FirstOrDefault());
 
 
         return value.GenerateReference();
     }
 
-    public void Validate(Aspect obj)
+    public override void Validate(Aspect obj)
     {
     }
 }

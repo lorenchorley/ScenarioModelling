@@ -14,8 +14,8 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
     public string Name { get; set; } = "";
     public Type Type => typeof(Relation);
 
-    public CompositeValue? FirstRelatableName { get; set; }
-    public CompositeValue? SecondRelatableName { get; set; }
+    public CompositeValue? Left { get; set; }
+    public CompositeValue? Right { get; set; }
 
     public RelationReference(System system)
     {
@@ -24,7 +24,7 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
 
     public Option<Relation> ResolveReference()
     {
-        if (FirstRelatableName == null || SecondRelatableName == null)
+        if (Left == null || Right == null)
         {
             throw new NotImplementedException();
         }

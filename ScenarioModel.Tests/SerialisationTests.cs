@@ -1,6 +1,4 @@
 using FluentAssertions;
-using LanguageExt.Common;
-using ScenarioModel.Serialisation;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Tests.Valid;
 using System.Diagnostics;
@@ -12,63 +10,52 @@ public class SerialisationTests
 {
     [TestMethod]
     [TestCategory("Serialisation")]
-    public void Deserialise_Serialise_AllContexts()
+    [SerialisationDataProvider]
+    public void Deserialise_Serialise(string originalContext)
     {
         // Arrange
         // =======
-        List<string> contexts =
-        [
-            ValidScenario1.SerialisedContext
-        ];
 
-        TestDeserialiseSerialiseContextForSerialiser<HumanReadableSerialiser>(contexts);
-        //TestSerialiseDeserialiseSystemsForSerialiser<YamlSerialiserV1>(systems);
-    }
+        // Act
+        // ===
+        Debug.WriteLine("Starting Serialised Context");
+        Debug.WriteLine("===========================");
+        Debug.WriteLine("");
+        Debug.WriteLine(originalContext);
 
-    private static void TestDeserialiseSerialiseContextForSerialiser<T>(List<string> contexts) where T : ISerialiser, new()
-    {
-        foreach (string context in contexts)
-        {
-            // Act
-            // ===
-            Debug.WriteLine("Starting Serialised Context");
-            Debug.WriteLine("===========================");
-            Debug.WriteLine("");
-            Debug.WriteLine(context);
+        Context loadedContext =
+            Context.New()
+                   .UseSerialiser<HumanReadableSerialiser>()
+                   .LoadContext(originalContext)
+                   .Initialise();
 
-            Context loadedContext =
-                Context.New()
-                       .UseSerialiser<T>()
-                       .LoadContext<T>(context)
-                       .Initialise();
+        loadedContext.ValidationErrors.Count.Should().Be(0, because: loadedContext.ValidationErrors.ToString());
 
-            loadedContext.ValidationErrors.Count.Should().Be(0, because: loadedContext.ValidationErrors.ToString());
-
-            Result<string> reserialisedContext = loadedContext.Serialise<T>();
-
-            reserialisedContext.IfFail(ex => Assert.Fail(ex.Message));
-
-            reserialisedContext.IfSucc(newContext =>
+        loadedContext.Serialise()
+                     .Switch(
+            reserialisedContext =>
             {
                 Debug.WriteLine("");
                 Debug.WriteLine("");
                 Debug.WriteLine("Reserialised Context");
                 Debug.WriteLine("====================");
                 Debug.WriteLine("");
-                Debug.WriteLine(newContext);
+                Debug.WriteLine(reserialisedContext);
 
                 Context reloadedContext = Context.New()
-                       .UseSerialiser<T>()
-                       .LoadContext<T>(newContext)
+                       .UseSerialiser<HumanReadableSerialiser>()
+                       .LoadContext(reserialisedContext)
                        .Initialise();
 
 
                 // Assert
                 // ======
                 reloadedContext.ValidationErrors.Count.Should().Be(0, $"because {string.Join('\n', reloadedContext.ValidationErrors)}");
-                newContext.Trim().Should().BeEquivalentTo(context.Trim());
-            });
-        }
+
+                DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext);
+            },
+            ex => Assert.Fail(ex.Message)
+        );
     }
 
 }

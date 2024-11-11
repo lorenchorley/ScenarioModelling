@@ -9,14 +9,24 @@ using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, Relation>]
-public class RelationTransformer(System System, Instanciator Instanciator) : IDefinitionToObjectTransformer<Relation, RelationReference>
+public class RelationTransformer(System System, Instanciator Instanciator) : DefinitionToObjectTransformer<Relation, RelationReference>
 {
-    public Option<RelationReference> Transform(Definition def)
+    protected override Option<RelationReference> Transform(Definition def, TransformationType type)
     {
         if (def is not UnnamedLinkDefinition unnamed)
-        {
             return null;
+
+        if (type == TransformationType.Object)
+        {
+            // Root level relation
+
         }
+        else
+        {
+            // Relation applied to object
+
+        }
+
 
         Relation value = Instanciator.New<Relation>(definition: def);
 
@@ -43,7 +53,7 @@ public class RelationTransformer(System System, Instanciator Instanciator) : IDe
         return value.GenerateReference();
     }
 
-    public void Validate(Relation obj)
+    public override void Validate(Relation obj)
     {
     }
 }

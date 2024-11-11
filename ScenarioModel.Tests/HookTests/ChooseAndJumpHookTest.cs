@@ -130,7 +130,7 @@ public class ChooseAndJumpHookTest
         choices.Enqueue("Change name and repeat");
         choices.Enqueue("Ciao");
 
-        var deserialisedContext =
+        var reserialisedContext =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
                    .LoadContext(_scenarioText)
@@ -158,14 +158,15 @@ public class ChooseAndJumpHookTest
         // ======
         generatedScenario.Should().NotBeNull();
 
-        var serialisedResult =
+        var rereserialisedContext =
             context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised context :");
-        Debug.WriteLine(serialisedResult);
+        Debug.WriteLine(rereserialisedContext);
 
-        serialisedResult.Should().Be(deserialisedContext);
+        var originalContext = _scenarioText;
+        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, rereserialisedContext);
     }
 }

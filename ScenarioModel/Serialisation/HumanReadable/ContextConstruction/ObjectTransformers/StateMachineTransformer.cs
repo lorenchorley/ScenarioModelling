@@ -8,9 +8,9 @@ using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, StateMachine>]
-public class StateMachineTransformer(System System, Instanciator Instanciator, StateTransformer StateTransformer, TransitionTransformer TransitionTransformer) : IDefinitionToObjectTransformer<StateMachine, StateMachineReference>
+public class StateMachineTransformer(System System, Instanciator Instanciator, StateTransformer StateTransformer, TransitionTransformer TransitionTransformer) : DefinitionToObjectTransformer<StateMachine, StateMachineReference>
 {
-    public Option<StateMachineReference> Transform(Definition def)
+    protected override Option<StateMachineReference> Transform(Definition def, TransformationType type)
     {
         if (def is not UnnamedDefinition unnamed)
         {
@@ -22,15 +22,20 @@ public class StateMachineTransformer(System System, Instanciator Instanciator, S
             return null;
         }
 
+        // If this is meant to be the value of a property in another object, we need to return a reference
+        // Otherwise we make a full object that is stored in the system
+        if (type == TransformationType.Property)
+            return Instanciator.NewReference<StateMachine, StateMachineReference>(definition: def);
+
         StateMachine value = Instanciator.New<StateMachine>(definition: def);
 
-        value.States.TryAddReferenceRange(unnamed.Definitions.Choose(StateTransformer.Transform));
-        value.Transitions.TryAddReferenceRange(unnamed.Definitions.Choose(TransitionTransformer.Transform));
+        value.States.TryAddReferenceRange(unnamed.Definitions.Choose(StateTransformer.TransformAsProperty));
+        value.Transitions.TryAddReferenceRange(unnamed.Definitions.Choose(TransitionTransformer.TransformAsProperty));
 
         return value.GenerateReference();
     }
 
-    public void Validate(StateMachine obj)
+    public override void Validate(StateMachine obj)
     {
         //foreach (var transition in obj.Transitions)
         //{

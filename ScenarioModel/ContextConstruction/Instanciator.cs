@@ -25,7 +25,7 @@ public class Instanciator(System System)
     {
         name = name ?? TryGetNameFromDefinition(definition);
 
-        return NewReference<TRef>(name)
+        return NewReference<TVal, TRef>(name)
             .ResolveReference()
             .Match(
                 Some: e => e,
@@ -58,11 +58,12 @@ public class Instanciator(System System)
             _ => throw new NotImplementedException($"Reference type {typeof(TVal).Name} not implemented.")
         };
 
-        return Name((TVal)instance, name, definition);
+        return Name<TVal, TVal>((TVal)instance, name, definition);
     }
 
-    public TRef NewReference<TRef>(string? name = null)
-        where TRef : IIdentifiable
+    public TRef NewReference<TVal, TRef>(string? name = null, Definition? definition = null)
+        where TVal : IIdentifiable
+        where TRef : IReference<TVal>
     {
         object reference = typeof(TRef).Name switch // TODO Exhaustivity ?
         {
@@ -77,20 +78,20 @@ public class Instanciator(System System)
             _ => throw new NotImplementedException($"Reference type {typeof(TRef).Name} not implemented.")
         };
 
-        return Name((TRef)reference, name);
+        return Name<TRef, TVal>((TRef)reference, name, definition);
     }
 
-    public TVal Name<TVal>(TVal obj, string? name = null, Definition? def = null)
+    public TVal Name<TVal, TKey>(TVal obj, string? name = null, Definition? def = null)
         where TVal : IIdentifiable
     {
         // First we check if the object already has a name
         if (!string.IsNullOrEmpty(obj.Name))
             return obj;
 
-        return SetOrGenerateName(obj, name, def);
+        return SetOrGenerateName<TVal, TKey>(obj, name, def);
     }
 
-    private TVal SetOrGenerateName<TVal>(TVal obj, string? name, Definition? def) where TVal : IIdentifiable
+    private TVal SetOrGenerateName<TVal, TKey>(TVal obj, string? name, Definition? def) where TVal : IIdentifiable
     {
         // Then we check if the name is provided via a definition
         if (def != null)
@@ -111,13 +112,18 @@ public class Instanciator(System System)
         }
 
         // If no name is provided, we generate one
-        if (!_countersByType.TryGetValue(obj.GetType(), out int counter))
+        Type keyType = typeof(TKey);
+        if (!_countersByType.TryGetValue(keyType, out int counter))
         {
             counter = 1;
-            _countersByType[obj.GetType()] = counter;
+            _countersByType[keyType] = counter;
+        }
+        else
+        {
+            _countersByType[keyType] = counter++;
         }
 
-        obj.Name = $"{obj.GetType().Name}{counter}";
+        obj.Name = $"{keyType.Name}{counter}";
 
         return obj;
     }

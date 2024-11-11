@@ -8,42 +8,41 @@ using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
 
 [ObjectLike<IDefinitionToObjectTransformer, Entity>]
-public class EntityTransformer(System System, Instanciator Instanciator, StateTransformer StateTransformer, AspectTransformer AspectTransformer, EntityTypeTransformer EntityTypeTransformer, RelationTransformer RelationTransformer) : IDefinitionToObjectTransformer<Entity, EntityReference>
+public class EntityTransformer(System System, Instanciator Instanciator, StateTransformer StateTransformer, AspectTransformer AspectTransformer, EntityTypeTransformer EntityTypeTransformer, RelationTransformer RelationTransformer) : DefinitionToObjectTransformer<Entity, EntityReference>
 {
-    public Option<EntityReference> Transform(Definition def)
+    protected override Option<EntityReference> Transform(Definition def, TransformationType type)
     {
         if (def is not UnnamedDefinition unnamed)
-        {
             return null;
-        }
 
         if (!unnamed.Type.Value.IsEqv("Entity"))
-        {
             return null;
-        }
 
-        var (relations, remaining1) = unnamed.Definitions.PartitionByChoose(RelationTransformer.Transform);
-        var (stateReferences, remaining2) = remaining1.PartitionByChoose(StateTransformer.Transform);
+        if (type == TransformationType.Property)
+            throw new Exception("Entity should not be properties of other objects");
+
+        var (relations, remaining1) = unnamed.Definitions.PartitionByChoose(RelationTransformer.TransformAsProperty);
+        var (stateReferences, remaining2) = remaining1.PartitionByChoose(StateTransformer.TransformAsProperty);
 
 
         Entity value = Instanciator.New<Entity>(definition: def);
 
-        EntityTypeReference type =
+        EntityTypeReference typeReference =
             unnamed.Definitions
-                   .Choose(EntityTypeTransformer.Transform)
+                   .Choose(EntityTypeTransformer.TransformAsProperty)
                    .FirstOrDefault()
-                   ?? Instanciator.NewReference<EntityTypeReference>();
+                   ?? Instanciator.NewReference<EntityType, EntityTypeReference>();
 
-        value.EntityType.SetReference(type);
+        value.EntityType.SetReference(typeReference);
         value.Relations.TryAddReferenceRange(relations);
 
-        value.Aspects.TryAddReferenceRange(unnamed.Definitions.Choose(d => AspectTransformer.Transform(d, value.GenerateReference())));
+        value.Aspects.TryAddReferenceRange(unnamed.Definitions.Choose(d => AspectTransformer.TransformAsObject(d, value.GenerateReference())));
         value.State.SetReference(stateReferences.FirstOrDefault());
         value.CharacterStyle = unnamed.Definitions.Choose(TransformCharacterStyle).FirstOrDefault() ?? "";
 
         if (stateReferences.Count() > 1)
         {
-            throw new Exception($"More than one state was set on entity {value.Name ?? "<unnamed>"} of type {type?.Name ?? "<unnnamed>"} : {stateReferences.Select(s => s.Name).CommaSeparatedList()}");
+            throw new Exception($"More than one state was set on entity {value.Name ?? "<unnamed>"} of type {typeReference?.Name ?? "<unnnamed>"} : {stateReferences.Select(s => s.Name).CommaSeparatedList()}");
         }
 
         return value.GenerateReference();
@@ -64,7 +63,7 @@ public class EntityTransformer(System System, Instanciator Instanciator, StateTr
         return null;
     }
 
-    public void Validate(Entity obj)
+    public override void Validate(Entity obj)
     {
     }
 }
