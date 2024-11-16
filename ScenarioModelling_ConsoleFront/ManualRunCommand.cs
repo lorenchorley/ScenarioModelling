@@ -45,7 +45,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
         ExpressionEvalator evalator = new(context.System);
         EventGenerationDependencies dependencies = new EventGenerationDependencies(interpolator, evalator, executor, context);
 
-        NodeExhaustiveness.AssertExhaustivelyImplemented<INodeHandler>();
+        NodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHandler>();
 
         DialogNodeHandler dialogNodeHandler = new() { Dependencies = dependencies };
         StateTransitionNodeHandler stateTransitionNodeHandler = new() { Dependencies = dependencies };

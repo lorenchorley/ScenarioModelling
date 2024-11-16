@@ -1,6 +1,6 @@
-﻿namespace ScenarioModel.Exhaustiveness;
+﻿namespace ScenarioModel.Exhaustiveness.Attributes;
 
-public class NodeLikePropertyAttribute : Attribute
+public class NodeLikePropertyAttribute : Attribute, IPropertyAttribute
 {
     public bool Serialise { get; } = true;
     public string? SerialisedName { get; }

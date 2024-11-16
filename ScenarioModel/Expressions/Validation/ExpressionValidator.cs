@@ -22,9 +22,11 @@ public class ExpressionValidator : IExpressionVisitor
     {
         exp.Type = ExpressionValueType.Boolean;
 
+        exp.Left.Accept(this);
         if (exp.Left.Type != ExpressionValueType.Boolean)
             Errors.Add(new ValidationError($"Left expression type in And Expression is not boolean : {exp.Left.Type}"));
 
+        exp.Right.Accept(this);
         if (exp.Right.Type != ExpressionValueType.Boolean)
             Errors.Add(new ValidationError($"Right expression type in And Expression is not boolean : {exp.Right.Type}"));
 
@@ -35,9 +37,11 @@ public class ExpressionValidator : IExpressionVisitor
     {
         exp.Type = ExpressionValueType.Boolean;
 
+        exp.Left.Accept(this);
         if (exp.Left.Type != ExpressionValueType.Boolean)
             Errors.Add(new ValidationError($"Left expression type in Or Expression is not boolean : {exp.Left.Type}"));
 
+        exp.Right.Accept(this);
         if (exp.Right.Type != ExpressionValueType.Boolean)
             Errors.Add(new ValidationError($"Right expression type in Or Expression is not boolean : {exp.Right.Type}"));
 
@@ -59,6 +63,7 @@ public class ExpressionValidator : IExpressionVisitor
         //if (reference.ResolveReference(_system).IsNone)
         //    Errors.Add(new ValidationError($"Relation {exp.Name} not found in system"));
 
+        exp.Left.Accept(this);
         if (!IsRelatableType(exp.Left.Type))
             Errors.Add(new ValidationError($"Object type (Left) in Has Relation Expression is not a relatable object type : {exp.Left.Type}"));
 
@@ -72,8 +77,9 @@ public class ExpressionValidator : IExpressionVisitor
             Errors.Add(new ValidationError($"Relatable object {exp.Left} not found in system"));
 
 
-        if (exp.Right.Type != ExpressionValueType.Relation)
-            Errors.Add(new ValidationError($"Relation name (Right) in Has Relation Expression does not resolve to a relation : {exp.Right.Type}"));
+        exp.Right.Accept(this);
+        if (!IsRelatableType(exp.Right.Type))
+            Errors.Add(new ValidationError($"Relation name (Right) in Has Relation Expression is not a relatable object type : {exp.Right.Type}"));
 
         var secondRelatableReference = new CompositeValueObjectReference(_system)
         {
@@ -110,6 +116,7 @@ public class ExpressionValidator : IExpressionVisitor
         //    Errors.Add(new ValidationError($"Relation {name} not found in system"));
         //}
 
+        exp.Left.Accept(this);
         if (!IsRelatableType(exp.Left.Type))
             Errors.Add(new ValidationError($"Object type (Left) in Does Not Have Relation Expression is not a relatable object type : {exp.Left.Type}"));
 
@@ -124,8 +131,9 @@ public class ExpressionValidator : IExpressionVisitor
             Errors.Add(new ValidationError($"Relatable object {exp.Left} not found in system"));
 
 
-        if (exp.Right.Type != ExpressionValueType.Relation)
-            Errors.Add(new ValidationError($"Relation name (Right) in Does Not Have Relation Expression does not resolve to a relation : {exp.Right.Type}"));
+        exp.Right.Accept(this);
+        if (!IsRelatableType(exp.Right.Type))
+            Errors.Add(new ValidationError($"Relation name (Right) in Does Not Have Relation Expression is not a relatable object type : {exp.Right.Type}"));
 
         var secondRelatableReference = new CompositeValueObjectReference(_system)
         {
@@ -221,6 +229,8 @@ public class ExpressionValidator : IExpressionVisitor
     {
         exp.Type = ExpressionValueType.Boolean;
 
+        exp.Left.Accept(this);
+        exp.Right.Accept(this);
         if (exp.Left.Type != exp.Right.Type)
         {
             Errors.Add(new ValidationError($"Left and right expression types in Non-Equality Expression are diffents : {exp.Left.Type} != {exp.Right.Type}"));
@@ -233,6 +243,8 @@ public class ExpressionValidator : IExpressionVisitor
     {
         exp.Type = ExpressionValueType.Boolean;
 
+        exp.Left.Accept(this);
+        exp.Right.Accept(this);
         if (exp.Left.Type != exp.Right.Type)
         {
             Errors.Add(new ValidationError($"Left and right expression types in Equality Expression are diffents : {exp.Left.Type} != {exp.Right.Type}"));
@@ -248,6 +260,7 @@ public class ExpressionValidator : IExpressionVisitor
 
     public object VisitBrackets(BracketsExpression exp)
     {
+        exp.Expression.Accept(this);
         exp.Type = exp.Expression.Type;
         return this;
     }

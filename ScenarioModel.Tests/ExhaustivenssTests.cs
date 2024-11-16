@@ -1,5 +1,7 @@
 using FluentAssertions;
-using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
+using ScenarioModel.Exhaustiveness.Common;
+using ScenarioModel.Exhaustiveness.Exceptions;
 
 namespace ScenarioModel.Tests;
 
@@ -73,15 +75,20 @@ internal class FourthOverlyImplemented : IOverlyImplementedTestNodeBase { }
 [TestClass]
 public class ExhaustivenssTests
 {
-    private Type[] _replacementCompleteTypeList = [typeof(First), typeof(Second), typeof(Third)];
+    private Type[] _completeTypeList = [typeof(First), typeof(Second), typeof(Third)];
 
     [TestMethod]
     [TestCategory("Exhaustivenss")]
     public void FullyImplemented()
     {
+        // Arrange
+        // =======
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
+
+
         // Act && Assert
         // =============
-        NodeExhaustiveness.AssertExhaustivelyImplemented<IFullyImplementedTestNodeBase>(_replacementCompleteTypeList);
+        functions.AssertTypeExhaustivelyImplemented<IFullyImplementedTestNodeBase>();
 
     }
 
@@ -89,11 +96,19 @@ public class ExhaustivenssTests
     [TestCategory("Exhaustivenss")]
     public void NotFullyImplemented()
     {
-        // Act && Assert
-        // =============
-        Action assert = () => NodeExhaustiveness.AssertExhaustivelyImplemented<INotFullyImplementedTestNodeBase>(_replacementCompleteTypeList);
+        // Arrange
+        // =======
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
 
-        assert.Should().Throw<ExhaustivenessException>()
+
+        // Act
+        // ===
+        Action action = () => functions.AssertTypeExhaustivelyImplemented<INotFullyImplementedTestNodeBase>();
+
+
+        // Assert
+        // ======
+        action.Should().Throw<ExhaustivenessException>()
               .Which.Types.Should().BeEquivalentTo([typeof(Third)]);
 
     }
@@ -102,11 +117,19 @@ public class ExhaustivenssTests
     [TestCategory("Exhaustivenss")]
     public void DoublyImplemented_ExtraImplementation()
     {
-        // Act && Assert
-        // =============
-        Action assert = () => NodeExhaustiveness.AssertExhaustivelyImplemented<IDoublyImplementedTestNodeBase>(_replacementCompleteTypeList);
+        // Arrange
+        // =======
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
 
-        assert.Should().Throw<ExhaustivenessException>()
+
+        // Act
+        // ===
+        Action action = () => functions.AssertTypeExhaustivelyImplemented<IDoublyImplementedTestNodeBase>();
+
+
+        // Assert
+        // ======
+        action.Should().Throw<ExhaustivenessException>()
               .Which.Types.Should().BeEquivalentTo([typeof(FirstThirdDoublyImplemented), typeof(SecondThirdDoublyImplemented)]);
 
     }
@@ -115,12 +138,21 @@ public class ExhaustivenssTests
     [TestCategory("Exhaustivenss")]
     public void OverlyImplemented_UntaggedImplementation()
     {
-        // Act && Assert
-        // =============
-        // The class "Fourth" is not in the complete list, but it has been tagged in an attribute (on SecondThirdOverlyImplemented2)
-        Action assert = () => NodeExhaustiveness.AssertExhaustivelyImplemented<IOverlyImplementedTestNodeBase>(_replacementCompleteTypeList);
+        // Arrange
+        // =======
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
 
-        assert.Should().Throw<ExhaustivenessException>()
+
+        // Act
+        // ===
+
+        // The class "Fourth" is not in the complete list, but it has been tagged in an attribute (on SecondThirdOverlyImplemented2)
+        Action action = () => functions.AssertTypeExhaustivelyImplemented<IOverlyImplementedTestNodeBase>();
+
+
+        // Assert
+        // ======
+        action.Should().Throw<ExhaustivenessException>()
               .Which.Types.Should().BeEquivalentTo([typeof(Fourth)]);
 
     }

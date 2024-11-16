@@ -65,7 +65,7 @@ public class System
             .. CheckNameUniqueness<Relation>(Relations),
             .. CheckNameUniqueness<Aspect>(Aspects),
             .. CheckNameUniqueness<StateMachine>(StateMachines),
-            .. CheckNameUniqueness<Transition>(Transitions)
+            //.. CheckNameUniqueness<Transition>(Transitions) // It's ok to have duplicate transition names, it's wanted even
         ];
 
         if (unresolvedReferenceDescriptions.Any())
@@ -111,6 +111,8 @@ public class System
     {
         get => AllStateful.Select(e => e.State.Reference)
                           .Concat(StateMachines.SelectMany(sm => sm.States.AllReferences))
+                          .Append(Transitions.Select(t => t.SourceState.Reference))
+                          .Append(Transitions.Select(t => t.DestinationState.Reference))
                           .Where(s => s != null)
                           .Cast<StateReference>();
     }
@@ -145,7 +147,7 @@ public class System
         get => Enumerable.Empty<IStateful>()
                          .Concat(Entities)
                          .Concat(AllAspects)
-                         .Concat(Relations); 
+                         .Concat(Relations);
     }
 
     public IEnumerable<IRelatable> AllRelatable

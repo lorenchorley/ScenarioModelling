@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.Collections;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeTransformers;

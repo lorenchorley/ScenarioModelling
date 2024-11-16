@@ -46,4 +46,18 @@ public static class StringExtensions
     {
         return string.Join(".", list.Select(s => s?.ToString() ?? "null"));
     }
+
+    public static IEnumerable<T> ThrowIfDuplicatesDetected<T>(this IEnumerable<T> list, Func<T, string> getKey)
+    {
+        var duplicates =
+            list.GroupBy(getKey)
+                .Where(g => g.Count() > 1)
+                .Select(g => $@"""{g.Key}""")
+                .ToList();
+
+        if (duplicates.Any())
+            throw new Exception($"Duplicate keys detected in list: {duplicates.CommaSeparatedList()}");
+
+        return list;
+    }
 }

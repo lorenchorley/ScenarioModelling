@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.Collections;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Objects.ScenarioNodes;

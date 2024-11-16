@@ -1,4 +1,5 @@
 ﻿using LanguageExt.Common;
+using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Serialisation;
 using ScenarioModel.Validation;
 
@@ -177,10 +178,16 @@ public class Context
     {
         Scenarios.AddRange(newContext.Scenarios);
 
-        System.Entities.AddRange(newContext.System.Entities);
-        System.EntityTypes.AddRange(newContext.System.EntityTypes);
-        System.StateMachines.AddRange(newContext.System.StateMachines);
-        System.Constraints.AddRange(newContext.System.Constraints);
+        SystemObjectExhaustivity.DoForEachObjectType(
+            entity: () => System.Entities.AddRange(newContext.System.Entities),
+            entityType: () => System.EntityTypes.AddRange(newContext.System.EntityTypes),
+            aspect: () => System.Aspects.AddRange(newContext.System.Aspects),
+            relation: () => System.Relations.AddRange(newContext.System.Relations),
+            state: () => System.States.AddRange(newContext.System.States),
+            stateMachine: () => System.StateMachines.AddRange(newContext.System.StateMachines),
+            transition: () => System.Transitions.AddRange(newContext.System.Transitions),
+            constraint: () => System.Constraints.AddRange(newContext.System.Constraints)
+        );
 
         return this;
     }

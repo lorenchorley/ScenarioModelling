@@ -3,7 +3,7 @@ using ScenarioModel.Objects.SystemObjects.Interfaces;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record Constraint : IIdentifiable
+public record Constraint : ISystemObject
 {
     private readonly System _system;
 

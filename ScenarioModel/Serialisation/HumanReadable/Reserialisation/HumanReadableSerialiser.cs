@@ -1,18 +1,29 @@
-﻿using LanguageExt.Common;
+﻿using LanguageExt;
+using LanguageExt.Common;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.Interfaces;
 using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Serialisation.HumanReadable.Interpreter;
 using System.Text;
+
+using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 
 public class HumanReadableSerialiser : ISerialiser
 {
     const string _indent = "  ";
+
+    public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
+    {
+        var newContext = DeserialiseContext(text);
+
+        return newContext.Match(Succ: c => context.Incorporate(c), Fail: e => new Result<Context>(e));
+    }
 
     public Result<Context> DeserialiseContext(string text)
     {
@@ -30,13 +41,6 @@ public class HumanReadableSerialiser : ISerialiser
         inputs.TopLevelOfDefinitionTree.AddRange(result.ParsedObject!);
 
         return contextBuilder.Build(inputs);
-    }
-
-    public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
-    {
-        var newContext = DeserialiseContext(text);
-
-        return newContext.Match(Succ: c => context.Incorporate(c), Fail: e => new Result<Context>(e));
     }
 
     public Result<string> SerialiseContext(Context context)
@@ -95,7 +99,7 @@ public class HumanReadableSerialiser : ISerialiser
 
         sb.AppendLine($"{indent}While <{result}> {{"); // TODO Serialise the expression correctly
 
-        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        NodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
 
         foreach (var step in node.SubGraph.NodeSequence)
         {
@@ -111,7 +115,7 @@ public class HumanReadableSerialiser : ISerialiser
         ExpressionSerialiser visitor = new(scenario.System);
         var result = (string)node.Condition.Accept(visitor);
 
-        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        NodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
 
         sb.AppendLine($"{indent}If <{result}> {{"); // TODO Serialise the expression correctly
 
@@ -148,7 +152,7 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Choose {node.Name} {{");
 
-        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        NodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
 
         foreach (var option in node.Choices)
         {
@@ -166,7 +170,7 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Dialog {node.Name} {{");
 
-        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        NodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
 
         //sb.AppendLine($"{indent}{_indent}Text {node.TextTemplate}");
 
@@ -181,7 +185,7 @@ public class HumanReadableSerialiser : ISerialiser
     {
         sb.AppendLine($"{indent}Jump {node.Name} {{");
 
-        NodeExhaustiveness.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
+        NodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{indent}{_indent}{prop} {value}"));
         //sb.AppendLine($"{indent}{_indent}{node.Target}");
 
         sb.AppendLine($"{indent}}}");
@@ -204,26 +208,26 @@ public class HumanReadableSerialiser : ISerialiser
         {
             WriteStateMachine(sb, "", stateMachine);
         }
+
+        foreach (var relation in system.Relations)
+        {
+            WriteRelation(sb, "", relation);
+        }
     }
 
     private static void WriteEntity(StringBuilder sb, System system, string indent, Entity entity)
     {
         sb.AppendLine($"{indent}Entity {AddQuotes(entity.Name)} {{");
 
-        if (entity.EntityType != null)
+        if (entity.EntityType.ResolvedValue != null && entity.EntityType.ResolvedValue.ShouldReserialise)
             sb.AppendLine($"{indent}{_indent}EntityType {entity.EntityType.Name}");
 
         if (entity.State.ResolvedValue != null)
-            WriteSMState(sb, indent + _indent, entity.State.ResolvedValue);
+            WriteState(sb, indent + _indent, entity.State.ResolvedValue);
 
         foreach (var aspectType in entity.Aspects)
         {
             WriteAspect(sb, indent + _indent, aspectType);
-        }
-
-        foreach (var relation in entity.Relations)
-        {
-            WriteRelation(sb, indent + _indent, relation);
         }
 
         sb.AppendLine($"{indent}}}");
@@ -232,7 +236,17 @@ public class HumanReadableSerialiser : ISerialiser
 
     private static void WriteRelation(StringBuilder sb, string indent, Relation relation)
     {
-        sb.AppendLine($"{indent}{relation.LeftEntity} -> {relation.RightEntity}");
+        Option<IRelatable> left = relation.LeftEntity?.ResolveReference() ?? Option<IRelatable>.None;
+        Option<IRelatable> right = relation.RightEntity?.ResolveReference() ?? Option<IRelatable>.None;
+
+        IRelatable leftRelatable = left.Match(Some: r => r, None: () => throw new Exception($"The left hand object of relation {relation.Name} is unresolvable"));
+        IRelatable rightRelatable = right.Match(Some: r => r, None: () => throw new Exception($"The right hand object of relation {relation.Name} is unresolvable"));
+
+        if (string.IsNullOrEmpty(relation.Name))
+            sb.AppendLine($@"{indent}{leftRelatable.Name} -> {rightRelatable.Name}");
+        else
+            sb.AppendLine($@"{indent}{leftRelatable.Name} -> {rightRelatable.Name} : {AddQuotes(relation.Name)}");
+
     }
 
     private static void WriteAspect(StringBuilder sb, string indent, Aspect aspect)
@@ -245,9 +259,12 @@ public class HumanReadableSerialiser : ISerialiser
 
     private static void WriteEntityType(StringBuilder sb, string indent, EntityType entityType)
     {
+        if (!entityType.ShouldReserialise)
+            return;
+
         sb.AppendLine($"{indent}EntityType {AddQuotes(entityType.Name)} {{");
 
-        if (entityType.StateMachine != null)
+        if (entityType.StateMachine.ResolvedValue != null)
             sb.AppendLine($"{indent}{_indent}SM {AddQuotes(entityType.StateMachine.Name ?? "")}");
 
         sb.AppendLine($"{indent}}}");
@@ -256,36 +273,36 @@ public class HumanReadableSerialiser : ISerialiser
 
     private static void WriteStateMachine(StringBuilder sb, string indent, StateMachine stateMachine)
     {
+        if (!stateMachine.ShouldReserialise)
+            return;
+
         sb.AppendLine($"{indent}SM {AddQuotes(stateMachine.Name)} {{");
 
         foreach (var state in stateMachine.States)
         {
-            WriteSMState(sb, indent + _indent, state);
+            WriteState(sb, indent + _indent, state);
         }
 
-        foreach (var state in stateMachine.States)
+        foreach (var transition in stateMachine.Transitions)
         {
-            foreach (var transition in state.Transitions)
-            {
-                WriteSMTransition(sb, indent + _indent, stateMachine.States, state, transition);
-            }
+            WriteTransition(sb, indent + _indent, transition);
         }
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine($"");
     }
 
-    private static void WriteSMState(StringBuilder sb, string indent, State state)
+    private static void WriteState(StringBuilder sb, string indent, State state)
     {
         sb.AppendLine($"{indent}State {AddQuotes(state.Name)}");
     }
 
-    private static void WriteSMTransition(StringBuilder sb, string indent, IEnumerable<State> states, State state, Transition transition)
+    private static void WriteTransition(StringBuilder sb, string indent, Transition transition)
     {
         if (string.IsNullOrEmpty(transition.Name))
-            sb.AppendLine($@"{indent}""{transition.SourceState.ResolvedValue?.Name ?? ""}"" -> ""{transition.DestinationState.ResolvedValue?.Name ?? ""}""");
+            sb.AppendLine($@"{indent}{AddQuotes(transition.SourceState.ResolvedValue?.Name ?? "")} -> {AddQuotes(transition.DestinationState.ResolvedValue?.Name ?? "")}");
         else
-            sb.AppendLine($@"{indent}""{transition.SourceState.ResolvedValue?.Name ?? ""}"" -> ""{transition.DestinationState.ResolvedValue?.Name ?? ""}"" : {transition.Name}");
+            sb.AppendLine($@"{indent}{AddQuotes(transition.SourceState.ResolvedValue?.Name ?? "")} -> {AddQuotes(transition.DestinationState.ResolvedValue?.Name ?? "")} : {AddQuotes(transition.Name)}");
     }
 
     private static string AddQuotes(string str)

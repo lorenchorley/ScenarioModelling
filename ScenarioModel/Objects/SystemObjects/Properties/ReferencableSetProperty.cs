@@ -20,6 +20,8 @@ public abstract class ReferencableSetProperty<TValue, TReference>(System System)
     //    );
     //}
 
+    public bool HasValues => _set.Count > 0;
+
     public void TryAddValue(TValue transition)
     {
         _set.Add(OneOf<TValue, TReference>.FromT0(transition));

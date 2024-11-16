@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
-using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -13,6 +13,11 @@ public class ConstraintTransformer(System System, Instanciator Instanciator) : D
     protected override Option<ConstraintReference> Transform(Definition def, TransformationType type)
     {
         return null;
+    }
+
+    public override void BeforeIndividualValidation()
+    {
+
     }
 
     public override void Validate(Constraint obj)

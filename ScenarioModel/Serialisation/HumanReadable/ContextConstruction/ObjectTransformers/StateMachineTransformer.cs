@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -35,35 +36,24 @@ public class StateMachineTransformer(System System, Instanciator Instanciator, S
         return value.GenerateReference();
     }
 
+    public override void BeforeIndividualValidation()
+    {
+        foreach (var state in System.States)
+        {
+            if (!System.StateMachines.Any(SM => SM.States.Any(s => s.IsEqv(state))))
+            {
+                Instanciator.New<StateMachine>().States.TryAddValue(state);
+            }
+        }
+    }
+
     public override void Validate(StateMachine obj)
     {
-        //foreach (var transition in obj.Transitions)
+        //foreach (var item in System.States.Where(s => s.StateMachine.IsEqv(obj)))
         //{
-        //    if (!obj.States.Any(s => s.IsEqv(transition.SourceState)))
-        //    {
-        //        State? state = System.States.Where(s => s.IsEqv(transition.SourceState)).FirstOrDefault();
-
-        //        if (state == null)
-        //        {
-        //            state = new State(System) { Name = transition.SourceState.Name };
-        //        }
-
-        //        obj.States.TryAddValue(state!);
-        //    }
-
-        //    if (!obj.States.Any(s => s.IsEqv(transition.DestinationState)))
-        //    {
-        //        var a = System.States.ToList();
-        //        State? state = System.States.Where(s => transition.DestinationState.IsEqv(s)).FirstOrDefault();
-
-        //        if (state == null)
-        //        {
-        //            state = new State(System) { Name = transition.DestinationState.Name };
-        //        }
-
-        //        obj.States.TryAddValue(state!);
-        //    }
+        //    obj.States.TryAddValue(item);
         //}
     }
+
 }
 

@@ -3,13 +3,22 @@ using ScenarioModel.Objects.SystemObjects.Properties;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record AspectType : IIdentifiable
+public record AspectType : ISystemObject, IOptionalSerialisability
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
     public Type Type => typeof(AspectType);
     public StateMachineProperty StateMachine { get; private init; }
+
+    public bool ExistanceOriginallyInferred { get; set; } = false;
+    public bool ShouldReserialise
+    {
+        get
+        {
+            return !ExistanceOriginallyInferred;
+        }
+    }
 
     public AspectType(System system)
     {

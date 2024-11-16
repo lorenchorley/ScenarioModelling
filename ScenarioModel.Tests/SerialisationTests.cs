@@ -1,4 +1,5 @@
 using FluentAssertions;
+using LanguageExt.Common;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Tests.Valid;
 using System.Diagnostics;
@@ -10,8 +11,8 @@ public class SerialisationTests
 {
     [TestMethod]
     [TestCategory("Serialisation")]
-    [SerialisationDataProvider]
-    public void Deserialise_Serialise(string originalContext)
+    [ReserialisationDataProvider]
+    public void Deserialise_Serialise(string testCaseName, string originalContextText, string expectedFinalContextText)
     {
         // Arrange
         // =======
@@ -21,30 +22,30 @@ public class SerialisationTests
         Debug.WriteLine("Starting Serialised Context");
         Debug.WriteLine("===========================");
         Debug.WriteLine("");
-        Debug.WriteLine(originalContext);
+        Debug.WriteLine(originalContextText);
 
         Context loadedContext =
             Context.New()
                    .UseSerialiser<HumanReadableSerialiser>()
-                   .LoadContext(originalContext)
+                   .LoadContext(originalContextText)
                    .Initialise();
 
         loadedContext.ValidationErrors.Count.Should().Be(0, because: loadedContext.ValidationErrors.ToString());
 
         loadedContext.Serialise()
                      .Switch(
-            reserialisedContext =>
+            reserialisedContextText =>
             {
                 Debug.WriteLine("");
                 Debug.WriteLine("");
                 Debug.WriteLine("Reserialised Context");
                 Debug.WriteLine("====================");
                 Debug.WriteLine("");
-                Debug.WriteLine(reserialisedContext);
+                Debug.WriteLine(reserialisedContextText);
 
                 Context reloadedContext = Context.New()
                        .UseSerialiser<HumanReadableSerialiser>()
-                       .LoadContext(reserialisedContext)
+                       .LoadContext(reserialisedContextText)
                        .Initialise();
 
 
@@ -52,7 +53,7 @@ public class SerialisationTests
                 // ======
                 reloadedContext.ValidationErrors.Count.Should().Be(0, $"because {string.Join('\n', reloadedContext.ValidationErrors)}");
 
-                DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext);
+                DiffAssert.DiffIfNotEqual(expectedFinalContextText.Trim(), reserialisedContextText.Trim(), leftName: $@"Expected_{testCaseName.Replace(' ', '_')}", rightName: $@"Result_{testCaseName.Replace(' ', '_')}");
             },
             ex => Assert.Fail(ex.Message)
         );

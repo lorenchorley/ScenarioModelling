@@ -399,7 +399,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             AndExpression { Left = HasRelationExpression { Name = , Left = CompositeValue { A }, Right = CompositeValue { B } }, Right = CompositeValue { true } }
             """,
             true,
-            ExpectedEvaluatedValue: false, // TODO
+            ExpectedEvaluatedValue: false,
             ExpectedReturnType: ExpressionValueType.Boolean
         ),
         new(

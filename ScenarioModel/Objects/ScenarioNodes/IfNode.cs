@@ -1,6 +1,7 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;

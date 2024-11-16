@@ -8,7 +8,7 @@ namespace ScenarioModel.Objects.SystemObjects;
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
-public record StateMachine : IIdentifiable
+public record StateMachine : ISystemObject, IOptionalSerialisability
 {
     private readonly System _system;
 
@@ -17,6 +17,24 @@ public record StateMachine : IIdentifiable
 
     public StateListProperty States { get; set; }
     public TransitionListProperty Transitions { get; set; }
+
+    public bool ExistanceOriginallyInferred { get; set; } = false;
+    public bool ShouldReserialise
+    {
+        get
+        {
+            if (ExistanceOriginallyInferred) 
+                return false;
+
+            //if (States.HasValues)
+            //    return false;
+            
+            //if (Transitions.HasValues)
+            //    return false;
+
+            return true;
+        }
+    }
 
     public StateMachine(System system)
     {

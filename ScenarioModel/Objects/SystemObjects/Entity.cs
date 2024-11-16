@@ -5,7 +5,7 @@ using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record Entity : IStateful, IRelatable, IIdentifiable
+public record Entity : IStateful, IRelatable, ISystemObject
 {
     private readonly System _system;
 

@@ -14,12 +14,12 @@ public class StateMachineHookDefinition : IObjectHookDefinition
 
     // Not sure that this is necessary
     public List<(string statefulInitial, string statefulFinal, string transitionName)> transitions = new();
-    
+
     public StateMachineHookDefinition(System system, Instanciator instanciator, string name)
     {
         _system = system;
         _instanciator = instanciator;
-    
+
         // Either create a new one or find an existing one in the provided system
         StateMachine = _instanciator.GetOrNew<StateMachine, StateMachineReference>(name);
         //StateMachine = new StateMachineReference(_system) { Name = name }

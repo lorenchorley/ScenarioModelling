@@ -3,7 +3,7 @@ using ScenarioModel.References;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record State : IIdentifiable
+public record State : ISystemObject
 {
     private readonly System _system;
 
@@ -17,10 +17,12 @@ public record State : IIdentifiable
         get
         {
             if (_stateMachine == null)
+            {
                 _stateMachine =
                     _system.StateMachines
-                          .FirstOrDefault(sm => sm.States.Any(s => s.Name.IsEqv(Name)))
-                          ?? throw new Exception($"No corresponding state machine found for state '{Name}'.");
+                           .FirstOrDefault(sm => sm.States.Any(s => s.Name.IsEqv(Name)))
+                           ?? throw new Exception($"No corresponding state machine found for state '{Name}'.");
+            }
 
             return _stateMachine;
         }

@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
-using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -31,6 +31,11 @@ public class AspectTransformer(System System, Instanciator Instanciator, StateTr
 
 
         return value.GenerateReference();
+    }
+
+    public override void BeforeIndividualValidation()
+    {
+
     }
 
     public override void Validate(Aspect obj)

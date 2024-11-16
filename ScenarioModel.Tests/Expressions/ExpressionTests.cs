@@ -158,7 +158,7 @@ public class ExpressionTests
 
         // Act
         // ===
-        parsedExpression.ParsedObject.Accept(validator);
+        parsedExpression.ParsedObject.Accept(validator); // Needed to set return types
         var result = parsedExpression.ParsedObject!.Accept(evalator);
 
 

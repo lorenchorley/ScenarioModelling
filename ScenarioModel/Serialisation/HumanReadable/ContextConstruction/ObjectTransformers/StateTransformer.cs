@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -35,6 +36,11 @@ public class StateTransformer(System System, Instanciator Instanciator) : Defini
         State value = Instanciator.New<State>(definition: def);
 
         return value.GenerateReference();
+    }
+
+    public override void BeforeIndividualValidation()
+    {
+
     }
 
     public override void Validate(State obj)

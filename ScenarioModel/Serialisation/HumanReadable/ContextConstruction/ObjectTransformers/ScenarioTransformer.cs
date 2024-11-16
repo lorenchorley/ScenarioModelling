@@ -2,6 +2,7 @@
 using ScenarioModel.Collections;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeTransformers;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -86,6 +87,11 @@ public class ScenarioTransformer(System System, Instanciator Instanciator) : Def
 
             return null;
         };
+
+    public override void BeforeIndividualValidation()
+    {
+
+    }
 
     public override void Validate(Scenario obj)
     {

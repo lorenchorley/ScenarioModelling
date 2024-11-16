@@ -20,7 +20,7 @@ public abstract class ScenarioHookOrchestrator
 
     protected ScenarioHookOrchestrator(Context context)
     {
-        NodeExhaustiveness.AssertExhaustivelyImplemented<INodeHookDefinition>();
+        NodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHookDefinition>();
 
         Context = context;
         _contextBuilder = new(context);

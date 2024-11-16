@@ -111,7 +111,23 @@ public class Instanciator(System System)
             return obj;
         }
 
-        // If no name is provided, we generate one
+        // If no name is provided, we generate one if name generation is required
+        if (IsNameGenerationRequired<TKey>())
+        {
+            obj.Name = GenerateName<TKey>();
+        }
+
+        return obj;
+    }
+
+    private static bool IsNameGenerationRequired<TKey>()
+    {
+        return typeof(TKey) != typeof(Transition) &&
+               typeof(TKey) != typeof(Relation);
+    }
+
+    private string GenerateName<TKey>()
+    {
         Type keyType = typeof(TKey);
         if (!_countersByType.TryGetValue(keyType, out int counter))
         {
@@ -123,9 +139,8 @@ public class Instanciator(System System)
             _countersByType[keyType] = counter++;
         }
 
-        obj.Name = $"{keyType.Name}{counter}";
-
-        return obj;
+        string name1 = $"{keyType.Name}{counter}";
+        return name1;
     }
 
     private static string? TryGetNameFromDefinition(Definition def)
@@ -136,6 +151,14 @@ public class Instanciator(System System)
                 throw new Exception("Definition name is empty.");
 
             return named.Name.Value;
+        }
+
+        if (def is NamedLinkDefinition namedLink)
+        {
+            if (string.IsNullOrEmpty(namedLink.Name.Value))
+                throw new Exception("Definition name is empty.");
+
+            return namedLink.Name.Value;
         }
 
         return null;

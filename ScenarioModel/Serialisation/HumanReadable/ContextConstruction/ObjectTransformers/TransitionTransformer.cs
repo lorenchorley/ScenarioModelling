@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -17,16 +18,18 @@ public class TransitionTransformer(System System, Instanciator Instanciator) : D
     /// <returns></returns>
     protected override Option<TransitionReference> Transform(Definition def, TransformationType type)
     {
-        if (def is not UnnamedDefinition unnamed)
+        if (def is not UnnamedLinkDefinition unnamed)
             return null;
 
-        if (!unnamed.Type.Value.IsEqv("Transition"))
-            return null;
+        //if (!unnamed.Type.Value.IsEqv("Transition"))
+        //    return null;
 
         if (type != TransformationType.Property)
             throw new Exception("A transition must always be the propert of another object");
 
         Transition value = Instanciator.New<Transition>(definition: def);
+        value.SourceState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Source.Value));
+        value.DestinationState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Destination.Value));
 
         return value.GenerateReference();
 
@@ -48,6 +51,11 @@ public class TransitionTransformer(System System, Instanciator Instanciator) : D
 
         //    value.Transitions.TryAddValue(item);
         //}
+    }
+
+    public override void BeforeIndividualValidation()
+    {
+
     }
 
     public override void Validate(Transition obj)

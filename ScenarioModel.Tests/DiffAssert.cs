@@ -22,7 +22,7 @@ public static class DiffAssert
 
         Assert.Fail();
     }
-    
+
     public static void DiffIfNotEqual(string left, string middle, string right, StringComparison stringComparison = StringComparison.Ordinal, [CallerArgumentExpression("left")] string leftName = "", [CallerArgumentExpression("middle")] string middleName = "", [CallerArgumentExpression("right")] string rightName = "")
     {
         if (string.Equals(left, right, stringComparison) && string.Equals(left, middle, stringComparison))

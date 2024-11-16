@@ -3,7 +3,6 @@ using LanguageExt.Common;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References;
 using ScenarioModel.References.Interfaces;
 using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.NodeProfiles;
@@ -39,13 +38,13 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
     // State
     private List<Definition> _remainingLast = new();
 
-    public bool IsUsed { get; private set; } = false;
+    public bool HasBeenUsedAlready { get; private set; } = false;
 
     public DeserialisationContextBuilder()
     {
-        NodeExhaustiveness.AssertExhaustivelyImplemented<IDefinitionToNodeTransformer>();
+        NodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeTransformer>();
 
-        NodeExhaustiveness.DoForEachNodeType(
+        NodeExhaustivity.DoForEachNodeType(
             chooseNode: () => RegisterNodeProfile(new ChooseNodeProfile()),
             dialogNode: () => RegisterNodeProfile(new DialogNodeProfile()),
             ifNode: () => RegisterNodeProfile(new IfNodeProfile()),
@@ -73,7 +72,7 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
 
     public Result<Context> Build(ContextBuilderInputs inputs)
     {
-        if (IsUsed)
+        if (HasBeenUsedAlready)
             throw new Exception("This instance of ContextBuilder has already been used.");
 
         // Transform all definitions into objects with references to other objects
@@ -93,7 +92,7 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
         if (_remainingLast.Any())
             throw new Exception($"Unknown definitions not taken into account : {_remainingLast.CommaSeparatedList()}");
 
-        IsUsed = true;
+        HasBeenUsedAlready = true;
 
         return _context;
     }
@@ -122,16 +121,19 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
                     new Entity(_context.System) { Name = r.Name };
                     break;
                 case EntityTypeReference r:
-                    new EntityType(_context.System) { Name = r.Name };
+                    new EntityType(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
                     break;
                 case AspectReference r:
                     new Aspect(_context.System) { Name = r.Name };
                     break;
+                //case AspectTypeReference r:
+                //    new AspectType(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
+                //    break;
                 case StateReference r:
                     new State(_context.System) { Name = r.Name };
                     break;
                 case StateMachineReference r:
-                    new StateMachine(_context.System) { Name = r.Name };
+                    new StateMachine(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
                     break;
                 case TransitionReference r:
                     new Transition(_context.System) { Name = r.Name };
@@ -156,31 +158,18 @@ public class DeserialisationContextBuilder : IContextBuilder<ContextBuilderInput
         var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
         var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
         var (scenarios, remainingLast) = remaining5.PartitionByChoose(_scenarioTransformer.TransformAsObject);
+        
         _context.Scenarios.AddRange(scenarios);
-
         _remainingLast.AddRange(remainingLast);
     }
-
-    //public void NameUnnamedObjects()
-    //{
-    //    var allIdentifiable =
-    //        Enumerable.Empty<IIdentifiable>()
-    //                  .Concat(_context.System.Entities)
-    //                  .Concat(_context.System.EntityTypes)
-    //                  .Concat(_context.System.States)
-    //                  .Concat(_context.System.StateMachines)
-    //                  .Concat(_context.System.Transitions)
-    //                  .Concat(_context.System.Aspects)
-    //                  .Concat(_context.System.Relations)
-    //                  .Concat(_context.System.Constraints);
-    //    // TODO
-    //}
 
     public void ValidateObjects()
     {
         _context.System.Entities.ForEach(_entityTransformer.Validate);
         _context.System.EntityTypes.ForEach(_entityTypeTransformer.Validate);
-        _context.System.AllAspects.ToList().ForEach(_aspectTransformer.Validate);
+        _context.System.Aspects.ForEach(_aspectTransformer.Validate);
+
+        _stateMachineTransformer.BeforeIndividualValidation();
         _context.System.StateMachines.ForEach(_stateMachineTransformer.Validate);
         _context.System.States.ForEach(_stateTransformer.Validate);
         _context.System.Transitions.ForEach(_transitionTransformer.Validate);

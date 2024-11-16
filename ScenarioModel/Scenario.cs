@@ -26,7 +26,7 @@ public class Scenario : IIdentifiable
 
     public void Initialise(Context context)
     {
-        
+
     }
 
     public StoryRunResult StartAtNode(string nodeName)

@@ -1,5 +1,6 @@
 ﻿using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModelling_ConsoleFront.NodeHandlers.BaseClasses;
 

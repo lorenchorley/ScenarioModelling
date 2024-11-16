@@ -4,7 +4,7 @@ using ScenarioModel.References;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record Transition : IIdentifiable
+public record Transition : ISystemObject
 {
     private readonly System _system;
 

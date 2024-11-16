@@ -205,7 +205,7 @@ public class ExpressionEvalator : IExpressionVisitor
 
         if (leftResult.GetType() == typeof(bool))
         {
-            return leftResult == rightResult;
+            return ((bool)leftResult) == ((bool)rightResult);
         }
 
         if (leftResult.GetType() == typeof(string))

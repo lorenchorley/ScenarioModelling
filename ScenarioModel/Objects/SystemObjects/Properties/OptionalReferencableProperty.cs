@@ -18,6 +18,8 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
         _system = system;
     }
 
+    public bool IsSet => _valueOrReference != null;
+
     public void SetValue(TVal? value)
     {
         if (value == null)

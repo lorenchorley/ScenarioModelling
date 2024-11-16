@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
 
@@ -51,6 +52,11 @@ public class RelationTransformer(System System, Instanciator Instanciator) : Def
         // TODO State ?
 
         return value.GenerateReference();
+    }
+
+    public override void BeforeIndividualValidation()
+    {
+
     }
 
     public override void Validate(Relation obj)

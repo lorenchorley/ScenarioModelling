@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
@@ -29,6 +30,11 @@ public class EntityTypeTransformer(System System, Instanciator Instanciator, Sta
         value.StateMachine.SetReference(unnamed.Definitions.Choose(StateMachineTransformer.TransformAsProperty).FirstOrDefault());
 
         return value.GenerateReference();
+    }
+
+    public override void BeforeIndividualValidation()
+    {
+
     }
 
     public override void Validate(EntityType obj)
