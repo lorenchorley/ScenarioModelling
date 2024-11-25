@@ -2,9 +2,9 @@
 
 namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
-public class OneOfIScenaroNode : OneOfBase<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode, WhileNode>
+public class OneOfIScenaroNode : OneOfBase<ChooseNode, DialogNode, IfNode, JumpNode, TransitionNode, WhileNode>
 {
-    public OneOfIScenaroNode(OneOf<ChooseNode, DialogNode, IfNode, JumpNode, StateTransitionNode, WhileNode> input) : base(input)
+    public OneOfIScenaroNode(OneOf<ChooseNode, DialogNode, IfNode, JumpNode, TransitionNode, WhileNode> input) : base(input)
     {
     }
 }

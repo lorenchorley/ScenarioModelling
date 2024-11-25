@@ -9,18 +9,18 @@ public static class ReferenceExtensions
         where S : IIdentifiable
         => a.Type == b.Type && a.Name.IsEqv(b.Name);
 
-    public static bool IsEqv<T, TRef>(this OptionalReferencableProperty<T, TRef> a, T b)
-        where T : class, IIdentifiable
-        where TRef : class, IReference<T>
+    public static bool IsEqv<TVal, TRef>(this OptionalReferencableProperty<TVal, TRef> a, TVal b)
+        where TVal : class, ISystemObject<TRef>
+        where TRef : class, IReference<TVal>
         => a.Match(
             value: v => v.IsEqv(b),
             reference: r => r.IsEqv(b),
             isNull: () => false
         );
 
-    public static bool IsEqv<T, TRef>(this T a, OptionalReferencableProperty<T, TRef> b)
-        where T : class, IIdentifiable
-        where TRef : class, IReference<T>
+    public static bool IsEqv<TVal, TRef>(this TVal a, OptionalReferencableProperty<TVal, TRef> b)
+        where TVal : class, ISystemObject<TRef>
+        where TRef : class, IReference<TVal>
         => b.Match(
             value: v => v.IsEqv(a),
             reference: r => r.IsEqv(a),

@@ -3,14 +3,22 @@ using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects.Properties;
 
-public abstract class ReferencableSetProperty<TValue, TReference>(System System) : IEnumerable<TValue>
+public abstract class ReferencableSetProperty<TValue, TReference> : IEnumerable<TValue>
     where TValue : class, IIdentifiable
-    where TReference : class, IReference<TValue>
+    where TReference : class, IReference
 {
-    private HashSet<OneOf<TValue, TReference>> _set = new(new EquivalanceComparer());
+    private HashSet<OneOf<TValue, TReference>> _set;
+    protected readonly System _system;
+
+    protected ReferencableSetProperty(System System, IEqualityComparer<OneOf<TValue, TReference>>? customEqualityComparer = null)
+    {
+        _system = System;
+        _set = new(customEqualityComparer ?? new OneOfValOrRefEquivalanceComparer<TValue, TReference>());
+    }
 
     //public bool Contains(INameful nameful)
     //{
@@ -20,6 +28,7 @@ public abstract class ReferencableSetProperty<TValue, TReference>(System System)
     //    );
     //}
 
+    [JsonIgnore]
     public bool HasValues => _set.Count > 0;
 
     public void TryAddValue(TValue transition)
@@ -40,7 +49,8 @@ public abstract class ReferencableSetProperty<TValue, TReference>(System System)
         }
     }
 
-    public List<TReference> AllReferences
+    [JsonIgnore]
+    public List<TReference> AllReferencesOnly
     {
         get => _set.Select(s => s.Match<TReference?>(entityType => null, reference => reference))
                    .Where(s => s != null)
@@ -48,17 +58,12 @@ public abstract class ReferencableSetProperty<TValue, TReference>(System System)
                    .ToList();
     }
 
+    [JsonIgnore]
     public IEnumerable<TValue> AllResolvedValues
-    {
-        get =>
-            _set.Select(s => s.Match(
-                value => value,
-                reference => reference.ResolveReference().Match(
-                    value => value,
-                    () => throw new Exception($"{typeof(TValue).Name} reference '{reference}' could not be resolved.")
-                )
-            )).ToList();
-    }
+        => _set.SelectMany(s => s.Match(
+               value => [value],
+               reference => reference.Resolve<TValue>()
+           )).Distinct();
 
     public int Count => _set.Count;
 
@@ -68,16 +73,24 @@ public abstract class ReferencableSetProperty<TValue, TReference>(System System)
     IEnumerator IEnumerable.GetEnumerator()
         => AllResolvedValues.GetEnumerator();
 
-    private class EquivalanceComparer : IEqualityComparer<OneOf<TValue, TReference>>
-    {
-        public bool Equals(OneOf<TValue, TReference> x, OneOf<TValue, TReference> y)
-            => x.Match(
-                X => y.Match(Y => X.IsEqv(Y), R => false),
-                r => y.Match(Y => false, R => r.IsEqv(R))
-            );
+}
 
-        public int GetHashCode([DisallowNull] OneOf<TValue, TReference> obj)
-            => obj.GetHashCode();
-    }
+public class OneOfValOrRefEquivalanceComparer<TValue, TReference> : IEqualityComparer<OneOf<TValue, TReference>>
+    where TValue : class, IIdentifiable
+    where TReference : class, IReference
+{
+    public bool Equals(OneOf<TValue, TReference> x, OneOf<TValue, TReference> y)
+        => x.Match(
+            vx => y.Match(vy => AreEqual(vx, vy), ry => false),
+            rx => y.Match(vy => false, ry => AreEqual(rx, ry))
+        );
 
+    protected virtual bool AreEqual(TValue vx, TValue vy)
+        => vx.IsEqv(vy);
+
+    protected virtual bool AreEqual(TReference rx, TReference ry)
+        => rx.IsEqv(ry);
+
+    public int GetHashCode([DisallowNull] OneOf<TValue, TReference> obj)
+        => obj.GetHashCode();
 }

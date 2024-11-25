@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Execution.Events;
+﻿using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.Execution.Dialog;
@@ -17,9 +17,7 @@ public class DialogExecutor : IExecutor
     public IScenarioEvent? GetLastEvent()
     {
         if (_scenario == null || _scenarioRun == null)
-        {
             throw new InvalidOperationException("Scenario not started");
-        }
 
         return _scenarioRun.Events.LastOrDefault();
     }
@@ -29,9 +27,7 @@ public class DialogExecutor : IExecutor
         _scenario = _context.Scenarios.FirstOrDefault(s => s.Name == name);
 
         if (_scenario == null)
-        {
             throw new InvalidOperationException($"No scenario with name {name}");
-        }
 
         _scenarioRun = new ScenarioRun { Scenario = _scenario };
         _scenarioRun.Init();
@@ -42,9 +38,7 @@ public class DialogExecutor : IExecutor
     public IScenarioNode? NextNode()
     {
         if (_scenario == null || _scenarioRun == null)
-        {
             throw new InvalidOperationException("Scenario not started");
-        }
 
         return _scenarioRun.NextNode();
     }
@@ -52,9 +46,7 @@ public class DialogExecutor : IExecutor
     public void RegisterEvent(IScenarioEvent @event)
     {
         if (_scenario == null || _scenarioRun == null)
-        {
             throw new InvalidOperationException("Scenario not started");
-        }
 
         _scenarioRun.RegisterEvent(@event);
     }

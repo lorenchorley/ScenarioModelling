@@ -1,5 +1,4 @@
 using FluentAssertions;
-using LanguageExt.Common;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Tests.Valid;
 using System.Diagnostics;
@@ -26,7 +25,7 @@ public class SerialisationTests
 
         Context loadedContext =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(originalContextText)
                    .Initialise();
 
@@ -44,7 +43,7 @@ public class SerialisationTests
                 Debug.WriteLine(reserialisedContextText);
 
                 Context reloadedContext = Context.New()
-                       .UseSerialiser<HumanReadableSerialiser>()
+                       .UseSerialiser<ContextSerialiser>()
                        .LoadContext(reserialisedContextText)
                        .Initialise();
 

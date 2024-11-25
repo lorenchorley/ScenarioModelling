@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Execution.Events;
+﻿using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.Execution.Analysis;

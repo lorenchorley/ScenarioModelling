@@ -20,7 +20,7 @@ public static class DiffAssert
         // Launch winmerge
         Process.Start(@"C:\Program Files\WinMerge\WinMergeU.exe", $"/dl {leftName} /dr {rightName} {leftTemp} {rightTemp}");
 
-        Assert.Fail();
+        Assert.Fail("The diff failed, winmerge was opened with two versions of the text");
     }
 
     public static void DiffIfNotEqual(string left, string middle, string right, StringComparison stringComparison = StringComparison.Ordinal, [CallerArgumentExpression("left")] string leftName = "", [CallerArgumentExpression("middle")] string middleName = "", [CallerArgumentExpression("right")] string rightName = "")
@@ -40,7 +40,7 @@ public static class DiffAssert
         // Launch winmerge
         Process.Start(@"C:\Program Files\WinMerge\WinMergeU.exe", $"/dl {leftName} /dm {middleName} /dr {rightName} {leftTemp} {middleTemp} {rightTemp}");
 
-        Assert.Fail();
+        Assert.Fail("The diff failed, winmerge was opened with three versions of the text");
     }
 
     private static string GetUniqueFilename(string name = "")

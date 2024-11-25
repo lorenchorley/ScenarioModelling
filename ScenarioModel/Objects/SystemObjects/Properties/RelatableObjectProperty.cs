@@ -1,9 +1,9 @@
 ﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.Objects.SystemObjects.Properties;
 
-public class RelatableObjectProperty(System System) : OptionalReferencableProperty<IRelatable, RelatableObjectReference>(System)
+public class RelatableObjectProperty(System System) : OptionalReferencableProperty<IRelatable, IRelatableObjectReference>(System)
 {
     public override string? Name
     {
@@ -12,5 +12,4 @@ public class RelatableObjectProperty(System System) : OptionalReferencableProper
             reference => reference.Name
         );
     }
-
 }

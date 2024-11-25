@@ -24,7 +24,7 @@ public class StringInterpolationTests
 
         Context context =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(_scenarioText)
                    .Initialise();
 

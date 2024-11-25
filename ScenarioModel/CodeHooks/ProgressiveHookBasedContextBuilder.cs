@@ -33,7 +33,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
         _instanciator = new(_context.System);
     }
 
-    public Result<Context> Build(HookContextBuilderInputs inputs)
+    public Result<Context> BuildContextFromInputs(HookContextBuilderInputs inputs)
     {
         // Transform all definitions into objects with references to other objects
         // One line for each type of definition that can exist at the top level of the definition tree (that is with a minimum of indentation)
@@ -46,7 +46,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
         //NameUnnamedObjects(); // Should be done as we go in the tranform step
 
         // Validate all objects
-        ValidateObjects();
+        InitialiseObjects();
 
         // Reinitialize the inputs so that everything is ready to be reused
         inputs.Reset();
@@ -122,7 +122,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
 
     //}
 
-    public void ValidateObjects()
+    public void InitialiseObjects()
     {
 
     }

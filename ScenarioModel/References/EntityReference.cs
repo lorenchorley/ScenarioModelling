@@ -2,12 +2,15 @@
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
 public record EntityReference(System System) : IReference<Entity>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(Entity);
 
     public Option<Entity> ResolveReference()

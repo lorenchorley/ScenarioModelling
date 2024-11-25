@@ -2,7 +2,6 @@
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References;
-using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel;
 
@@ -17,76 +16,10 @@ public class System
     public List<Transition> Transitions { get; set; } = new();
     public List<Constraint> Constraints { get; set; } = new();
 
-    public void ValidateAndInitialise()
-    {
-        CheckForUnresolvableReferences();
-        CheckForNameUniquenessByType();
-    }
-
-    #region Validation
-    public void CheckForUnresolvableReferences()
-    {
-        List<string> unresolvedReferenceDescriptions =
-        [
-            .. CheckReferenceResolvability<Entity>(AllEntityReferences, name => $"Entity reference : {name}"),
-            .. CheckReferenceResolvability<EntityType>(AllEntityTypeReferences, name => $"Entity type reference : {name}"),
-            .. CheckReferenceResolvability<State>(AllStateReferences, name => $"State reference : {name}"),
-            .. CheckReferenceResolvability<Relation>(AllRelationReferences, name => $"Relation reference : {name}"),
-            .. CheckReferenceResolvability<Aspect>(AllAspectReferences, name => $"Aspect reference : {name}"),
-            .. CheckReferenceResolvability<StateMachine>(AllStateMachineReferences, name => $"StateMachine reference : {name}"),
-            .. CheckReferenceResolvability<Transition>(AllTransitionReferences, name => $"Transition reference : {name}"),
-            .. CheckReferenceResolvability<Constraint>(AllConstraintReferences, name => $"Constraint reference : {name}")
-        ];
-
-        if (unresolvedReferenceDescriptions.Any())
-        {
-            throw new Exception($"Unresolved references found : {unresolvedReferenceDescriptions.BulletPointList()}");
-        }
-    }
-
-    private IEnumerable<string> CheckReferenceResolvability<TValue>(IEnumerable<IReference<TValue>> references, Func<IReference<TValue>, string> toMessage)
-    {
-        foreach (var reference in references)
-        {
-            if (reference.ResolveReference().IsNone)
-            {
-                yield return toMessage(reference);
-            }
-        }
-    }
-
-    public void CheckForNameUniquenessByType()
-    {
-        List<string> unresolvedReferenceDescriptions =
-        [
-            .. CheckNameUniqueness<Entity>(Entities),
-            .. CheckNameUniqueness<EntityType>(EntityTypes),
-            .. CheckNameUniqueness<State>(States),
-            .. CheckNameUniqueness<Relation>(Relations),
-            .. CheckNameUniqueness<Aspect>(Aspects),
-            .. CheckNameUniqueness<StateMachine>(StateMachines),
-            //.. CheckNameUniqueness<Transition>(Transitions) // It's ok to have duplicate transition names, it's wanted even
-        ];
-
-        if (unresolvedReferenceDescriptions.Any())
-        {
-            throw new Exception($"Name uniqueness by object type not satisfied : {unresolvedReferenceDescriptions.BulletPointList()}");
-        }
-    }
-
-    private IEnumerable<string> CheckNameUniqueness<TValue>(IEnumerable<IIdentifiable> values)
-    {
-        foreach (var groupsWithMoreThanOneName in values.GroupBy(v => v.Name).Where(g => g.Count() > 1))
-        {
-            yield return $"Found more than one {typeof(TValue).Name} with name {groupsWithMoreThanOneName.Key} ({groupsWithMoreThanOneName.Count()})";
-        }
-    }
-    #endregion
-
     public IEnumerable<EntityReference> AllEntityReferences
     {
         get => Enumerable.Empty<EntityReference>()
-                         .Concat(Aspects.Select(e => e.Entity.Reference))
+                         .Concat(Aspects.Select(e => e.Entity.ReferenceOnly))
                          .Where(s => s != null)
                          .Cast<EntityReference>();
     }
@@ -94,7 +27,7 @@ public class System
     public IEnumerable<EntityTypeReference> AllEntityTypeReferences
     {
         get => Enumerable.Empty<EntityTypeReference>()
-                         .Concat(Entities.Select(e => e.EntityType.Reference))
+                         .Concat(Entities.Select(e => e.EntityType.ReferenceOnly))
                          .Where(s => s != null)
                          .Cast<EntityTypeReference>();
     }
@@ -102,17 +35,17 @@ public class System
     public IEnumerable<AspectReference> AllAspectReferences
     {
         get => Enumerable.Empty<AspectReference>()
-                         .Concat(Entities.SelectMany(e => e.Aspects.AllReferences))
+                         .Concat(Entities.SelectMany(e => e.Aspects.AllReferencesOnly))
                          .Where(s => s != null)
                          .Cast<AspectReference>();
     }
 
     public IEnumerable<StateReference> AllStateReferences
     {
-        get => AllStateful.Select(e => e.State.Reference)
-                          .Concat(StateMachines.SelectMany(sm => sm.States.AllReferences))
-                          .Append(Transitions.Select(t => t.SourceState.Reference))
-                          .Append(Transitions.Select(t => t.DestinationState.Reference))
+        get => AllStateful.Select(e => e.State.ReferenceOnly)
+                          .Concat(StateMachines.SelectMany(sm => sm.States.AllReferencesOnly))
+                          .Append(Transitions.Select(t => t.SourceState.ReferenceOnly))
+                          .Append(Transitions.Select(t => t.DestinationState.ReferenceOnly))
                           .Where(s => s != null)
                           .Cast<StateReference>();
     }
@@ -120,8 +53,8 @@ public class System
     public IEnumerable<StateMachineReference> AllStateMachineReferences
     {
         get => Enumerable.Empty<StateMachineReference>()
-                         .Concat(Aspects.Select(e => e.AspectType?.StateMachine.Reference))
-                         .Concat(EntityTypes.Select(e => e.StateMachine.Reference))
+                         .Concat(Aspects.Select(e => e.AspectType?.StateMachine.ReferenceOnly))
+                         .Concat(EntityTypes.Select(e => e.StateMachine.ReferenceOnly))
                          .Where(s => s != null)
                          .Cast<StateMachineReference>();
     }
@@ -129,7 +62,7 @@ public class System
     public IEnumerable<RelationReference> AllRelationReferences
     {
         get => Enumerable.Empty<RelationReference>()
-                         .Concat(AllRelatable.SelectMany(e => e.Relations.AllReferences))
+                         .Concat(AllRelatable.SelectMany(e => e.Relations.AllReferencesOnly))
                          .Where(s => s != null)
                          .Cast<RelationReference>();
     }
@@ -137,7 +70,7 @@ public class System
     public IEnumerable<TransitionReference> AllTransitionReferences
     {
         get => Enumerable.Empty<TransitionReference>()
-                         .Concat(StateMachines.SelectMany(s => s.Transitions.AllReferences))
+                         .Concat(StateMachines.SelectMany(s => s.Transitions.AllReferencesOnly))
                          .Where(s => s != null)
                          .Cast<TransitionReference>();
     }

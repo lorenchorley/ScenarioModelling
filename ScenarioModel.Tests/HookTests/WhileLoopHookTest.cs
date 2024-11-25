@@ -160,14 +160,14 @@ public class WhileLoopHookTest
         // =======
         Context context =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
         ScenarioHookOrchestratorForConstruction hooks = new ScenarioHookOrchestratorForConstruction(context);
 
         var reserialisedContext =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(_scenarioText)
                    .Initialise()
                    .Serialise()
@@ -213,12 +213,12 @@ public class WhileLoopHookTest
         // =======
         Context context =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
         var reserialisedContext =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(_scenarioText)
                    .Initialise()
                    .Serialise()

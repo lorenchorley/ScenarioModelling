@@ -42,7 +42,7 @@ public static class SystemObjectExhaustivity
     }
 
     private static readonly PropertyExhaustivityFunctions<ObjectLikePropertyAttribute> _propertyExhaustivityFunctions = new();
-    private static readonly TypeExhaustivityFunctions _typeExhaustivityFunctions = new(AllObjectTypes, typeof(ObjectLikeAttribute<,>));
+    private static readonly TypeExhaustivityFunctions _typeExhaustivityFunctions = new(AllObjectTypes, typeof(ObjectLikeAttribute<,>), "object");
 
     public static void DoForEachNodeProperty<TNode>(TNode node, Action<string, object?> callback)
     {

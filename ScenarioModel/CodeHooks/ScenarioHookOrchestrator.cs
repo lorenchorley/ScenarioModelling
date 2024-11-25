@@ -20,7 +20,7 @@ public abstract class ScenarioHookOrchestrator
 
     protected ScenarioHookOrchestrator(Context context)
     {
-        NodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHookDefinition>();
+        ScenarioNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHookDefinition>();
 
         Context = context;
         _contextBuilder = new(context);
@@ -36,7 +36,7 @@ public abstract class ScenarioHookOrchestrator
             SubGraph = Scenario.Graph.PrimarySubGraph
         });
 
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
         return _scenarioDefintion;
     }
 
@@ -51,7 +51,7 @@ public abstract class ScenarioHookOrchestrator
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
@@ -62,7 +62,7 @@ public abstract class ScenarioHookOrchestrator
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
@@ -74,18 +74,18 @@ public abstract class ScenarioHookOrchestrator
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
 
-    public virtual StateTransitionHookDefinition DeclareTransition(string statefulObjectName, string transition)
+    public virtual TransitionHookDefinition DeclareTransition(string statefulObjectName, string transition)
     {
-        StateTransitionHookDefinition nodeDef = new(Context.System, statefulObjectName, transition);
+        TransitionHookDefinition nodeDef = new(Context.System, statefulObjectName, transition);
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
@@ -96,7 +96,7 @@ public abstract class ScenarioHookOrchestrator
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
@@ -107,7 +107,7 @@ public abstract class ScenarioHookOrchestrator
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
@@ -117,7 +117,7 @@ public abstract class ScenarioHookOrchestrator
         WhileHookDefinition nodeDef = new(condition, CurrentScope);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
@@ -129,6 +129,6 @@ public abstract class ScenarioHookOrchestrator
         systemHookDefinition.Initialise();
 
         //_contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.Build(_contextBuilderInputs);
+        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
     }
 }

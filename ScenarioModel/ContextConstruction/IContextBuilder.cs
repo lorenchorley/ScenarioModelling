@@ -4,9 +4,9 @@ namespace ScenarioModel.ContextConstruction;
 
 public interface IContextBuilder<TInputs> where TInputs : IContextBuilderInputs
 {
-    Result<Context> Build(TInputs inputs);
+    Result<Context> BuildContextFromInputs(TInputs inputs);
     void Transform(TInputs inputs);
     void CreateObjectsFromUnresolvableReferences();
     //void NameUnnamedObjects();
-    void ValidateObjects();
+    void InitialiseObjects();
 }

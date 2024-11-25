@@ -1,6 +1,7 @@
 ﻿using LanguageExt;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
@@ -9,6 +10,8 @@ public class RelatableObjectReference : IRelatableObjectReference
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type
         => ResolveReference().Match(
             Some: x => x.Type,

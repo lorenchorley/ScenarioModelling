@@ -35,7 +35,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
         // Create the context from the scenario text
         Context context =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .SetResourceFolder(filePath)
                    .LoadContext(scenarioText)
                    .Initialise();
@@ -45,10 +45,10 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
         ExpressionEvalator evalator = new(context.System);
         EventGenerationDependencies dependencies = new EventGenerationDependencies(interpolator, evalator, executor, context);
 
-        NodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHandler>();
+        ScenarioNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHandler>();
 
         DialogNodeHandler dialogNodeHandler = new() { Dependencies = dependencies };
-        StateTransitionNodeHandler stateTransitionNodeHandler = new() { Dependencies = dependencies };
+        TransitionNodeHandler transitionNodeHandler = new() { Dependencies = dependencies };
         JumpNodeHandler jumpNodeHandler = new() { Dependencies = dependencies };
         IfNodeHandler ifNodeHandler = new() { Dependencies = dependencies };
         ChooseNodeHandler chooseNodeHandler = new() { Dependencies = dependencies };
@@ -73,7 +73,7 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
                 dialogNodeHandler.Manage,
                 ifNodeHandler.Manage,
                 jumpNodeHandler.Manage,
-                stateTransitionNodeHandler.Manage,
+                transitionNodeHandler.Manage,
                 whileNodeHandler.Manage
             );
 

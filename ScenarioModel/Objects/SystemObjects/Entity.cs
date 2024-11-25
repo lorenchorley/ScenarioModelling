@@ -1,15 +1,19 @@
 ﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
+using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record Entity : IStateful, IRelatable, ISystemObject
+public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(Entity);
 
     public string CharacterStyle { get; set; } = "";
@@ -35,6 +39,12 @@ public record Entity : IStateful, IRelatable, ISystemObject
         => new EntityReference(_system) { Name = Name };
 
     public IStatefulObjectReference GenerateStatefulReference()
+        => GenerateReference();
+
+    IRelatableObjectReference ISystemObject<IRelatableObjectReference>.GenerateReference()
+        => GenerateReference();
+
+    IRelatableObjectReference IReferencable<IRelatableObjectReference>.GenerateReference()
         => GenerateReference();
 
     public void AssertEqv(Entity other)
@@ -76,4 +86,7 @@ public record Entity : IStateful, IRelatable, ISystemObject
             throw new Exception($"States do not match: '{State}' and '{other.State}'.");
         }
     }
+
+    public object Accept(ISystemVisitor visitor)
+        => visitor.VisitEntity(this);
 }

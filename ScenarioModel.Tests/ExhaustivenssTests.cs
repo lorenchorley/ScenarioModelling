@@ -83,7 +83,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
 
 
         // Act && Assert
@@ -98,7 +98,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
 
 
         // Act
@@ -119,7 +119,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
 
 
         // Act
@@ -140,7 +140,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>));
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
 
 
         // Act

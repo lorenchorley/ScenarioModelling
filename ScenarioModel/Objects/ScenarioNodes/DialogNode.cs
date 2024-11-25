@@ -1,9 +1,9 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
-using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.Visitors;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
@@ -40,4 +40,7 @@ public record DialogNode : ScenarioNode<DialogEvent>
         => Enumerable.Empty<SemiLinearSubGraph<IScenarioNode>>();
 
     public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
+
+    public override object Accept(IScenarioVisitor visitor)
+        => visitor.VisitDialogNode(this);
 }

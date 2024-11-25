@@ -1,7 +1,8 @@
 ﻿using ScenarioModel.Collections;
-using ScenarioModel.Execution.Events;
+using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
+using ScenarioModel.Objects.Visitors;
 
 namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
@@ -10,4 +11,6 @@ public interface IScenarioNode : IDirectedGraphNode<IScenarioNode>, IIdentifiabl
     int? Line { get; set; }
     IScenarioEvent GenerateUntypedEvent(EventGenerationDependencies dependencies);
     OneOfIScenaroNode ToOneOf();
+    object Accept(IScenarioVisitor visitor);
+    string? LineInformation { get; }
 }

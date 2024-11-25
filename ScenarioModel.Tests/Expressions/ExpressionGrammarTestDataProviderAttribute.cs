@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModel.Expressions.Evaluation;
+using ScenarioModel.Objects.SystemObjects;
 using System.Reflection;
 
 namespace ScenarioModel.Tests;
@@ -9,9 +10,9 @@ public class ExpectedValues
     public string Expected { get; set; }
     public bool IsValid { get; set; }
     public object? ExpectedEvaluatedValue { get; set; } = null;
-    public ExpressionValueType? ExpectedReturnType { get; set; } = null;
+    public Type? ExpectedReturnType { get; set; } = null;
 
-    public ExpectedValues(string Expected, bool IsValid, object? ExpectedEvaluatedValue = null, ExpressionValueType? ExpectedReturnType = null)
+    public ExpectedValues(string Expected, bool IsValid, object? ExpectedEvaluatedValue = null, Type? ExpectedReturnType = null)
     {
         this.Expected = Expected;
         this.IsValid = IsValid;
@@ -54,7 +55,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: "A",
-            ExpectedReturnType: ExpressionValueType.Entity
+            ExpectedReturnType: typeof(Entity)
         ),
         new(
             "Reference to entity A's aspect D (A.D)",
@@ -64,7 +65,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: "D",
-            ExpectedReturnType: ExpressionValueType.Aspect
+            ExpectedReturnType: typeof(Aspect)
         ),
         new(
             "Reference to the state of entity A's aspect D (A.D.State)",
@@ -74,7 +75,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: "DState",
-            ExpectedReturnType: ExpressionValueType.State
+            ExpectedReturnType: typeof(State)
         ),
         new(
             "A string",
@@ -84,7 +85,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: "A string",
-            ExpectedReturnType: ExpressionValueType.String
+            ExpectedReturnType: typeof(string)
         ),
         new(
             "And",
@@ -102,7 +103,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "Or",
@@ -120,7 +121,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "Or and",
@@ -138,7 +139,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "And or",
@@ -156,7 +157,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "==",
@@ -166,7 +167,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "!=",
@@ -176,7 +177,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "!= ==",
@@ -194,7 +195,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "== !=",
@@ -212,7 +213,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "And ==",
@@ -230,7 +231,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "== and",
@@ -248,7 +249,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "(==) and",
@@ -266,7 +267,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "== (and)",
@@ -284,7 +285,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "Function not - 1 param",
@@ -312,7 +313,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "B related to C",
@@ -322,27 +323,27 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "A related to B with named relation",
-            @"A -?> B : ""Relation name""",
+            @"A -?> B : NamedRelation",
             """
             HasRelationExpression { Name = Relation name, Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "B related to A with named relation",
-            @"A -?> B : ""Relation name""",
+            @"B -?> A : NamedRelation",
             """
             HasRelationExpression { Name = Relation name, Left = CompositeValue { B }, Right = CompositeValue { A } }
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "A not related to B",
@@ -352,7 +353,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "B not related to A",
@@ -361,28 +362,28 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             DoesNotHaveRelationExpression { Name = , Left = CompositeValue { B }, Right = CompositeValue { A } }
             """,
             true,
-            ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedEvaluatedValue: true,
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "A not related to B with named relation",
-            @"A -!> B : ""Relation name""",
+            @"A -!> B : NamedRelation",
             """
             DoesNotHaveRelationExpression { Name = Relation name, Left = CompositeValue { A }, Right = CompositeValue { B } }
             """,
             true,
             ExpectedEvaluatedValue: true,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "B not related to A with named relation",
-            @"B -!> A : ""Relation name""",
+            @"B -!> A : NamedRelation",
             """
             DoesNotHaveRelationExpression { Name = Relation name, Left = CompositeValue { B }, Right = CompositeValue { A } }
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "-?> and",
@@ -400,7 +401,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             """,
             true,
             ExpectedEvaluatedValue: false,
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedReturnType: typeof(bool)
         ),
         new(
             "and -?>",
@@ -417,8 +418,8 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
             AndExpression { Left = CompositeValue { true }, Right = HasRelationExpression { Name = , Left = CompositeValue { B }, Right = CompositeValue { C } } }
             """,
             true,
-            ExpectedEvaluatedValue: false, // TODO
-            ExpectedReturnType: ExpressionValueType.Boolean
+            ExpectedEvaluatedValue: true, // TODO
+            ExpectedReturnType: typeof(bool)
         ),
     };
 

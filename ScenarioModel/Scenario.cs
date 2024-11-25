@@ -2,6 +2,7 @@
 using ScenarioModel.Execution;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel;
 
@@ -19,15 +20,12 @@ namespace ScenarioModel;
 public class Scenario : IIdentifiable
 {
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(Scenario);
 
     public System System { get; set; } = new();
     public DirectedGraph<IScenarioNode> Graph { get; set; } = new();
-
-    public void Initialise(Context context)
-    {
-
-    }
 
     public StoryRunResult StartAtNode(string nodeName)
     {

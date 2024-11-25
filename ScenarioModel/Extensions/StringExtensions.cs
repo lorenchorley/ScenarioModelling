@@ -6,6 +6,19 @@ public static class StringExtensions
     {
         return string.Equals(firstStr, secondStr, StringComparison.CurrentCultureIgnoreCase);
     }
+    
+    public static bool IsEqvCountingNulls(this string? firstStr, string? secondStr)
+    {
+        if (firstStr == null || secondStr == null)
+        {
+            if (firstStr != null || secondStr != null)
+                return false; // If only one is null
+            else
+                return true; // If both are null
+        }
+
+        return string.Equals(firstStr, secondStr, StringComparison.CurrentCultureIgnoreCase);
+    }
 
     public static bool IsEqv(this string firstStr, StringValue secondStr)
     {

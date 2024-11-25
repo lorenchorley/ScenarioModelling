@@ -72,7 +72,7 @@ public class Instanciator(System System)
             nameof(AspectReference) => new AspectReference(System),
             nameof(StateReference) => new StateReference(System),
             nameof(StateMachineReference) => new StateMachineReference(System),
-            nameof(TransitionReference) => new TransitionReference(System),
+            nameof(TransitionReference) => throw new Exception("Transitino reference might not have enough information (source, destination)"),// new TransitionReference(System),
             nameof(RelationReference) => new RelationReference(System),
             nameof(ConstraintReference) => new ConstraintReference(System),
             _ => throw new NotImplementedException($"Reference type {typeof(TRef).Name} not implemented.")

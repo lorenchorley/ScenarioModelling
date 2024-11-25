@@ -1,15 +1,19 @@
 ﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
+using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record Relation : ISystemObject, IStateful
+public record Relation : ISystemObject<RelationReference>, IStateful
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(Relation);
 
     public RelatableObjectReference? LeftEntity { get; set; } // TODO Propertyise
@@ -32,4 +36,6 @@ public record Relation : ISystemObject, IStateful
     public IStatefulObjectReference GenerateStatefulReference()
         => GenerateReference();
 
+    public object Accept(ISystemVisitor visitor)
+        => visitor.VisitRelation(this);
 }

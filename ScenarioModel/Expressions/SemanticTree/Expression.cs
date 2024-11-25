@@ -5,6 +5,6 @@ namespace ScenarioModel.Expressions.SemanticTree;
 
 public abstract record Expression : IExpressionNode
 {
-    public ExpressionValueType Type { get; set; } = ExpressionValueType.Unknown;
+    public Type? Type { get; set; }
     public abstract object Accept(IExpressionVisitor visitor);
 }

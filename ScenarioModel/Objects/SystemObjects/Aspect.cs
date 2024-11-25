@@ -1,15 +1,19 @@
 ﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
+using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record Aspect : ISystemObject, IStateful, IRelatable
+public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(Aspect);
     public AspectType? AspectType { get; set; } // TODO Propertyise
     public EntityProperty Entity { get; private init; }
@@ -34,8 +38,13 @@ public record Aspect : ISystemObject, IStateful, IRelatable
     public IStatefulObjectReference GenerateStatefulReference()
         => new AspectReference(_system) { Name = Name };
 
-    //public bool IsEqv(Aspect other)
-    //{
-    //    return true; // TODO
-    //}
+    IRelatableObjectReference ISystemObject<IRelatableObjectReference>.GenerateReference()
+        => GenerateReference();
+
+    IRelatableObjectReference IReferencable<IRelatableObjectReference>.GenerateReference()
+        => GenerateReference();
+
+    public object Accept(ISystemVisitor visitor)
+        => visitor.VisitAspect(this);
+
 }

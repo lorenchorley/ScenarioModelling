@@ -67,7 +67,7 @@ public static class ReserialisationTestData
             SM SM1 {
             }
             """);
-        
+
         yield return new CompleteTestCase(
             Name: "Entity with state but no other direct link to state machine",
             text: """
@@ -79,7 +79,7 @@ public static class ReserialisationTestData
               State S1
             }
             """);
-        
+
         //yield return new IncompleteTestCase(
         //    Name: "Entity with state but no other direct link to state machine",
         //    originalText: """
@@ -188,7 +188,7 @@ public static class ReserialisationTestData
               S1 -> S2
             }
             """);
-        
+
         yield return new IncompleteTestCase(
             Name: "State machine with a transition",
             originalText: """
@@ -203,7 +203,7 @@ public static class ReserialisationTestData
               S1 -> S2
             }
             """);
-        
+
         yield return new IncompleteTestCase(
             Name: "State machine with a transition and only one explicit state",
             originalText: """
@@ -214,8 +214,8 @@ public static class ReserialisationTestData
             """,
             expectedFinalText: """
             SM SM1 {
-              State S1
               State S2
+              State S1
               S1 -> S2
             }
             """);
@@ -241,7 +241,7 @@ public static class ReserialisationTestData
             SM SM1 {
               State S1
               State S2
-              S1 -> S2 : T2
+              S1 -> S2 : T1
             }
             """);
 
@@ -294,7 +294,7 @@ public static class ReserialisationTestData
               S1 -> S2 : "T 1"
             }
             """);
-        
+
         yield return new CompleteTestCase(
             Name: "Two related entities",
             text: """

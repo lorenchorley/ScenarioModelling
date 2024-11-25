@@ -1,5 +1,7 @@
 ﻿using LanguageExt.Common;
+using ScenarioModel.ContextValidation;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Serialisation;
 using ScenarioModel.Validation;
 
@@ -135,26 +137,10 @@ public class Context
 
     public Context Initialise()
     {
-        foreach (var scenario in Scenarios)
-        {
-            scenario.Initialise(this);
-        }
-
-        System.ValidateAndInitialise();
-
-        Validate();
+        // Context validation
+        ValidationErrors.Incorporate(new ContextValidator().Validate(this));
 
         return this;
-    }
-
-    public void Validate()
-    {
-        foreach (var scenario in Scenarios)
-        {
-            ValidationErrors.Incorporate(new ScenarioValidator().Validate(scenario));
-        }
-
-        ValidationErrors.Incorporate(new SystemValidator().Validate(System));
     }
 
     public Result<string> Serialise<T>() where T : ISerialiser

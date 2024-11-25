@@ -119,7 +119,7 @@ public class ChooseAndJumpHookTest
         // =======
         Context context =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
         ScenarioHookOrchestrator hooks = new ScenarioHookOrchestratorForConstruction(context);
@@ -132,7 +132,7 @@ public class ChooseAndJumpHookTest
 
         var reserialisedContext =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(_scenarioText)
                    .Initialise()
                    .Serialise()

@@ -1,17 +1,25 @@
 ﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
+using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record State : ISystemObject
+public record State : ISystemObject<StateReference>
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(State);
 
-    public StateMachine? _stateMachine;
+    private StateMachine? _stateMachine;
     internal bool HasStateMachine => _stateMachine != null;
+
+    public string StateMachineName => StateMachine.Name;
+
+    [JsonIgnore]
     public StateMachine StateMachine
     {
         get
@@ -42,26 +50,57 @@ public record State : ISystemObject
         _system.States.Add(this);
     }
 
-    public bool TryTransition(string transitionName, IStateful stateful)
+    public void DoTransition(string transitionName, IStateful statefulObject)
     {
-        var transition = Transitions.FirstOrDefault(t => t.Name.IsEqv(transitionName));
+        // Get the current state name so that we know which transitions have it as a source state
+        var currentStateName = statefulObject.State.ResolvedValue?.Name 
+                               ?? throw new Exception("Stateful object state is not set.");
 
-        if (transition == null)
+        var matchingTransitions = Transitions.Where(t => IsTransitionMatch(t, transitionName, currentStateName))
+                                             .ToList();
+
+        if (matchingTransitions.Count == 0)
         {
-            return false;
+            throw new Exception($"No transition found for transition name '{transitionName}' and source state name '{currentStateName}'.");
         }
+        else if (matchingTransitions.Count >= 2)
+        {
+            throw new Exception($"Multiple transitions found for transition name '{transitionName}' and source state name '{currentStateName}'.");
+        }
+
+        // We can assume that we have exactly one valid transition
+        var transition = matchingTransitions[0];
 
         // TODO Constraints
 
-        string? name = transition.DestinationState.Name;
+        string destinationStateName = transition.DestinationState.Name
+                                      ?? throw new Exception("Transition destination state name is not set.");
 
-        if (name == null)
-            throw new Exception("Transition destination state name is not set.");
-
-        stateful.State.SetValue(StateMachine.States.First(s => name?.IsEqv(s.Name) ?? false));
+        // Find the actual state that corresponds to the state that is specified on the transition
+        // We should verify that the state exists as early as possible to make debugging easier
+        State newState = StateMachine.States.Single(s => destinationStateName.IsEqv(s.Name));
+        statefulObject.State.SetValue(newState);
 
         // TODO Effects
 
+    }
+
+    private static bool IsTransitionMatch(Transition t, string transitionName, string sourceStateName)
+    {
+        // If transition names don't correspond, it's not our transition
+        if (!t.Name.IsEqv(transitionName))
+            return false;
+
+        var transitionSourceState = t.SourceState.ResolvedValue;
+
+        if (transitionSourceState == null)
+            throw new Exception("Transition source state is not set.");
+
+        // The source state of the transition must be the same as the source state of the transition request
+        if (!transitionSourceState.Name.IsEqv(sourceStateName))
+            return false;
+
+        // If everything passes, then it must be a valid match
         return true;
     }
 
@@ -91,4 +130,7 @@ public record State : ISystemObject
 
         return true;
     }
+
+    public object Accept(ISystemVisitor visitor)
+        => visitor.VisitState(this);
 }

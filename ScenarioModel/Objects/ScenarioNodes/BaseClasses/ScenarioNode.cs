@@ -1,12 +1,16 @@
 ﻿using ScenarioModel.Collections;
-using ScenarioModel.Execution.Events;
+using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.Visitors;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
 {
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(E);
     public int? Line { get; set; }
     public abstract E GenerateEvent(EventGenerationDependencies dependencies);
@@ -23,4 +27,5 @@ public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
     }
 
     public abstract OneOfIScenaroNode ToOneOf();
+    public abstract object Accept(IScenarioVisitor visitor);
 }

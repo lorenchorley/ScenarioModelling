@@ -1,11 +1,12 @@
 ﻿using OneOf;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects.Properties;
 
 public abstract class OptionalReferencableProperty<TVal, TRef>
-    where TVal : class, IIdentifiable
+    where TVal : class, ISystemObject<TRef>
     where TRef : class, IReference<TVal>
 {
     protected OneOf<TVal, TRef>? _valueOrReference = null;
@@ -18,6 +19,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
         _system = system;
     }
 
+    [JsonIgnore]
     public bool IsSet => _valueOrReference != null;
 
     public void SetValue(TVal? value)
@@ -44,7 +46,19 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
         }
     }
 
-    public TVal? Value
+    public TRef? GetOrGenerateReference()
+    {
+        if (_valueOrReference == null)
+            return null;
+
+        return _valueOrReference?.Match<TRef>(
+                value => value.GenerateReference(),
+                reference => reference
+            );
+    }
+
+    [JsonIgnore]
+    public TVal? ValueOnly
     {
         get => _valueOrReference?.Match<TVal?>(
                 value => value,
@@ -52,7 +66,8 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
             );
     }
 
-    public TRef? Reference
+    [JsonIgnore]
+    public TRef? ReferenceOnly
     {
         get => _valueOrReference?.Match<TRef?>(
                 state => default,
@@ -68,6 +83,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
         return _valueOrReference.Value.Match(value, reference);
     }
 
+    [JsonIgnore]
     public TVal? ResolvedValue
     {
         get
@@ -78,7 +94,10 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
             return ((OneOf<TVal, TRef>)_valueOrReference).Match(
                 state => state,
                 reference => reference.ResolveReference().Match(
-                    state => state,
+                    state => {
+                        _valueOrReference = state; // Cache the resolved value
+                        return state;
+                    },
                     () => throw new Exception($"{typeof(TVal).Name} reference '{reference}' could not be resolved.")
                 )
             );

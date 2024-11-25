@@ -1,15 +1,15 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
-using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.Visitors;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
 [NodeLike<IScenarioNode, WhileNode>]
-public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>
+public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioNodeWithExpression
 {
     [NodeLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
@@ -47,4 +47,7 @@ public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>
     }
 
     public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
+
+    public override object Accept(IScenarioVisitor visitor)
+        => visitor.VisitWhileNode(this);
 }

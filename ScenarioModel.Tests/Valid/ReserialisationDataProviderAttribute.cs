@@ -12,7 +12,7 @@ public class ReserialisationDataProviderAttribute : Attribute, ITestDataSource
 
     private static object[] TransformIntoArgumentsArray(IContextReserialisationTestCase testCase)
     {
-        if(testCase is CompleteTestCase completeTestCase)
+        if (testCase is CompleteTestCase completeTestCase)
             return [completeTestCase.Name, completeTestCase.text, completeTestCase.text];
 
         if (testCase is IncompleteTestCase incompleteTestCase)

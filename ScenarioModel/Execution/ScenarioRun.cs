@@ -1,5 +1,6 @@
 ﻿using ScenarioModel.Collections;
 using ScenarioModel.Execution.Events;
+using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
@@ -97,24 +98,36 @@ public class ScenarioRun
         var currentScopeNode = GraphScopeStack.Peek().CurrentNode;
 
         if (currentScopeNode is null)
-            return ManageDefaultCase(currentScopeNode);
+            return AdvanceToNextNodeInSubgraph(currentScopeNode);
 
         return currentScopeNode.ToOneOf().Match(
             (ChooseNode node) => ManangeChoseNode(currentEvent, node),
-            (DialogNode node) => ManageDefaultCase(currentScopeNode),
+            (DialogNode node) => AdvanceToNextNodeInSubgraph(currentScopeNode),
             (IfNode node) => ManageIfNode(currentEvent, node),
             (JumpNode node) => ManageJumpNode(currentEvent, node),
-            (StateTransitionNode node) => ManageDefaultCase(currentScopeNode),
+            (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
             (WhileNode node) => ManageWhileNode(currentEvent, node)
             );
     }
 
-    private IScenarioNode? ManageDefaultCase(IScenarioNode? currentScopeNode)
+    private IScenarioNode? AdvanceToNextNodeInSubgraph(IScenarioNode? currentScopeNode)
     {
         return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
     }
 
-    private IScenarioNode ManangeChoseNode(IScenarioEvent? currentEvent, ChooseNode chooseNode)
+    private IScenarioNode? ManangeTransitionNode(IScenarioEvent? currentEvent, TransitionNode currentScopeNode)
+    {
+        // The last event must be a state change event
+        if (currentEvent is null ||
+            currentEvent is not StateChangeEvent stateChangeEvent)
+            throw new Exception($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
+
+
+
+        return AdvanceToNextNodeInSubgraph(currentScopeNode);
+    }
+    
+    private IScenarioNode? ManangeChoseNode(IScenarioEvent? currentEvent, ChooseNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -122,20 +135,20 @@ public class ScenarioRun
             throw new Exception($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
 
         // Find the next node based on the choice
-        IScenarioNode? currentScopeNode =
+        IScenarioNode? newCurrentScopeNode =
             GraphScopeStack.Peek()
                            .Graph
                            .Find(s => s.Name.IsEqv(choiceEvent.Choice));
 
-        if (currentScopeNode is null)
+        if (newCurrentScopeNode is null)
             throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
 
-        GraphScopeStack.Peek().CurrentNode = currentScopeNode;
+        GraphScopeStack.Peek().CurrentNode = newCurrentScopeNode;
 
-        return currentScopeNode;
+        return newCurrentScopeNode;
     }
 
-    private IScenarioNode ManageJumpNode(IScenarioEvent? currentEvent, JumpNode jumpNode)
+    private IScenarioNode? ManageJumpNode(IScenarioEvent? currentEvent, JumpNode currentScopeNode)
     {
         // The last event must be a jump event
         if (currentEvent is null ||
@@ -143,17 +156,17 @@ public class ScenarioRun
             throw new Exception($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
 
         // Find the next node based on the choice
-        IScenarioNode? currentScopeNode =
+        IScenarioNode? newCurrentScopeNode =
             GraphScopeStack.Peek()
                            .Graph
                            .Find(s => s.Name.IsEqv(jumpEvent.Target));
 
-        if (currentScopeNode is null)
+        if (newCurrentScopeNode is null)
             throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
 
-        GraphScopeStack.Peek().CurrentNode = currentScopeNode;
+        GraphScopeStack.Peek().CurrentNode = newCurrentScopeNode;
 
-        return currentScopeNode;
+        return newCurrentScopeNode;
     }
 
     private IScenarioNode? ManageIfNode(IScenarioEvent? currentEvent, IScenarioNode? currentScopeNode)
@@ -171,11 +184,11 @@ public class ScenarioRun
         else
         {
             // Otherwise advance past the if node
-            return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
+            return AdvanceToNextNodeInSubgraph(currentScopeNode);
         }
     }
 
-    private IScenarioNode? ManageWhileNode(IScenarioEvent? currentEvent, WhileNode whileNode)
+    private IScenarioNode? ManageWhileNode(IScenarioEvent? currentEvent, WhileNode currentScopeNode)
     {
         // The last event must be an while event
         if (currentEvent is null ||
@@ -190,7 +203,7 @@ public class ScenarioRun
         else
         {
             // Otherwise advance past the while node
-            return GraphScopeStack.Peek().GetNextInSequence(whileNode);
+            return AdvanceToNextNodeInSubgraph(currentScopeNode);
         }
     }
 

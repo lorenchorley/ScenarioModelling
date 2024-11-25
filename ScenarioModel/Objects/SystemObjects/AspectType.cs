@@ -1,13 +1,18 @@
 ﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
+using ScenarioModel.Objects.Visitors;
+using ScenarioModel.References;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
-public record AspectType : ISystemObject, IOptionalSerialisability
+public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialisability
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(AspectType);
     public StateMachineProperty StateMachine { get; private init; }
 
@@ -30,7 +35,10 @@ public record AspectType : ISystemObject, IOptionalSerialisability
         StateMachine = new(system);
     }
 
-    //public AspectTypeReference GenerateReference()
-    //    => new AspectTypeReference(System) { Name = Name };
+    public AspectTypeReference GenerateReference()
+        => new AspectTypeReference(_system) { Name = Name };
+
+    public object Accept(ISystemVisitor visitor)
+        => visitor.VisitAspectType(this);
 
 }

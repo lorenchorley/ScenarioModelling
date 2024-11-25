@@ -61,12 +61,12 @@ public class ExpressionTests
 
         System system =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(systemText)
                    .Initialise()
                    .System;
 
-        ExpressionValidator validator = new(system);
+        ExpressionInitialiser validator = new(system);
 
         var parsedExpression = interpreter.Parse(text);
 
@@ -94,9 +94,10 @@ public class ExpressionTests
 
         System system =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(systemText)
-                   .Initialise().System;
+                   .Initialise()
+                   .System;
 
         ExpressionSerialiser visitor = new(system);
 
@@ -141,12 +142,13 @@ public class ExpressionTests
 
         System system =
             Context.New()
-                   .UseSerialiser<HumanReadableSerialiser>()
+                   .UseSerialiser<ContextSerialiser>()
                    .LoadContext(systemText)
-                   .Initialise().System;
+                   .Initialise()
+                   .System;
 
+        ExpressionInitialiser initialiser = new(system);
         ExpressionEvalator evalator = new(system);
-        ExpressionValidator validator = new(system);
 
         var parsedExpression = interpreter.Parse(text);
 
@@ -158,7 +160,7 @@ public class ExpressionTests
 
         // Act
         // ===
-        parsedExpression.ParsedObject.Accept(validator); // Needed to set return types
+        parsedExpression.ParsedObject.Accept(initialiser); // Needed to set return types
         var result = parsedExpression.ParsedObject!.Accept(evalator);
 
 

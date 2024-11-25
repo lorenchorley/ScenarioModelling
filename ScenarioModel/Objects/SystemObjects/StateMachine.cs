@@ -1,18 +1,22 @@
 ﻿using LanguageExt;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
+using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
-public record StateMachine : ISystemObject, IOptionalSerialisability
+public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSerialisability
 {
     private readonly System _system;
 
     public string Name { get; set; } = "";
+
+    [JsonIgnore]
     public Type Type => typeof(StateMachine);
 
     public StateListProperty States { get; set; }
@@ -23,12 +27,12 @@ public record StateMachine : ISystemObject, IOptionalSerialisability
     {
         get
         {
-            if (ExistanceOriginallyInferred) 
+            if (ExistanceOriginallyInferred)
                 return false;
 
             //if (States.HasValues)
             //    return false;
-            
+
             //if (Transitions.HasValues)
             //    return false;
 
@@ -77,4 +81,6 @@ public record StateMachine : ISystemObject, IOptionalSerialisability
         }
     }
 
+    public object Accept(ISystemVisitor visitor)
+        => visitor.VisitStateMachine(this);
 }

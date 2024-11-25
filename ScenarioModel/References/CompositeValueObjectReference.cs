@@ -3,6 +3,7 @@ using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
@@ -18,6 +19,8 @@ public class CompositeValueObjectReference(System System) : IReference<IIdentifi
         );
         set => throw new Exception();
     }
+
+    [JsonIgnore]
     public Type Type => ResolveReference().Match(
             Some: x => x.Type,
             None: () => throw new Exception($"{Identifier.ValueList.DotSeparatedList()} is not a valid relatable object reference")
