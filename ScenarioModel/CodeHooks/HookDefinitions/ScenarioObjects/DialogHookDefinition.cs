@@ -1,27 +1,37 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
+﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 [NodeLike<INodeHookDefinition, DialogNode>]
-public class DialogHookDefinition(string Text) : INodeHookDefinition
+public class DialogHookDefinition : INodeHookDefinition
 {
-    [NodeLikeProperty]
-    public string Character { get; private set; }
+    public DialogNode Node { get; private set; }
+
+    public DialogHookDefinition(string text)
+    {
+        Node = new DialogNode()
+        {
+            TextTemplate = text
+        };
+    }
 
     public IScenarioNode GetNode()
     {
-        return new DialogNode()
-        {
-            TextTemplate = Text,
-            Character = Character
-        };
+        return Node;
     }
 
     public DialogHookDefinition SetCharacter(string character)
     {
-        Character = character;
+        Node.Character = character;
+        return this;
+    }
+
+    public DialogHookDefinition SetId(string id)
+    {
+        Node.Name = id;
         return this;
     }
 }

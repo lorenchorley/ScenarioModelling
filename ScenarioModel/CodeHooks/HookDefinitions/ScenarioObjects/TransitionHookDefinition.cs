@@ -1,30 +1,34 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
+﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.References;
+using ScenarioModel.References.GeneralisedReferences;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 [NodeLike<INodeHookDefinition, TransitionNode>]
-public class TransitionHookDefinition(System System, string StatefulObjectName, string Transition) : INodeHookDefinition
+public class TransitionHookDefinition : INodeHookDefinition
 {
-    [NodeLikeProperty]
-    public string? Id { get; private set; }
+    public TransitionNode Node { get; private set; }
 
-    public IScenarioNode GetNode()
+    public TransitionHookDefinition(System System, string StatefulObjectName, string Transition)
     {
-        return new TransitionNode()
+        Node = new TransitionNode()
         {
             // Not sure
-            Name = Id ?? "",
             StatefulObject = new StatefulObjectReference(System) { Name = StatefulObjectName },
             TransitionName = Transition
         };
     }
 
+    public IScenarioNode GetNode()
+    {
+        return Node;
+    }
+
     public TransitionHookDefinition SetId(string id)
     {
-        Id = id;
+        Node.Name = id;
         return this;
     }
 }

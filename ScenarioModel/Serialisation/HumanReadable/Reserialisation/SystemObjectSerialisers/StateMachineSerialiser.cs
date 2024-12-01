@@ -1,10 +1,9 @@
 ﻿using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
 [ObjectLike<IObjectSerialiser, StateMachine>]
 public class StateMachineSerialiser(string IndentSegment, StateSerialiser StateSerialiser, TransitionSerialiser TransitionSerialiser) : IObjectSerialiser<StateMachine>
@@ -16,7 +15,7 @@ public class StateMachineSerialiser(string IndentSegment, StateSerialiser StateS
 
         string subIndent = currentIndent + IndentSegment;
 
-        sb.AppendLine($"{currentIndent}SM {ContextSerialiser.AddQuotes(obj.Name)} {{");
+        sb.AppendLine($"{currentIndent}SM {obj.Name.AddQuotes()} {{");
 
         foreach (var state in obj.States)
         {

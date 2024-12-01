@@ -1,10 +1,12 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
+[ObjectLike<IReference, Constraint>]
 public record ConstraintReference(System System) : IReference<Constraint>
 {
     public string Name { get; set; } = "";

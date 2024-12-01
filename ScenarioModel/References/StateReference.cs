@@ -1,10 +1,12 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
+[ObjectLike<IReference, State>]
 public record StateReference : IReference<State>
 {
     private readonly System _system;

@@ -1,11 +1,11 @@
 ﻿using ScenarioModel.Collections;
+using ScenarioModel.ContextValidation.Errors;
 using ScenarioModel.ContextValidation.Interfaces;
 using ScenarioModel.ContextValidation.ScenarioValidation;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.Visitors;
-using ScenarioModel.Validation;
 
 namespace ScenarioModel.ContextValidation;
 

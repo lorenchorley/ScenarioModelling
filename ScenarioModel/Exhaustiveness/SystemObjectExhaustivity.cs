@@ -19,6 +19,12 @@ public static class SystemObjectExhaustivity
         typeof(Constraint),
     ];
 
+    public static void AssertIsObjectType<T>()
+    {
+        if (!AllObjectTypes.Contains(typeof(T)))
+            throw new ArgumentException($"Type {typeof(T).Name} is not a valid object type.");
+    }
+
     public static void DoForEachObjectType(
         Action entity,
         Action entityType,

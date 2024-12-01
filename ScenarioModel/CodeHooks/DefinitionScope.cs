@@ -1,4 +1,4 @@
-﻿using ScenarioModel.CodeHooks.HookDefinitions;
+﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Collections;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;

@@ -1,0 +1,1 @@
+﻿* DialogEvent {"Text":"Hello with multiple words","Character":null}

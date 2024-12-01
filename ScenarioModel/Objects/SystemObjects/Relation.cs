@@ -2,6 +2,7 @@
 using ScenarioModel.Objects.SystemObjects.Properties;
 using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
+using ScenarioModel.References.GeneralisedReferences;
 using ScenarioModel.References.Interfaces;
 using System.Text.Json.Serialization;
 

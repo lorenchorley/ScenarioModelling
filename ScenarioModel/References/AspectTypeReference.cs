@@ -6,10 +6,11 @@ using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
+//[ObjectLike<IReference, AspectType>]
 public record AspectTypeReference(System System) : IReference<AspectType>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string Name { get; set; } = "";
-    
+
     [JsonIgnore]
     public Type Type => typeof(AspectType);
 

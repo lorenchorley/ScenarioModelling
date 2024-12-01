@@ -1,12 +1,11 @@
 ﻿using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.Validation;
+using ScenarioModel.Expressions.Reserialisation;
 using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 [NodeLike<INodeSerialiser, IfNode>]
 public class IfNodeSerialiser(string IndentSegment, ScenarioSerialiser ScenarioSerialiser) : INodeSerialiser<IfNode>
@@ -27,7 +26,7 @@ public class IfNodeSerialiser(string IndentSegment, ScenarioSerialiser ScenarioS
         }
 
         sb.AppendLine($"{currentIndent}}}");
-        sb.AppendLine($"");
+        //sb.AppendLine($"");
     }
 }
 

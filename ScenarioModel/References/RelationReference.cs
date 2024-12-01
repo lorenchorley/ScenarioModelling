@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
@@ -7,6 +8,7 @@ using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel.References;
 
+[ObjectLike<IReference, Relation>]
 public record RelationReference : IReference<Relation>, IStatefulObjectReference
 {
     private readonly System _system;

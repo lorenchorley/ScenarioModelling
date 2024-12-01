@@ -11,7 +11,7 @@ public class TransitionListProperty : ReferencableSetProperty<Transition, Transi
 
     private class TransitionEquivalanceComparer(System System) : OneOfValOrRefEquivalanceComparer<Transition, TransitionReference>
     {
-        protected override bool AreEqual(TransitionReference rx, TransitionReference ry) 
+        protected override bool AreEqual(TransitionReference rx, TransitionReference ry)
             => rx.Equals(ry);
 
         protected override bool AreEqual(Transition vx, Transition vy)

@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References.Interfaces;
@@ -6,6 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
+[ObjectLike<IReference, Entity>]
 public record EntityReference(System System) : IReference<Entity>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string Name { get; set; } = "";

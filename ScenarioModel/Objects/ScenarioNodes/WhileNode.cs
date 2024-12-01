@@ -5,6 +5,7 @@ using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.Visitors;
+using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
@@ -19,7 +20,6 @@ public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioN
 
     public WhileNode()
     {
-        Name = "While";
     }
 
     public override WhileLoopConditionCheckEvent GenerateEvent(EventGenerationDependencies dependencies)
@@ -46,6 +46,7 @@ public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioN
         yield return SubGraph;
     }
 
+    [DebuggerNonUserCode]
     public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
 
     public override object Accept(IScenarioVisitor visitor)

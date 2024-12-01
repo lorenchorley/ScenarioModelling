@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
+﻿using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
 public static class StringExtensions
 {
@@ -6,7 +6,7 @@ public static class StringExtensions
     {
         return string.Equals(firstStr, secondStr, StringComparison.CurrentCultureIgnoreCase);
     }
-    
+
     public static bool IsEqvCountingNulls(this string? firstStr, string? secondStr)
     {
         if (firstStr == null || secondStr == null)
@@ -47,7 +47,7 @@ public static class StringExtensions
 
     public static string BulletPointList(this IEnumerable<string> list)
     {
-        return string.Join("", list.Select(i => $"\n * {i}"));
+        return string.Join("", list.Select(i => $"\n* {i}"));
     }
 
     public static string CommaSeparatedList<T>(this IEnumerable<T> list)
@@ -73,4 +73,7 @@ public static class StringExtensions
 
         return list;
     }
+
+    public static string AddQuotes(this string str)
+        => str.Contains(' ') ? $@"""{str}""" : str;
 }

@@ -94,7 +94,8 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
             return ((OneOf<TVal, TRef>)_valueOrReference).Match(
                 state => state,
                 reference => reference.ResolveReference().Match(
-                    state => {
+                    state =>
+                    {
                         _valueOrReference = state; // Cache the resolved value
                         return state;
                     },

@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References.Interfaces;
 using System.Diagnostics.CodeAnalysis;
@@ -9,6 +10,7 @@ namespace ScenarioModel.References;
 // Transition reference cannot base themselves only on the name
 // They are unique only on the triplet (name, source, dest)
 // (related : TransitionEquivalanceComparer, )
+[ObjectLike<IReference, Transition>]
 public record TransitionReference(System System) : IReferences<Transition>, IEqualityComparer<TransitionReference>
 {
     public string Name { get; set; } = "";

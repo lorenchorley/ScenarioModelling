@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Validation;
+﻿namespace ScenarioModel.ContextValidation.Errors;
 
 public class ValidationErrors : List<ValidationError>
 {

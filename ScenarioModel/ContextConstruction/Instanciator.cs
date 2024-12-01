@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Objects.SystemObjects;
+﻿using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.References;
 using ScenarioModel.References.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.SemanticTree;
-
+using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel.ContextConstruction;
@@ -33,6 +33,16 @@ public class Instanciator(System System)
             );
     }
 
+    public Scenario NewScenario(Definition definition)
+    {
+        Scenario scenario = new Scenario()
+        {
+            System = System
+        };
+
+        return Name<Scenario, Scenario>(scenario, def: definition);
+    }
+
     /// <summary>
     /// New creates a new instance of the provided type, and registers it in the provided system.
     /// </summary>
@@ -44,6 +54,8 @@ public class Instanciator(System System)
     public TVal New<TVal>(string? name = null, Definition? definition = null)
         where TVal : IIdentifiable
     {
+        SystemObjectExhaustivity.AssertIsObjectType<TVal>();
+
         object instance = typeof(TVal).Name switch // TODO Exhaustivity ?
         {
             nameof(Entity) => new Entity(System),
@@ -54,7 +66,7 @@ public class Instanciator(System System)
             nameof(Transition) => new Transition(System),
             nameof(Relation) => new Relation(System),
             nameof(Constraint) => new Constraint(System),
-            nameof(Scenario) => new Scenario() { System = System },
+            //nameof(Scenario) => new Scenario() { System = System },
             _ => throw new NotImplementedException($"Reference type {typeof(TVal).Name} not implemented.")
         };
 
@@ -65,6 +77,8 @@ public class Instanciator(System System)
         where TVal : IIdentifiable
         where TRef : IReference<TVal>
     {
+        SystemObjectExhaustivity.AssertIsObjectType<TVal>();
+
         object reference = typeof(TRef).Name switch // TODO Exhaustivity ?
         {
             nameof(EntityReference) => new EntityReference(System),

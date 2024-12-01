@@ -4,14 +4,15 @@ using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 [NodeLike<INodeSerialiser, ChooseNode>]
 public class ChooseNodeSerialiser(string IndentSegment) : INodeSerialiser<ChooseNode>
 {
     public void WriteNode(StringBuilder sb, Scenario scenario, ChooseNode node, string currentIndent)
     {
-        sb.AppendLine($"{currentIndent}Choose {node.Name} {{");
+        var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes()+ " ";
+        sb.AppendLine($"{currentIndent}Choose {name}{{");
 
         string subIndent = currentIndent + IndentSegment;
         ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
@@ -25,7 +26,7 @@ public class ChooseNodeSerialiser(string IndentSegment) : INodeSerialiser<Choose
         }
 
         sb.AppendLine($"{currentIndent}}}");
-        sb.AppendLine($"");
+        //sb.AppendLine($"");
     }
 }
 

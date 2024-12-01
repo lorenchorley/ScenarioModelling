@@ -1,9 +1,8 @@
 ﻿using LanguageExt.Common;
 using ScenarioModel.ContextValidation;
+using ScenarioModel.ContextValidation.Errors;
 using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Expressions.Validation;
 using ScenarioModel.Serialisation;
-using ScenarioModel.Validation;
 
 namespace ScenarioModel;
 

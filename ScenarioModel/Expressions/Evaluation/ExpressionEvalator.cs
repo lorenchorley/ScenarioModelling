@@ -3,6 +3,7 @@ using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
+using ScenarioModel.References.GeneralisedReferences;
 
 namespace ScenarioModel.Expressions.Evaluation;
 
@@ -197,7 +198,7 @@ public class ExpressionEvalator : IExpressionVisitor
             (s1, s2) => s1.IsEqv(s2),
             (e1, e2) => e1.Name.IsEqv(e2.Name)
         );
-    
+
     private bool CompareStateAndString(State state, string str)
     {
         return str.IsEqv(state.Name);

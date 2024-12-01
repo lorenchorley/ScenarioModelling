@@ -1,4 +1,5 @@
-﻿using ScenarioModel.ContextConstruction;
+﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModel.ContextConstruction;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 
@@ -19,18 +20,27 @@ public class EntityHookDefinition : IObjectHookDefinition
 
         // Either create a new one or find an existing one in the provided system
         Entity = _instanciator.GetOrNew<Entity, EntityReference>(name);
-        //Entity = new EntityReference(system) { Name = name }
-        //    .ResolveReference()
-        //    .Match(
-        //        Some: e => e,
-        //        None: () => _instanciator.New<Entity>(name: name));
     }
 
     public EntityHookDefinition SetState(string stateName)
     {
-        // Either set the state or verify that the states match
+        // TODO Either set the state or verify that the states match
         Entity.State.SetReference(new StateReference(_system) { Name = stateName });
 
+        return this;
+    }
+
+    public EntityHookDefinition SetType(string entityTypeName)
+    {
+        // TODO Either set the type or verify that the types match
+        Entity.EntityType.SetReference(new EntityTypeReference(_system) { Name = entityTypeName });
+
+        return this;
+    }
+
+    public EntityHookDefinition SetCharacterStyle(string style)
+    {
+        Entity.CharacterStyle = style;
         return this;
     }
 }

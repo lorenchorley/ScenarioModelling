@@ -31,9 +31,9 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
     }
 
     public TransitionReference GenerateReference()
-        => new TransitionReference(_system) 
-        { 
-            Name = Name ,
+        => new TransitionReference(_system)
+        {
+            Name = Name,
             SourceName = SourceState.Name,
             DestinationName = DestinationState.Name
         };

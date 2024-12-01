@@ -4,20 +4,21 @@ using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 [NodeLike<INodeSerialiser, DialogNode>]
 public class DialogNodeSerialiser(string IndentSegment) : INodeSerialiser<DialogNode>
 {
     public void WriteNode(StringBuilder sb, Scenario scenario, DialogNode node, string currentIndent)
     {
-        sb.AppendLine($"{currentIndent}Dialog {node.Name} {{");
+        var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
+        sb.AppendLine($"{currentIndent}Dialog {name}{{");
 
         string subIndent = currentIndent + IndentSegment;
-        ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
+        ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value?.ToString()?.AddQuotes() ?? ""}"));
 
         sb.AppendLine($"{currentIndent}}}");
-        sb.AppendLine($"");
+        //sb.AppendLine($"");
     }
 }
 

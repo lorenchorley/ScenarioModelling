@@ -5,6 +5,7 @@ using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.Visitors;
+using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
@@ -19,7 +20,6 @@ public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
 
     public IfNode()
     {
-        Name = "If";
     }
 
     public override IfBlockEvent GenerateEvent(EventGenerationDependencies dependencies)
@@ -43,6 +43,7 @@ public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
         yield return SubGraph;
     }
 
+    [DebuggerNonUserCode]
     public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
 
     public override object Accept(IScenarioVisitor visitor)

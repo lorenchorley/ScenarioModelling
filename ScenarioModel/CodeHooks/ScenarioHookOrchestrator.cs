@@ -1,4 +1,5 @@
 ﻿using ScenarioModel.CodeHooks.HookDefinitions;
+using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
@@ -70,7 +71,7 @@ public abstract class ScenarioHookOrchestrator
     public virtual ChooseHookDefinition DeclareChoose(params ChoiceList choices)
     {
         ChooseHookDefinition nodeDef = new();
-        nodeDef.Choices.AddRange(choices);
+        nodeDef.Node.Choices.AddRange(choices);
         CurrentScope.AddNodeDefintion(nodeDef);
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
@@ -103,6 +104,9 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual JumpHookDefinition DeclareJump(string target)
     {
+        if (string.IsNullOrEmpty(target))
+            throw new ArgumentNullException(nameof(target));
+
         JumpHookDefinition nodeDef = new(target);
         CurrentScope.AddNodeDefintion(nodeDef);
 

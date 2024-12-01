@@ -1,10 +1,12 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace ScenarioModel.References;
 
+[ObjectLike<IReference, StateMachine>]
 public record StateMachineReference(System System) : IReference<StateMachine>
 {
     public string Name { get; set; } = "";

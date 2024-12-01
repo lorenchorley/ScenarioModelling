@@ -1,8 +1,0 @@
-﻿
- * WhileLoopConditionCheckEvent {"LoopBlockRun":true}
- * IfBlockEvent {"IfBlockRun":true}
- * DialogEvent {"Text":"Amy\u0027s name was well chosen","Character":"Actor"}
- * IfBlockEvent {"IfBlockRun":false}
- * IfBlockEvent {"IfBlockRun":false}
- * StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Amy Stake"},"FinalState":{"Name":"Brock Lee"},"TransitionName":"ChangeName"}
- * IfBlockEvent {"IfBlockRun":false}

@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Validation;
+﻿using ScenarioModel.ContextValidation.Errors;
 
 namespace ScenarioModel.ContextValidation;
 

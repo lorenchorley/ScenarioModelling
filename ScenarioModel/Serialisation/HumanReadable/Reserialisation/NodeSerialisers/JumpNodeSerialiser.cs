@@ -4,20 +4,21 @@ using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 [NodeLike<INodeSerialiser, JumpNode>]
 public class JumpNodeSerialiser(string IndentSegment) : INodeSerialiser<JumpNode>
 {
     public void WriteNode(StringBuilder sb, Scenario scenario, JumpNode node, string currentIndent)
     {
-        sb.AppendLine($"{currentIndent}Jump {node.Name} {{");
+        var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
+        sb.AppendLine($"{currentIndent}Jump {name}{{");
 
         string subIndent = currentIndent + IndentSegment;
         ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
 
         sb.AppendLine($"{currentIndent}}}");
-        sb.AppendLine($"");
+        //sb.AppendLine($"");
     }
 }
 

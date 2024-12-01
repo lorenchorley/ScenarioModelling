@@ -1,7 +1,7 @@
-﻿using ScenarioModel.ContextValidation.Interfaces;
+﻿using ScenarioModel.ContextValidation.Errors;
+using ScenarioModel.ContextValidation.Interfaces;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Validation;
 
 namespace ScenarioModel.ContextValidation.SystemValidation;
 

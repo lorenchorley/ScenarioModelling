@@ -12,42 +12,44 @@ public class ChooseAndJumpHookTest
 {
     private string _scenarioText = """
         Entity Actor {
-            State Bob
+          State Bob
         }
 
         SM Name {
-            Bob -> Alice : ChangeName
-            Alice -> Bob : ChangeName
+          State Bob
+          State Alice
+          Bob -> Alice : ChangeName
+          Alice -> Bob : ChangeName
         }
 
         Scenario First {
+          Dialog {
+            Text Hello
+            Character Actor
+          }
+          Dialog {
+            Text "My name is {Actor.State}"
+            Character Actor
+          }
+          Choose LoopStart {
+            Change "Change name and repeat"
+            GoodBye Ciao
+          }
+          Transition Change {
+            Actor : ChangeName
+          }
+          if <Actor.State == Alice> {
             Dialog {
-                Character Actor
-                Text "Hello"
+              Text "I am now Alice !"
+              Character Actor
             }
-            Dialog {
-                Character Actor
-                Text "My name is {Actor.State}"
-            }
-            Choose LoopStart {
-                Change "Change name and repeat"
-                GoodBye "Ciao"
-            }
-            Transition Change {
-                Actor : ChangeName
-            }
-            if <Actor.State == "Alice"> {
-                Dialog {
-                    Character Actor
-                    Text "I am now Alice !"
-                }
-            }
-            Jump {
-                LoopStart
-            }
-            Dialog GoodBye {
-                Text "Bubye (Actor called {Actor.State} in the end)"
-            }
+          }
+          Jump {
+            LoopStart
+          }
+          Dialog GoodBye {
+            Text "Bubye (Actor called {Actor.State} in the end)"
+          }
         }
         """;
 
@@ -158,15 +160,15 @@ public class ChooseAndJumpHookTest
         // ======
         generatedScenario.Should().NotBeNull();
 
-        var rereserialisedContext =
+        var contextBuiltFromHooks =
             context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised context :");
-        Debug.WriteLine(rereserialisedContext);
+        Debug.WriteLine(contextBuiltFromHooks);
 
         var originalContext = _scenarioText;
-        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, rereserialisedContext);
+        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
     }
 }

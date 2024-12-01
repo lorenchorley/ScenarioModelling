@@ -1,5 +1,5 @@
 ﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 

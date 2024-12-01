@@ -54,7 +54,7 @@ public class EqualityFunctions
 
         throw new Exception($"Unsupported type for expression : {left.GetType().Name}");
     }
-    
+
     public static void CheckEqualityTypeCases(Type? left, Type? right, System system)
     {
         // Null checks

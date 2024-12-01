@@ -2,7 +2,7 @@
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
@@ -35,7 +35,7 @@ public class ScenarioSerialiser
 
     public void WriteScenario(StringBuilder sb, Scenario scenario, string currentIndent)
     {
-        sb.AppendLine($"{currentIndent}Scenario {scenario.Name} {{");
+        sb.AppendLine($"{currentIndent}Scenario {scenario.Name.AddQuotes()} {{");
 
         foreach (var node in scenario.Graph.PrimarySubGraph.NodeSequence)
         {
@@ -48,11 +48,12 @@ public class ScenarioSerialiser
 
     public void WriteScenarioNode(StringBuilder sb, Scenario scenario, IScenarioNode node, string currentIndent)
     {
+        // TODO Still used ?
         if (node is ITransitionNode transitionNode)
         {
             foreach (var target in transitionNode.TargetNodeNames)
             {
-                sb.AppendLine($"{currentIndent}{node.Name} -> {target}"); // TODO Used ?
+                sb.AppendLine($"{currentIndent}{node.Name} -> {target}");
             }
             return;
         }

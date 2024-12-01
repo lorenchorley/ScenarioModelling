@@ -1,4 +1,5 @@
 ﻿using ScenarioModel.Execution.Events.Interfaces;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.References;
@@ -8,6 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Execution.Events;
 
+[NodeLike<IScenarioNode, IfNode>]
 public record StateChangeEvent : IScenarioEvent<TransitionNode>
 {
     public IReference StatefulObject { get; set; } = null!;

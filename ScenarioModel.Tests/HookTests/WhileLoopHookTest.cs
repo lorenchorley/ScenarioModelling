@@ -4,66 +4,66 @@ using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModel.Tests.HookTests;
 
 [TestClass]
 public class WhileLoopHookTest
 {
     private string _scenarioText = """
         Entity Actor {
-            EntityType ET1
-            State "Amy Stake"
-            CharacterStyle "Red"
+          EntityType ET1
+          State "Amy Stake"
+          CharacterStyle Red
         }
         
         EntityType ET1 {
-            SM Name
+          SM Name
         }
         
         SM Name {
-            State "Amy Stake"
-            State "Brock Lee"
-            State "Clara Nett"
-            State "Dee Zaster"
-            "Amy Stake" -> "Brock Lee" : ChangeName
-            "Brock Lee" -> "Clara Nett" : ChangeName
-            "Clara Nett" -> "Dee Zaster" : ChangeName
+          State "Amy Stake"
+          State "Brock Lee"
+          State "Clara Nett"
+          State "Dee Zaster"
+          "Amy Stake" -> "Brock Lee" : ChangeName
+          "Brock Lee" -> "Clara Nett" : ChangeName
+          "Clara Nett" -> "Dee Zaster" : ChangeName
         }
         
         Scenario NameSwappingPuns {
-            Dialog SayName {
-                Text "The actor {Actor.State} says hello and introduces themselves"
+          Dialog SayName {
+            Text "The actor {Actor.State} says hello and introduces themselves"
+            Character Actor
+          }
+          While <Actor.State != "Dee Zaster"> {
+            if <Actor.State == "Amy Stake"> {
+              Dialog {
+                Text "The actor Mrs Stake makes a bad pun to do with their name"
                 Character Actor
+              }
             }
-            While <Actor.State != "Dee Zaster"> {
-                if <Actor.State == "Amy Stake"> {
-                    Dialog {
-                        Text "The actor Mrs Stake makes a bad pun to do with their name"
-                        Character Actor
-                    }
-                }
-                if <Actor.State == "Brock Lee"> {
-                    Dialog {
-                        Text "The actor Mr Lee makes a bad pun to do with their name"
-                        Character Actor
-                    }
-                }
-                if <Actor.State == "Clara Nett"> {
-                    Dialog {
-                        Text "The actor Mrs Nett makes a bad pun to do with their name"
-                        Character Actor
-                    }
-                }
-                Transition {
-                    Actor : ChangeName
-                }
+            if <Actor.State == "Brock Lee"> {
+              Dialog {
+                Text "The actor Mr Lee makes a bad pun to do with their name"
+                Character Actor
+              }
             }
-            if <Actor.State == "Dee Zaster"> {
-                Dialog {
-                    Text "The actor Mr Zaster makes a bad pun to do with their name"
-                    Character Actor
-                }
+            if <Actor.State == "Clara Nett"> {
+              Dialog {
+                Text "The actor Mrs Nett makes a bad pun to do with their name"
+                Character Actor
+              }
             }
+            Transition {
+              Actor : ChangeName
+            }
+          }
+          if <Actor.State == "Dee Zaster"> {
+            Dialog {
+              Text "The actor Mr Zaster makes a bad pun to do with their name"
+              Character Actor
+            }
+          }
         }
         """;
 
@@ -80,7 +80,9 @@ public class WhileLoopHookTest
         hooks.DefineSystem(configuration =>
         {
             configuration.DefineEntity("Actor")
-                         .SetState("Amy Stake");
+                         .SetState("Amy Stake")
+                         .SetType("ET1")
+                         .SetCharacterStyle("Red");
 
             configuration.DefineStateMachine("Name")
                          .WithTransition("Amy Stake", "Brock Lee", "ChangeName")
@@ -93,6 +95,7 @@ public class WhileLoopHookTest
 
 
         hooks.DeclareDialog("The actor {Actor.State} says hello and introduces themselves")
+             .SetId("SayName")
              .SetCharacter("Actor");
 
         Debug.WriteLine($"Hi, this is {actorName}");
@@ -193,16 +196,16 @@ public class WhileLoopHookTest
         // ======
         generatedScenario.Should().NotBeNull();
 
-        var rereserialisedContext =
+        var contextBuiltFromHooks =
             context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised context :");
-        Debug.WriteLine(rereserialisedContext);
+        Debug.WriteLine(contextBuiltFromHooks);
 
         var originalContext = _scenarioText;
-        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, rereserialisedContext);
+        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
     }
 
     [TestMethod]
@@ -216,6 +219,8 @@ public class WhileLoopHookTest
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
+        ScenarioHookOrchestratorForValidation hooks = new ScenarioHookOrchestratorForValidation(context);
+
         var reserialisedContext =
             Context.New()
                    .UseSerialiser<ContextSerialiser>()
@@ -223,8 +228,6 @@ public class WhileLoopHookTest
                    .Initialise()
                    .Serialise()
                    .Match(v => v, e => throw e);
-
-        ScenarioHookOrchestratorForValidation hooks = new ScenarioHookOrchestratorForValidation(context);
 
 
         // Act
@@ -244,15 +247,15 @@ public class WhileLoopHookTest
 
         // Assert
         // ======
-        var rereserialisedContext =
+        var contextBuiltFromHooks =
             context.Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised context :");
-        Debug.WriteLine(rereserialisedContext);
+        Debug.WriteLine(contextBuiltFromHooks);
 
         var originalContext = _scenarioText;
-        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, rereserialisedContext);
+        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
     }
 }

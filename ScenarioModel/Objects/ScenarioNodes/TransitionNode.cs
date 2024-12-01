@@ -7,6 +7,7 @@ using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
 using ScenarioModel.References.Interfaces;
+using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
@@ -21,7 +22,6 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
 
     public TransitionNode()
     {
-        Name = "Transition";
     }
 
     public override StateChangeEvent GenerateEvent(EventGenerationDependencies dependencies)
@@ -52,7 +52,7 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
         }
 
         var resolvedValue = statefulObject.State.ResolvedValue
-                            ?? throw new Exception("Stateful object state is not set.");        
+                            ?? throw new Exception("Stateful object state is not set.");
 
         e.InitialState = new StateReference(dependencies.Context.System) { Name = resolvedValue.Name };
 
@@ -69,6 +69,7 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
     public override IEnumerable<SemiLinearSubGraph<IScenarioNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IScenarioNode>>();
 
+    [DebuggerNonUserCode]
     public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
 
     public override object Accept(IScenarioVisitor visitor)

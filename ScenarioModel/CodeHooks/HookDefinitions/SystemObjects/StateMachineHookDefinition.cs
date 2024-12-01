@@ -1,4 +1,5 @@
-﻿using ScenarioModel.ContextConstruction;
+﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModel.ContextConstruction;
 using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.References;
 
@@ -22,11 +23,7 @@ public class StateMachineHookDefinition : IObjectHookDefinition
 
         // Either create a new one or find an existing one in the provided system
         StateMachine = _instanciator.GetOrNew<StateMachine, StateMachineReference>(name);
-        //StateMachine = new StateMachineReference(_system) { Name = name }
-        //    .ResolveReference()
-        //    .Match(
-        //        Some: e => e,
-        //        None: () => _instanciator.New<StateMachine>(name: name));
+
     }
 
     public StateMachineHookDefinition WithState(string state)

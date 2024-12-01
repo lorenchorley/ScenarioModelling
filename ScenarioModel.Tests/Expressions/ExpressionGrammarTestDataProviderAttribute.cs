@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
-using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Objects.SystemObjects;
 using System.Reflection;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModel.Tests.Expressions;
 
 public class ExpectedValues
 {
@@ -440,7 +439,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
         return finalData;
     }
 
-    public string GetDisplayName(MethodInfo methodInfo, object[] data)
+    public string GetDisplayName(MethodInfo methodInfo, object?[]? data)
         => data?[0]?.ToString() ?? "";
 
 }

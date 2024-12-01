@@ -4,6 +4,7 @@ using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.Visitors;
+using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
@@ -18,7 +19,6 @@ public record DialogNode : ScenarioNode<DialogEvent>
 
     public DialogNode()
     {
-        Name = "Dialog";
     }
 
     public override DialogEvent GenerateEvent(EventGenerationDependencies dependencies)
@@ -39,6 +39,7 @@ public record DialogNode : ScenarioNode<DialogEvent>
     public override IEnumerable<SemiLinearSubGraph<IScenarioNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IScenarioNode>>();
 
+    [DebuggerNonUserCode]
     public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
 
     public override object Accept(IScenarioVisitor visitor)

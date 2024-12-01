@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModel.Tests.HumanReadableGrammar;
 
 public class HumanReadableGrammarTestDataProviderAttribute : Attribute, ITestDataSource
 {
@@ -207,7 +207,7 @@ public class HumanReadableGrammarTestDataProviderAttribute : Attribute, ITestDat
     public IEnumerable<object[]> GetData(MethodInfo methodInfo)
         => TestData.Select(t => new object[] { t.Name, t.Expression, t.ExpectedResultRegex });
 
-    public string GetDisplayName(MethodInfo methodInfo, object[] data)
+    public string GetDisplayName(MethodInfo methodInfo, object?[]? data)
         => data?[0]?.ToString() ?? "";
 
 }

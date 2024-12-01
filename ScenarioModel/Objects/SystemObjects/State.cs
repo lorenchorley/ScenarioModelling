@@ -53,7 +53,7 @@ public record State : ISystemObject<StateReference>
     public void DoTransition(string transitionName, IStateful statefulObject)
     {
         // Get the current state name so that we know which transitions have it as a source state
-        var currentStateName = statefulObject.State.ResolvedValue?.Name 
+        var currentStateName = statefulObject.State.ResolvedValue?.Name
                                ?? throw new Exception("Stateful object state is not set.");
 
         var matchingTransitions = Transitions.Where(t => IsTransitionMatch(t, transitionName, currentStateName))

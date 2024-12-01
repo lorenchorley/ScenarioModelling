@@ -1,13 +1,12 @@
 ﻿using LanguageExt;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
 using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
 [ObjectLike<IObjectSerialiser, Relation>]
 public class RelationSerialiser(string IndentSegment) : IObjectSerialiser<Relation>
@@ -21,9 +20,9 @@ public class RelationSerialiser(string IndentSegment) : IObjectSerialiser<Relati
         IRelatable rightRelatable = right.Match(Some: r => r, None: () => throw new Exception($"The right hand object of relation {obj.Name} is unresolvable"));
 
         if (string.IsNullOrEmpty(obj.Name))
-            sb.AppendLine($@"{currentIndent}{ContextSerialiser.AddQuotes(leftRelatable.Name)} -> {ContextSerialiser.AddQuotes(rightRelatable.Name)}");
+            sb.AppendLine($@"{currentIndent}{leftRelatable.Name.AddQuotes()} -> {rightRelatable.Name.AddQuotes()}");
         else
-            sb.AppendLine($@"{currentIndent}{ContextSerialiser.AddQuotes(leftRelatable.Name)} -> {ContextSerialiser.AddQuotes(rightRelatable.Name)} : {ContextSerialiser.AddQuotes(obj.Name)}");
+            sb.AppendLine($@"{currentIndent}{leftRelatable.Name.AddQuotes()} -> {rightRelatable.Name.AddQuotes()} : {obj.Name.AddQuotes()}");
     }
 }
 

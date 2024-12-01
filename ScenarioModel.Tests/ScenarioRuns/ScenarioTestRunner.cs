@@ -24,7 +24,7 @@ public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependen
             IScenarioEvent e = node.GenerateUntypedEvent(dependencies);
 
             node.ToOneOf().Switch(
-                (chooseNode) =>
+                chooseNode =>
                 {
                     if (choicesByNodeName != null)
                     {
@@ -36,18 +36,18 @@ public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependen
                         string selection = choicesForNode.Dequeue();
 
                         ChoiceSelectedEvent choiceEvent = (ChoiceSelectedEvent)e;
-                        choiceEvent.Choice = 
+                        choiceEvent.Choice =
                             chooseNode.Choices
                                       .Where(n => n.Text.IsEqv(selection))
                                       .Select(s => s.NodeName)
                                       .First();
                     }
                 },
-                (dialogNode) => { },
-                (ifNode) => { },
-                (jumpNode) => { },
-                (transitionNode) => { },
-                (whileNode) => { }
+                dialogNode => { },
+                ifNode => { },
+                jumpNode => { },
+                transitionNode => { },
+                whileNode => { }
             );
 
             executor.RegisterEvent(e);

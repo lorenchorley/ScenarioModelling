@@ -1,79 +1,9 @@
-﻿using ScenarioModel.Collections;
-using ScenarioModel.Execution.Events;
+﻿using ScenarioModel.Execution.Events;
 using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.Execution;
-
-// Assertions in C# code that works directly on the object model defined by the system and the scenario?
-// Time series graphs and sequence diagrams derived from the scenario ?
-// Component diagrams derived from the system?
-// Code skeltons generated from the system?
-// State exhaustiveness and reachability analysis?
-
-// What makes relations special?
-
-public class GraphScope
-{
-    public IScenarioNode? CurrentNode { get; set; }
-    public SemiLinearSubGraph<IScenarioNode> CurrentSubGraph { get; set; }
-    public DirectedGraph<IScenarioNode> Graph { get; }
-
-    public GraphScope(DirectedGraph<IScenarioNode> graph)
-    {
-        Graph = graph;
-        CurrentSubGraph = graph.PrimarySubGraph;
-        CurrentNode = graph.PrimarySubGraph.NodeSequence.FirstOrDefault();
-    }
-
-    public IScenarioNode? GetNextInSequence(IScenarioNode? node)
-    {
-        if (node == null)
-        {
-            throw new ArgumentNullException(nameof(node));
-        }
-
-        CurrentNode = CurrentSubGraph.GetNextInSequence(node);
-
-        if (CurrentNode is not null)
-        {
-            return CurrentNode;
-        }
-
-        if (CurrentSubGraph.ParentSubGraph is null)
-        {
-            return null;
-        }
-
-        if (CurrentSubGraph.ParentSubGraphEntryPoint is null)
-        {
-            throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
-        }
-
-        // Go back up one subgraph and continue to the next node after the departure point
-        var parentSubGraphRentryNode = CurrentSubGraph.ParentSubGraphEntryPoint;
-        CurrentSubGraph = CurrentSubGraph.ParentSubGraph;
-        CurrentNode = CurrentSubGraph.GetNextInSequence(parentSubGraphRentryNode);
-
-        return CurrentNode;
-    }
-
-    public void EnterSubGraph(SemiLinearSubGraph<IScenarioNode> subGraph)
-    {
-        CurrentSubGraph = subGraph;
-        CurrentNode = subGraph.NodeSequence.FirstOrDefault();
-    }
-
-    public void EnterSubGraphOnNode(SemiLinearSubGraph<IScenarioNode> subGraph, IScenarioNode node)
-    {
-        if (!subGraph.NodeSequence.Contains(node))
-            throw new Exception("Node not found in subgraph");
-
-        CurrentSubGraph = subGraph;
-        CurrentNode = node;
-    }
-}
 
 /// <summary>
 /// A story is an instance or a play through of a scenario.
@@ -84,6 +14,8 @@ public class ScenarioRun
     public List<IScenarioEvent> Events { get; set; } = new();
     public Stack<GraphScope> GraphScopeStack { get; set; } = new();
 
+    public GraphScope CurrentScope => GraphScopeStack.Peek();
+
     public void Init()
     {
         GraphScopeStack.Push(new GraphScope(Scenario.Graph));
@@ -92,17 +24,32 @@ public class ScenarioRun
     public IScenarioNode? NextNode()
     {
         if (GraphScopeStack.Count == 0)
-            return null;
+            return null; // We're finished
 
-        var currentEvent = Events.LastOrDefault();
-        var currentScopeNode = GraphScopeStack.Peek().CurrentNode;
+        var currentEvent = Events.LastOrDefault(); // Null only on the first run through because no events have yet to be registered
+        var currentScopeNode = CurrentScope.CurrentNode;
 
-        if (currentScopeNode is null)
-            return AdvanceToNextNodeInSubgraph(currentScopeNode);
+        bool isFirstNode = currentEvent is null;
+        if (isFirstNode)
+        {
+            // On this first run, we return the first node quickly without advancing so that it can be processed in the loop
+            // On the next run, we will have the same node but with an event so that it can then be processed and we can advance
+            return CurrentScope.CurrentNode;
+        }
+
+        // If the node is not set, we have finished the subgraph
+        bool finishedSubgraph = currentScopeNode is null;
+        if (finishedSubgraph)
+        {
+            // We need to go up one level
+            GraphScopeStack.Pop();
+            return NextNode();
+            //return AdvanceToNextNodeInSubgraph(currentScopeNode);
+        }
 
         return currentScopeNode.ToOneOf().Match(
             (ChooseNode node) => ManangeChoseNode(currentEvent, node),
-            (DialogNode node) => AdvanceToNextNodeInSubgraph(currentScopeNode),
+            (DialogNode node) => AdvanceToNextNodeInGraphStack(currentScopeNode),
             (IfNode node) => ManageIfNode(currentEvent, node),
             (JumpNode node) => ManageJumpNode(currentEvent, node),
             (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
@@ -110,9 +57,37 @@ public class ScenarioRun
             );
     }
 
-    private IScenarioNode? AdvanceToNextNodeInSubgraph(IScenarioNode? currentScopeNode)
+    private IScenarioNode? AdvanceToNextNodeInGraphStack(IScenarioNode currentScopeNode)
     {
-        return GraphScopeStack.Peek().GetNextInSequence(currentScopeNode);
+        var nextNode = CurrentScope.GetNextInSequence(currentScopeNode);
+
+        //if (nextNode is not null)
+        //{
+        //    return nextNode;
+        //}
+
+        //if (CurrentScope.CurrentSubGraph.ParentSubGraph is null)
+        //{
+        //    return null;
+        //}
+
+        //if (CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint is null)
+        //{
+        //    throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
+        //}
+
+        //// Go back up one subgraph and continue to the next node after the departure point
+        //var parentSubGraphRentryNode = CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint;
+
+        //// Verify coherence of subgraph stack
+        //if (CurrentScope.CurrentSubGraph != CurrentScope.CurrentSubGraph.ParentSubGraph)
+        //    throw new Exception("Incoherence in subgraph stack");
+
+        //CurrentScope.CurrentSubGraph = CurrentScope.CurrentSubGraph.ParentSubGraph;
+
+        //nextNode = CurrentScope.CurrentSubGraph.GetNextInSequence(parentSubGraphRentryNode);
+
+        return nextNode;
     }
 
     private IScenarioNode? ManangeTransitionNode(IScenarioEvent? currentEvent, TransitionNode currentScopeNode)
@@ -124,9 +99,9 @@ public class ScenarioRun
 
 
 
-        return AdvanceToNextNodeInSubgraph(currentScopeNode);
+        return AdvanceToNextNodeInGraphStack(currentScopeNode);
     }
-    
+
     private IScenarioNode? ManangeChoseNode(IScenarioEvent? currentEvent, ChooseNode currentScopeNode)
     {
         // The last event must be a choice event
@@ -136,14 +111,14 @@ public class ScenarioRun
 
         // Find the next node based on the choice
         IScenarioNode? newCurrentScopeNode =
-            GraphScopeStack.Peek()
+            CurrentScope
                            .Graph
                            .Find(s => s.Name.IsEqv(choiceEvent.Choice));
 
         if (newCurrentScopeNode is null)
             throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
 
-        GraphScopeStack.Peek().CurrentNode = newCurrentScopeNode;
+        CurrentScope.CurrentNode = newCurrentScopeNode;
 
         return newCurrentScopeNode;
     }
@@ -157,14 +132,14 @@ public class ScenarioRun
 
         // Find the next node based on the choice
         IScenarioNode? newCurrentScopeNode =
-            GraphScopeStack.Peek()
-                           .Graph
-                           .Find(s => s.Name.IsEqv(jumpEvent.Target));
+            CurrentScope
+                .Graph
+                .Find(s => s.Name.IsEqv(jumpEvent.Target));
 
         if (newCurrentScopeNode is null)
             throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
 
-        GraphScopeStack.Peek().CurrentNode = newCurrentScopeNode;
+        CurrentScope.CurrentNode = newCurrentScopeNode;
 
         return newCurrentScopeNode;
     }
@@ -178,13 +153,13 @@ public class ScenarioRun
 
         if (ifEvent.IfBlockRun)
         {
-            GraphScopeStack.Peek().EnterSubGraph(ifEvent.ProducerNode.SubGraph);
-            return GraphScopeStack.Peek().CurrentNode; // Automatically the first node in the subgraph
+            CurrentScope.EnterSubGraph(ifEvent.ProducerNode.SubGraph);
+            return CurrentScope.CurrentNode; // Automatically the first node in the subgraph
         }
         else
         {
             // Otherwise advance past the if node
-            return AdvanceToNextNodeInSubgraph(currentScopeNode);
+            return AdvanceToNextNodeInGraphStack(currentScopeNode);
         }
     }
 
@@ -197,13 +172,13 @@ public class ScenarioRun
 
         if (whileEvent.LoopBlockRun)
         {
-            GraphScopeStack.Peek().EnterSubGraph(whileEvent.ProducerNode.SubGraph);
-            return GraphScopeStack.Peek().CurrentNode; // Automatically the first node in the subgraph
+            CurrentScope.EnterSubGraph(whileEvent.ProducerNode.SubGraph);
+            return CurrentScope.CurrentNode; // Automatically the first node in the subgraph
         }
         else
         {
             // Otherwise advance past the while node
-            return AdvanceToNextNodeInSubgraph(currentScopeNode);
+            return AdvanceToNextNodeInGraphStack(currentScopeNode);
         }
     }
 

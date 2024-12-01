@@ -1,9 +1,9 @@
 using FluentAssertions;
-using ScenarioModel.Serialisation.HumanReadable.Interpreter;
+using ScenarioModel.Serialisation.HumanReadable.Deserialisation.Interpreter;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModel.Tests.HumanReadableGrammar;
 
 [TestClass]
 public class HumanReadableGrammarTests

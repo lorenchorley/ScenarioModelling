@@ -1,12 +1,11 @@
-﻿using ScenarioModel.Expressions.Common;
-using ScenarioModel.Expressions.Evaluation;
+﻿using ScenarioModel.ContextValidation.Errors;
+using ScenarioModel.Expressions.Common;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Expressions.Traversal;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.References;
-using ScenarioModel.Validation;
+using ScenarioModel.References.GeneralisedReferences;
 
-namespace ScenarioModel.Expressions.Validation;
+namespace ScenarioModel.Expressions.Initialisation;
 
 public class ExpressionInitialiser : IExpressionVisitor
 {

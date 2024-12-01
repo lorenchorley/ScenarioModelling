@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using ScenarioModel.ContextValidation.Errors;
 using ScenarioModel.ContextValidation.Interfaces;
 using ScenarioModel.ContextValidation.SystemValidation;
 using ScenarioModel.Exhaustiveness;
@@ -6,7 +7,6 @@ using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References.Interfaces;
-using ScenarioModel.Validation;
 using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel.ContextValidation;
@@ -88,7 +88,7 @@ public class SystemValidator : ISystemVisitor
 
         foreach (var state in system.States)
         {
-            
+
         }
     }
 

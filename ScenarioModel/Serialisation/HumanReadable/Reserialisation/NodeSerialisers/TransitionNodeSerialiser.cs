@@ -3,7 +3,7 @@ using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 [NodeLike<INodeSerialiser, TransitionNode>]
 public class TransitionNodeSerialiser(string IndentSegment) : INodeSerialiser<TransitionNode>
@@ -21,7 +21,8 @@ public class TransitionNodeSerialiser(string IndentSegment) : INodeSerialiser<Tr
             Some: s => s,
             None: () => throw new Exception($"Stateful object not found: {node.StatefulObject}"));
 
-        sb.AppendLine($"{currentIndent}Transition {{");
+        var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
+        sb.AppendLine($"{currentIndent}Transition {name}{{");
 
         string subIndent = currentIndent + IndentSegment;
         sb.AppendLine($"{subIndent}{obj.Name} : {node.TransitionName}");

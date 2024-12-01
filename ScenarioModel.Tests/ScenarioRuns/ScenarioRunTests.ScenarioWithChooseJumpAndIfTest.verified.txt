@@ -1,1 +1,21 @@
-﻿
+﻿* DialogEvent {"Text":"Hello","Character":"Actor"}
+* DialogEvent {"Text":"My name is Bob","Character":"Actor"}
+* ChoiceSelectedEvent {"Choice":"Change"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Bob"},"FinalState":{"Name":"Alice"},"TransitionName":"ChangeName"}
+* IfBlockEvent {"IfBlockRun":true}
+* DialogEvent {"Text":"I am now Alice !","Character":"Actor"}
+* JumpEvent {"Target":"SayName"}
+* DialogEvent {"Text":"My name is Alice","Character":"Actor"}
+* ChoiceSelectedEvent {"Choice":"Change"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Alice"},"FinalState":{"Name":"Bob"},"TransitionName":"ChangeName"}
+* IfBlockEvent {"IfBlockRun":false}
+* JumpEvent {"Target":"SayName"}
+* DialogEvent {"Text":"My name is Bob","Character":"Actor"}
+* ChoiceSelectedEvent {"Choice":"Change"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Bob"},"FinalState":{"Name":"Alice"},"TransitionName":"ChangeName"}
+* IfBlockEvent {"IfBlockRun":true}
+* DialogEvent {"Text":"I am now Alice !","Character":"Actor"}
+* JumpEvent {"Target":"SayName"}
+* DialogEvent {"Text":"My name is Alice","Character":"Actor"}
+* ChoiceSelectedEvent {"Choice":"GoodBye"}
+* DialogEvent {"Text":"Bubye (Actor called Alice in the end)","Character":null}

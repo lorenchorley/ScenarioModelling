@@ -1,10 +1,9 @@
 ﻿using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
 [ObjectLike<IObjectSerialiser, Entity>]
 public class EntitySerialiser(string IndentSegment, StateSerialiser StateSerialiser, AspectSerialiser AspectSerialiser) : IObjectSerialiser<Entity>
@@ -13,12 +12,16 @@ public class EntitySerialiser(string IndentSegment, StateSerialiser StateSeriali
     {
         string subIndent = currentIndent + IndentSegment;
 
-        sb.AppendLine($"{currentIndent}Entity {ContextSerialiser.AddQuotes(obj.Name)} {{");
+        sb.AppendLine($"{currentIndent}Entity {obj.Name.AddQuotes()} {{");
+
         if (obj.EntityType.ResolvedValue != null && obj.EntityType.ResolvedValue.ShouldReserialise)
             sb.AppendLine($"{subIndent}EntityType {obj.EntityType.Name}");
 
         if (obj.State.ResolvedValue != null)
             StateSerialiser.WriteObject(sb, system, obj.State.ResolvedValue, subIndent);
+
+        if (!string.IsNullOrEmpty(obj.CharacterStyle))
+            sb.AppendLine($@"{subIndent}CharacterStyle {obj.CharacterStyle.AddQuotes()}");
 
         foreach (var aspectType in obj.Aspects)
         {

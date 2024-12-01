@@ -1,0 +1,8 @@
+﻿Scenario "Scenario recorded by hooks" {
+  Jump {
+    Target D1
+  }
+  Dialog D1 {
+    Text "Some text"
+  }
+}

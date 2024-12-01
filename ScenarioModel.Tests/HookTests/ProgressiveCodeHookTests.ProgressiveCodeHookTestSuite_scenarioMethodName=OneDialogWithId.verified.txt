@@ -1,0 +1,8 @@
+﻿Entity Actor {
+}
+
+Scenario "Scenario recorded by hooks" {
+  Dialog "custom dialog id" {
+    Text Hello
+  }
+}

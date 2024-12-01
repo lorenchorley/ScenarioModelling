@@ -1,15 +1,10 @@
-using FluentAssertions;
 using ScenarioModel.Execution;
 using ScenarioModel.Execution.Dialog;
-using ScenarioModel.Execution.Events;
 using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Interpolation;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
-using ScenarioModel.Objects.SystemObjects;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
 using System.Data;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ScenarioModel.Tests.ScenarioRuns;
 
@@ -90,7 +85,7 @@ public partial class ScenarioRunTests
 
         // Assert
         // ======
-        string target = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList();
+        string target = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
         await Verify(target);
 
     }
@@ -168,7 +163,7 @@ public partial class ScenarioRunTests
 
         // Assert
         // ======
-        string target = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList();
+        string target = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
         await Verify(target);
 
     }

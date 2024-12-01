@@ -12,7 +12,9 @@ public class SemiLinearSubGraph<T> where T : IDirectedGraphNode<T>
 {
     public List<T> NodeSequence { get; private set; } = new();
     public SemiLinearSubGraph<T>? ParentSubGraph { get; set; }
-    public T? ParentSubGraphEntryPoint { get; set; }
+    public T? ParentSubGraphReentryPoint { get; set; }
+
+    public T FirstNode => NodeSequence.First();
 
     public T? GetNextInSequence(T node)
     {

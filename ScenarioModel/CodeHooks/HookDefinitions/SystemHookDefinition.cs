@@ -33,39 +33,41 @@ public class SystemHookDefinition
 
     internal void Initialise()
     {
-        //foreach (var entityDefintions in _entityDefintions)
-        //{
-        //    Entity newlyDefinedEntity = entityDefintions.Entity;
-        //    Entity? existingCorrespondingEntity = Context.System.Entities.FirstOrDefault(e => e.Name.IsEqv(newlyDefinedEntity.Name));
-        //    if (existingCorrespondingEntity == null)
-        //    {
-        //        // No worries, we add it to complete the system
-        //        Initialise(newlyDefinedEntity);
-        //        Context.System.Entities.Add(newlyDefinedEntity);
-        //    }
-        //    else
-        //    {
-        //        // If it exists already, we have to verify that all properties are the same
-        //        existingCorrespondingEntity.AssertEqv(newlyDefinedEntity);
-        //    }
-        //}
+        foreach (var entityDefintions in _entityDefintions)
+        {
 
-        //foreach (var stateMachineDefintions in _stateMachineDefintions)
-        //{
-        //    StateMachine newlyDefinedStateMachine = stateMachineDefintions.StateMachine;
-        //    StateMachine? existingCorrespondingStateMachine = Context.System.StateMachines.FirstOrDefault(e => e.Name.IsEqv(newlyDefinedStateMachine.Name));
 
-        //    if (existingCorrespondingStateMachine == null)
-        //    {
-        //        // No worries, we add it to complete the system
-        //        Context.System.StateMachines.Add(newlyDefinedStateMachine);
-        //    }
-        //    else
-        //    {
-        //        // If it exists already, we have to verify that all properties are the same
-        //        existingCorrespondingStateMachine.AssertDeepEqv(newlyDefinedStateMachine);
-        //    }
-        //}
+            Entity newlyDefinedEntity = entityDefintions.Entity;
+            Entity? existingCorrespondingEntity = Context.System.Entities.FirstOrDefault(e => e.IsEqv(newlyDefinedEntity));
+            //if (existingCorrespondingEntity == null)
+            //{
+            //    // No worries, we add it to complete the system
+            //    Initialise(newlyDefinedEntity);
+            //    Context.System.Entities.Add(newlyDefinedEntity);
+            //}
+            //else
+            //{
+            //    // If it exists already, we have to verify that all properties are the same
+            //    existingCorrespondingEntity.AssertEqv(newlyDefinedEntity);
+            //}
+        }
+
+        foreach (var stateMachineDefintions in _stateMachineDefintions)
+        {
+            StateMachine newlyDefinedStateMachine = stateMachineDefintions.StateMachine;
+            StateMachine? existingCorrespondingStateMachine = Context.System.StateMachines.FirstOrDefault(e => e.Name.IsEqv(newlyDefinedStateMachine.Name));
+
+            //    if (existingCorrespondingStateMachine == null)
+            //    {
+            //        // No worries, we add it to complete the system
+            //        Context.System.StateMachines.Add(newlyDefinedStateMachine);
+            //    }
+            //    else
+            //    {
+            //        // If it exists already, we have to verify that all properties are the same
+            //        existingCorrespondingStateMachine.AssertDeepEqv(newlyDefinedStateMachine);
+            //    }
+        }
 
         //Context.System.Entities.ForEach(UpdateStateMachineOnEntity);
     }

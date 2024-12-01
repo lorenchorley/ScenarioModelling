@@ -1,5 +1,6 @@
 ﻿using LanguageExt.Common;
-using ScenarioModel.Serialisation.HumanReadable.Interpreter;
+using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
+using ScenarioModel.Serialisation.HumanReadable.Deserialisation.Interpreter;
 using System.Text;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation;
@@ -45,6 +46,7 @@ public class ContextSerialiser : ISerialiser
     public Result<string> SerialiseContext(Context context)
     {
         StringBuilder sb = new();
+        StrMkr sm = new();
 
         _systemSerialiser.WriteSystem(sb, context.System, "");
 
@@ -56,6 +58,4 @@ public class ContextSerialiser : ISerialiser
         return sb.ToString();
     }
 
-    public static string AddQuotes(string str)
-        => str.Contains(' ') ? $@"""{str}""" : str;
 }
