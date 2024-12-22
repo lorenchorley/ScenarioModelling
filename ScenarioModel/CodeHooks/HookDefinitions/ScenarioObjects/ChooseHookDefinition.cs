@@ -48,4 +48,8 @@ public class ChooseHookDefinition : INodeHookDefinition
     {
         return Node;
     }
+
+    public void ValidateFinalState()
+    {
+    }
 }

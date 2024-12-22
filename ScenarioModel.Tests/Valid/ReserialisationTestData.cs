@@ -318,6 +318,32 @@ public static class ReserialisationTestData
 
             E1 -> E2 : R1
             """);
+        
+        yield return new CompleteTestCase(
+            Name: "One constraint",
+            text: """
+            Constraint <A == A> {
+              Description "A must always be equal to A, a tautology"
+            }
+            """);
+        
+        yield return new CompleteTestCase(
+            Name: "One constraint on entity state",
+            text: """
+            Entity E1 {
+              State S1
+            }
+            
+            SM StateMachine1 {
+              State S1
+            }
+            
+            Constraint <E1.State == S1> {
+              Description "E1's state must stay S1"
+            }
+            """);
+
+        // TODO more constraints
 
     }
 }

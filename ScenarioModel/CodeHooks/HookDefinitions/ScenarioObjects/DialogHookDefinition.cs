@@ -34,4 +34,8 @@ public class DialogHookDefinition : INodeHookDefinition
         Node.Name = id;
         return this;
     }
+
+    public void ValidateFinalState()
+    {
+    }
 }

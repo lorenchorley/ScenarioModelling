@@ -24,4 +24,9 @@
 	  <PackageReference Include="YamlDotNet" Version="16.1.2" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Export\PlantUML\ActivityDiagram\" />
+	  <Folder Include="Export\PlantUML\SequenceDiagram\" />
+	</ItemGroup>
+
 </Project>

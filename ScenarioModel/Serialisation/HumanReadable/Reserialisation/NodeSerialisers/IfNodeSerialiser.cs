@@ -16,9 +16,9 @@ public class IfNodeSerialiser(string IndentSegment, ScenarioSerialiser ScenarioS
         var result = (string)node.Condition.Accept(visitor);
 
         string subIndent = currentIndent + IndentSegment;
-        ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
 
         sb.AppendLine($"{currentIndent}If <{result}> {{"); // TODO Serialise the expression correctly
+        ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
 
         foreach (var subNode in node.SubGraph.NodeSequence)
         {

@@ -71,9 +71,9 @@ public partial class ScenarioRunTests
                    .UseSerialiser<ContextSerialiser>()
                    .LoadContext(scenario)
                    .Initialise();
-        DialogExecutor executor = new(context);
-        StringInterpolator interpolator = new(context.System);
         ExpressionEvalator evalator = new(context.System);
+        DialogExecutor executor = new(context, evalator);
+        StringInterpolator interpolator = new(context.System);
         EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
         ScenarioTestRunner runner = new(executor, dependencies, choicesByNodeName);
 
@@ -150,9 +150,9 @@ public partial class ScenarioRunTests
                    .UseSerialiser<ContextSerialiser>()
                    .LoadContext(scenario)
                    .Initialise();
-        DialogExecutor executor = new(context);
-        StringInterpolator interpolator = new(context.System);
         ExpressionEvalator evalator = new(context.System);
+        DialogExecutor executor = new(context, evalator);
+        StringInterpolator interpolator = new(context.System);
         EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
         ScenarioTestRunner runner = new(executor, dependencies);
 

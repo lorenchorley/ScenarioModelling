@@ -5,13 +5,10 @@ using ScenarioModel.Exhaustiveness;
 using ScenarioModel.Expressions.Initialisation;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.References;
-using ScenarioModel.References.Interfaces;
 using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers;
 using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;
 using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers;
 using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
 
@@ -85,7 +82,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         Transform(inputs);
 
         // Create objects from unresolvable references
-        CreateObjectsFromUnresolvableReferences();
+        _context.CreateObjectsFromUnresolvableReferences();
 
         // Validate all objects
         InitialiseObjects();
@@ -97,59 +94,6 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         HasBeenUsedAlready = true;
 
         return _context;
-    }
-
-    public void CreateObjectsFromUnresolvableReferences()
-    {
-        var allIdentifiable =
-            Enumerable.Empty<IReference>()
-                      .Concat(_context.System.AllEntityReferences)
-                      .Concat(_context.System.AllEntityTypeReferences)
-                      .Concat(_context.System.AllStateReferences)
-                      .Concat(_context.System.AllStateMachineReferences)
-                      .Concat(_context.System.AllTransitionReferences)
-                      .Concat(_context.System.AllAspectReferences)
-                      .Concat(_context.System.AllRelationReferences)
-                      .Concat(_context.System.AllConstraintReferences);
-
-        foreach (var reference in allIdentifiable)
-        {
-            if (reference.IsResolvable())
-                continue;
-
-            switch (reference) // TODO Exhaustivity ?
-            {
-                case EntityReference r:
-                    new Entity(_context.System) { Name = r.Name };
-                    break;
-                case EntityTypeReference r:
-                    new EntityType(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
-                    break;
-                case AspectReference r:
-                    new Aspect(_context.System) { Name = r.Name };
-                    break;
-                //case AspectTypeReference r:
-                //    new AspectType(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
-                //    break;
-                case StateReference r:
-                    new State(_context.System) { Name = r.Name };
-                    break;
-                case StateMachineReference r:
-                    new StateMachine(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
-                    break;
-                case TransitionReference r:
-                    new Transition(_context.System) { Name = r.Name };
-                    break;
-                case RelationReference r:
-                    new Relation(_context.System) { Name = r.Name };
-                    break;
-                case ConstraintReference r:
-                    new Constraint(_context.System) { Name = r.Name };
-                    break;
-                default:
-                    throw new NotImplementedException($"Reference type {reference.GetType().Name} not implemented.");
-            }
-        }
     }
 
     public void Transform(ContextBuilderInputs inputs)

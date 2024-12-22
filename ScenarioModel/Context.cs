@@ -2,7 +2,11 @@
 using ScenarioModel.ContextValidation;
 using ScenarioModel.ContextValidation.Errors;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.References;
+using ScenarioModel.References.Interfaces;
 using ScenarioModel.Serialisation;
+using Relation = ScenarioModel.Objects.SystemObjects.Relation;
 
 namespace ScenarioModel;
 
@@ -183,4 +187,59 @@ public class Context
 
         return this;
     }
+
+
+    public void CreateObjectsFromUnresolvableReferences()
+    {
+        var allIdentifiable =
+            Enumerable.Empty<IReference>()
+                      .Concat(System.AllEntityReferences)
+                      .Concat(System.AllEntityTypeReferences)
+                      .Concat(System.AllStateReferences)
+                      .Concat(System.AllStateMachineReferences)
+                      .Concat(System.AllTransitionReferences)
+                      .Concat(System.AllAspectReferences)
+                      .Concat(System.AllRelationReferences)
+                      .Concat(System.AllConstraintReferences);
+
+        foreach (var reference in allIdentifiable)
+        {
+            if (reference.IsResolvable())
+                continue;
+
+            switch (reference) // TODO Exhaustivity ?
+            {
+                case EntityReference r:
+                    new Entity(System) { Name = r.Name };
+                    break;
+                case EntityTypeReference r:
+                    new EntityType(System) { Name = r.Name, ExistanceOriginallyInferred = true };
+                    break;
+                case AspectReference r:
+                    new Aspect(System) { Name = r.Name };
+                    break;
+                //case AspectTypeReference r:
+                //    new AspectType(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
+                //    break;
+                case StateReference r:
+                    new State(System) { Name = r.Name };
+                    break;
+                case StateMachineReference r:
+                    new StateMachine(System) { Name = r.Name, ExistanceOriginallyInferred = true };
+                    break;
+                case TransitionReference r:
+                    new Transition(System) { Name = r.Name };
+                    break;
+                case RelationReference r:
+                    new Relation(System) { Name = r.Name };
+                    break;
+                case ConstraintReference r:
+                    new Constraint(System) { Name = r.Name };
+                    break;
+                default:
+                    throw new NotImplementedException($"Reference type {reference.GetType().Name} not implemented.");
+            }
+        }
+    }
+
 }

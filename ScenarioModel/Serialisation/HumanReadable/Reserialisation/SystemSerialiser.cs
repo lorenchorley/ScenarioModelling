@@ -55,6 +55,11 @@ public class SystemSerialiser
         {
             _relationSerialiser.WriteObject(sb, system, relation, currentIndent);
         }
+
+        foreach (var constraint in system.Constraints)
+        {
+            _constraintSerialiser.WriteObject(sb, system, constraint, currentIndent);
+        }
     }
 }
 

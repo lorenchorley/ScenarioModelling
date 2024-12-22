@@ -1,7 +1,11 @@
-﻿using ScenarioModel.Execution.Events;
+﻿using LanguageExt;
+using LanguageExt.SomeHelp;
+using ScenarioModel.Execution.Events;
 using ScenarioModel.Execution.Events.Interfaces;
+using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModel.Objects.SystemObjects;
 
 namespace ScenarioModel.Execution;
 
@@ -13,6 +17,7 @@ public class ScenarioRun
     public Scenario Scenario { get; init; } = null!;
     public List<IScenarioEvent> Events { get; set; } = new();
     public Stack<GraphScope> GraphScopeStack { get; set; } = new();
+    public ExpressionEvalator Evaluator { get; set; } = null!;
 
     public GraphScope CurrentScope => GraphScopeStack.Peek();
 
@@ -23,6 +28,18 @@ public class ScenarioRun
 
     public IScenarioNode? NextNode()
     {
+        var failedConstraintEvents =
+            Scenario.System
+                    .Constraints
+                    .Choose(CheckConstraint)
+                    .ToList();
+
+        if (failedConstraintEvents.Any())
+        {
+            failedConstraintEvents.ForEach(RegisterEvent);
+            return null;
+        }
+
         if (GraphScopeStack.Count == 0)
             return null; // We're finished
 
@@ -55,6 +72,25 @@ public class ScenarioRun
             (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
             (WhileNode node) => ManageWhileNode(currentEvent, node)
             );
+    }
+
+    private Option<ConstraintFailedEvent> CheckConstraint(Constraint constraint)
+    {
+        var result = constraint.Condition.Accept(Evaluator);
+
+        if (result is not bool shouldExecuteBlock)
+        {
+            throw new Exception($"If condition {constraint.OriginalConditionText} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
+        }
+
+        var constraintSatisfied = (bool)result;
+
+        if (!constraintSatisfied)
+        {
+            return constraint.GenerateConstraintFailedEvent().ToSome();
+        }
+
+        return null;
     }
 
     private IScenarioNode? AdvanceToNextNodeInGraphStack(IScenarioNode currentScopeNode)

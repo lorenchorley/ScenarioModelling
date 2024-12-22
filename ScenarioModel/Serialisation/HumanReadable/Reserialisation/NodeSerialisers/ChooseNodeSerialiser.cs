@@ -11,7 +11,7 @@ public class ChooseNodeSerialiser(string IndentSegment) : INodeSerialiser<Choose
 {
     public void WriteNode(StringBuilder sb, Scenario scenario, ChooseNode node, string currentIndent)
     {
-        var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes()+ " ";
+        var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
         sb.AppendLine($"{currentIndent}Choose {name}{{");
 
         string subIndent = currentIndent + IndentSegment;

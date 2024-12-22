@@ -1,4 +1,5 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModel.Exhaustiveness.Attributes;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
 using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
@@ -9,6 +10,7 @@ namespace ScenarioModel.Objects.SystemObjects;
 /// <summary>
 /// Types exist only to allow grouping and reuse of entities (that would then have the same state type and aspects)
 /// </summary>
+[ObjectLike<ISystemObject, EntityType>]
 public record EntityType : ISystemObject<EntityTypeReference>, IOptionalSerialisability
 {
     private readonly System _system;

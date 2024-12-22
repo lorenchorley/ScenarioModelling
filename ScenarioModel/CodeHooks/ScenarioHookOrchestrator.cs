@@ -6,6 +6,9 @@ using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 
 namespace ScenarioModel.CodeHooks;
 
+public delegate void ReturnOneScopeLevelDelegate();
+public delegate void EnterScopeDelegate(DefinitionScope scope);
+
 public abstract class ScenarioHookOrchestrator
 {
     public Context Context { get; }
@@ -14,6 +17,7 @@ public abstract class ScenarioHookOrchestrator
     protected readonly Stack<DefinitionScope> _scopeStack = new();
     protected readonly HookContextBuilderInputs _contextBuilderInputs;
     protected readonly ProgressiveHookBasedContextBuilder _contextBuilder;
+    protected readonly HashSet<INodeHookDefinition> _newlyCreatedHooks = new();
 
     protected DefinitionScope CurrentScope => _scopeStack.Peek();
     protected System System => Scenario.System;
@@ -26,6 +30,16 @@ public abstract class ScenarioHookOrchestrator
         Context = context;
         _contextBuilder = new(context);
         _contextBuilderInputs = new();
+    }
+
+    private void ReturnOneScopeLevel()
+    {
+        _scopeStack.Pop();
+    }
+
+    private void EnterNewScope(DefinitionScope scope)
+    {
+        _scopeStack.Push(scope);
     }
 
     public virtual ScenarioHookDefinition? DeclareScenarioStart(string name)
@@ -43,13 +57,23 @@ public abstract class ScenarioHookOrchestrator
 
     public Scenario DeclareScenarioEnd()
     {
-        return _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException();
+        // Validate all hooks
+        foreach (var hook in _newlyCreatedHooks)
+        {
+            hook.ValidateFinalState();
+        }
+
+        return _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException(nameof(_scenarioDefintion));
     }
 
     public virtual DialogHookDefinition DeclareDialog(string text)
     {
+        ArgumentException.ThrowIfNullOrEmpty(text);
+
         DialogHookDefinition nodeDef = new(text);
+
         CurrentScope.AddNodeDefintion(nodeDef);
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
@@ -59,8 +83,15 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual DialogHookDefinition DeclareDialog(string character, string text)
     {
-        DialogHookDefinition nodeDef = new DialogHookDefinition(text).SetCharacter(character);
+        ArgumentException.ThrowIfNullOrEmpty(character);
+        ArgumentException.ThrowIfNullOrEmpty(text);
+
+        DialogHookDefinition nodeDef =
+            new DialogHookDefinition(text)
+                .SetCharacter(character);
+
         CurrentScope.AddNodeDefintion(nodeDef);
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
@@ -72,7 +103,9 @@ public abstract class ScenarioHookOrchestrator
     {
         ChooseHookDefinition nodeDef = new();
         nodeDef.Node.Choices.AddRange(choices);
+
         CurrentScope.AddNodeDefintion(nodeDef);
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
@@ -82,8 +115,13 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual TransitionHookDefinition DeclareTransition(string statefulObjectName, string transition)
     {
+        ArgumentException.ThrowIfNullOrEmpty(statefulObjectName);
+        ArgumentException.ThrowIfNullOrEmpty(transition);
+
         TransitionHookDefinition nodeDef = new(Context.System, statefulObjectName, transition);
+        
         CurrentScope.AddNodeDefintion(nodeDef);
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
@@ -93,8 +131,12 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual IfHookDefinition DeclareIfBranch(string condition)
     {
-        IfHookDefinition nodeDef = new(condition);
+        ArgumentException.ThrowIfNullOrEmpty(condition);
+
+        IfHookDefinition nodeDef = new(condition, EnterNewScope, ReturnOneScopeLevel);
+
         CurrentScope.AddNodeDefintion(nodeDef);
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
@@ -104,11 +146,12 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual JumpHookDefinition DeclareJump(string target)
     {
-        if (string.IsNullOrEmpty(target))
-            throw new ArgumentNullException(nameof(target));
+        ArgumentException.ThrowIfNullOrEmpty(target);
 
         JumpHookDefinition nodeDef = new(target);
+
         CurrentScope.AddNodeDefintion(nodeDef);
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
@@ -118,7 +161,11 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual WhileHookDefinition DeclareWhileBranch(string condition)
     {
-        WhileHookDefinition nodeDef = new(condition, CurrentScope);
+        ArgumentException.ThrowIfNullOrEmpty(condition);
+
+        WhileHookDefinition nodeDef = new(condition, CurrentScope, EnterNewScope, ReturnOneScopeLevel);
+
+        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);

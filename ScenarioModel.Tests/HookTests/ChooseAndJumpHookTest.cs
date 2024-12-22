@@ -98,12 +98,14 @@ public class ChooseAndJumpHookTest
 
 
             hooks.DeclareIfBranch(@"Actor.State != ""Alice""")
-                 .GetConditionHook(out IfHook ifHook);
+                 .GetConditionHooks(out IfConditionHook ifHook, out IfBlockEndHook ifBlockEndHook);
 
             if (ifHook(ActorName == "Alice"))
             {
                 hooks.DeclareDialog("Actor", "The actor declares themselves to be Alice");
                 Debug.WriteLine($"I am now Alice !");
+
+                ifBlockEndHook();
             }
 
             hooks.DeclareJump("LoopStart");

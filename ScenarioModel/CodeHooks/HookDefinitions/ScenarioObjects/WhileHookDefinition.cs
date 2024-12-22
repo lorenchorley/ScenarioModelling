@@ -16,32 +16,56 @@ public class WhileHookDefinition : INodeHookDefinition
 
     private int _whileLoopCount = 0;
     private readonly DefinitionScope _currentScope;
+    private readonly EnterScopeDelegate _enterScope;
+    private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
 
     public WhileNode Node { get; private set; }
 
-    public WhileHookDefinition(string Condition, DefinitionScope CurrentScope)
+    public WhileHookDefinition(string expression, DefinitionScope CurrentScope, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
     {
         Node = new WhileNode();
 
         // Parse the expression before adding it to the node
         ExpressionInterpreter interpreter = new();
-        var result = interpreter.Parse(Condition);
+        var result = interpreter.Parse(expression);
 
         if (result.HasErrors)
-            throw new Exception($@"Unable to parse expression ""{Condition}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
+            throw new Exception($@"Unable to parse expression ""{expression}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
 
+        Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
         _currentScope = CurrentScope;
+        _enterScope = enterScope;
+        _returnOneScopeLevel = returnOneScopeLevel;
     }
 
     private bool WhileHook(bool result)
     {
+        _whileLoopCount++;
+
         RecordedWhileLoopEvents.Add(result);
 
-        if (_whileLoopCount == 0)
+        bool firstRun = _whileLoopCount == 1;
+        if (firstRun)
+        {
             _currentScope.AddNodeDefintion(this);
-        else
+        }
+
+        if (result)
+        {
+            // Continue the loop
+            _enterScope(new DefinitionScope()
+            {
+                SubGraph = Node.SubGraph
+            });
+
             _currentScope.SetCurrentNodeDefintion(this);
+        }
+        else
+        {
+            // End the loop
+            _returnOneScopeLevel();
+        }
 
         return result;
     }
@@ -55,5 +79,9 @@ public class WhileHookDefinition : INodeHookDefinition
     public IScenarioNode GetNode()
     {
         return Node;
+    }
+
+    public void ValidateFinalState()
+    {
     }
 }

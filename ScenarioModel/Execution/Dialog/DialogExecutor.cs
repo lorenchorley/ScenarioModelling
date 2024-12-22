@@ -1,17 +1,20 @@
 ﻿using ScenarioModel.Execution.Events.Interfaces;
+using ScenarioModel.Expressions.Evaluation;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.Execution.Dialog;
 
 public class DialogExecutor : IExecutor
 {
-    private readonly Context _context;
+    public Context Context { get; set; }
     private Scenario? _scenario;
     private ScenarioRun? _scenarioRun;
+    private readonly ExpressionEvalator _evalator;
 
-    public DialogExecutor(Context context)
+    public DialogExecutor(Context context, ExpressionEvalator evalator)
     {
-        _context = context;
+        Context = context;
+        _evalator = evalator;
     }
 
     public IScenarioEvent? GetLastEvent()
@@ -24,12 +27,12 @@ public class DialogExecutor : IExecutor
 
     public ScenarioRun StartScenario(string name)
     {
-        _scenario = _context.Scenarios.FirstOrDefault(s => s.Name == name);
+        _scenario = Context.Scenarios.FirstOrDefault(s => s.Name == name);
 
         if (_scenario == null)
             throw new InvalidOperationException($"No scenario with name {name}");
 
-        _scenarioRun = new ScenarioRun { Scenario = _scenario };
+        _scenarioRun = new ScenarioRun { Scenario = _scenario, Evaluator = _evalator };
         _scenarioRun.Init();
 
         return _scenarioRun;

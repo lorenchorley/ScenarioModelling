@@ -36,19 +36,19 @@ public class WhileLoopHookTest
             Character Actor
           }
           While <Actor.State != "Dee Zaster"> {
-            if <Actor.State == "Amy Stake"> {
+            If <Actor.State == "Amy Stake"> {
               Dialog {
                 Text "The actor Mrs Stake makes a bad pun to do with their name"
                 Character Actor
               }
             }
-            if <Actor.State == "Brock Lee"> {
+            If <Actor.State == "Brock Lee"> {
               Dialog {
                 Text "The actor Mr Lee makes a bad pun to do with their name"
                 Character Actor
               }
             }
-            if <Actor.State == "Clara Nett"> {
+            If <Actor.State == "Clara Nett"> {
               Dialog {
                 Text "The actor Mrs Nett makes a bad pun to do with their name"
                 Character Actor
@@ -58,7 +58,7 @@ public class WhileLoopHookTest
               Actor : ChangeName
             }
           }
-          if <Actor.State == "Dee Zaster"> {
+          If <Actor.State == "Dee Zaster"> {
             Dialog {
               Text "The actor Mr Zaster makes a bad pun to do with their name"
               Character Actor
@@ -104,32 +104,40 @@ public class WhileLoopHookTest
         hooks.DeclareWhileBranch(@"Actor.State != ""Dee Zaster""")
              .GetConditionHook(out WhileHook whileHook);
 
+        IfBlockEndHook ifBlockEndHook;
+
         while (whileHook(actorName != ActorName.DeeZaster))
         {
             hooks.DeclareIfBranch(@"Actor.State == ""Amy Stake""")
-                 .GetConditionHook(out IfHook ifHookAmy);
+                 .GetConditionHooks(out IfConditionHook ifHookAmy, out ifBlockEndHook);
             if (ifHookAmy(actorName == ActorName.AmyStake))
             {
                 hooks.DeclareDialog("Actor", "The actor Mrs Stake makes a bad pun to do with their name");
                 Debug.WriteLine($"Amy's name was well chosen");
+
+                ifBlockEndHook();
             }
 
 
             hooks.DeclareIfBranch(@"Actor.State == ""Brock Lee""")
-                 .GetConditionHook(out IfHook ifHookBrock);
+                 .GetConditionHooks(out IfConditionHook ifHookBrock, out ifBlockEndHook);
             if (ifHookBrock(actorName == ActorName.BrockLee))
             {
                 hooks.DeclareDialog("Actor", "The actor Mr Lee makes a bad pun to do with their name");
                 Debug.WriteLine($"Brock didn't like his vegies");
+
+                ifBlockEndHook();
             }
 
 
             hooks.DeclareIfBranch(@"Actor.State == ""Clara Nett""")
-                 .GetConditionHook(out IfHook ifHookClara);
+                 .GetConditionHooks(out IfConditionHook ifHookClara, out ifBlockEndHook);
             if (ifHookClara(actorName == ActorName.ClaraNett))
             {
                 hooks.DeclareDialog("Actor", "The actor Mrs Nett makes a bad pun to do with their name");
                 Debug.WriteLine($"Clara hated music");
+
+                ifBlockEndHook();
             }
 
 
@@ -146,11 +154,13 @@ public class WhileLoopHookTest
         }
 
         hooks.DeclareIfBranch(@"Actor.State == ""Dee Zaster""")
-             .GetConditionHook(out IfHook ifHookDee);
+             .GetConditionHooks(out IfConditionHook ifHookDee, out ifBlockEndHook);
         if (ifHookDee(actorName == ActorName.DeeZaster))
         {
             hooks.DeclareDialog("Actor", "The actor Mr Zaster makes a bad pun to do with their name");
             Debug.WriteLine($"Well, that went well !");
+
+            ifBlockEndHook();
         }
 
     }

@@ -1,0 +1,19 @@
+﻿Entity Actor {
+  State S1
+}
+
+SM SM1 {
+  State S1
+  State S2
+  State S3
+  S1 -> S2 : T1
+  S2 -> S3 : T1
+}
+
+Scenario "Scenario recorded by hooks" {
+  While <Actor.State != S2> {
+    Transition {
+      Actor : T1
+    }
+  }
+}

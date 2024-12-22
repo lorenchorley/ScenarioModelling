@@ -1,6 +1,7 @@
 ﻿using ScenarioModel.CodeHooks.HookDefinitions.SystemObjects;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.References;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions;
 
@@ -10,6 +11,7 @@ public class SystemHookDefinition
     private readonly Instanciator _instanciator;
     protected List<EntityHookDefinition> _entityDefintions = new();
     protected List<StateMachineHookDefinition> _stateMachineDefintions = new();
+    protected List<ConstraintHookDefinition> _constraintDefintions = new();
 
     public SystemHookDefinition(Context context)
     {
@@ -31,25 +33,20 @@ public class SystemHookDefinition
         return nodeDef;
     }
 
+    public ConstraintHookDefinition DefineConstraint(string name)
+    {
+        ConstraintHookDefinition nodeDef = new(Context.System, _instanciator, name);
+        _constraintDefintions.Add(nodeDef);
+        return nodeDef;
+    }
+
     internal void Initialise()
     {
         foreach (var entityDefintions in _entityDefintions)
         {
-
-
             Entity newlyDefinedEntity = entityDefintions.Entity;
-            Entity? existingCorrespondingEntity = Context.System.Entities.FirstOrDefault(e => e.IsEqv(newlyDefinedEntity));
-            //if (existingCorrespondingEntity == null)
-            //{
-            //    // No worries, we add it to complete the system
-            //    Initialise(newlyDefinedEntity);
-            //    Context.System.Entities.Add(newlyDefinedEntity);
-            //}
-            //else
-            //{
-            //    // If it exists already, we have to verify that all properties are the same
-            //    existingCorrespondingEntity.AssertEqv(newlyDefinedEntity);
-            //}
+            Initialise(newlyDefinedEntity);
+            // TODO Make sure there are no duplicates
         }
 
         foreach (var stateMachineDefintions in _stateMachineDefintions)
@@ -84,7 +81,14 @@ public class SystemHookDefinition
 
     private void Initialise(Entity newlyDefinedEntity)
     {
-
+        // Check if it has an entity type
+        if (newlyDefinedEntity.EntityType.ReferenceOnly != null &&
+            !newlyDefinedEntity.EntityType.ReferenceOnly.IsResolvable())
+        {
+            // Create new type unique to this entity
+            var reference = _instanciator.NewReference<EntityType, EntityTypeReference>(newlyDefinedEntity.Name);
+            newlyDefinedEntity.EntityType.SetReference(reference);
+        }
     }
 
 }

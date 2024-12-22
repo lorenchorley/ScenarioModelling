@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
 using ScenarioModel.Objects.Visitors;
@@ -10,6 +11,7 @@ namespace ScenarioModel.Objects.SystemObjects;
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
+[ObjectLike<ISystemObject, StateMachine>]
 public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSerialisability
 {
     private readonly System _system;

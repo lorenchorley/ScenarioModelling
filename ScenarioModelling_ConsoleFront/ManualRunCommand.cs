@@ -40,9 +40,9 @@ public class ManualRunCommand : Command<ManualRunCommand.Settings>
                    .LoadContext(scenarioText)
                    .Initialise();
 
-        DialogExecutor executor = new(context);
-        StringInterpolator interpolator = new(context.System);
         ExpressionEvalator evalator = new(context.System);
+        DialogExecutor executor = new(context, evalator);
+        StringInterpolator interpolator = new(context.System);
         EventGenerationDependencies dependencies = new EventGenerationDependencies(interpolator, evalator, executor, context);
 
         ScenarioNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHandler>();

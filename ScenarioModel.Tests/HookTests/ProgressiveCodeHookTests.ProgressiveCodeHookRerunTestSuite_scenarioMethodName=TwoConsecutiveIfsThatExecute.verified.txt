@@ -1,0 +1,4 @@
+﻿* IfBlockEvent {"Expression":"Actor.State != S2","IfBlockRun":true}
+* DialogEvent {"Text":"Some text","Character":null}
+* IfBlockEvent {"Expression":"Actor.State != S3","IfBlockRun":true}
+* DialogEvent {"Text":"Some text","Character":null}

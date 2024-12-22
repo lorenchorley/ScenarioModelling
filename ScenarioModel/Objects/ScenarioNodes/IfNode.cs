@@ -16,6 +16,9 @@ public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
     public Expression Condition { get; set; } = null!;
 
     [NodeLikeProperty(serialise: false)]
+    public string OriginalConditionText { get; set; } = "";
+
+    [NodeLikeProperty(serialise: false)]
     public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = new();
 
     public IfNode()
@@ -33,6 +36,7 @@ public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
             throw new Exception($"If condition {Condition} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
         }
 
+        e.Expression = OriginalConditionText;
         e.IfBlockRun = shouldExecuteBlock;
 
         return e;

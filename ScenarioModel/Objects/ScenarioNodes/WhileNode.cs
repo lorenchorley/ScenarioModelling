@@ -16,6 +16,9 @@ public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioN
     public Expression Condition { get; set; } = null!;
 
     [NodeLikeProperty(serialise: false)]
+    public string OriginalConditionText { get; set; } = "";
+
+    [NodeLikeProperty(serialise: false)]
     public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = new();
 
     public WhileNode()

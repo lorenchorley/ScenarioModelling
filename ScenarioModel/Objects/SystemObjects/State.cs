@@ -1,10 +1,12 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModel.Exhaustiveness.Attributes;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;
 using System.Text.Json.Serialization;
 
 namespace ScenarioModel.Objects.SystemObjects;
 
+[ObjectLike<ISystemObject, State>]
 public record State : ISystemObject<StateReference>
 {
     private readonly System _system;

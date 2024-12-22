@@ -27,12 +27,12 @@ public class Scenario : IIdentifiable
     public System System { get; set; } = new();
     public DirectedGraph<IScenarioNode> Graph { get; set; } = new();
 
-    public StoryRunResult StartAtNode(string nodeName)
-    {
-        ScenarioRun story = new() { Scenario = this };
+    //public StoryRunResult StartAtNode(string nodeName)
+    //{
+    //    ScenarioRun story = new() { Scenario = this };
 
-        IScenarioNode? initialAction = Graph.PrimarySubGraph.NodeSequence.FirstOrDefault(step => step.Name == nodeName);
+    //    IScenarioNode? initialAction = Graph.PrimarySubGraph.NodeSequence.FirstOrDefault(step => step.Name == nodeName);
 
-        return StoryRunResult.Successful(story);
-    }
+    //    return StoryRunResult.Successful(story);
+    //}
 }

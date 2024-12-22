@@ -29,4 +29,8 @@ public class JumpHookDefinition : INodeHookDefinition
     {
         return Node;
     }
+
+    public void ValidateFinalState()
+    {
+    }
 }

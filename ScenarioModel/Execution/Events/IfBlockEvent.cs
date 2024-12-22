@@ -10,6 +10,7 @@ namespace ScenarioModel.Execution.Events;
 [NodeLike<IScenarioNode, IfNode>]
 public record IfBlockEvent : IScenarioEvent<IfNode>
 {
+    public string Expression { get; set; } = ""; // Progressive series of evaluations to improve readability
     public bool IfBlockRun { get; set; }
 
     [JsonIgnore]
