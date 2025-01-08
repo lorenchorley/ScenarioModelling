@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.ContextValidation.Errors;
 using ScenarioModel.ContextValidation.Interfaces;
 using ScenarioModel.ContextValidation.ScenarioValidation;

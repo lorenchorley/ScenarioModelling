@@ -13,12 +13,15 @@ SM SM1 {
 Scenario "Scenario recorded by hooks" {
   If <Actor.State != S2> {
     Dialog {
-      Text "Some text"
+      Text "Inside if first block"
     }
   }
   If <Actor.State != S3> {
     Dialog {
-      Text "Some more text"
+      Text "Inside if second block"
     }
+  }
+  Dialog {
+    Text "After if blocks"
   }
 }

@@ -21,6 +21,8 @@ public class WhileHookDefinition : INodeHookDefinition
 
     public WhileNode Node { get; private set; }
 
+    private DefinitionScope? _whileLoopScope;
+
     public WhileHookDefinition(string expression, DefinitionScope CurrentScope, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
     {
         Node = new WhileNode();
@@ -37,6 +39,7 @@ public class WhileHookDefinition : INodeHookDefinition
         _currentScope = CurrentScope;
         _enterScope = enterScope;
         _returnOneScopeLevel = returnOneScopeLevel;
+
     }
 
     private bool WhileHook(bool result)
@@ -46,24 +49,31 @@ public class WhileHookDefinition : INodeHookDefinition
         RecordedWhileLoopEvents.Add(result);
 
         bool firstRun = _whileLoopCount == 1;
+
+        // Otherwise on the first run we need to enter the loop's scope
         if (firstRun)
         {
-            _currentScope.AddNodeDefintion(this);
+            // If the first result is false, we don't enter the loop at all
+            if (!result)
+                return result;
+
+            // Continue the loop
+            _whileLoopScope = new DefinitionScope()
+            {
+                SubGraph = Node.SubGraph
+            };
+            _enterScope(_whileLoopScope);
         }
 
         if (result)
         {
-            // Continue the loop
-            _enterScope(new DefinitionScope()
-            {
-                SubGraph = Node.SubGraph
-            });
-
-            _currentScope.SetCurrentNodeDefintion(this);
+            // Reset the position in the while loop subgraph to the beginning
+            ArgumentNullException.ThrowIfNull(_whileLoopScope);
+            _whileLoopScope.ReturnToStartOfScope();
         }
         else
         {
-            // End the loop
+            // End the loop and return to the parent scope
             _returnOneScopeLevel();
         }
 

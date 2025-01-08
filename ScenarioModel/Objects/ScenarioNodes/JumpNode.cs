@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
@@ -35,4 +35,15 @@ public record JumpNode : ScenarioNode<JumpEvent>
 
     public override object Accept(IScenarioVisitor visitor)
         => visitor.VisitJumpNode(this);
+
+    public override bool IsFullyEqv(IScenarioNode other)
+    {
+        if (other is not JumpNode otherNode)
+            return false;
+
+        if (!otherNode.Target.IsEqv(Target))
+            return false;
+
+        return true;
+    }
 }

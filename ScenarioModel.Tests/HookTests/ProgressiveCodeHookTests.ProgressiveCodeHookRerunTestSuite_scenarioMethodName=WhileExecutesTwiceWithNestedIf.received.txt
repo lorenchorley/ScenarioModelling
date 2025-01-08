@@ -1,0 +1,4 @@
+﻿* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"S1"},"FinalState":{"Name":"S2"},"TransitionName":"T1"}
+* IfBlockEvent {"Expression":"Actor.State != S3","IfBlockRun":true}
+* DialogEvent {"Text":"Some text","Character":null}

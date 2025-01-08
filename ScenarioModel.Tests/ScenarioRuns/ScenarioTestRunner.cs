@@ -23,6 +23,7 @@ public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependen
         {
             IScenarioEvent e = node.GenerateUntypedEvent(dependencies);
 
+            // Custom test context behaviour
             node.ToOneOf().Switch(
                 chooseNode =>
                 {

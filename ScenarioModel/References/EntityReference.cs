@@ -28,4 +28,15 @@ public record EntityReference(System System) : IReference<Entity>, IRelatableObj
 
     override public string ToString() => $"{Name}";
 
+
+    public bool IsEqv(IStatefulObjectReference other)
+    {
+        if (other is not EntityReference otherReference)
+            return false;
+
+        if (!otherReference.Name.IsEqv(Name))
+            return false;
+
+        return true;
+    }
 }

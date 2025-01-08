@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Collections;
+using ScenarioModel.Collections.Graph;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.Interpreter;
 using ScenarioModel.Objects.ScenarioNodes;
@@ -48,8 +48,8 @@ public class IfNodeDeserialiser : IDefinitionToNodeDeserialiser
         node.Condition = result.ParsedObject;
         ConditionsToInitialise.Add(node);
 
-        node.SubGraph.ParentSubGraph = currentSubgraph;
-        node.SubGraph.ParentSubGraphReentryPoint = node;
+        node.SubGraph.ParentSubgraph = currentSubgraph;
+        //node.SubGraph.ExplicitReentryPoint = node; // Node is probaby wrong here
         node.SubGraph.NodeSequence.AddRange(expDef.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, node.SubGraph), "Unknown node types not taken into account : {0}").ToList());
 
         return node;

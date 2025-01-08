@@ -19,4 +19,7 @@ Scenario "Scenario recorded by hooks" {
       Text "Doing T1"
     }
   }
+  Dialog {
+    Text "After while block"
+  }
 }

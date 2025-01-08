@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Collections;
+using ScenarioModel.Collections.Graph;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;

@@ -28,4 +28,14 @@ public record AspectReference(System System) : IReference<Aspect>, IRelatableObj
 
     override public string ToString() => $"{Name}";
 
+    public bool IsEqv(IStatefulObjectReference other)
+    {
+        if (other is not AspectReference otherReference)
+            return false;
+
+        if (!otherReference.Name.IsEqv(Name))
+            return false;
+
+        return true;
+    }
 }

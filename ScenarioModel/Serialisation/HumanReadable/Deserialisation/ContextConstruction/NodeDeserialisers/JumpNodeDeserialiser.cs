@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Collections;
+using ScenarioModel.Collections.Graph;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
@@ -29,7 +29,12 @@ public class JumpNodeDeserialiser : IDefinitionToNodeDeserialiser
 
         foreach (var item in unnamed.Definitions)
         {
-            if (item is UnnamedDefinition unnamedDefinition)
+            if (item is NamedDefinition namedDefinition && namedDefinition.Type.Value == "Target") // We accept either an explicitly typed "Target" definition
+            {
+                node.Target = namedDefinition.Name.Value;
+                break;
+            }
+            else if (item is UnnamedDefinition unnamedDefinition) // Or an unnamed definition as the target node name
             {
                 node.Target = unnamedDefinition.Type.Value;
                 break;

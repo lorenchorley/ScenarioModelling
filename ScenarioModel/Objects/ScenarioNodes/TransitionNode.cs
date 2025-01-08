@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
@@ -74,4 +74,21 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
 
     public override object Accept(IScenarioVisitor visitor)
         => visitor.VisitTransitionNode(this);
+
+    public override bool IsFullyEqv(IScenarioNode other)
+    {
+        if (other is not TransitionNode otherNode)
+            return false;
+
+        if (!otherNode.TransitionName.IsEqv(TransitionName))
+            return false;
+
+        ArgumentNullException.ThrowIfNull(StatefulObject);
+        ArgumentNullException.ThrowIfNull(otherNode.StatefulObject);
+
+        if (!otherNode.StatefulObject.IsEqv(StatefulObject))
+            return false;
+
+        return true;
+    }
 }

@@ -1,34 +1,7 @@
-﻿using ScenarioModel.Objects.ScenarioNodes.Interfaces;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModel.Collections.Graph.Validation;
+using ScenarioModel.Objects.ScenarioNodes.Interfaces;
 
-namespace ScenarioModel.Collections;
-
-public interface IDirectedGraphNode<T> : IIdentifiable where T : IDirectedGraphNode<T>
-{
-    IEnumerable<SemiLinearSubGraph<T>> TargetSubgraphs();
-}
-
-public class SemiLinearSubGraph<T> where T : IDirectedGraphNode<T>
-{
-    public List<T> NodeSequence { get; private set; } = new();
-    public SemiLinearSubGraph<T>? ParentSubGraph { get; set; }
-    public T? ParentSubGraphReentryPoint { get; set; }
-
-    public T FirstNode => NodeSequence.First();
-
-    public T? GetNextInSequence(T node)
-    {
-        var index = NodeSequence.IndexOf(node); // Could be better
-
-        if (index == -1 || index == NodeSequence.Count - 1)
-        {
-            return default;
-        }
-
-        return NodeSequence[index + 1];
-    }
-
-}
+namespace ScenarioModel.Collections.Graph;
 
 public class DirectedGraph<T> where T : IDirectedGraphNode<T>
 {
@@ -104,19 +77,4 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
         }
     }
 
-}
-
-public interface DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
-{
-    public static DirectedGraphValidationResult<T> BrokenLinks(List<(IDirectedGraphNode<T> node, string intendedTarget)> value) => new BrokenLinks<T>(value);
-    public static DirectedGraphValidationResult<T> Valid() => new Valid<T>();
-}
-
-public class BrokenLinks<T>(List<(IDirectedGraphNode<T> node, string intendedTarget)> links) : DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
-{
-    public List<(IDirectedGraphNode<T> node, string intendedTarget)> Links { get; } = links;
-}
-
-public class Valid<T> : DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
-{
 }

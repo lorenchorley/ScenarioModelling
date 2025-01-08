@@ -1,5 +1,4 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
 using ScenarioModel.Objects.SystemObjects.Properties;
 using ScenarioModel.Objects.Visitors;
 using ScenarioModel.References;

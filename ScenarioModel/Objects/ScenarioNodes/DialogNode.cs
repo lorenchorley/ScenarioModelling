@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
@@ -44,4 +44,18 @@ public record DialogNode : ScenarioNode<DialogEvent>
 
     public override object Accept(IScenarioVisitor visitor)
         => visitor.VisitDialogNode(this);
+
+    public override bool IsFullyEqv(IScenarioNode other)
+    {
+        if (other is not DialogNode otherDialogNode)
+            return false;
+
+        if (!otherDialogNode.TextTemplate.IsEqv(TextTemplate))
+            return false;
+
+        if (!otherDialogNode.Character.IsEqvCountingNulls(Character))
+            return false;
+
+        return true;
+    }
 }

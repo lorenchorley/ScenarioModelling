@@ -22,7 +22,7 @@ public class ChooseNodeSerialiser(string IndentSegment) : INodeSerialiser<Choose
             if (string.IsNullOrEmpty(option.Text))
                 sb.AppendLine($"{subIndent}{option.NodeName}");
             else
-                sb.AppendLine($"{subIndent}{option.NodeName} {option.Text}");
+                sb.AppendLine($"{subIndent}{option.NodeName} {option.Text.AddQuotes()}");
         }
 
         sb.AppendLine($"{currentIndent}}}");

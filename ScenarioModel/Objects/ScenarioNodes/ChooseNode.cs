@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
@@ -31,4 +31,15 @@ public record ChooseNode : ScenarioNode<ChoiceSelectedEvent>
 
     public override object Accept(IScenarioVisitor visitor)
         => visitor.VisitChooseNode(this);
+
+    public override bool IsFullyEqv(IScenarioNode other)
+    {
+        if (other is not ChooseNode otherNode)
+            return false;
+
+        if (!otherNode.Choices.IsEqv(Choices))
+            return false;
+
+        return true;
+    }
 }

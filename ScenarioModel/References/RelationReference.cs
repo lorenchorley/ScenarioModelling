@@ -71,4 +71,15 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
 
     override public string ToString() => $"{Name}";
 
+
+    public bool IsEqv(IStatefulObjectReference other)
+    {
+        if (other is not RelationReference otherReference)
+            return false;
+
+        if (!otherReference.Name.IsEqv(Name))
+            return false;
+
+        return true;
+    }
 }

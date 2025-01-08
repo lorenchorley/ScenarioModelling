@@ -8,6 +8,7 @@ namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
 public delegate bool IfConditionHook(bool result);
 public delegate void IfBlockEndHook();
+public delegate IDisposable IfBlockUsingHook();
 
 [NodeLike<INodeHookDefinition, IfNode>]
 public class IfHookDefinition : INodeHookDefinition
@@ -39,26 +40,53 @@ public class IfHookDefinition : INodeHookDefinition
 
     private bool IfConditionHook(bool result)
     {
-        _enterScope(new DefinitionScope()
+        if (result)
         {
-            SubGraph = Node.SubGraph
-        });
+            _enterScope(new DefinitionScope()
+            {
+                SubGraph = Node.SubGraph
+            });
+        }
 
-        // TODO
         RecordedIfEvents.Add(result);
         return result;
     }
 
     private void IfBlockEndHook()
     {
-        // TODO
-        _returnOneScopeLevel();
+        if (RecordedIfEvents.Count == 0)
+            throw new Exception("If block end hook called without any recorded events");
+
+        // Only return the scope if the last recorded event was true
+        // This gives flexibility in that this callback can be either inside the if scope at the end or after it outside
+        if (RecordedIfEvents.Last() == true)
+            _returnOneScopeLevel();
+    }
+
+    private class UsingHookScope(Action endScope) : IDisposable
+    {
+        public void Dispose()
+        {
+            endScope();
+        }
+    }
+
+    private IDisposable IfBlockUsingHook()
+    {
+        return new UsingHookScope(IfBlockEndHook);
     }
 
     public IfHookDefinition GetConditionHooks(out IfConditionHook ifconditionHook, out IfBlockEndHook ifBlockEndHook)
     {
         ifconditionHook = IfConditionHook;
         ifBlockEndHook = IfBlockEndHook;
+        return this;
+    }
+
+    public IfHookDefinition GetConditionUsingHook(out IfConditionHook ifconditionHook, out IfBlockUsingHook ifBlockUsingHook)
+    {
+        ifconditionHook = IfConditionHook;
+        ifBlockUsingHook = IfBlockUsingHook;
         return this;
     }
 

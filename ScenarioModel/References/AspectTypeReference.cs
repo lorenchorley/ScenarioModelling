@@ -27,4 +27,15 @@ public record AspectTypeReference(System System) : IReference<AspectType>, IRela
 
     override public string ToString() => $"{Name}";
 
+    public bool IsEqv(IStatefulObjectReference other)
+    {
+        if (other is not AspectTypeReference otherReference)
+            return false;
+
+        if (!otherReference.Name.IsEqv(Name))
+            return false;
+
+        return true;
+    }
+
 }

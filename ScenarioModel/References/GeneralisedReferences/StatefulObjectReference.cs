@@ -29,4 +29,15 @@ public class StatefulObjectReference : IStatefulObjectReference
 
     public bool IsResolvable() => ResolveReference().IsSome;
 
+
+    public bool IsEqv(IStatefulObjectReference other)
+    {
+        if (other is not StatefulObjectReference otherReference)
+            return false;
+
+        if (!otherReference.Name.IsEqv(Name))
+            return false;
+
+        return true;
+    }
 }

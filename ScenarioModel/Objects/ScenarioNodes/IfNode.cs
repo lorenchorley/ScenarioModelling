@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
@@ -52,4 +52,17 @@ public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
 
     public override object Accept(IScenarioVisitor visitor)
         => visitor.VisitIfNode(this);
+
+    public override bool IsFullyEqv(IScenarioNode other)
+    {
+        if (other is not IfNode otherNode)
+            return false;
+
+        if (!otherNode.OriginalConditionText.IsEqv(OriginalConditionText))
+            return false;
+
+        // Should not take into account subgraph ! That would be for IsDeepEqv
+
+        return true;
+    }
 }

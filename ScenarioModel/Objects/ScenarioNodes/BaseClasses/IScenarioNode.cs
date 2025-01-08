@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.SystemObjects.Interfaces;
@@ -13,4 +13,5 @@ public interface IScenarioNode : IDirectedGraphNode<IScenarioNode>, IIdentifiabl
     OneOfIScenaroNode ToOneOf();
     object Accept(IScenarioVisitor visitor);
     string? LineInformation { get; }
+    bool IsFullyEqv(IScenarioNode other);
 }

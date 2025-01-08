@@ -1,5 +1,5 @@
 ﻿using LanguageExt;
-using ScenarioModel.Collections;
+using ScenarioModel.Collections.Graph;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;

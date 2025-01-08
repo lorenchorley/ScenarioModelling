@@ -72,11 +72,13 @@ public abstract class ScenarioHookOrchestrator
 
         DialogHookDefinition nodeDef = new(text);
 
-        CurrentScope.AddNodeDefintion(nodeDef);
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
+        {
+            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
 
         return nodeDef;
     }
@@ -90,7 +92,8 @@ public abstract class ScenarioHookOrchestrator
             new DialogHookDefinition(text)
                 .SetCharacter(character);
 
-        CurrentScope.AddNodeDefintion(nodeDef);
+        // Parent subgraph is null here in ScenarioWithWhileLoop_ConstructionTest !
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () => { });
         _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
@@ -104,11 +107,13 @@ public abstract class ScenarioHookOrchestrator
         ChooseHookDefinition nodeDef = new();
         nodeDef.Node.Choices.AddRange(choices);
 
-        CurrentScope.AddNodeDefintion(nodeDef);
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
+        {
+            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
 
         return nodeDef;
     }
@@ -119,12 +124,15 @@ public abstract class ScenarioHookOrchestrator
         ArgumentException.ThrowIfNullOrEmpty(transition);
 
         TransitionHookDefinition nodeDef = new(Context.System, statefulObjectName, transition);
-        
-        CurrentScope.AddNodeDefintion(nodeDef);
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
+        {
+            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+
+            // TODO Needs modifying to only happen when node is new ?
+            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
 
         return nodeDef;
     }
@@ -135,11 +143,13 @@ public abstract class ScenarioHookOrchestrator
 
         IfHookDefinition nodeDef = new(condition, EnterNewScope, ReturnOneScopeLevel);
 
-        CurrentScope.AddNodeDefintion(nodeDef);
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
+        {
+            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
 
         return nodeDef;
     }
@@ -150,11 +160,13 @@ public abstract class ScenarioHookOrchestrator
 
         JumpHookDefinition nodeDef = new(target);
 
-        CurrentScope.AddNodeDefintion(nodeDef);
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
+        {
+            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
 
         return nodeDef;
     }
@@ -169,6 +181,14 @@ public abstract class ScenarioHookOrchestrator
 
         _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+
+        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
+        {
+            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+
+            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
 
         return nodeDef;
     }

@@ -15,14 +15,13 @@ Scenario "Scenario recorded by hooks" {
     Transition {
       Actor : T1
     }
-    Dialog {
-      Text "Doing T1"
+    If <Actor.State != S3> {
+      Dialog {
+        Text "Some text"
+      }
     }
-    Transition {
-      Actor : T1
-    }
-    Dialog {
-      Text "Doing T1"
-    }
+  }
+  Dialog {
+    Text "After while block"
   }
 }

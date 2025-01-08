@@ -16,4 +16,7 @@ Scenario "Scenario recorded by hooks" {
       Actor : T1
     }
   }
+  Dialog {
+    Text "After while block"
+  }
 }

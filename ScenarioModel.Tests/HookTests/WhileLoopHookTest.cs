@@ -1,13 +1,20 @@
 using FluentAssertions;
 using ScenarioModel.CodeHooks;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModel.Execution;
+using ScenarioModel.Execution.Dialog;
+using ScenarioModel.Expressions.Evaluation;
+using ScenarioModel.Interpolation;
+using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModel.Tests.ScenarioRuns;
 using System.Diagnostics;
 
 namespace ScenarioModel.Tests.HookTests;
 
 [TestClass]
-public class WhileLoopHookTest
+[UsesVerify]
+public partial class WhileLoopHookTest
 {
     private string _scenarioText = """
         Entity Actor {
@@ -30,7 +37,7 @@ public class WhileLoopHookTest
           "Clara Nett" -> "Dee Zaster" : ChangeName
         }
         
-        Scenario NameSwappingPuns {
+        Scenario "Scenario recorded by hooks" {
           Dialog SayName {
             Text "The actor {Actor.State} says hello and introduces themselves"
             Character Actor
@@ -191,10 +198,9 @@ public class WhileLoopHookTest
         // ===
 
         // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.DeclareScenarioStart("NameSwappingPuns");
+        hooks.DeclareScenarioStart("Scenario recorded by hooks");
 
         // Run the code and produce the scenario from the called hooks
-
         Debug.WriteLine("");
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
@@ -219,8 +225,8 @@ public class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("CodeHooks")]
-    public void ScenarioWithWhileLoop_ValidationTest()
+    [TestCategory("CodeHooks"), TestCategory("ScenarioRuns")]
+    public async Task ScenarioWithWhileLoop_ScenarioRunTest()
     {
         // Arrange
         // =======
@@ -229,43 +235,41 @@ public class WhileLoopHookTest
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestratorForValidation hooks = new ScenarioHookOrchestratorForValidation(context);
+        ScenarioHookOrchestratorForConstruction hooks = new ScenarioHookOrchestratorForConstruction(context);
 
-        var reserialisedContext =
-            Context.New()
-                   .UseSerialiser<ContextSerialiser>()
-                   .LoadContext(_scenarioText)
-                   .Initialise()
-                   .Serialise()
-                   .Match(v => v, e => throw e);
+        // Everything necessary to run the scenario
+        ExpressionEvalator evalator = new(context.System);
+        DialogExecutor executor = new(context, evalator);
+        StringInterpolator interpolator = new(context.System);
+        EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
+        ScenarioTestRunner runner = new(executor, dependencies);
 
 
         // Act
         // ===
 
         // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.DeclareScenarioStart("NameSwappingPuns");
+        hooks.DeclareScenarioStart("Scenario recorded by hooks");
 
         // Run the code and produce the scenario from the called hooks
-
         Debug.WriteLine("");
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
 
         hooks.DeclareScenarioEnd();
 
+        ScenarioRun scenarioRun = runner.Run("Scenario recorded by hooks");
+
 
         // Assert
         // ======
-        var contextBuiltFromHooks =
-            context.Serialise()
-                   .Match(v => v, e => throw e);
+        string events = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         Debug.WriteLine("");
-        Debug.WriteLine("Final serialised context :");
-        Debug.WriteLine(contextBuiltFromHooks);
+        Debug.WriteLine("Final serialised events :");
+        Debug.WriteLine(events);
 
-        var originalContext = _scenarioText;
-        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
+        await Verify(events);
     }
+
 }

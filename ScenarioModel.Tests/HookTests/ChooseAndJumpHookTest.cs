@@ -1,8 +1,13 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using ScenarioModel.CodeHooks;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModel.Execution;
+using ScenarioModel.Execution.Dialog;
+using ScenarioModel.Expressions.Evaluation;
+using ScenarioModel.Interpolation;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModel.Tests.ScenarioRuns;
 using System.Diagnostics;
 
 namespace ScenarioModel.Tests.HookTests;
@@ -22,13 +27,9 @@ public class ChooseAndJumpHookTest
           Alice -> Bob : ChangeName
         }
 
-        Scenario First {
+        Scenario "Scenario recorded by hooks" {
           Dialog {
-            Text Hello
-            Character Actor
-          }
-          Dialog {
-            Text "My name is {Actor.State}"
+            Text "The actor {Actor.State} says hello and introduces themselves"
             Character Actor
           }
           Choose LoopStart {
@@ -38,17 +39,18 @@ public class ChooseAndJumpHookTest
           Transition Change {
             Actor : ChangeName
           }
-          if <Actor.State == Alice> {
+          If <Actor.State != Alice> {
             Dialog {
-              Text "I am now Alice !"
+              Text "The actor declares themselves to be Alice"
               Character Actor
             }
           }
           Jump {
-            LoopStart
+            Target LoopStart
           }
           Dialog GoodBye {
-            Text "Bubye (Actor called {Actor.State} in the end)"
+            Text "The actor {Actor.State} says goodbye"
+            Character Actor
           }
         }
         """;
@@ -72,38 +74,33 @@ public class ChooseAndJumpHookTest
         hooks.DeclareDialog("The actor {Actor.State} says hello and introduces themselves")
              .SetCharacter("Actor");
 
-        Debug.WriteLine($"Hello");
-        Debug.WriteLine($"My name is {ActorName}");
+        Debug.WriteLine($"{ActorName}: Hello");
+        Debug.WriteLine($"{ActorName}: My name is {ActorName}");
 
 
-        hooks.DeclareChoose(new ChoiceList() { ("Change name and repeat", ""), ("Ciao", "") }) // TODO
-             .GetConditionHook(out ChooseHook chooseCondition)
+        hooks.DeclareChoose(new ChoiceList() { ("Change", "Change name and repeat") })
+             .GetConditionHook(out ChooseHook φ)
              .SetId("LoopStart")
-             .WithJump("Change name and repeat", "Change")
-             .WithJump("Ciao", "GoodBye");
+             .WithJump("GoodBye", "Ciao");
 
-        while (chooseCondition(choices.Dequeue() == "Change name and repeat"))
+        while (φ(choices.Dequeue()) == "Change name and repeat")
         {
             hooks.DeclareTransition("Actor", "ChangeName")
                  .SetId("Change");
 
             if (ActorName == "Bob")
-            {
                 ActorName = "Alice";
-            }
             else
-            {
                 ActorName = "Bob";
-            }
 
 
             hooks.DeclareIfBranch(@"Actor.State != ""Alice""")
-                 .GetConditionHooks(out IfConditionHook ifHook, out IfBlockEndHook ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
 
-            if (ifHook(ActorName == "Alice"))
+            if (ψ(ActorName == "Alice"))
             {
                 hooks.DeclareDialog("Actor", "The actor declares themselves to be Alice");
-                Debug.WriteLine($"I am now Alice !");
+                Debug.WriteLine($"{ActorName}: I am now Alice !");
 
                 ifBlockEndHook();
             }
@@ -111,8 +108,10 @@ public class ChooseAndJumpHookTest
             hooks.DeclareJump("LoopStart");
         }
 
-        hooks.DeclareDialog("Actor", "The actor {Actor.State} says goodbye");
-        Debug.WriteLine($"Bubye (Actor called {ActorName} in the end)");
+        hooks.DeclareDialog("Actor", "The actor {Actor.State} says goodbye")
+            .SetId("GoodBye");
+
+        Debug.WriteLine($"{ActorName}: Bubye");
     }
 
     [TestMethod]
@@ -142,12 +141,19 @@ public class ChooseAndJumpHookTest
                    .Serialise()
                    .Match(v => v, e => throw e);
 
+        // Everything necessary to run the scenario
+        ExpressionEvalator evalator = new(context.System);
+        DialogExecutor executor = new(context, evalator);
+        StringInterpolator interpolator = new(context.System);
+        EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
+        ScenarioTestRunner runner = new(executor, dependencies);
+
 
         // Act
         // ===
 
         // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.DeclareScenarioStart("First");
+        hooks.DeclareScenarioStart("Scenario recorded by hooks");
 
         // Run the code and produce the scenario from the called hooks
 
@@ -156,6 +162,8 @@ public class ChooseAndJumpHookTest
         ProducerMethod(hooks, choices);
 
         Scenario generatedScenario = hooks.DeclareScenarioEnd();
+
+        ScenarioRun scenarioRun = runner.Run("Scenario recorded by hooks");
 
 
         // Assert
@@ -169,6 +177,12 @@ public class ChooseAndJumpHookTest
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised context :");
         Debug.WriteLine(contextBuiltFromHooks);
+
+        string events = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+
+        Debug.WriteLine("");
+        Debug.WriteLine("Final serialised events :");
+        Debug.WriteLine(events);
 
         var originalContext = _scenarioText;
         DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);

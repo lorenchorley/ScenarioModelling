@@ -318,7 +318,7 @@ public static class ReserialisationTestData
 
             E1 -> E2 : R1
             """);
-        
+
         yield return new CompleteTestCase(
             Name: "One constraint",
             text: """
@@ -326,7 +326,7 @@ public static class ReserialisationTestData
               Description "A must always be equal to A, a tautology"
             }
             """);
-        
+
         yield return new CompleteTestCase(
             Name: "One constraint on entity state",
             text: """

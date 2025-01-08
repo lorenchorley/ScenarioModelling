@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
@@ -54,4 +54,17 @@ public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioN
 
     public override object Accept(IScenarioVisitor visitor)
         => visitor.VisitWhileNode(this);
+
+    public override bool IsFullyEqv(IScenarioNode other)
+    {
+        if (other is not WhileNode otherNode)
+            return false;
+
+        if (!otherNode.OriginalConditionText.IsEqv(OriginalConditionText))
+            return false;
+
+        // Should not take into account subgraph ! That would be for IsDeepEqv
+
+        return true;
+    }
 }

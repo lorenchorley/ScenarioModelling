@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events.Interfaces;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.Visitors;
@@ -28,4 +28,5 @@ public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
 
     public abstract OneOfIScenaroNode ToOneOf();
     public abstract object Accept(IScenarioVisitor visitor);
+    public abstract bool IsFullyEqv(IScenarioNode other);
 }

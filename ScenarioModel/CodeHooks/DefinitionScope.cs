@@ -1,6 +1,5 @@
 ﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
-using ScenarioModel.Collections;
+using ScenarioModel.Collections.Graph;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.CodeHooks;
@@ -11,24 +10,49 @@ public class DefinitionScope
     public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = null!;
     public int CurrentIndex { get; set; } = 0;
 
-    public void AddNodeDefintion(INodeHookDefinition nodeDefinition)
+    public void AddOrVerifyInPhase(INodeHookDefinition nodeDefinition, Action add)
     {
-        NodeHookDefinitions.Add(nodeDefinition);
+        IScenarioNode newNode = nodeDefinition.GetNode();
 
-        SubGraph.NodeSequence.Add(nodeDefinition.GetNode());
+        if (CurrentIndex > SubGraph.NodeSequence.Count + 1)
+            throw new Exception("Current index is too far beyond the end of the subgraph");
+
+        bool atEndOfSubgraph = SubGraph.NodeSequence.Count == CurrentIndex;
+
+        // If the index points to just after the last position, then we must be missing the next mode. We add it
+        if (atEndOfSubgraph)
+        {
+            NodeHookDefinitions.Add(nodeDefinition);
+            SubGraph.NodeSequence.Add(newNode);
+
+            add();
+        }
+        else // Otherwise we check that the current node corresponds to the new definition
+        {
+            var currentNode = SubGraph.NodeSequence[CurrentIndex];
+            bool nodesAreEssentiallyTheSame = currentNode.IsFullyEqv(newNode);
+            if (!nodesAreEssentiallyTheSame)
+                throw new Exception("Current node does not match the new definition");
+        }
+
         CurrentIndex++;
     }
 
-    internal void SetCurrentNodeDefintion(WhileHookDefinition whileHookDefinition)
+    internal void ReturnToStartOfScope()
     {
-        var node = whileHookDefinition.GetNode();
-        int? index = SubGraph.NodeSequence.IndexOf(node);
-
-        if (index is null)
-        {
-            throw new Exception("Node not found in subgraph");
-        }
-
-        CurrentIndex = (int)index;
+        CurrentIndex = 0;
     }
+
+    //internal void SetCurrentNodeDefintion(INodeHookDefinition nodeDefinition)
+    //{
+    //    var node = nodeDefinition.GetNode();
+    //    int? index = SubGraph.NodeSequence.IndexOf(node);
+
+    //    if (index is null)
+    //    {
+    //        throw new Exception("Node not found in subgraph");
+    //    }
+
+    //    CurrentIndex = (int)index;
+    //}
 }

@@ -13,4 +13,7 @@ SM SM1 {
 Scenario "Scenario recorded by hooks" {
   While <Actor.State != S1> {
   }
+  Dialog {
+    Text "After while block"
+  }
 }

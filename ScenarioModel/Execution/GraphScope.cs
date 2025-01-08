@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Collections;
+﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
@@ -22,51 +22,48 @@ public class GraphScope
     {
         Graph = graph;
         CurrentSubGraph = graph.PrimarySubGraph;
-        CurrentNode = graph.PrimarySubGraph.NodeSequence.FirstOrDefault();
+        CurrentNode = graph.PrimarySubGraph.GetNextInSequenceOrNull();
     }
 
-    public IScenarioNode? GetNextInSequence(IScenarioNode node)
+    public void SetExplicitNextNode(IScenarioNode node)
     {
-        CurrentNode = CurrentSubGraph.GetNextInSequence(node);
+        CurrentSubGraph.SetExplicitNextNode(node);
+    }
+
+    public IScenarioNode? GetNextInSequence()
+    {
+        CurrentNode = CurrentSubGraph.GetNextInSequenceOrNull();
 
         if (CurrentNode is not null)
         {
             return CurrentNode;
         }
 
-        if (CurrentSubGraph.ParentSubGraph is null)
+        if (CurrentSubGraph.ParentSubgraph is null)
         {
-            return null;
-        }
-
-        if (CurrentSubGraph.ParentSubGraphReentryPoint is null)
-        {
-            throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
+            return null; // End of graph
         }
 
         // Go back up one subgraph and continue to the next node after the departure point
-        var parentSubGraphReentryNode = CurrentSubGraph.ParentSubGraphReentryPoint;
-        CurrentSubGraph = CurrentSubGraph.ParentSubGraph;
-
-        // Here we have the node that entered the subgraph (the if node or the while node for example)
-        // An if node must not be re-executed, but a while node should be
-        // It's not appropriate that the GraphScope makes this decision
-        if (parentSubGraphReentryNode is WhileNode)
-        {
-            CurrentNode = parentSubGraphReentryNode;
-        }
-        else
-        {
-            CurrentNode = CurrentSubGraph.GetNextInSequence(parentSubGraphReentryNode);
-        }
+        CurrentSubGraph = CurrentSubGraph.ParentSubgraph;
+        CurrentNode = CurrentSubGraph.GetNextInSequenceOrNull(); // Explicit reentry point is handled by this method if setb
 
         return CurrentNode;
     }
 
     public void EnterSubGraph(SemiLinearSubGraph<IScenarioNode> subGraph)
     {
+        ArgumentNullException.ThrowIfNull(CurrentNode);
+
+        subGraph.ParentSubgraph = CurrentSubGraph;
+
+        if (CurrentNode is WhileNode)
+            CurrentSubGraph.SetExplicitNextNode(CurrentNode);
+        // else
+        //    CurrentSubGraph.ExplicitReentryPoint = CurrentSubGraph.GetNextInSequenceOrNull(CurrentNode);
+
         CurrentSubGraph = subGraph;
-        CurrentNode = subGraph.NodeSequence.FirstOrDefault();
+        CurrentNode = subGraph.GetNextInSequenceOrNull();
     }
 
     public void EnterSubGraphOnNode(SemiLinearSubGraph<IScenarioNode> subGraph, IScenarioNode node)

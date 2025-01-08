@@ -5,13 +5,13 @@ using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 
-public delegate bool ChooseHook(bool result);
+public delegate string ChooseHook(string result);
 
 [NodeLike<INodeHookDefinition, ChooseNode>]
 public class ChooseHookDefinition : INodeHookDefinition
 {
     [NodeLikeProperty]
-    public List<bool> RecordedChooseEvents { get; } = new();
+    public List<string> RecordedChooseEvents { get; } = new();
 
     public ChooseNode Node { get; private set; }
 
@@ -20,7 +20,7 @@ public class ChooseHookDefinition : INodeHookDefinition
         Node = new ChooseNode();
     }
 
-    private bool ChooseHook(bool result)
+    private string ChooseHook(string result)
     {
         RecordedChooseEvents.Add(result);
         return result;

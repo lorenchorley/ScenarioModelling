@@ -66,7 +66,7 @@ public class ScenarioRun
 
         return currentScopeNode.ToOneOf().Match(
             (ChooseNode node) => ManangeChoseNode(currentEvent, node),
-            (DialogNode node) => AdvanceToNextNodeInGraphStack(currentScopeNode),
+            (DialogNode node) => CurrentScope.GetNextInSequence(),
             (IfNode node) => ManageIfNode(currentEvent, node),
             (JumpNode node) => ManageJumpNode(currentEvent, node),
             (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
@@ -93,38 +93,38 @@ public class ScenarioRun
         return null;
     }
 
-    private IScenarioNode? AdvanceToNextNodeInGraphStack(IScenarioNode currentScopeNode)
-    {
-        var nextNode = CurrentScope.GetNextInSequence(currentScopeNode);
+    //private IScenarioNode? AdvanceToNextNodeInGraphStack()
+    //{
+    //    var nextNode = CurrentScope.GetNextInSequence();
 
-        //if (nextNode is not null)
-        //{
-        //    return nextNode;
-        //}
+    //    //if (nextNode is not null)
+    //    //{
+    //    //    return nextNode;
+    //    //}
 
-        //if (CurrentScope.CurrentSubGraph.ParentSubGraph is null)
-        //{
-        //    return null;
-        //}
+    //    //if (CurrentScope.CurrentSubGraph.ParentSubGraph is null)
+    //    //{
+    //    //    return null;
+    //    //}
 
-        //if (CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint is null)
-        //{
-        //    throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
-        //}
+    //    //if (CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint is null)
+    //    //{
+    //    //    throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
+    //    //}
 
-        //// Go back up one subgraph and continue to the next node after the departure point
-        //var parentSubGraphRentryNode = CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint;
+    //    //// Go back up one subgraph and continue to the next node after the departure point
+    //    //var parentSubGraphRentryNode = CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint;
 
-        //// Verify coherence of subgraph stack
-        //if (CurrentScope.CurrentSubGraph != CurrentScope.CurrentSubGraph.ParentSubGraph)
-        //    throw new Exception("Incoherence in subgraph stack");
+    //    //// Verify coherence of subgraph stack
+    //    //if (CurrentScope.CurrentSubGraph != CurrentScope.CurrentSubGraph.ParentSubGraph)
+    //    //    throw new Exception("Incoherence in subgraph stack");
 
-        //CurrentScope.CurrentSubGraph = CurrentScope.CurrentSubGraph.ParentSubGraph;
+    //    //CurrentScope.CurrentSubGraph = CurrentScope.CurrentSubGraph.ParentSubGraph;
 
-        //nextNode = CurrentScope.CurrentSubGraph.GetNextInSequence(parentSubGraphRentryNode);
+    //    //nextNode = CurrentScope.CurrentSubGraph.GetNextInSequence(parentSubGraphRentryNode);
 
-        return nextNode;
-    }
+    //    return nextNode;
+    //}
 
     private IScenarioNode? ManangeTransitionNode(IScenarioEvent? currentEvent, TransitionNode currentScopeNode)
     {
@@ -133,9 +133,7 @@ public class ScenarioRun
             currentEvent is not StateChangeEvent stateChangeEvent)
             throw new Exception($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
 
-
-
-        return AdvanceToNextNodeInGraphStack(currentScopeNode);
+        return CurrentScope.GetNextInSequence();
     }
 
     private IScenarioNode? ManangeChoseNode(IScenarioEvent? currentEvent, ChooseNode currentScopeNode)
@@ -175,9 +173,11 @@ public class ScenarioRun
         if (newCurrentScopeNode is null)
             throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
 
-        CurrentScope.CurrentNode = newCurrentScopeNode;
+        // TODO Change to set explicit next node
+        CurrentScope.SetExplicitNextNode(newCurrentScopeNode);
 
-        return newCurrentScopeNode;
+        //return newCurrentScopeNode; // Get next ?
+        return CurrentScope.GetNextInSequence();
     }
 
     private IScenarioNode? ManageIfNode(IScenarioEvent? currentEvent, IScenarioNode? currentScopeNode)
@@ -195,7 +195,7 @@ public class ScenarioRun
         else
         {
             // Otherwise advance past the if node
-            return AdvanceToNextNodeInGraphStack(currentScopeNode);
+            return CurrentScope.GetNextInSequence();
         }
     }
 
@@ -214,7 +214,7 @@ public class ScenarioRun
         else
         {
             // Otherwise advance past the while node
-            return AdvanceToNextNodeInGraphStack(currentScopeNode);
+            return CurrentScope.GetNextInSequence();
         }
     }
 
