@@ -7,7 +7,7 @@ public enum HookExecutionMode
     SubsequentScenarioConstruction
 }
 
-public interface IObjectHookDefinition
+public interface IObjectHookDefinition : IHookDefinition
 {
     HookExecutionMode HookExecutionMode { get; }
 }

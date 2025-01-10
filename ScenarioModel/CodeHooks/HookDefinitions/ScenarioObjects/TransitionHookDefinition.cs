@@ -9,9 +9,11 @@ namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 [NodeLike<INodeHookDefinition, TransitionNode>]
 public class TransitionHookDefinition : INodeHookDefinition
 {
+    public bool Validated { get; private set; } = false;
+    public DefinitionScope CurrentScope { get; }
     public TransitionNode Node { get; private set; }
 
-    public TransitionHookDefinition(System System, string StatefulObjectName, string Transition)
+    public TransitionHookDefinition(DefinitionScope currentScope, System System, string StatefulObjectName, string Transition)
     {
         Node = new TransitionNode()
         {
@@ -19,6 +21,7 @@ public class TransitionHookDefinition : INodeHookDefinition
             StatefulObject = new StatefulObjectReference(System) { Name = StatefulObjectName },
             TransitionName = Transition
         };
+        CurrentScope = currentScope;
     }
 
     public IScenarioNode GetNode()
@@ -32,7 +35,8 @@ public class TransitionHookDefinition : INodeHookDefinition
         return this;
     }
 
-    public void ValidateFinalState()
+    public void Validate()
     {
+        Validated = true;
     }
 }

@@ -28,8 +28,9 @@ public class AspectDeserialiser(System System, Instanciator Instanciator, StateD
         value.Relations.TryAddReferenceRange(named.Definitions.Choose(RelationTransformer.TransformAsProperty).ToList());
         //value.AspectType = named.Definitions.Choose(d => TransformAspectType(System, d)).FirstOrDefault() ?? new AspectType(System) { Name = named.Name.Value }
 
-        value.State.SetReference(named.Definitions.Choose(StateTransformer.TransformAsProperty).FirstOrDefault());
-
+        StateReference? reference = named.Definitions.Choose(StateTransformer.TransformAsProperty).FirstOrDefault();
+        value.State.SetReference(reference);
+        value.InitialState.SetReference(reference);
 
         return value.GenerateReference();
     }

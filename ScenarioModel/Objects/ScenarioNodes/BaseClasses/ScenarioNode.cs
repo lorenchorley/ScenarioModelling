@@ -1,5 +1,6 @@
 ﻿using ScenarioModel.Collections.Graph;
 using ScenarioModel.Execution.Events.Interfaces;
+using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 using ScenarioModel.Objects.Visitors;
 using System.Text.Json.Serialization;
@@ -10,13 +11,16 @@ public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
 {
     public string Name { get; set; } = "";
 
+    [NodeLikeProperty(optionalBool: OptionalBoolSetting.FalseAsDefault)]
+    public bool Implicit { get; set; } = false;
+
     [JsonIgnore]
     public Type Type => typeof(E);
     public int? Line { get; set; }
     public abstract E GenerateEvent(EventGenerationDependencies dependencies);
     public abstract IEnumerable<SemiLinearSubGraph<IScenarioNode>> TargetSubgraphs();
 
-    public IScenarioEvent GenerateUntypedEvent(EventGenerationDependencies dependencies)
+    public IScenarioEvent GenerateGenericTypeEvent(EventGenerationDependencies dependencies)
     {
         return GenerateEvent(dependencies);
     }

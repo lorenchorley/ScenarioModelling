@@ -80,6 +80,9 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
         if (other is not TransitionNode otherNode)
             return false;
 
+        if (!other.Name.IsEqv(Name))
+            return false;
+
         if (!otherNode.TransitionName.IsEqv(TransitionName))
             return false;
 

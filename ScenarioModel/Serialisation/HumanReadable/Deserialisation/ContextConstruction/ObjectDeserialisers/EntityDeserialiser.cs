@@ -37,8 +37,10 @@ public class EntityDeserialiser(System System, Instanciator Instanciator, StateD
         value.EntityType.SetReference(typeReference);
         value.Relations.TryAddReferenceRange(relations);
 
+        StateReference? reference = stateReferences.FirstOrDefault();
+        value.State.SetReference(reference);
+        value.InitialState.SetReference(reference);
         value.Aspects.TryAddReferenceRange(unnamed.Definitions.Choose(d => AspectTransformer.TransformAsObject(d, value.GenerateReference())));
-        value.State.SetReference(stateReferences.FirstOrDefault());
         value.CharacterStyle = unnamed.Definitions.Choose(TransformCharacterStyle).FirstOrDefault() ?? "";
 
         if (stateReferences.Count() > 1)

@@ -1,0 +1,3 @@
+﻿* DialogEvent {"Text":"Some text","Character":null}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"S1"},"FinalState":{"Name":"S2"},"TransitionName":"T1"}
+* ConstraintFailedEvent {"Expression":"Actor.State != S2"}

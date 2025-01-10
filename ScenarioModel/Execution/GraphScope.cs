@@ -46,9 +46,7 @@ public class GraphScope
 
         // Go back up one subgraph and continue to the next node after the departure point
         CurrentSubGraph = CurrentSubGraph.ParentSubgraph;
-        CurrentNode = CurrentSubGraph.GetNextInSequenceOrNull(); // Explicit reentry point is handled by this method if setb
-
-        return CurrentNode;
+        return GetNextInSequence(); // Explicit reentry point is handled by this method if set
     }
 
     public void EnterSubGraph(SemiLinearSubGraph<IScenarioNode> subGraph)
@@ -59,8 +57,9 @@ public class GraphScope
 
         if (CurrentNode is WhileNode)
             CurrentSubGraph.SetExplicitNextNode(CurrentNode);
-        // else
-        //    CurrentSubGraph.ExplicitReentryPoint = CurrentSubGraph.GetNextInSequenceOrNull(CurrentNode);
+
+        // Reinitialise the subgraph so that we start at the beginning again if the subgraph has already been run
+        subGraph.Reinitalise();
 
         CurrentSubGraph = subGraph;
         CurrentNode = subGraph.GetNextInSequenceOrNull();

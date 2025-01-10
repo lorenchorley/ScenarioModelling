@@ -1,4 +1,4 @@
 ﻿* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
 * StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"S1"},"FinalState":{"Name":"S2"},"TransitionName":"T1"}
-* DialogEvent {"Text":"Doing T1","Character":null}
-* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":false}
+* DialogEvent {"Text":"After while block","Character":null}

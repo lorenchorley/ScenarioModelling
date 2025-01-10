@@ -16,7 +16,7 @@ public class ConstraintSerialiser(string IndentSegment) : IObjectSerialiser<Cons
         var result = (string)obj.Condition.Accept(visitor);
 
         string subIndent = currentIndent + IndentSegment;
-        ScenarioNodeExhaustivity.DoForEachNodeProperty(obj, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
+        ScenarioNodeExhaustivity.DoForEachNodeProperty(obj, (attr, prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
 
         sb.AppendLine($"{currentIndent}Constraint <{result}> {{"); // TODO Serialise the expression correctly
 

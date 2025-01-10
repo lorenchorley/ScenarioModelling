@@ -3,13 +3,17 @@ using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
+// TODO A subgraph for each choice rather than relying on jump nodes
+// Could act more like a switch
+
 [NodeLike<IScenarioNode, ChooseNode>]
-public record ChooseNode : ScenarioNode<ChoiceSelectedEvent>
+public record ChooseNode : ScenarioNode<ChoiceSelectedEvent>, IFlowNode
 {
     [NodeLikeProperty(serialise: false)]
     public ChoiceList Choices { get; set; } = new();
@@ -35,6 +39,9 @@ public record ChooseNode : ScenarioNode<ChoiceSelectedEvent>
     public override bool IsFullyEqv(IScenarioNode other)
     {
         if (other is not ChooseNode otherNode)
+            return false;
+
+        if (!otherNode.Name.IsEqv(Name))
             return false;
 
         if (!otherNode.Choices.IsEqv(Choices))

@@ -2,8 +2,8 @@
 
 namespace ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
 
-public interface INodeHookDefinition
+public interface INodeHookDefinition : IHookDefinition
 {
     IScenarioNode GetNode();
-    void ValidateFinalState();
+    DefinitionScope CurrentScope { get; }
 }

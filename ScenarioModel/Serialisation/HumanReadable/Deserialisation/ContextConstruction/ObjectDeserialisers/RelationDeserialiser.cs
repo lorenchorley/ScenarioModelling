@@ -40,16 +40,8 @@ public class RelationDeserialiser(System System, Instanciator Instanciator) : De
         {
             Name = unnamed.Destination.Value
         };
-        //value.LeftEntity = new CompositeValueObjectReference(System)
-        //{
-        //    Identifier = unnamed.Source
-        //};
 
-        //value.RightEntity = new CompositeValueObjectReference(System)
-        //{
-        //    Identifier = unnamed.Destination
-        //};
-        // TODO State ?
+        // TODO State and InitialState
 
         return value.GenerateReference();
     }

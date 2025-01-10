@@ -126,7 +126,7 @@ public class ExpressionTests
     }
 
     [DataTestMethod]
-    [TestCategory("Expressions"), TestCategory("Evaluation")]
+    [TestCategory("Expressions"), TestCategory("Expression Evaluation")]
     [ExpressionGrammarTestDataProvider]
     public void ExpressionEvaluationTests(string name, string text, string systemText, string expectedValuesJson)
     {

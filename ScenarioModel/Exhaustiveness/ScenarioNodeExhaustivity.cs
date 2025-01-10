@@ -35,7 +35,7 @@ public static class ScenarioNodeExhaustivity
     private static readonly PropertyExhaustivityFunctions<NodeLikePropertyAttribute> _propertyExhaustivityFunctions = new();
     private static readonly TypeExhaustivityFunctions _typeExhaustivityFunctions = new(AllNodeTypes, typeof(NodeLikeAttribute<,>), "node");
 
-    public static void DoForEachNodeProperty<TNode>(TNode node, Action<string, object?> callback)
+    public static void DoForEachNodeProperty<TNode>(TNode node, Action<NodeLikePropertyAttribute, string, object?> callback)
     {
         _propertyExhaustivityFunctions.DoForEachProperty<TNode>(node, callback);
     }

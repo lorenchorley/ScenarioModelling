@@ -4,13 +4,14 @@ using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
 [NodeLike<IScenarioNode, WhileNode>]
-public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioNodeWithExpression
+public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioNodeWithExpression, IFlowNode
 {
     [NodeLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
@@ -58,6 +59,9 @@ public record WhileNode : ScenarioNode<WhileLoopConditionCheckEvent>, IScenarioN
     public override bool IsFullyEqv(IScenarioNode other)
     {
         if (other is not WhileNode otherNode)
+            return false;
+
+        if (!other.Name.IsEqv(Name))
             return false;
 
         if (!otherNode.OriginalConditionText.IsEqv(OriginalConditionText))

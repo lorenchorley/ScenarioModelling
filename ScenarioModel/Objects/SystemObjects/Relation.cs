@@ -21,6 +21,7 @@ public record Relation : ISystemObject<RelationReference>, IStateful
 
     public RelatableObjectReference? LeftEntity { get; set; } // TODO Propertyise
     public RelatableObjectReference? RightEntity { get; set; } // TODO Propertyise
+    public StateProperty InitialState { get; private init; }
     public StateProperty State { get; }
 
     public Relation(System system)
@@ -30,7 +31,8 @@ public record Relation : ISystemObject<RelationReference>, IStateful
         // Add this to the system
         system.Relations.Add(this);
 
-        State = new(system);
+        InitialState = new StateProperty(system);
+        State = new(system); 
     }
 
     public RelationReference GenerateReference()

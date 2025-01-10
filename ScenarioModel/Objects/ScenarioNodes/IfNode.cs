@@ -4,13 +4,14 @@ using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.SemanticTree;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
 [NodeLike<IScenarioNode, IfNode>]
-public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
+public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression, IFlowNode
 {
     [NodeLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
@@ -56,6 +57,9 @@ public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression
     public override bool IsFullyEqv(IScenarioNode other)
     {
         if (other is not IfNode otherNode)
+            return false;
+
+        if (!other.Name.IsEqv(Name))
             return false;
 
         if (!otherNode.OriginalConditionText.IsEqv(OriginalConditionText))

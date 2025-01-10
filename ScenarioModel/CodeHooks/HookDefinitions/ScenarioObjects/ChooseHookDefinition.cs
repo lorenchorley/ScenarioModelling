@@ -13,11 +13,14 @@ public class ChooseHookDefinition : INodeHookDefinition
     [NodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
 
+    public bool Validated { get; private set; } = false;
     public ChooseNode Node { get; private set; }
+    public DefinitionScope CurrentScope { get; }
 
-    public ChooseHookDefinition()
+    public ChooseHookDefinition(DefinitionScope currentScope)
     {
         Node = new ChooseNode();
+        CurrentScope = currentScope;
     }
 
     private string ChooseHook(string result)
@@ -44,12 +47,19 @@ public class ChooseHookDefinition : INodeHookDefinition
         return this;
     }
 
+    public ChooseHookDefinition SetAsImplicit()
+    {
+        Node.Implicit = true;
+        return this;
+    }
+
     public IScenarioNode GetNode()
     {
         return Node;
     }
 
-    public void ValidateFinalState()
+    public void Validate()
     {
+        Validated = true;
     }
 }

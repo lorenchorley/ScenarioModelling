@@ -22,6 +22,7 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
     public EntityTypeProperty EntityType { get; private init; }
     public RelationListProperty Relations { get; private init; }
     public AspectListProperty Aspects { get; private init; }
+    public StateProperty InitialState { get; private init; }
     public StateProperty State { get; private init; }
 
     public Entity(System system)
@@ -31,6 +32,7 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
         // Add this to the system
         system.Entities.Add(this);
 
+        InitialState = new StateProperty(system);
         State = new StateProperty(system);
         Relations = new RelationListProperty(system);
         Aspects = new AspectListProperty(system);

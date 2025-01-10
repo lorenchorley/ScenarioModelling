@@ -47,13 +47,16 @@ public record DialogNode : ScenarioNode<DialogEvent>
 
     public override bool IsFullyEqv(IScenarioNode other)
     {
-        if (other is not DialogNode otherDialogNode)
+        if (other is not DialogNode otherNode)
             return false;
 
-        if (!otherDialogNode.TextTemplate.IsEqv(TextTemplate))
+        if (!otherNode.Name.IsEqv(Name))
+            return false;
+        
+        if (!otherNode.TextTemplate.IsEqv(TextTemplate))
             return false;
 
-        if (!otherDialogNode.Character.IsEqvCountingNulls(Character))
+        if (!otherNode.Character.IsEqvCountingNulls(Character))
             return false;
 
         return true;

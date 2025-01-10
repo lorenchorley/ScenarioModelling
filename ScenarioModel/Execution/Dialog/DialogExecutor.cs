@@ -27,6 +27,8 @@ public class DialogExecutor : IExecutor
 
     public ScenarioRun StartScenario(string name)
     {
+        Context.ResetToInitialState();
+
         _scenario = Context.Scenarios.FirstOrDefault(s => s.Name == name);
 
         if (_scenario == null)

@@ -1,5 +1,4 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Exhaustiveness.Attributes;
+﻿using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Expressions.Reserialisation;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
@@ -15,10 +14,11 @@ public class WhileNodeSerialiser(string IndentSegment, ScenarioSerialiser Scenar
         ExpressionSerialiser visitor = new(scenario.System);
         var result = (string)node.Condition.Accept(visitor);
 
-        sb.AppendLine($"{currentIndent}While <{result}> {{"); // TODO Serialise the expression correctly
+        sb.AppendLine($"{currentIndent}While <{result}> {{");
 
         string subIndent = currentIndent + IndentSegment;
-        ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
+
+        node.SerialiseAnnotatedProperties(sb, subIndent);
 
         foreach (var subNode in node.SubGraph.NodeSequence)
         {
@@ -26,7 +26,6 @@ public class WhileNodeSerialiser(string IndentSegment, ScenarioSerialiser Scenar
         }
 
         sb.AppendLine($"{currentIndent}}}");
-        //sb.AppendLine($"");
     }
 }
 

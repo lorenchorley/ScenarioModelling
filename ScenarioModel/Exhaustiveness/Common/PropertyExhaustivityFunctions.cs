@@ -5,7 +5,7 @@ namespace ScenarioModel.Exhaustiveness.Common;
 public class PropertyExhaustivityFunctions<TPropertyAttribute>
         where TPropertyAttribute : IPropertyAttribute
 {
-    public void DoForEachProperty<TType>(TType obj, Action<string, object?> callback)
+    public void DoForEachProperty<TType>(TType obj, Action<TPropertyAttribute, string, object?> callback)
     {
         var type = typeof(TType);
         var properties =
@@ -29,7 +29,7 @@ public class PropertyExhaustivityFunctions<TPropertyAttribute>
                     continue;
             }
 
-            callback(propertyName, propertyValue);
+            callback(property.Attribute, propertyName, propertyValue);
         }
     }
 

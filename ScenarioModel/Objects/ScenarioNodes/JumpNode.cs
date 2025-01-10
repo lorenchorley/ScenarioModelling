@@ -3,13 +3,14 @@ using ScenarioModel.Execution.Events;
 using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModel.Objects.ScenarioNodes.Interfaces;
 using ScenarioModel.Objects.Visitors;
 using System.Diagnostics;
 
 namespace ScenarioModel.Objects.ScenarioNodes;
 
 [NodeLike<IScenarioNode, JumpNode>]
-public record JumpNode : ScenarioNode<JumpEvent>
+public record JumpNode : ScenarioNode<JumpEvent>, IFlowNode
 {
     [NodeLikeProperty]
     public string Target { get; set; } = "";
@@ -39,6 +40,9 @@ public record JumpNode : ScenarioNode<JumpEvent>
     public override bool IsFullyEqv(IScenarioNode other)
     {
         if (other is not JumpNode otherNode)
+            return false;
+
+        if (!other.Name.IsEqv(Name))
             return false;
 
         if (!otherNode.Target.IsEqv(Target))

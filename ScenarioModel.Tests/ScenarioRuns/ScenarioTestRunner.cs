@@ -21,35 +21,10 @@ public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependen
 
         while ((node = executor.NextNode()) != null)
         {
-            IScenarioEvent e = node.GenerateUntypedEvent(dependencies);
+            IScenarioEvent e = node.GenerateGenericTypeEvent(dependencies);
 
             // Custom test context behaviour
-            node.ToOneOf().Switch(
-                chooseNode =>
-                {
-                    if (choicesByNodeName != null)
-                    {
-                        if (!choicesByNodeName.TryGetValue(chooseNode.Name, out Queue<string>? choicesForNode) || choicesForNode == null)
-                        {
-                            throw new ArgumentException($"No choices queue provided for node {chooseNode.Name}, only for {choicesByNodeName.Keys.CommaSeparatedList()}");
-                        }
-
-                        string selection = choicesForNode.Dequeue();
-
-                        ChoiceSelectedEvent choiceEvent = (ChoiceSelectedEvent)e;
-                        choiceEvent.Choice =
-                            chooseNode.Choices
-                                      .Where(n => n.Text.IsEqv(selection))
-                                      .Select(s => s.NodeName)
-                                      .First();
-                    }
-                },
-                dialogNode => { },
-                ifNode => { },
-                jumpNode => { },
-                transitionNode => { },
-                whileNode => { }
-            );
+            DoCustomRunBehaviour(choicesByNodeName, node, e);
 
             executor.RegisterEvent(e);
         }
@@ -57,4 +32,33 @@ public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependen
         return scenarioRun;
     }
 
+    private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IScenarioNode? node, IScenarioEvent e)
+    {
+        node.ToOneOf().Switch(
+            chooseNode =>
+            {
+                if (choicesByNodeName != null)
+                {
+                    if (!choicesByNodeName.TryGetValue(chooseNode.Name, out Queue<string>? choicesForNode) || choicesForNode == null)
+                    {
+                        throw new ArgumentException($"No choices queue provided for node {chooseNode.Name}, only for {choicesByNodeName.Keys.CommaSeparatedList()}");
+                    }
+
+                    string selection = choicesForNode.Dequeue();
+
+                    ChoiceSelectedEvent choiceEvent = (ChoiceSelectedEvent)e;
+                    choiceEvent.Choice =
+                        chooseNode.Choices
+                                    .Where(n => n.Text.IsEqv(selection))
+                                    .Select(s => s.NodeName)
+                                    .First();
+                }
+            },
+            dialogNode => { },
+            ifNode => { },
+            jumpNode => { },
+            transitionNode => { },
+            whileNode => { }
+        );
+    }
 }

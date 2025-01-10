@@ -1,7 +1,11 @@
-﻿using ScenarioModel.CodeHooks.HookDefinitions.SystemObjects;
+﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModel.CodeHooks.HookDefinitions.SystemObjects;
 using ScenarioModel.ContextConstruction;
 using ScenarioModel.Objects.SystemObjects;
+using ScenarioModel.Objects.SystemObjects.Interfaces;
+using ScenarioModel.Objects.SystemObjects.Properties;
 using ScenarioModel.References;
+using ScenarioModel.References.Interfaces;
 
 namespace ScenarioModel.CodeHooks.HookDefinitions;
 
@@ -42,15 +46,17 @@ public class SystemHookDefinition
 
     internal void Initialise()
     {
-        foreach (var entityDefintions in _entityDefintions)
+        foreach (var entityDefintion in _entityDefintions)
         {
-            Entity newlyDefinedEntity = entityDefintions.Entity;
-            Initialise(newlyDefinedEntity);
+            ValidateDefinition(entityDefintion);
+            Entity newlyDefinedEntity = entityDefintion.Entity;
+            CreateNewIfNotSet<EntityType, EntityTypeReference, EntityTypeProperty>(newlyDefinedEntity.EntityType, newlyDefinedEntity.Name);
             // TODO Make sure there are no duplicates
         }
 
         foreach (var stateMachineDefintions in _stateMachineDefintions)
         {
+            ValidateDefinition(stateMachineDefintions);
             StateMachine newlyDefinedStateMachine = stateMachineDefintions.StateMachine;
             StateMachine? existingCorrespondingStateMachine = Context.System.StateMachines.FirstOrDefault(e => e.Name.IsEqv(newlyDefinedStateMachine.Name));
 
@@ -66,29 +72,46 @@ public class SystemHookDefinition
             //    }
         }
 
+        foreach (var constraintDefintion in _constraintDefintions)
+        {
+            ValidateDefinition(constraintDefintion);
+        }
+
         //Context.System.Entities.ForEach(UpdateStateMachineOnEntity);
     }
 
-    //private void UpdateStateMachineOnEntity(Entity entity)
-    //{
-    //    State? state = entity.State.ResolvedValue;
-
-    //    if (state == null)
-    //        return;
-
-    //    state.
-    //}
-
-    private void Initialise(Entity newlyDefinedEntity)
+    private void CreateNewIfNotSet<TObjType, TObjTypeRef, TProp>(TProp objType, string name)
+        where TObjType : class, ISystemObject<TObjTypeRef>
+        where TObjTypeRef : class, IReference<TObjType>
+        where TProp : OptionalReferencableProperty<TObjType, TObjTypeRef>
     {
         // Check if it has an entity type
-        if (newlyDefinedEntity.EntityType.ReferenceOnly != null &&
-            !newlyDefinedEntity.EntityType.ReferenceOnly.IsResolvable())
+        if (objType.ReferenceOnly != null &&
+            !objType.ReferenceOnly.IsResolvable())
         {
             // Create new type unique to this entity
-            var reference = _instanciator.NewReference<EntityType, EntityTypeReference>(newlyDefinedEntity.Name);
-            newlyDefinedEntity.EntityType.SetReference(reference);
+            var reference = _instanciator.NewReference<TObjType, TObjTypeRef>(name);
+            objType.SetReference(reference);
         }
     }
 
+    //private void Initialise(Entity newlyDefinedEntity)
+    //{
+    //    // Check if it has an entity type
+    //    if (newlyDefinedEntity.EntityType.ReferenceOnly != null &&
+    //        !newlyDefinedEntity.EntityType.ReferenceOnly.IsResolvable())
+    //    {
+    //        // Create new type unique to this entity
+    //        var reference = _instanciator.NewReference<EntityType, EntityTypeReference>(newlyDefinedEntity.Name);
+    //        newlyDefinedEntity.EntityType.SetReference(reference);
+    //    }
+    //}
+
+    private void ValidateDefinition(IHookDefinition definition)
+    {
+        if (definition.Validated)
+            throw new Exception("Definition already validated");
+
+        definition.Validate();
+    }
 }

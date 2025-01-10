@@ -12,6 +12,7 @@ public class EntityHookDefinition : IObjectHookDefinition
 
     public HookExecutionMode HookExecutionMode { get; set; }
     public Entity Entity { get; private set; }
+    public bool Validated { get; private set; } = false;
 
     public EntityHookDefinition(System system, Instanciator instanciator, string name)
     {
@@ -25,7 +26,9 @@ public class EntityHookDefinition : IObjectHookDefinition
     public EntityHookDefinition SetState(string stateName)
     {
         // TODO Either set the state or verify that the states match
-        Entity.State.SetReference(new StateReference(_system) { Name = stateName });
+        StateReference reference = new StateReference(_system) { Name = stateName };
+        Entity.State.SetReference(reference);
+        Entity.InitialState.SetReference(reference);
 
         return this;
     }
@@ -42,5 +45,10 @@ public class EntityHookDefinition : IObjectHookDefinition
     {
         Entity.CharacterStyle = style;
         return this;
+    }
+
+    public void Validate()
+    {
+        Validated = true;
     }
 }

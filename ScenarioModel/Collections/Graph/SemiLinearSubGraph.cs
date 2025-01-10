@@ -21,6 +21,12 @@ public class SemiLinearSubGraph<T> where T : IDirectedGraphNode<T>
 
     public T FirstNode => NodeSequence.First();
 
+    public void Reinitalise()
+    {
+        _lastReturnedIndex = -1;
+        ExplicitNextNode = default;
+    }
+
     public T? GetNextInSequenceFromNodeOrNull(T node)
     {
         // Record the explicit next node 

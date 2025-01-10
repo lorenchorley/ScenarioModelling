@@ -242,4 +242,25 @@ public class Context
         }
     }
 
+    public void ResetToInitialState()
+    {
+        foreach(var statefulObject in System.AllStateful)
+        {
+            if (!statefulObject.State.IsSet)
+            {
+                // If no state is set, that is that no state machine is associated with the stateful object
+                // Then we should not try to reset the state to it's initial state
+                continue;
+            }
+
+            State? resolvedValue = statefulObject.InitialState.ResolvedValue;
+
+            if (resolvedValue == null)
+            {
+                throw new Exception($"Stateful object {statefulObject.Name} has no initial state");
+            }
+
+            statefulObject.State.SetReference(resolvedValue.GenerateReference());
+        }
+    }
 }

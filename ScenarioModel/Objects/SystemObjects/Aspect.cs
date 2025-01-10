@@ -20,6 +20,7 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
     public AspectType? AspectType { get; set; } // TODO Propertyise
     public EntityProperty Entity { get; private init; }
     public RelationListProperty Relations { get; private init; }
+    public StateProperty InitialState { get; private init; }
     public StateProperty State { get; private init; }
 
     public Aspect(System system)
@@ -30,6 +31,7 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
         system.Aspects.Add(this);
 
         Entity = new EntityProperty(system);
+        InitialState = new StateProperty(system);
         State = new StateProperty(system);
         Relations = new RelationListProperty(system);
     }

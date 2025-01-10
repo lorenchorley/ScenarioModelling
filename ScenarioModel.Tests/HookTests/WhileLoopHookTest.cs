@@ -173,8 +173,8 @@ public partial class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("CodeHooks")]
-    public void ScenarioWithWhileLoop_ConstructionTest()
+    [TestCategory("Code Hooks"), TestCategory("Scenario Construction")]
+    public void ScenarioWithWhileLoop_ScenarioConstructionTest()
     {
         // Arrange
         // =======
@@ -225,7 +225,7 @@ public partial class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("CodeHooks"), TestCategory("ScenarioRuns")]
+    [TestCategory("Code Hooks"), TestCategory("Scenario Execution")]
     public async Task ScenarioWithWhileLoop_ScenarioRunTest()
     {
         // Arrange

@@ -1,5 +1,4 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Exhaustiveness.Attributes;
+﻿using ScenarioModel.Exhaustiveness.Attributes;
 using ScenarioModel.Objects.ScenarioNodes;
 using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
@@ -15,10 +14,10 @@ public class JumpNodeSerialiser(string IndentSegment) : INodeSerialiser<JumpNode
         sb.AppendLine($"{currentIndent}Jump {name}{{");
 
         string subIndent = currentIndent + IndentSegment;
-        ScenarioNodeExhaustivity.DoForEachNodeProperty(node, (prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
+
+        node.SerialiseAnnotatedProperties(sb, subIndent);
 
         sb.AppendLine($"{currentIndent}}}");
-        //sb.AppendLine($"");
     }
 }
 

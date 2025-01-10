@@ -10,9 +10,9 @@ public class DefinitionScope
     public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = null!;
     public int CurrentIndex { get; set; } = 0;
 
-    public void AddOrVerifyInPhase(INodeHookDefinition nodeDefinition, Action add)
+    public void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add)
     {
-        IScenarioNode newNode = nodeDefinition.GetNode();
+        IScenarioNode newNode = newNodeDefinition.GetNode();
 
         if (CurrentIndex > SubGraph.NodeSequence.Count + 1)
             throw new Exception("Current index is too far beyond the end of the subgraph");
@@ -22,20 +22,46 @@ public class DefinitionScope
         // If the index points to just after the last position, then we must be missing the next mode. We add it
         if (atEndOfSubgraph)
         {
-            NodeHookDefinitions.Add(nodeDefinition);
+            NodeHookDefinitions.Add(newNodeDefinition);
             SubGraph.NodeSequence.Add(newNode);
 
             add();
+            CurrentIndex++;
         }
         else // Otherwise we check that the current node corresponds to the new definition
         {
             var currentNode = SubGraph.NodeSequence[CurrentIndex];
-            bool nodesAreEssentiallyTheSame = currentNode.IsFullyEqv(newNode);
-            if (!nodesAreEssentiallyTheSame)
+            int indexAdvance = VerifyInPhaseWithGraph(currentNode, newNode);
+            CurrentIndex += indexAdvance; // TODO This should be managed by the verify method because in looking ahead we will need to skip nodes
+        }
+    }
+
+    private int VerifyInPhaseWithGraph(IScenarioNode existingNode, IScenarioNode newNode)
+    {
+        bool nodesAreEssentiallyTheSame = existingNode.IsFullyEqv(newNode);
+        if (!nodesAreEssentiallyTheSame)
+        {
+            if (existingNode.Implicit)
+            {
+                // If the current node doesn't match the new definition, and the current node is implicit
+                // we need to look ahead until we find a non implicit node that either matches or not the new definition
+
+                // Simple implementation for now : no look ahead outside the current subgraph
+                // TODO arbitrary look ahead, up and down all possible subgraphs from the current node
+
+                if (CurrentIndex + 1 >= SubGraph.NodeSequence.Count)
+                    throw new Exception("Current index is too far beyond the end of the subgraph : To be implemented");
+
+                IScenarioNode next = SubGraph.NodeSequence[CurrentIndex + 1];
+                VerifyInPhaseWithGraph(next, newNode);
+            }
+            else
+            {
                 throw new Exception("Current node does not match the new definition");
+            }
         }
 
-        CurrentIndex++;
+        return 1;
     }
 
     internal void ReturnToStartOfScope()

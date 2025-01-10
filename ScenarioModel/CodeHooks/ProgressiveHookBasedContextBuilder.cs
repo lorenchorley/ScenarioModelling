@@ -32,6 +32,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
 
     public Result<Context> BuildContextFromInputs(HookContextBuilderInputs inputs)
     {
+
         // Transform all definitions into objects with references to other objects
         // One line for each type of definition that can exist at the top level of the definition tree (that is with a minimum of indentation)
         Transform(inputs);
@@ -44,6 +45,8 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
 
         // Reinitialize the inputs so that everything is ready to be reused
         inputs.Reset();
+
+        _context.ResetToInitialState(); // TODO Too early !
 
         return _context;
     }

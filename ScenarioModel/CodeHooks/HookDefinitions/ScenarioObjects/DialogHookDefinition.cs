@@ -8,14 +8,17 @@ namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 [NodeLike<INodeHookDefinition, DialogNode>]
 public class DialogHookDefinition : INodeHookDefinition
 {
+    public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
+    public DefinitionScope CurrentScope { get; }
 
-    public DialogHookDefinition(string text)
+    public DialogHookDefinition(DefinitionScope currentScope, string text)
     {
         Node = new DialogNode()
         {
             TextTemplate = text
         };
+        CurrentScope = currentScope;
     }
 
     public IScenarioNode GetNode()
@@ -35,7 +38,9 @@ public class DialogHookDefinition : INodeHookDefinition
         return this;
     }
 
-    public void ValidateFinalState()
+    public void Validate()
     {
+        Validated = true;
+
     }
 }

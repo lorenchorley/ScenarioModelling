@@ -19,9 +19,11 @@ public class IfHookDefinition : INodeHookDefinition
     [NodeLikeProperty]
     public List<bool> RecordedIfEvents { get; } = new();
 
+    public bool Validated { get; private set; } = false;
     public IfNode Node { get; private set; }
+    public DefinitionScope CurrentScope { get; }
 
-    public IfHookDefinition(string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
+    public IfHookDefinition(DefinitionScope currentScope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
     {
         Node = new IfNode();
 
@@ -34,6 +36,7 @@ public class IfHookDefinition : INodeHookDefinition
 
         Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
+        CurrentScope = currentScope;
         _enterScope = enterScope;
         _returnOneScopeLevel = returnOneScopeLevel;
     }
@@ -90,16 +93,23 @@ public class IfHookDefinition : INodeHookDefinition
         return this;
     }
 
+    public IfHookDefinition SetAsImplicit()
+    {
+        Node.Implicit = true;
+        return this;
+    }
+
     public IScenarioNode GetNode()
     {
         return Node;
     }
 
-    public void ValidateFinalState()
+    public void Validate()
     {
         // TODO
         // If condition == false, then no recorded events
         // If condition == true, then one recorded event
         // How to take into account multiple usages ?
+        Validated = true;
     }
 }

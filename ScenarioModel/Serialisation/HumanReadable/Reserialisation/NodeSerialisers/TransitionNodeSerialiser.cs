@@ -25,6 +25,9 @@ public class TransitionNodeSerialiser(string IndentSegment) : INodeSerialiser<Tr
         sb.AppendLine($"{currentIndent}Transition {name}{{");
 
         string subIndent = currentIndent + IndentSegment;
+
+        node.SerialiseAnnotatedProperties(sb, subIndent);
+
         sb.AppendLine($"{subIndent}{obj.Name} : {node.TransitionName}");
 
         sb.AppendLine($"{currentIndent}}}");

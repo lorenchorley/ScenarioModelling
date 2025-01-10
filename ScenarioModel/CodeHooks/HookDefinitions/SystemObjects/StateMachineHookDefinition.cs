@@ -12,6 +12,7 @@ public class StateMachineHookDefinition : IObjectHookDefinition
 
     public HookExecutionMode HookExecutionMode { get; set; }
     public StateMachine StateMachine { get; private set; }
+    public bool Validated { get; private set; } = false;
 
     // Not sure that this is necessary
     public List<(string statefulInitial, string statefulFinal, string transitionName)> transitions = new();
@@ -49,5 +50,10 @@ public class StateMachineHookDefinition : IObjectHookDefinition
         StateMachine.States.TryAddReference(destination);
 
         return this;
+    }
+
+    public void Validate()
+    {
+        Validated = true;
     }
 }

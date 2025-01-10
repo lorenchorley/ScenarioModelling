@@ -14,6 +14,8 @@ public class ConstraintHookDefinition : IObjectHookDefinition
     public HookExecutionMode HookExecutionMode { get; set; }
     public Constraint Constraint { get; private set; }
 
+    public bool Validated { get; private set; } = false;
+
     public ConstraintHookDefinition(System system, Instanciator instanciator, string name)
     {
         _system = system;
@@ -40,4 +42,8 @@ public class ConstraintHookDefinition : IObjectHookDefinition
         return this;
     }
 
+    public void Validate()
+    {
+        Validated = true;
+    }
 }

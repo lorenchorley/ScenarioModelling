@@ -29,6 +29,7 @@ public partial class ProgressiveCodeHookTests
             new(nameof(TwoStatesOneTransitionWithId), nameof(SystemOneActorTwoStates)),
 
             new(nameof(OneDialogAndOneJump), nameof(SystemEmpty)),
+            new(nameof(TwoDialogsAndOneJump), nameof(SystemEmpty)),
 
             new(nameof(OneConstraintAlwaysValid), nameof(SystemOneActorTwoStatesWithConstraint)),
             new(nameof(OneConstraintFailsOnTransition), nameof(SystemOneActorTwoStatesWithConstraint)),
@@ -53,13 +54,14 @@ public partial class ProgressiveCodeHookTests
             new(nameof(WhileExecutesTwiceWithTransition), nameof(SystemOneActorThreeStatesSingleTransition)),
             new(nameof(WhileExecutesTwiceWithTransitionAndDialog), nameof(SystemOneActorThreeStatesSingleTransition)),
             new(nameof(WhileExecutesTwiceWithNestedIf), nameof(SystemOneActorThreeStatesSingleTransition)),
+            new(nameof(WhileExecutesTwiceWithNestedIf_NoDialogAfter), nameof(SystemOneActorThreeStatesSingleTransition)),
         ];
 
         public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<TestCase, object[]>)(t => [t.ScenarioMethodName, t.SystemMethodName]));
         public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
     }
 
-    #region System
+    #region Systems
     private static void SystemEmpty(SystemHookDefinition sysConf)
     {
     }
@@ -155,6 +157,22 @@ public partial class ProgressiveCodeHookTests
         hooks.DeclareDialog("Some text")
              .SetId("D1");
     }
+    
+    private static void TwoDialogsAndOneJump(ScenarioHookOrchestrator hooks)
+    {
+        hooks.DeclareJump("D2");
+
+        hooks.DeclareDialog("Some text")
+             .SetId("D1");
+
+        hooks.DeclareDialog("Some more text")
+             .SetId("D2");
+    }
+
+    #endregion
+
+    #region Choose
+    // TODO
     #endregion
 
     #region Constraint
@@ -334,7 +352,7 @@ public partial class ProgressiveCodeHookTests
 
         hooks.DeclareDialog("After if block");
     }
-
+    
     private static void IfDoesNotExecute_UsingHook(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
@@ -482,7 +500,7 @@ public partial class ProgressiveCodeHookTests
 
         hooks.DeclareDialog("After while block");
     }
-
+    
     private static void WhileExecutesTwiceWithTransitionAndDialog(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
@@ -510,7 +528,7 @@ public partial class ProgressiveCodeHookTests
             hooks.DeclareTransition("Actor", "T1");
 
             hooks.DeclareIfBranch(@"Actor.State != S3")
-             .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
 
             bool condition = true;
             if (ψ(condition))
@@ -525,10 +543,35 @@ public partial class ProgressiveCodeHookTests
 
         hooks.DeclareDialog("After while block");
     }
+
+    private static void WhileExecutesTwiceWithNestedIf_NoDialogAfter(ScenarioHookOrchestrator hooks)
+    {
+        hooks.DeclareWhileBranch(@"Actor.State != S3")
+             .GetConditionHook(out WhileHook φ);
+
+        int count = 2;
+        while (φ(count > 0))
+        {
+            hooks.DeclareTransition("Actor", "T1");
+
+            hooks.DeclareIfBranch(@"Actor.State != S3")
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
+
+            bool condition = true;
+            if (ψ(condition))
+            {
+                hooks.DeclareDialog("Some text");
+
+                ifBlockEndHook();
+            }
+
+            count--;
+        }
+    }
     #endregion
 
     [DataTestMethod]
-    [TestCategory("CodeHooks")]
+    [TestCategory("Code Hooks"), TestCategory("Scenario Construction")]
     [ProgressiveCodeHookTestDataProvider]
     public async Task ProgressiveCodeHookTestSuite(string scenarioMethodName, string systemMethodName)
     {
@@ -569,11 +612,10 @@ public partial class ProgressiveCodeHookTests
 
         await Verify(serialisedContext)
             .UseParameters(scenarioMethodName);
-
     }
 
     [DataTestMethod]
-    [TestCategory("CodeHooks"), TestCategory("ScenarioRuns")]
+    [TestCategory("Code Hooks"), TestCategory("Scenario Execution")]
     [ProgressiveCodeHookTestDataProvider]
     public async Task ProgressiveCodeHookRerunTestSuite(string scenarioMethodName, string systemMethodName)
     {
@@ -620,7 +662,7 @@ public partial class ProgressiveCodeHookTests
             .UseParameters(scenarioMethodName);
 
     }
-
+    
     private Action<T> GetAction<T>(string systemMethodName)
     {
         var methodRef =

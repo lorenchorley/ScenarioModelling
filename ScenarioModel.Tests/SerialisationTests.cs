@@ -11,7 +11,7 @@ public class SerialisationTests
     [TestMethod]
     [TestCategory("Serialisation")]
     [ReserialisationDataProvider]
-    public void Deserialise_Serialise(string testCaseName, string originalContextText, string expectedFinalContextText)
+    public void Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
     {
         // Arrange
         // =======

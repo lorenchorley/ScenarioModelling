@@ -1,0 +1,3 @@
+﻿* DialogEvent {"Text":"Before if block","Character":null}
+* IfBlockEvent {"Expression":"Actor.State == S2","IfBlockRun":false}
+* DialogEvent {"Text":"After if block","Character":null}

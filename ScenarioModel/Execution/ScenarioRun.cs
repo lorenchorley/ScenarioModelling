@@ -54,17 +54,16 @@ public class ScenarioRun
             return CurrentScope.CurrentNode;
         }
 
-        // If the node is not set, we have finished the subgraph
         bool finishedSubgraph = currentScopeNode is null;
         if (finishedSubgraph)
         {
-            // We need to go up one level
+            // If we can keep going up, we go up one level
             GraphScopeStack.Pop();
+
             return NextNode();
-            //return AdvanceToNextNodeInSubgraph(currentScopeNode);
         }
 
-        return currentScopeNode.ToOneOf().Match(
+        currentScopeNode = currentScopeNode.ToOneOf().Match(
             (ChooseNode node) => ManangeChoseNode(currentEvent, node),
             (DialogNode node) => CurrentScope.GetNextInSequence(),
             (IfNode node) => ManageIfNode(currentEvent, node),
@@ -72,6 +71,8 @@ public class ScenarioRun
             (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
             (WhileNode node) => ManageWhileNode(currentEvent, node)
             );
+
+        return currentScopeNode;
     }
 
     private Option<ConstraintFailedEvent> CheckConstraint(Constraint constraint)
@@ -93,39 +94,6 @@ public class ScenarioRun
         return null;
     }
 
-    //private IScenarioNode? AdvanceToNextNodeInGraphStack()
-    //{
-    //    var nextNode = CurrentScope.GetNextInSequence();
-
-    //    //if (nextNode is not null)
-    //    //{
-    //    //    return nextNode;
-    //    //}
-
-    //    //if (CurrentScope.CurrentSubGraph.ParentSubGraph is null)
-    //    //{
-    //    //    return null;
-    //    //}
-
-    //    //if (CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint is null)
-    //    //{
-    //    //    throw new InvalidOperationException("Incorherence : ParentSubGraphEntryPoint was null while ParentSubGraph was not");
-    //    //}
-
-    //    //// Go back up one subgraph and continue to the next node after the departure point
-    //    //var parentSubGraphRentryNode = CurrentScope.CurrentSubGraph.ParentSubGraphEntryPoint;
-
-    //    //// Verify coherence of subgraph stack
-    //    //if (CurrentScope.CurrentSubGraph != CurrentScope.CurrentSubGraph.ParentSubGraph)
-    //    //    throw new Exception("Incoherence in subgraph stack");
-
-    //    //CurrentScope.CurrentSubGraph = CurrentScope.CurrentSubGraph.ParentSubGraph;
-
-    //    //nextNode = CurrentScope.CurrentSubGraph.GetNextInSequence(parentSubGraphRentryNode);
-
-    //    return nextNode;
-    //}
-
     private IScenarioNode? ManangeTransitionNode(IScenarioEvent? currentEvent, TransitionNode currentScopeNode)
     {
         // The last event must be a state change event
@@ -146,8 +114,8 @@ public class ScenarioRun
         // Find the next node based on the choice
         IScenarioNode? newCurrentScopeNode =
             CurrentScope
-                           .Graph
-                           .Find(s => s.Name.IsEqv(choiceEvent.Choice));
+                .Graph
+                .Find(s => s.Name.IsEqv(choiceEvent.Choice));
 
         if (newCurrentScopeNode is null)
             throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
@@ -173,10 +141,9 @@ public class ScenarioRun
         if (newCurrentScopeNode is null)
             throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
 
-        // TODO Change to set explicit next node
+        // Set explicit next node
         CurrentScope.SetExplicitNextNode(newCurrentScopeNode);
 
-        //return newCurrentScopeNode; // Get next ?
         return CurrentScope.GetNextInSequence();
     }
 

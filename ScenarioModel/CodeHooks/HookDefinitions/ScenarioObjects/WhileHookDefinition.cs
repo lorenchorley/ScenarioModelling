@@ -11,19 +11,19 @@ public delegate bool WhileHook(bool result);
 [NodeLike<INodeHookDefinition, WhileNode>]
 public class WhileHookDefinition : INodeHookDefinition
 {
-    [NodeLikeProperty]
-    public List<bool> RecordedWhileLoopEvents { get; } = new();
-
     private int _whileLoopCount = 0;
-    private readonly DefinitionScope _currentScope;
+    private DefinitionScope? _whileLoopScope;
     private readonly EnterScopeDelegate _enterScope;
     private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
 
+    [NodeLikeProperty]
+    public List<bool> RecordedWhileLoopEvents { get; } = new();
+
+    public bool Validated { get; private set; } = false;
+    public DefinitionScope CurrentScope { get; }
     public WhileNode Node { get; private set; }
 
-    private DefinitionScope? _whileLoopScope;
-
-    public WhileHookDefinition(string expression, DefinitionScope CurrentScope, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
+    public WhileHookDefinition(DefinitionScope currentScope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
     {
         Node = new WhileNode();
 
@@ -36,7 +36,7 @@ public class WhileHookDefinition : INodeHookDefinition
 
         Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
-        _currentScope = CurrentScope;
+        CurrentScope = currentScope;
         _enterScope = enterScope;
         _returnOneScopeLevel = returnOneScopeLevel;
 
@@ -86,12 +86,19 @@ public class WhileHookDefinition : INodeHookDefinition
         return this;
     }
 
+    public WhileHookDefinition SetAsImplicit()
+    {
+        Node.Implicit = true;
+        return this;
+    }
+
     public IScenarioNode GetNode()
     {
         return Node;
     }
 
-    public void ValidateFinalState()
+    public void Validate()
     {
+        Validated = true;
     }
 }

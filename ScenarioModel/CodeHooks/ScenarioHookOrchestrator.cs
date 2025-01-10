@@ -2,6 +2,7 @@
 using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 using ScenarioModel.Exhaustiveness;
+using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModel.Objects.ScenarioNodes.DataClasses;
 
 namespace ScenarioModel.CodeHooks;
@@ -17,7 +18,7 @@ public abstract class ScenarioHookOrchestrator
     protected readonly Stack<DefinitionScope> _scopeStack = new();
     protected readonly HookContextBuilderInputs _contextBuilderInputs;
     protected readonly ProgressiveHookBasedContextBuilder _contextBuilder;
-    protected readonly HashSet<INodeHookDefinition> _newlyCreatedHooks = new();
+    protected readonly Queue<INodeHookDefinition> _newlyCreatedHooks = new();
 
     protected DefinitionScope CurrentScope => _scopeStack.Peek();
     protected System System => Scenario.System;
@@ -57,11 +58,13 @@ public abstract class ScenarioHookOrchestrator
 
     public Scenario DeclareScenarioEnd()
     {
+        VerifyAndAddLastDefinition();
+
         // Validate all hooks
-        foreach (var hook in _newlyCreatedHooks)
-        {
-            hook.ValidateFinalState();
-        }
+        //foreach (var hook in _newlyCreatedHooks)
+        //{
+        //    hook.ValidateFinalState();
+        //}
 
         return _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException(nameof(_scenarioDefintion));
     }
@@ -70,15 +73,11 @@ public abstract class ScenarioHookOrchestrator
     {
         ArgumentException.ThrowIfNullOrEmpty(text);
 
-        DialogHookDefinition nodeDef = new(text);
+        VerifyAndAddLastDefinition();
 
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
-        {
-            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        DialogHookDefinition nodeDef = new(CurrentScope, text);
 
-            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
-        });
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
         return nodeDef;
     }
@@ -88,32 +87,27 @@ public abstract class ScenarioHookOrchestrator
         ArgumentException.ThrowIfNullOrEmpty(character);
         ArgumentException.ThrowIfNullOrEmpty(text);
 
+        VerifyAndAddLastDefinition();
+
         DialogHookDefinition nodeDef =
-            new DialogHookDefinition(text)
+            new DialogHookDefinition(CurrentScope, text)
                 .SetCharacter(character);
 
         // Parent subgraph is null here in ScenarioWithWhileLoop_ConstructionTest !
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () => { });
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
         return nodeDef;
     }
 
     public virtual ChooseHookDefinition DeclareChoose(params ChoiceList choices)
     {
-        ChooseHookDefinition nodeDef = new();
+        VerifyAndAddLastDefinition();
+
+        ChooseHookDefinition nodeDef = new(CurrentScope);
         nodeDef.Node.Choices.AddRange(choices);
 
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
-        {
-            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
-
-            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
-        });
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
         return nodeDef;
     }
@@ -123,16 +117,11 @@ public abstract class ScenarioHookOrchestrator
         ArgumentException.ThrowIfNullOrEmpty(statefulObjectName);
         ArgumentException.ThrowIfNullOrEmpty(transition);
 
-        TransitionHookDefinition nodeDef = new(Context.System, statefulObjectName, transition);
+        VerifyAndAddLastDefinition();
 
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
-        {
-            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        TransitionHookDefinition nodeDef = new(CurrentScope, Context.System, statefulObjectName, transition);
 
-            // TODO Needs modifying to only happen when node is new ?
-            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
-        });
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
         return nodeDef;
     }
@@ -141,15 +130,11 @@ public abstract class ScenarioHookOrchestrator
     {
         ArgumentException.ThrowIfNullOrEmpty(condition);
 
-        IfHookDefinition nodeDef = new(condition, EnterNewScope, ReturnOneScopeLevel);
+        VerifyAndAddLastDefinition();
 
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
-        {
-            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        IfHookDefinition nodeDef = new(CurrentScope, condition, EnterNewScope, ReturnOneScopeLevel);
 
-            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
-        });
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
         return nodeDef;
     }
@@ -158,15 +143,11 @@ public abstract class ScenarioHookOrchestrator
     {
         ArgumentException.ThrowIfNullOrEmpty(target);
 
-        JumpHookDefinition nodeDef = new(target);
+        VerifyAndAddLastDefinition();
 
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
-        {
-            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        JumpHookDefinition nodeDef = new(CurrentScope, target);
 
-            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
-        });
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
         return nodeDef;
     }
@@ -175,31 +156,63 @@ public abstract class ScenarioHookOrchestrator
     {
         ArgumentException.ThrowIfNullOrEmpty(condition);
 
-        WhileHookDefinition nodeDef = new(condition, CurrentScope, EnterNewScope, ReturnOneScopeLevel);
+        VerifyAndAddLastDefinition();
 
-        _newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
+        WhileHookDefinition nodeDef = new(CurrentScope, condition, EnterNewScope, ReturnOneScopeLevel);
 
-        _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-        _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        _newlyCreatedHooks.Enqueue(nodeDef);
 
-        CurrentScope.AddOrVerifyInPhase(nodeDef, add: () =>
-        {
-            //_newlyCreatedHooks.Add(nodeDef); // TODO If exists already ?
-
-            _contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
-            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
-        });
+        //_contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
+        //_contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
 
         return nodeDef;
     }
 
     public void DefineSystem(Action<SystemHookDefinition> configure)
     {
+        VerifyAndAddLastDefinition();
+
         SystemHookDefinition systemHookDefinition = new(Context);
         configure(systemHookDefinition);
         systemHookDefinition.Initialise();
 
-        //_contextBuilderInputs.NewNodes.Enqueue(nodeDef.GetNode());
         _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
     }
+
+    /// <summary>
+    /// Validate and add as we go that each node definition is correct so that 
+    /// * the problem is raised as close to the definition as possible,
+    /// * and so that each node is verified before the next is started.
+    /// </summary>
+    private void VerifyAndAddLastDefinition()
+    {
+        if (_newlyCreatedHooks.Count == 0)
+        {
+            // Nothing to do
+            return;
+        }
+
+        if (_newlyCreatedHooks.Count > 1)
+            throw new Exception("Only one definition should have been create since the last call");
+
+        INodeHookDefinition lastDefinition = _newlyCreatedHooks.Dequeue();
+        ValidateDefinition(lastDefinition);
+
+        // Must be done after all properties have been set via the fluent API
+        lastDefinition.CurrentScope.AddOrVerifyInPhase(lastDefinition, add: () =>
+        {
+            IScenarioNode newNode = lastDefinition.GetNode();
+            _contextBuilderInputs.NewNodes.Enqueue(newNode);
+            _contextBuilder.BuildContextFromInputs(_contextBuilderInputs);
+        });
+    }
+
+    private void ValidateDefinition(IHookDefinition definition)
+    {
+        if (definition.Validated)
+            throw new Exception("Definition already validated");
+
+        definition.Validate();
+    }
+
 }
