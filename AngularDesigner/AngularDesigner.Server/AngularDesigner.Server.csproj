@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ScenarioModel\ScenarioModel.csproj" />
     <ProjectReference Include="..\angulardesigner.client\angulardesigner.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

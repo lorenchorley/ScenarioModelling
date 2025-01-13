@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { CodeeditorComponent } from './codeeditor/codeeditor.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,7 @@ import { CodeeditorComponent } from './codeeditor/codeeditor.component';
     CodeeditorComponent
   ],
   imports: [
-    BrowserModule, HttpClientModule
+    BrowserModule, HttpClientModule, CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
