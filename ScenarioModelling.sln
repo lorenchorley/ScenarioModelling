@@ -9,6 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel.Tests", "Scen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModelling_ConsoleFront", "ScenarioModelling_ConsoleFront\ScenarioModelling_ConsoleFront.csproj", "{9E318620-D992-45E8-8492-4983BD449B30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularDesigner.Server", "AngularDesigner\AngularDesigner.Server\AngularDesigner.Server.csproj", "{48E010BD-D1A1-4675-9ABE-C47323CA1EA9}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "angulardesigner.client", "AngularDesigner\angulardesigner.client\angulardesigner.client.esproj", "{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesignerWeb", "DesignerWeb", "{B4F178E8-4564-44B4-8D88-35167A27E503}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9736C932-23C0-4659-8ED8-ED10B558E690}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +35,25 @@ Global
 		{9E318620-D992-45E8-8492-4983BD449B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E318620-D992-45E8-8492-4983BD449B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E318620-D992-45E8-8492-4983BD449B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48E010BD-D1A1-4675-9ABE-C47323CA1EA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48E010BD-D1A1-4675-9ABE-C47323CA1EA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48E010BD-D1A1-4675-9ABE-C47323CA1EA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48E010BD-D1A1-4675-9ABE-C47323CA1EA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{184C6E70-1580-44E9-BB75-0F07F1F19236} = {9736C932-23C0-4659-8ED8-ED10B558E690}
+		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370} = {9736C932-23C0-4659-8ED8-ED10B558E690}
+		{48E010BD-D1A1-4675-9ABE-C47323CA1EA9} = {B4F178E8-4564-44B4-8D88-35167A27E503}
+		{23F147D3-9BF0-4ADD-B14C-1DCD8FBBE0E2} = {B4F178E8-4564-44B4-8D88-35167A27E503}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {333BF7DB-891B-4BFD-992D-4026E1CE729D}
