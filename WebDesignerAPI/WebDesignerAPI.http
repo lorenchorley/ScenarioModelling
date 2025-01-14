@@ -1,0 +1,6 @@
+@WebDesignerAPI_HostAddress = http://localhost:5210
+
+GET {{WebDesignerAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

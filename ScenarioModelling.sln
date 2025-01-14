@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel", "ScenarioMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel.Tests", "ScenarioModel.Tests\ScenarioModel.Tests.csproj", "{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModelling_ConsoleFront", "ScenarioModelling_ConsoleFront\ScenarioModelling_ConsoleFront.csproj", "{9E318620-D992-45E8-8492-4983BD449B30}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Designer", "Designer", "{AAFAA4C1-73EE-406F-840F-A58557F858F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDesignerAPI", "WebDesignerAPI\WebDesignerAPI.csproj", "{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,10 @@ Global
 		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E318620-D992-45E8-8492-4983BD449B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E318620-D992-45E8-8492-4983BD449B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E318620-D992-45E8-8492-4983BD449B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E318620-D992-45E8-8492-4983BD449B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
