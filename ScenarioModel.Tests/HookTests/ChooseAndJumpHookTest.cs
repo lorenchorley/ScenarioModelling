@@ -155,7 +155,7 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks, choices);
 
-        Scenario generatedScenario = hooks.DeclareScenarioEnd();
+        MetaStory generatedScenario = hooks.DeclareScenarioEnd();
 
 
         // Assert
@@ -222,9 +222,9 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks, choices);
 
-        Scenario generatedScenario = hooks.DeclareScenarioEnd();
+        MetaStory generatedScenario = hooks.DeclareScenarioEnd();
 
-        ScenarioRun scenarioRun = runner.Run("Scenario recorded by hooks");
+        Story scenarioRun = runner.Run("Scenario recorded by hooks");
 
 
         // Assert

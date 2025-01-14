@@ -9,5 +9,5 @@ public interface INodeValidator
 
 public interface INodeValidator<T> : INodeValidator
 {
-    ValidationErrors Validate(System system, Scenario scenario, T instance);
+    ValidationErrors Validate(System system, MetaStory scenario, T instance);
 }

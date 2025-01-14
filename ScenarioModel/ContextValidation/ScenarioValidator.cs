@@ -19,9 +19,9 @@ public class ScenarioValidator : IScenarioVisitor
     private readonly WhileNodeValidator _whileNodeValidator = new();
 
     private System? _system;
-    private Scenario? _scenario;
+    private MetaStory? _scenario;
 
-    public ValidationErrors Validate(System system, Scenario scenario)
+    public ValidationErrors Validate(System system, MetaStory scenario)
     {
         SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectValidator>();
 

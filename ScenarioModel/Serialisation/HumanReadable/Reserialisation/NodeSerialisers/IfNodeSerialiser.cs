@@ -9,7 +9,7 @@ namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialis
 [NodeLike<INodeSerialiser, IfNode>]
 public class IfNodeSerialiser(string IndentSegment, ScenarioSerialiser ScenarioSerialiser) : INodeSerialiser<IfNode>
 {
-    public void WriteNode(StringBuilder sb, Scenario scenario, IfNode node, string currentIndent)
+    public void WriteNode(StringBuilder sb, MetaStory scenario, IfNode node, string currentIndent)
     {
         ExpressionSerialiser visitor = new(scenario.System);
         var result = (string)node.Condition.Accept(visitor);

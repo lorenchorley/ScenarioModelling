@@ -5,25 +5,25 @@ public class ScenarioHookDefinition
     public string Name { get; }
     public Context Context { get; }
 
-    private Scenario _activeScenario;
+    private MetaStory _activeScenario;
 
     public ScenarioHookDefinition(string Name, Context Context)
     {
         this.Name = Name;
         this.Context = Context;
 
-        Scenario? scenario = Context.Scenarios.FirstOrDefault(s => s.Name == Name);
+        MetaStory? scenario = Context.Scenarios.FirstOrDefault(s => s.Name == Name);
 
         if (scenario == null)
         {
-            scenario = new Scenario() { Name = Name, System = Context.System };
+            scenario = new MetaStory() { Name = Name, System = Context.System };
             Context.Scenarios.Add(scenario);
         }
 
         _activeScenario = scenario;
     }
 
-    public Scenario GetScenario()
+    public MetaStory GetScenario()
     {
         return _activeScenario;
     }

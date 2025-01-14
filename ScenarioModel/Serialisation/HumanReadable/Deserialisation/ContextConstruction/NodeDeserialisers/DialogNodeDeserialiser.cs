@@ -17,7 +17,7 @@ public class DialogNodeDeserialiser : IDefinitionToNodeDeserialiser
     [NodeLikeProperty]
     public Func<Definition, bool>? Predicate => null;
 
-    public IScenarioNode Transform(Definition def, Scenario scenario, SemiLinearSubGraph<IScenarioNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> transformDefinition)
+    public IScenarioNode Transform(Definition def, MetaStory scenario, SemiLinearSubGraph<IScenarioNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> transformDefinition)
     {
         if (def is not UnnamedDefinition unnamed)
         {

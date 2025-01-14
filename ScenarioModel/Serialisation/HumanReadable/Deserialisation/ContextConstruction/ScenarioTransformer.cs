@@ -8,12 +8,12 @@ using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSema
 
 namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
 
-public class ScenarioTransformer(System System, Instanciator Instanciator) : DefinitionToObjectDeserialiser<Scenario, Scenario>
+public class ScenarioTransformer(System System, Instanciator Instanciator) : DefinitionToObjectDeserialiser<MetaStory, MetaStory>
 {
     public Dictionary<string, IDefinitionToNodeDeserialiser> NodeProfilesByName { get; init; }
     public Dictionary<Func<Definition, bool>, IDefinitionToNodeDeserialiser> NodeProfilesByPredicate { get; init; }
 
-    protected override Option<Scenario> Transform(Definition def, TransformationType type)
+    protected override Option<MetaStory> Transform(Definition def, TransformationType type)
     {
         if (def is not NamedDefinition named)
         {
@@ -31,7 +31,7 @@ public class ScenarioTransformer(System System, Instanciator Instanciator) : Def
         if (type == TransformationType.Property)
             throw new InvalidOperationException("Scenarios should not be properties");
 
-        Scenario value = Instanciator.NewScenario(definition: def);
+        MetaStory value = Instanciator.NewScenario(definition: def);
 
         var tryTransform = TryTransformDefinitionToNode(value);
         value.Graph.PrimarySubGraph.NodeSequence.AddRange(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, value.Graph.PrimarySubGraph), "Unknown node types not taken into account : {0}"));
@@ -39,7 +39,7 @@ public class ScenarioTransformer(System System, Instanciator Instanciator) : Def
         return value;
     }
 
-    private Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> TryTransformDefinitionToNode(Scenario scenario)
+    private Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> TryTransformDefinitionToNode(MetaStory scenario)
         => (def, currentSubgraph) =>
         {
             var tryTransform = TryTransformDefinitionToNode(scenario);
@@ -91,7 +91,7 @@ public class ScenarioTransformer(System System, Instanciator Instanciator) : Def
 
     }
 
-    public override void Initialise(Scenario obj)
+    public override void Initialise(MetaStory obj)
     {
     }
 }

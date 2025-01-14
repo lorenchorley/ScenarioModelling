@@ -16,12 +16,12 @@ namespace ScenarioModel;
 /// <summary>
 /// A scenario is all the possibilities of a story, yet to be played out.
 /// </summary>
-public class Scenario : IIdentifiable
+public class MetaStory : IIdentifiable
 {
     public string Name { get; set; } = "";
 
     [JsonIgnore]
-    public Type Type => typeof(Scenario);
+    public Type Type => typeof(MetaStory);
 
     public System System { get; set; } = new();
     public DirectedGraph<IScenarioNode> Graph { get; set; } = new();

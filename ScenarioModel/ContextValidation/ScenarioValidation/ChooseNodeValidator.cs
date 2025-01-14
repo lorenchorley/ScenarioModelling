@@ -10,7 +10,7 @@ namespace ScenarioModel.ContextValidation.ScenarioValidation;
 [NodeLike<INodeValidator, ChooseNode>]
 public class ChooseNodeValidator : INodeValidator<ChooseNode>
 {
-    public ValidationErrors Validate(System system, Scenario scenario, ChooseNode node)
+    public ValidationErrors Validate(System system, MetaStory scenario, ChooseNode node)
     {
         ValidationErrors validationErrors = new();
 

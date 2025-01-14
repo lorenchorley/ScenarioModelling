@@ -592,10 +592,7 @@ public partial class ProgressiveCodeHookTests
         // ===
 
         // Build system
-        orchestrator.DefineSystem(sysConf =>
-        {
-            systemHooksMethod(sysConf);
-        });
+        orchestrator.DefineSystem(systemHooksMethod);
 
         // Build scenario
         orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
@@ -651,7 +648,7 @@ public partial class ProgressiveCodeHookTests
 
         // Act
         // ===
-        ScenarioRun scenarioRun = runner.Run("Scenario recorded by hooks");
+        Story scenarioRun = runner.Run("Scenario recorded by hooks");
 
 
         // Assert

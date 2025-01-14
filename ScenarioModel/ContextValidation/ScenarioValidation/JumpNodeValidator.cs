@@ -8,7 +8,7 @@ namespace ScenarioModel.ContextValidation.ScenarioValidation;
 [NodeLike<INodeValidator, JumpNode>]
 public class JumpNodeValidator : INodeValidator<JumpNode>
 {
-    public ValidationErrors Validate(System system, Scenario scenario, JumpNode node)
+    public ValidationErrors Validate(System system, MetaStory scenario, JumpNode node)
     {
         ValidationErrors validationErrors = new();
         return validationErrors;

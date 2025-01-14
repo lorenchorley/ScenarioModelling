@@ -12,9 +12,9 @@ namespace ScenarioModel.Execution;
 /// <summary>
 /// A story is an instance or a play through of a scenario.
 /// </summary>
-public class ScenarioRun
+public class Story
 {
-    public Scenario Scenario { get; init; } = null!;
+    public MetaStory Scenario { get; init; } = null!;
     public List<IScenarioEvent> Events { get; set; } = new();
     public Stack<GraphScope> GraphScopeStack { get; set; } = new();
     public ExpressionEvalator Evaluator { get; set; } = null!;
@@ -194,7 +194,7 @@ public class ScenarioRun
 public interface StoryRunResult
 {
     public static StoryRunResult ConstraintFailure(string value) => new ConstraintFailure(value);
-    public static StoryRunResult Successful(ScenarioRun story) => new Successful(story);
+    public static StoryRunResult Successful(Story story) => new Successful(story);
     public static StoryRunResult NotStarted() => new NotStarted();
 }
 
@@ -203,9 +203,9 @@ public class ConstraintFailure(string value) : StoryRunResult
     public string Value { get; } = value;
 }
 
-public class Successful(ScenarioRun story) : StoryRunResult
+public class Successful(Story story) : StoryRunResult
 {
-    public ScenarioRun Story { get; } = story;
+    public Story Story { get; } = story;
 }
 
 public class NotStarted : StoryRunResult

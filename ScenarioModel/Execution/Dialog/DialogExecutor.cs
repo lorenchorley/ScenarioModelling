@@ -7,8 +7,8 @@ namespace ScenarioModel.Execution.Dialog;
 public class DialogExecutor : IExecutor
 {
     public Context Context { get; set; }
-    private Scenario? _scenario;
-    private ScenarioRun? _scenarioRun;
+    private MetaStory? _scenario;
+    private Story? _scenarioRun;
     private readonly ExpressionEvalator _evalator;
 
     public DialogExecutor(Context context, ExpressionEvalator evalator)
@@ -25,7 +25,7 @@ public class DialogExecutor : IExecutor
         return _scenarioRun.Events.LastOrDefault();
     }
 
-    public ScenarioRun StartScenario(string name)
+    public Story StartScenario(string name)
     {
         Context.ResetToInitialState();
 
@@ -34,7 +34,7 @@ public class DialogExecutor : IExecutor
         if (_scenario == null)
             throw new InvalidOperationException($"No scenario with name {name}");
 
-        _scenarioRun = new ScenarioRun { Scenario = _scenario, Evaluator = _evalator };
+        _scenarioRun = new Story { Scenario = _scenario, Evaluator = _evalator };
         _scenarioRun.Init();
 
         return _scenarioRun;

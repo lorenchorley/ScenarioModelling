@@ -11,7 +11,7 @@ namespace ScenarioModel.Tests.ScenarioRuns;
 
 public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null)
 {
-    public ScenarioRun Run(string scenarioName)
+    public Story Run(string scenarioName)
     {
         // Initialize the scenario
         var scenarioRun = executor.StartScenario(scenarioName);

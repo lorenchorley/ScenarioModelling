@@ -33,7 +33,7 @@ public class ScenarioSerialiser
         _whileNodeSerialiser = new(indentSegment, this);
     }
 
-    public void WriteScenario(StringBuilder sb, Scenario scenario, string currentIndent)
+    public void WriteScenario(StringBuilder sb, MetaStory scenario, string currentIndent)
     {
         sb.AppendLine($"{currentIndent}Scenario {scenario.Name.AddQuotes()} {{");
 
@@ -46,7 +46,7 @@ public class ScenarioSerialiser
         sb.AppendLine($"");
     }
 
-    public void WriteScenarioNode(StringBuilder sb, Scenario scenario, IScenarioNode node, string currentIndent)
+    public void WriteScenarioNode(StringBuilder sb, MetaStory scenario, IScenarioNode node, string currentIndent)
     {
         // TODO Still used ?
         if (node is ITransitionNode transitionNode)

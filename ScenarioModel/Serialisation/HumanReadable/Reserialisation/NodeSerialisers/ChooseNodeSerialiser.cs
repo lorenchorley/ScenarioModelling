@@ -8,7 +8,7 @@ namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialis
 [NodeLike<INodeSerialiser, ChooseNode>]
 public class ChooseNodeSerialiser(string IndentSegment) : INodeSerialiser<ChooseNode>
 {
-    public void WriteNode(StringBuilder sb, Scenario scenario, ChooseNode node, string currentIndent)
+    public void WriteNode(StringBuilder sb, MetaStory scenario, ChooseNode node, string currentIndent)
     {
         var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
         sb.AppendLine($"{currentIndent}Choose {name}{{");

@@ -9,7 +9,7 @@ namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialis
 [NodeLike<INodeSerialiser, WhileNode>]
 public class WhileNodeSerialiser(string IndentSegment, ScenarioSerialiser ScenarioSerialiser) : INodeSerialiser<WhileNode>
 {
-    public void WriteNode(StringBuilder sb, Scenario scenario, WhileNode node, string currentIndent)
+    public void WriteNode(StringBuilder sb, MetaStory scenario, WhileNode node, string currentIndent)
     {
         ExpressionSerialiser visitor = new(scenario.System);
         var result = (string)node.Condition.Accept(visitor);
