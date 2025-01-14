@@ -8,7 +8,7 @@ namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialis
 [NodeLike<INodeSerialiser, TransitionNode>]
 public class TransitionNodeSerialiser(string IndentSegment) : INodeSerialiser<TransitionNode>
 {
-    public void WriteNode(StringBuilder sb, Scenario scenario, TransitionNode node, string currentIndent)
+    public void WriteNode(StringBuilder sb, MetaStory scenario, TransitionNode node, string currentIndent)
     {
         if (node.StatefulObject == null)
         {

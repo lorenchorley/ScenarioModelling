@@ -13,7 +13,7 @@ namespace ScenarioModel;
 public class Context
 {
     public List<ISerialiser> Serialisers { get; set; } = new();
-    public List<Scenario> Scenarios { get; set; } = new();
+    public List<MetaStory> Scenarios { get; set; } = new();
     public System System { get; set; } = new();
     public ValidationErrors ValidationErrors { get; set; } = new();
 
@@ -98,12 +98,12 @@ public class Context
     //    return LoadSystem(serialisedSystem, out _);
     //}
 
-    public Context LoadScenario(Scenario scenario)
+    public Context LoadScenario(MetaStory scenario)
     {
         return LoadScenario(scenario, out _);
     }
 
-    public Context LoadScenario(Scenario newScenario, out Scenario scenario)
+    public Context LoadScenario(MetaStory newScenario, out MetaStory scenario)
     {
         Scenarios.Add(newScenario);
         newScenario.System = System;

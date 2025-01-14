@@ -8,7 +8,7 @@ namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialis
 [NodeLike<INodeSerialiser, DialogNode>]
 public class DialogNodeSerialiser(string IndentSegment) : INodeSerialiser<DialogNode>
 {
-    public void WriteNode(StringBuilder sb, Scenario scenario, DialogNode node, string currentIndent)
+    public void WriteNode(StringBuilder sb, MetaStory scenario, DialogNode node, string currentIndent)
     {
         var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
         sb.AppendLine($"{currentIndent}Dialog {name}{{");

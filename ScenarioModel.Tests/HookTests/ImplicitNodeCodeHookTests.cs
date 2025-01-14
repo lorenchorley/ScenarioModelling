@@ -275,14 +275,14 @@ public partial class ImplicitNodeCodeHookTests
         scenarioWithoutImplicitNodeMethod(orchestrator);
         orchestrator.DeclareScenarioEnd();
 
-        ScenarioRun firstRun = runner.Run("Scenario recorded by hooks");
+        Story firstRun = runner.Run("Scenario recorded by hooks");
 
         // The build scenario without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second scenario
         orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
         scenarioWithImplicitNodeMethod(orchestrator);
         orchestrator.DeclareScenarioEnd();
 
-        ScenarioRun secondRun = runner.Run("Scenario recorded by hooks");
+        Story secondRun = runner.Run("Scenario recorded by hooks");
 
 
         // Assert

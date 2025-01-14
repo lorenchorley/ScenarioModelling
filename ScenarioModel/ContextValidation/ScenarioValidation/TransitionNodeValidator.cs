@@ -8,7 +8,7 @@ namespace ScenarioModel.ContextValidation.ScenarioValidation;
 [NodeLike<INodeValidator, TransitionNode>]
 public class TransitionNodeValidator : INodeValidator<TransitionNode>
 {
-    public ValidationErrors Validate(System system, Scenario scenario, TransitionNode node)
+    public ValidationErrors Validate(System system, MetaStory scenario, TransitionNode node)
     {
         ValidationErrors validationErrors = new();
         return validationErrors;

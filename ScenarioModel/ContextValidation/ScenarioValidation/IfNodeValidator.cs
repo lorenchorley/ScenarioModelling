@@ -8,7 +8,7 @@ namespace ScenarioModel.ContextValidation.ScenarioValidation;
 [NodeLike<INodeValidator, IfNode>]
 public class IfNodeValidator : INodeValidator<IfNode>
 {
-    public ValidationErrors Validate(System system, Scenario scenario, IfNode node)
+    public ValidationErrors Validate(System system, MetaStory scenario, IfNode node)
     {
         ValidationErrors validationErrors = new();
         return validationErrors;

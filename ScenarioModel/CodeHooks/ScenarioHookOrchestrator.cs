@@ -22,7 +22,7 @@ public abstract class ScenarioHookOrchestrator
 
     protected DefinitionScope CurrentScope => _scopeStack.Peek();
     protected System System => Scenario.System;
-    protected Scenario Scenario => _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException();
+    protected MetaStory Scenario => _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException();
 
     protected ScenarioHookOrchestrator(Context context)
     {
@@ -56,7 +56,7 @@ public abstract class ScenarioHookOrchestrator
         return _scenarioDefintion;
     }
 
-    public Scenario DeclareScenarioEnd()
+    public MetaStory DeclareScenarioEnd()
     {
         VerifyAndAddLastDefinition();
 

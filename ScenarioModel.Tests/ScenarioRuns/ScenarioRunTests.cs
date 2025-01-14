@@ -80,7 +80,7 @@ public partial class ScenarioRunTests
 
         // Act
         // ===
-        ScenarioRun scenarioRun = runner.Run("First");
+        Story scenarioRun = runner.Run("First");
 
 
         // Assert
@@ -158,7 +158,7 @@ public partial class ScenarioRunTests
 
         // Act
         // ===
-        ScenarioRun scenarioRun = runner.Run("NameSwappingPuns");
+        Story scenarioRun = runner.Run("NameSwappingPuns");
 
 
         // Assert

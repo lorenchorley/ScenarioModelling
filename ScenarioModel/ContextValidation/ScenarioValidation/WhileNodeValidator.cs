@@ -8,7 +8,7 @@ namespace ScenarioModel.ContextValidation.ScenarioValidation;
 [NodeLike<INodeValidator, WhileNode>]
 public class WhileNodeValidator : INodeValidator<WhileNode>
 {
-    public ValidationErrors Validate(System system, Scenario scenario, WhileNode node)
+    public ValidationErrors Validate(System system, MetaStory scenario, WhileNode node)
     {
         ValidationErrors validationErrors = new();
         return validationErrors;

@@ -21,7 +21,7 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
         return def is TransitionDefinition;
     };
 
-    public IScenarioNode Transform(Definition def, Scenario scenario, SemiLinearSubGraph<IScenarioNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> transformDefinition)
+    public IScenarioNode Transform(Definition def, MetaStory scenario, SemiLinearSubGraph<IScenarioNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IScenarioNode>, Option<IScenarioNode>> transformDefinition)
     {
         TransitionNode node = new();
         node.Line = def.Line;

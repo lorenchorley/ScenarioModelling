@@ -10,5 +10,5 @@ public interface IExecutor
     bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IScenarioEvent;
     IScenarioNode? NextNode();
     void RegisterEvent(IScenarioEvent @event);
-    ScenarioRun StartScenario(string name);
+    Story StartScenario(string name);
 }

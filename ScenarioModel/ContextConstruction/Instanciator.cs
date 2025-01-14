@@ -33,14 +33,14 @@ public class Instanciator(System System)
             );
     }
 
-    public Scenario NewScenario(Definition definition)
+    public MetaStory NewScenario(Definition definition)
     {
-        Scenario scenario = new Scenario()
+        MetaStory scenario = new MetaStory()
         {
             System = System
         };
 
-        return Name<Scenario, Scenario>(scenario, def: definition);
+        return Name<MetaStory, MetaStory>(scenario, def: definition);
     }
 
     /// <summary>

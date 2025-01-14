@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel.Tests", "Scen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModelling_ConsoleFront", "ScenarioModelling_ConsoleFront\ScenarioModelling_ConsoleFront.csproj", "{9E318620-D992-45E8-8492-4983BD449B30}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Designer", "Designer", "{AAFAA4C1-73EE-406F-840F-A58557F858F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

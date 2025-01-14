@@ -30,7 +30,7 @@ public class AnalysisExecutor : IExecutor
         throw new NotImplementedException();
     }
 
-    public ScenarioRun StartScenario(string name)
+    public Story StartScenario(string name)
     {
         throw new NotImplementedException();
     }

@@ -205,7 +205,7 @@ public partial class WhileLoopHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
 
-        Scenario generatedScenario = hooks.DeclareScenarioEnd();
+        MetaStory generatedScenario = hooks.DeclareScenarioEnd();
 
 
         // Assert
@@ -258,7 +258,7 @@ public partial class WhileLoopHookTest
 
         hooks.DeclareScenarioEnd();
 
-        ScenarioRun scenarioRun = runner.Run("Scenario recorded by hooks");
+        Story scenarioRun = runner.Run("Scenario recorded by hooks");
 
 
         // Assert
