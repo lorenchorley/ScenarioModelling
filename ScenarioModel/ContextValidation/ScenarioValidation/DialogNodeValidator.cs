@@ -1,9 +1,9 @@
-﻿using ScenarioModel.ContextValidation.Errors;
-using ScenarioModel.ContextValidation.Interfaces;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.ScenarioNodes;
+﻿using ScenarioModelling.ContextValidation.Errors;
+using ScenarioModelling.ContextValidation.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.ScenarioNodes;
 
-namespace ScenarioModel.ContextValidation.ScenarioValidation;
+namespace ScenarioModelling.ContextValidation.ScenarioValidation;
 
 [NodeLike<INodeValidator, DialogNode>]
 public class DialogNodeValidator : INodeValidator<DialogNode>

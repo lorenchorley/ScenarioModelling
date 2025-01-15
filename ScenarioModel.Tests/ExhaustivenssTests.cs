@@ -1,9 +1,9 @@
 using FluentAssertions;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Exhaustiveness.Common;
-using ScenarioModel.Exhaustiveness.Exceptions;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Exhaustiveness.Common;
+using ScenarioModelling.Exhaustiveness.Exceptions;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModelling.Tests;
 
 #region Target classes
 public class First { }

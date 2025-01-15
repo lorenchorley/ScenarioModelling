@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
 
-namespace ScenarioModel.Exhaustiveness.Common;
+namespace ScenarioModelling.Exhaustiveness.Common;
 
 public class PropertyExhaustivityFunctions<TPropertyAttribute>
         where TPropertyAttribute : IPropertyAttribute

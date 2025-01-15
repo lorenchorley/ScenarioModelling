@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.Objects.ScenarioNodes.Interfaces;
+namespace ScenarioModelling.Objects.ScenarioNodes.Interfaces;
 
 public interface ITransitionNode : IScenarioNode
 {

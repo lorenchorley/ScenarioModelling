@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿namespace ScenarioModelling.Objects.SystemObjects.Interfaces;
 
 public interface IOptionalSerialisability
 {

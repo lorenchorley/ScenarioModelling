@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+namespace ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 
 public interface INodeHookDefinition : IHookDefinition
 {

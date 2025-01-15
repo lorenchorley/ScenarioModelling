@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Objects.ScenarioNodes.DataClasses;
+﻿namespace ScenarioModelling.Objects.ScenarioNodes.DataClasses;
 
 public class ChoiceList : List<(string NodeName, string Text)>
 {

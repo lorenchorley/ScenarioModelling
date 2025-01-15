@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers.Interfaces;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers.Interfaces;
 
 public abstract class DefinitionToObjectDeserialiser<TVal, TRef> : IDefinitionToObjectDeserialiser
 {

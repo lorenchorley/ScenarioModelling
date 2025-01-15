@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModelling.Objects.SystemObjects.Interfaces;
 
-namespace ScenarioModel.Collections.Graph;
+namespace ScenarioModelling.Collections.Graph;
 
 public interface IDirectedGraphNode<T> : IIdentifiable where T : IDirectedGraphNode<T>
 {

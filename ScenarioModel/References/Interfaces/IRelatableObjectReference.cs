@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModelling.Objects.SystemObjects.Interfaces;
 
-namespace ScenarioModel.References.Interfaces;
+namespace ScenarioModelling.References.Interfaces;
 
 public interface IRelatableObjectReference : IReference<IRelatable>
 {

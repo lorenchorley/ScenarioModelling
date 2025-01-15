@@ -1,7 +1,7 @@
 ﻿using GOLD;
 using System.Reflection;
 
-namespace ScenarioModel.Parsers;
+namespace ScenarioModelling.Parsers;
 
 public class GoldEngineParserFactory
 {

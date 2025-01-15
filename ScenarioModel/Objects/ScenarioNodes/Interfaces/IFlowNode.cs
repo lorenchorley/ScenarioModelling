@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Objects.ScenarioNodes.Interfaces;
+﻿namespace ScenarioModelling.Objects.ScenarioNodes.Interfaces;
 
 internal interface IFlowNode
 {

@@ -1,14 +1,14 @@
 ﻿using LanguageExt.Common;
-using ScenarioModel.ContextValidation;
-using ScenarioModel.ContextValidation.Errors;
-using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.References;
-using ScenarioModel.References.Interfaces;
-using ScenarioModel.Serialisation;
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
+using ScenarioModelling.ContextValidation;
+using ScenarioModelling.ContextValidation.Errors;
+using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.References;
+using ScenarioModelling.References.Interfaces;
+using ScenarioModelling.Serialisation;
+using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel;
+namespace ScenarioModelling;
 
 public class Context
 {

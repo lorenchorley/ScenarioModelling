@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
+﻿using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 
 public class SystemSerialiser
 {

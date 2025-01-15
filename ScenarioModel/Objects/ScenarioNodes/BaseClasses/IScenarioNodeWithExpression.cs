@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Expressions.SemanticTree;
+﻿using ScenarioModelling.Expressions.SemanticTree;
 
-namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+namespace ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
 public interface IScenarioNodeWithExpression : IScenarioNode
 {

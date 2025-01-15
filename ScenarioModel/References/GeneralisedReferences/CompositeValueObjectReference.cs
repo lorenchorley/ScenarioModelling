@@ -1,11 +1,11 @@
 ﻿using LanguageExt;
-using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.References.GeneralisedReferences;
+namespace ScenarioModelling.References.GeneralisedReferences;
 
 public class CompositeValueObjectReference(System System) : IReference<IIdentifiable>
 {

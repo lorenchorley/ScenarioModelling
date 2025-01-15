@@ -1,15 +1,15 @@
 using FluentAssertions;
 using Newtonsoft.Json;
-using ScenarioModel.Expressions.Evaluation;
-using ScenarioModel.Expressions.Initialisation;
-using ScenarioModel.Expressions.Interpreter;
-using ScenarioModel.Expressions.Reserialisation;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Expressions.Evaluation;
+using ScenarioModelling.Expressions.Initialisation;
+using ScenarioModelling.Expressions.Interpreter;
+using ScenarioModelling.Expressions.Reserialisation;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using System.Diagnostics;
 
-namespace ScenarioModel.Tests.Expressions;
+namespace ScenarioModelling.Tests.Expressions;
 
 [TestClass]
 public class ExpressionTests

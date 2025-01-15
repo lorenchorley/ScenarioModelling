@@ -1,10 +1,10 @@
 ﻿using LanguageExt;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.References;
+namespace ScenarioModelling.References;
 
 [ObjectLike<IReference, StateMachine>]
 public record StateMachineReference(System System) : IReference<StateMachine>

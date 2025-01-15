@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Expressions.Traversal;
+﻿namespace ScenarioModelling.Expressions.Traversal;
 
 public interface IExpressionNode
 {

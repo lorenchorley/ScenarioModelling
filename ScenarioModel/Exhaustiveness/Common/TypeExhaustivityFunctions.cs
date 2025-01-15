@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Exhaustiveness.Exceptions;
+﻿using ScenarioModelling.Exhaustiveness.Exceptions;
 
-namespace ScenarioModel.Exhaustiveness.Common;
+namespace ScenarioModelling.Exhaustiveness.Common;
 
 public class TypeExhaustivityFunctions
 {

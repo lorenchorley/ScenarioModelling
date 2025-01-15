@@ -1,9 +1,9 @@
-﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
+namespace ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
 
 public delegate string ChooseHook(string result);
 

@@ -1,9 +1,9 @@
 ﻿using LanguageExt;
-using ScenarioModel.Collections.Graph;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;
 
 public interface IDefinitionToNodeDeserialiser
 {

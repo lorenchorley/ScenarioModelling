@@ -1,12 +1,12 @@
 ﻿using LanguageExt;
-using ScenarioModel.Collections.Graph;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers;
 
 [NodeLike<IDefinitionToNodeDeserialiser, ChooseNode>]
 public class ChooseNodeDeserialiser : IDefinitionToNodeDeserialiser

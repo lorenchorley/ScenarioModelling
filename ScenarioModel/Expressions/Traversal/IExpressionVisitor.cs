@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Expressions.SemanticTree;
+﻿using ScenarioModelling.Expressions.SemanticTree;
 
-namespace ScenarioModel.Expressions.Traversal;
+namespace ScenarioModelling.Expressions.Traversal;
 
 public interface IExpressionVisitor
 {

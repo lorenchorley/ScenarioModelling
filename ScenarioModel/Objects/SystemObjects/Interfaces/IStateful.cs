@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Objects.SystemObjects.Properties;
-using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.Objects.SystemObjects.Properties;
+using ScenarioModelling.References.Interfaces;
 
-namespace ScenarioModel.Objects.SystemObjects.Interfaces;
+namespace ScenarioModelling.Objects.SystemObjects.Interfaces;
 
 public interface IStateful : IIdentifiable
 {

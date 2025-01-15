@@ -1,11 +1,11 @@
-﻿using ScenarioModel.Collections.Graph;
-using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
-using ScenarioModel.Objects.Visitors;
+﻿using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.Visitors;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+namespace ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
 public abstract record ScenarioNode<E> : IScenarioNode where E : IScenarioEvent
 {

@@ -1,13 +1,13 @@
 using FluentAssertions;
-using ScenarioModel.Execution;
-using ScenarioModel.Execution.Dialog;
-using ScenarioModel.Execution.Events;
-using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Execution;
+using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Execution.Events;
+using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
 using System.Data;
 
-namespace ScenarioModel.Tests.ScenarioRuns;
+namespace ScenarioModelling.Tests.ScenarioRuns;
 
 public class ScenarioTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null)
 {

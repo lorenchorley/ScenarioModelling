@@ -1,11 +1,11 @@
 ﻿using OneOf;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.SystemObjects.Properties;
+namespace ScenarioModelling.Objects.SystemObjects.Properties;
 
 public abstract class ReferencableSetProperty<TValue, TReference> : IEnumerable<TValue>
     where TValue : class, IIdentifiable

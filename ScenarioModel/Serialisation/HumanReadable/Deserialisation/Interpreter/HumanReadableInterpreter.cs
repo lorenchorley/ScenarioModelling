@@ -1,10 +1,10 @@
 ﻿using GOLD;
-using ScenarioModel.Parsers;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.Grammar;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Parsers;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Grammar;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.Interpreter;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpreter;
 
 public partial class HumanReadableInterpreter
 {

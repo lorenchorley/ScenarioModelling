@@ -1,12 +1,12 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References;
-using ScenarioModel.References.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
+﻿using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References;
+using ScenarioModelling.References.Interfaces;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel.ContextConstruction;
+namespace ScenarioModelling.ContextConstruction;
 
 public class Instanciator(System System)
 {

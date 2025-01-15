@@ -1,6 +1,6 @@
-﻿using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.References.Interfaces;
 
-namespace ScenarioModel.Objects.SystemObjects.Interfaces;
+namespace ScenarioModelling.Objects.SystemObjects.Interfaces;
 
 public interface IReferencable<TRef>
     where TRef : IReference

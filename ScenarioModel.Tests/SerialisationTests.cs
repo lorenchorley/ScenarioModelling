@@ -1,9 +1,9 @@
 using FluentAssertions;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModel.Tests.Valid;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Tests.Valid;
 using System.Diagnostics;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModelling.Tests;
 
 [TestClass]
 public class SerialisationTests

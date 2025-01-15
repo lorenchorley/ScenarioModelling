@@ -1,6 +1,6 @@
 ﻿using LanguageExt.Common;
 
-namespace ScenarioModel.Serialisation;
+namespace ScenarioModelling.Serialisation;
 
 public interface ISerialiser
 {

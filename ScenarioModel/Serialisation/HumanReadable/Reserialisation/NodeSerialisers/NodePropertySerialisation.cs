@@ -1,8 +1,8 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 public static class NodePropertySerialisation
 {

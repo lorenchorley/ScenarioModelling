@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.Interpreter;
+﻿namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpreter;
 
 public enum HumanReadableProductionIndex
 {

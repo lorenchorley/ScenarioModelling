@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace ScenarioModel.Tests.Valid;
+namespace ScenarioModelling.Tests.Valid;
 
 public class ReserialisationDataProviderAttribute : Attribute, ITestDataSource
 {

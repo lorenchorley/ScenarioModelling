@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.ContextValidation.Errors;
+﻿namespace ScenarioModelling.ContextValidation.Errors;
 
 public class UnknownStateTransition(string message) : ValidationError(message)
 {

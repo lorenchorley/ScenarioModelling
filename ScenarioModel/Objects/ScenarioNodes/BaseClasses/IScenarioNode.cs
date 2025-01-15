@@ -1,10 +1,10 @@
-﻿using ScenarioModel.Collections.Graph;
-using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.Visitors;
+﻿using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.Visitors;
 
-namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+namespace ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
 public interface IScenarioNode : IDirectedGraphNode<IScenarioNode>, IIdentifiable
 {

@@ -1,7 +1,7 @@
-using ScenarioModel.Collections.Graph;
+using ScenarioModelling.Collections.Graph;
 using System.Diagnostics;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModelling.Tests;
 
 [TestClass]
 [UsesVerify]

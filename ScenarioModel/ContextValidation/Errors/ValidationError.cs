@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.ContextValidation.Errors;
+﻿namespace ScenarioModelling.ContextValidation.Errors;
 
 public class ValidationError(string message)
 {

@@ -1,10 +1,10 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.Visitors;
-using ScenarioModel.References;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.Visitors;
+using ScenarioModelling.References;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.SystemObjects;
+namespace ScenarioModelling.Objects.SystemObjects;
 
 [ObjectLike<ISystemObject, State>]
 public record State : ISystemObject<StateReference>

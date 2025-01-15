@@ -1,6 +1,6 @@
 ﻿using GOLD;
 
-namespace ScenarioModel.Parsers;
+namespace ScenarioModelling.Parsers;
 
 public static class GoldEngineExtensions
 {

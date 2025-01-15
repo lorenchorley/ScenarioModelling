@@ -1,4 +1,4 @@
-﻿using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.References.Interfaces;
 
 public static class SystemObjectExtensions
 {

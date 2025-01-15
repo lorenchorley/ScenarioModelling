@@ -1,15 +1,15 @@
-﻿using ScenarioModel.Collections.Graph;
-using ScenarioModel.Execution.Events;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.Visitors;
-using ScenarioModel.References;
-using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Execution.Events;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.Visitors;
+using ScenarioModelling.References;
+using ScenarioModelling.References.Interfaces;
 using System.Diagnostics;
 
-namespace ScenarioModel.Objects.ScenarioNodes;
+namespace ScenarioModelling.Objects.ScenarioNodes;
 
 [NodeLike<IScenarioNode, TransitionNode>]
 public record TransitionNode : ScenarioNode<StateChangeEvent>

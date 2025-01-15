@@ -1,16 +1,16 @@
 using FluentAssertions;
-using ScenarioModel.CodeHooks;
-using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
-using ScenarioModel.Execution;
-using ScenarioModel.Execution.Dialog;
-using ScenarioModel.Expressions.Evaluation;
-using ScenarioModel.Interpolation;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModel.Tests.ScenarioRuns;
+using ScenarioModelling.CodeHooks;
+using ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModelling.Execution;
+using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Expressions.Evaluation;
+using ScenarioModelling.Interpolation;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Tests.ScenarioRuns;
 using System.Diagnostics;
 
-namespace ScenarioModel.Tests.HookTests;
+namespace ScenarioModelling.Tests.HookTests;
 
 [TestClass]
 [UsesVerify]

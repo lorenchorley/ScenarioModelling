@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.Grammar;
+﻿namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Grammar;
 
 public static class GrammarLocalisation
 {

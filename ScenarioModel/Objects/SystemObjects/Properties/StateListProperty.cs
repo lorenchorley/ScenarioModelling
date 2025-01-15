@@ -1,6 +1,6 @@
-﻿using ScenarioModel.References;
+﻿using ScenarioModelling.References;
 
-namespace ScenarioModel.Objects.SystemObjects.Properties;
+namespace ScenarioModelling.Objects.SystemObjects.Properties;
 
 public class StateListProperty(System System) : ReferencableSetProperty<State, StateReference>(System)
 {

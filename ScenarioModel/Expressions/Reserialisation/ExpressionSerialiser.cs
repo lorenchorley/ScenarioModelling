@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Expressions.Traversal;
+﻿using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Expressions.Traversal;
 
-namespace ScenarioModel.Expressions.Reserialisation;
+namespace ScenarioModelling.Expressions.Reserialisation;
 
 public class ExpressionSerialiser : IExpressionVisitor
 {

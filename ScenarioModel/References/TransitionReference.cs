@@ -1,11 +1,11 @@
 ﻿using LanguageExt;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.References.Interfaces;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.References;
+namespace ScenarioModelling.References;
 
 // Transition reference cannot base themselves only on the name
 // They are unique only on the triplet (name, source, dest)

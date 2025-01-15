@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModelling.Tests;
 
 public static class DiffAssert
 {

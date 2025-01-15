@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Execution;
-using ScenarioModel.Expressions.Evaluation;
-using ScenarioModel.Interpolation;
+﻿using ScenarioModelling.Execution;
+using ScenarioModelling.Expressions.Evaluation;
+using ScenarioModelling.Interpolation;
 
-namespace ScenarioModel.Objects.ScenarioNodes.DataClasses;
+namespace ScenarioModelling.Objects.ScenarioNodes.DataClasses;
 
 public record EventGenerationDependencies(StringInterpolator Interpolator, ExpressionEvalator Evaluator, IExecutor Executor, Context Context);

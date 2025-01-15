@@ -1,11 +1,11 @@
 ﻿using LanguageExt;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.References;
+namespace ScenarioModelling.References;
 
 [ObjectLike<IReference, Aspect>]
 public record AspectReference(System System) : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference

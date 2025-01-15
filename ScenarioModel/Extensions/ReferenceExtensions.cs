@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.SystemObjects.Properties;
-using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.SystemObjects.Properties;
+using ScenarioModelling.References.Interfaces;
 
 public static class ReferenceExtensions
 {

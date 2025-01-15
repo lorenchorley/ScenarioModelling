@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
 [ObjectLike<IObjectSerialiser, Entity>]
 public class EntitySerialiser(string IndentSegment, StateSerialiser StateSerialiser, AspectSerialiser AspectSerialiser) : IObjectSerialiser<Entity>

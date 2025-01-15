@@ -1,8 +1,8 @@
 using FluentAssertions;
-using ScenarioModel.Interpolation;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Interpolation;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModelling.Tests;
 
 [TestClass]
 public class StringInterpolationTests

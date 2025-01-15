@@ -1,8 +1,8 @@
-﻿using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Expressions.Evaluation;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Expressions.Evaluation;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.Execution.Dialog;
+namespace ScenarioModelling.Execution.Dialog;
 
 public class DialogExecutor : IExecutor
 {

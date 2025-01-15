@@ -1,4 +1,0 @@
-﻿* IfBlockEvent {"Expression":"Actor.State != S2","IfBlockRun":true}
-* IfBlockEvent {"Expression":"Actor.State != S3","IfBlockRun":true}
-* DialogEvent {"Text":"Inside if block","Character":null}
-* DialogEvent {"Text":"After if blocks","Character":null}

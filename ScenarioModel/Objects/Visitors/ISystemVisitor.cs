@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.SystemObjects;
+﻿using ScenarioModelling.Objects.SystemObjects;
 
-namespace ScenarioModel.Objects.Visitors;
+namespace ScenarioModelling.Objects.Visitors;
 
 public interface ISystemVisitor
 {

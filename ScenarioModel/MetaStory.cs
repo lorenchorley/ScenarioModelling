@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Collections.Graph;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel;
+namespace ScenarioModelling;
 
 // Assertions in C# code that works directly on the object model defined by the system and the scenario?
 // Time series graphs and sequence diagrams derived from the scenario ?

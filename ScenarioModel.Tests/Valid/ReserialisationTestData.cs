@@ -1,4 +1,4 @@
-namespace ScenarioModel.Tests.Valid;
+namespace ScenarioModelling.Tests.Valid;
 
 public interface IContextReserialisationTestCase
 {

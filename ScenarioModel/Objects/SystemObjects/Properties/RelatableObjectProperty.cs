@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 
-namespace ScenarioModel.Objects.SystemObjects.Properties;
+namespace ScenarioModelling.Objects.SystemObjects.Properties;
 
 public class RelatableObjectProperty(System System) : OptionalReferencableProperty<IRelatable, IRelatableObjectReference>(System)
 {

@@ -1,8 +1,8 @@
-﻿using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModel.Collections.Graph;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.CodeHooks;
+namespace ScenarioModelling.CodeHooks;
 
 public class DefinitionScope
 {

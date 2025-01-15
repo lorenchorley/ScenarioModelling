@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Exhaustiveness.Exceptions;
+﻿namespace ScenarioModelling.Exhaustiveness.Exceptions;
 
 public class ExhaustivenessException : Exception
 {

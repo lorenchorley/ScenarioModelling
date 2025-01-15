@@ -1,12 +1,12 @@
 ﻿using LanguageExt;
-using ScenarioModel.ContextConstruction;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.References;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.ContextConstruction;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.References;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers.Interfaces;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers;
 
 [ObjectLike<IDefinitionToObjectDeserialiser, Entity>]
 public class EntityDeserialiser(System System, Instanciator Instanciator, StateDeserialiser StateTransformer, AspectDeserialiser AspectTransformer, EntityTypeDeserialiser EntityTypeTransformer, RelationDeserialiser RelationTransformer) : DefinitionToObjectDeserialiser<Entity, EntityReference>

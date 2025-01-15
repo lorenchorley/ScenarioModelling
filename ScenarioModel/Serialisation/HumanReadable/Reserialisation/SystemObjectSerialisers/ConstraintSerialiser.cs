@@ -1,11 +1,11 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.Reserialisation;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
+﻿using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Expressions.Reserialisation;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
 [ObjectLike<IObjectSerialiser, Constraint>]
 public class ConstraintSerialiser(string IndentSegment) : IObjectSerialiser<Constraint>

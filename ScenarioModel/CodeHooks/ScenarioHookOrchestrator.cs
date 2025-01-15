@@ -1,11 +1,11 @@
-﻿using ScenarioModel.CodeHooks.HookDefinitions;
-using ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
-using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions;
+using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
 
-namespace ScenarioModel.CodeHooks;
+namespace ScenarioModelling.CodeHooks;
 
 public delegate void ReturnOneScopeLevelDelegate();
 public delegate void EnterScopeDelegate(DefinitionScope scope);

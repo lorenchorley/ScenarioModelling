@@ -1,12 +1,12 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.SystemObjects.Properties;
-using ScenarioModel.Objects.Visitors;
-using ScenarioModel.References;
-using ScenarioModel.References.Interfaces;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.SystemObjects.Properties;
+using ScenarioModelling.Objects.Visitors;
+using ScenarioModelling.References;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.SystemObjects;
+namespace ScenarioModelling.Objects.SystemObjects;
 
 [ObjectLike<ISystemObject, Entity>]
 public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable

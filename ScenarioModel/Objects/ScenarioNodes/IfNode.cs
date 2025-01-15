@@ -1,14 +1,14 @@
-﻿using ScenarioModel.Collections.Graph;
-using ScenarioModel.Execution.Events;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.ScenarioNodes.DataClasses;
-using ScenarioModel.Objects.ScenarioNodes.Interfaces;
-using ScenarioModel.Objects.Visitors;
+﻿using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Execution.Events;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.ScenarioNodes.Interfaces;
+using ScenarioModelling.Objects.Visitors;
 using System.Diagnostics;
 
-namespace ScenarioModel.Objects.ScenarioNodes;
+namespace ScenarioModelling.Objects.ScenarioNodes;
 
 [NodeLike<IScenarioNode, IfNode>]
 public record IfNode : ScenarioNode<IfBlockEvent>, IScenarioNodeWithExpression, IFlowNode

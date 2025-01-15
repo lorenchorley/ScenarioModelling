@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Parsers;
+﻿namespace ScenarioModelling.Parsers;
 
 public interface IParserResult<TNode>
 {

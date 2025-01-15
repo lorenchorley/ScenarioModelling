@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Expressions.SemanticTree;
+﻿namespace ScenarioModelling.Expressions.SemanticTree;
 
 public abstract record Value : Expression
 {

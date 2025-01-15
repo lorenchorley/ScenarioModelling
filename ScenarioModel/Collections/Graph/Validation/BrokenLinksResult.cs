@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Collections.Graph.Validation;
+﻿namespace ScenarioModelling.Collections.Graph.Validation;
 
 public class BrokenLinksResult<T>(List<(IDirectedGraphNode<T> node, string intendedTarget)> links) : DirectedGraphValidationResult<T> where T : IDirectedGraphNode<T>
 {

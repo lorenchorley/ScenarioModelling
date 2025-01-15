@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Collections.Graph.Validation;
-using ScenarioModel.Objects.ScenarioNodes.Interfaces;
+﻿using ScenarioModelling.Collections.Graph.Validation;
+using ScenarioModelling.Objects.ScenarioNodes.Interfaces;
 
-namespace ScenarioModel.Collections.Graph;
+namespace ScenarioModelling.Collections.Graph;
 
 public class DirectedGraph<T> where T : IDirectedGraphNode<T>
 {

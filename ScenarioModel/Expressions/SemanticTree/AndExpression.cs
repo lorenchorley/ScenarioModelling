@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Expressions.Traversal;
+﻿using ScenarioModelling.Expressions.Traversal;
 
-namespace ScenarioModel.Expressions.SemanticTree;
+namespace ScenarioModelling.Expressions.SemanticTree;
 
 public record AndExpression : Expression
 {

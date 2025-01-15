@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using YamlDotNet.Core;
 
-namespace ScenarioModel.Interpolation;
+namespace ScenarioModelling.Interpolation;
 public class StringInterpolator(System System)
 {
     public string ReplaceInterpolations(string str)

@@ -1,6 +1,6 @@
-﻿using ScenarioModel.ContextValidation.Errors;
+﻿using ScenarioModelling.ContextValidation.Errors;
 
-namespace ScenarioModel.ContextValidation;
+namespace ScenarioModelling.ContextValidation;
 
 public class ContextValidator
 {

@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.ContextConstruction;
+﻿namespace ScenarioModelling.ContextConstruction;
 
 public interface IContextBuilderInputs
 {

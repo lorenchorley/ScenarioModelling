@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 
 public interface INodeSerialiser
 {

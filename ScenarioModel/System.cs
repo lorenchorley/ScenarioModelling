@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References;
+﻿using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References;
 
-namespace ScenarioModel;
+namespace ScenarioModelling;
 
 public class System
 {

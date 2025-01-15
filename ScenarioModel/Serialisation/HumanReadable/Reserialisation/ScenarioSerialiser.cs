@@ -1,12 +1,12 @@
-﻿using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.ScenarioNodes.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
+﻿using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.ScenarioNodes.Interfaces;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 
 public class ScenarioSerialiser
 {

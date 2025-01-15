@@ -1,6 +1,6 @@
 using FluentAssertions;
 
-namespace ScenarioModel.Tests;
+namespace ScenarioModelling.Tests;
 
 [TestClass]
 public class IEnumerableExtensionsTests

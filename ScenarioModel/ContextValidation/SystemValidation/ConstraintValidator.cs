@@ -1,10 +1,10 @@
-﻿using ScenarioModel.ContextValidation.Errors;
-using ScenarioModel.ContextValidation.Interfaces;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.Initialisation;
-using ScenarioModel.Objects.SystemObjects;
+﻿using ScenarioModelling.ContextValidation.Errors;
+using ScenarioModelling.ContextValidation.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Expressions.Initialisation;
+using ScenarioModelling.Objects.SystemObjects;
 
-namespace ScenarioModel.ContextValidation.SystemValidation;
+namespace ScenarioModelling.ContextValidation.SystemValidation;
 
 [ObjectLike<IObjectValidator, Constraint>]
 public class ConstraintValidator : IObjectValidator<Constraint>

@@ -1,9 +1,9 @@
 ﻿using LanguageExt.Common;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.Interpreter;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpreter;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 
 public class ContextSerialiser : ISerialiser
 {

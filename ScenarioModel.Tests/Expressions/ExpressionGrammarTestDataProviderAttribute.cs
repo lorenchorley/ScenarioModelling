@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using ScenarioModel.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects;
 using System.Reflection;
 
-namespace ScenarioModel.Tests.Expressions;
+namespace ScenarioModelling.Tests.Expressions;
 
 public class ExpectedValues
 {

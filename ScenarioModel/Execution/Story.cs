@@ -1,13 +1,13 @@
 ﻿using LanguageExt;
 using LanguageExt.SomeHelp;
-using ScenarioModel.Execution.Events;
-using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Expressions.Evaluation;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.SystemObjects;
+using ScenarioModelling.Execution.Events;
+using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Expressions.Evaluation;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.SystemObjects;
 
-namespace ScenarioModel.Execution;
+namespace ScenarioModelling.Execution;
 
 /// <summary>
 /// A story is an instance or a play through of a scenario.

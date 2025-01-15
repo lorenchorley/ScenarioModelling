@@ -1,11 +1,11 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.SystemObjects.Properties;
-using ScenarioModel.Objects.Visitors;
-using ScenarioModel.References;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.SystemObjects.Properties;
+using ScenarioModelling.Objects.Visitors;
+using ScenarioModelling.References;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.SystemObjects;
+namespace ScenarioModelling.Objects.SystemObjects;
 
 /// <summary>
 /// Types exist only to allow grouping and reuse of entities (that would then have the same state type and aspects)

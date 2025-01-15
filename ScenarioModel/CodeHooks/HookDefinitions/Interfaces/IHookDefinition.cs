@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.CodeHooks.HookDefinitions.Interfaces;
+﻿namespace ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 
 public interface IHookDefinition
 {

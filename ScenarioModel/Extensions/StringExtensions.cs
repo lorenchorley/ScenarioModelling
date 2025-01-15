@@ -1,4 +1,4 @@
-﻿using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+﻿using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
 public static class StringExtensions
 {

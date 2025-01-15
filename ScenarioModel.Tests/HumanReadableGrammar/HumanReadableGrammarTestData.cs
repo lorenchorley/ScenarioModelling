@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace ScenarioModel.Tests.HumanReadableGrammar;
+namespace ScenarioModelling.Tests.HumanReadableGrammar;
 
 public record HumanReadableGrammarTestData(string Name, string Expression, [StringSyntax(StringSyntaxAttribute.Regex)] string ExpectedResultRegex) { }

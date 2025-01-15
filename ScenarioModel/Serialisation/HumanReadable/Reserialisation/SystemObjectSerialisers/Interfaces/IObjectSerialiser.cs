@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Objects.SystemObjects.Interfaces;
+﻿using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 
 public interface IObjectSerialiser
 {

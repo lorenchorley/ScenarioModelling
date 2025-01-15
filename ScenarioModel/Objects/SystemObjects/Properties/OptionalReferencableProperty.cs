@@ -1,9 +1,9 @@
 ﻿using OneOf;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.SystemObjects.Properties;
+namespace ScenarioModelling.Objects.SystemObjects.Properties;
 
 public abstract class OptionalReferencableProperty<TVal, TRef>
     where TVal : class, ISystemObject<TRef>

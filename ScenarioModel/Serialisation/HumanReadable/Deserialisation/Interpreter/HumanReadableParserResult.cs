@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Parsers;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+﻿using ScenarioModelling.Parsers;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.Interpreter;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpreter;
 
 public class HumanReadableParserResult : IParserResult<Definitions>
 {

@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects;
+﻿using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Objects.SystemObjects;
 
-namespace ScenarioModel.Expressions.Common;
+namespace ScenarioModelling.Expressions.Common;
 
 public class EqualityFunctions
 {

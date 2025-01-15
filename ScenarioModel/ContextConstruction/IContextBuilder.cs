@@ -1,6 +1,6 @@
 ﻿using LanguageExt.Common;
 
-namespace ScenarioModel.ContextConstruction;
+namespace ScenarioModelling.ContextConstruction;
 
 public interface IContextBuilder<TInputs> where TInputs : IContextBuilderInputs
 {

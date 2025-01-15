@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.CodeHooks.HookDefinitions;
+﻿namespace ScenarioModelling.CodeHooks.HookDefinitions;
 
 public class ScenarioHookDefinition
 {

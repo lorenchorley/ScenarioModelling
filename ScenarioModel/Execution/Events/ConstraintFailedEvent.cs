@@ -1,9 +1,9 @@
-﻿using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Objects.SystemObjects;
+﻿using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Objects.SystemObjects;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Execution.Events;
+namespace ScenarioModelling.Execution.Events;
 
 public record ConstraintFailedEvent : IScenarioEvent
 {

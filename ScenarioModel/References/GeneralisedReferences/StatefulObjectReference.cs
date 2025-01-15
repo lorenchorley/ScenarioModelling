@@ -1,9 +1,9 @@
 ﻿using LanguageExt;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.References.GeneralisedReferences;
+namespace ScenarioModelling.References.GeneralisedReferences;
 
 public class StatefulObjectReference : IStatefulObjectReference
 {

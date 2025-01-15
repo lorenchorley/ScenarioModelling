@@ -1,7 +1,7 @@
 ﻿using OneOf;
 using System.Diagnostics;
 
-namespace ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+namespace ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
 public class OneOfIScenaroNode : OneOfBase<ChooseNode, DialogNode, IfNode, JumpNode, TransitionNode, WhileNode>
 {

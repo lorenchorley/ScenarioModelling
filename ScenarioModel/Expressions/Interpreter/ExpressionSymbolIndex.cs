@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Expressions.Interpreter;
+﻿namespace ScenarioModelling.Expressions.Interpreter;
 
 public enum ExpressionSymbolIndex
 {

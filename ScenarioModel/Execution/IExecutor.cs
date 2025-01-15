@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.Execution;
+namespace ScenarioModelling.Execution;
 
 public interface IExecutor
 {

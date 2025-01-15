@@ -1,1 +1,2 @@
-﻿
+﻿* WhileLoopConditionCheckEvent {"LoopBlockRun":false}
+* DialogEvent {"Text":"After while block","Character":null}

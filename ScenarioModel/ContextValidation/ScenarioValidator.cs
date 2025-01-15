@@ -1,13 +1,13 @@
-﻿using ScenarioModel.Collections.Graph;
-using ScenarioModel.ContextValidation.Errors;
-using ScenarioModel.ContextValidation.Interfaces;
-using ScenarioModel.ContextValidation.ScenarioValidation;
-using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
-using ScenarioModel.Objects.Visitors;
+﻿using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.ContextValidation.Errors;
+using ScenarioModelling.ContextValidation.Interfaces;
+using ScenarioModelling.ContextValidation.ScenarioValidation;
+using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.Visitors;
 
-namespace ScenarioModel.ContextValidation;
+namespace ScenarioModelling.ContextValidation;
 
 public class ScenarioValidator : IScenarioVisitor
 {

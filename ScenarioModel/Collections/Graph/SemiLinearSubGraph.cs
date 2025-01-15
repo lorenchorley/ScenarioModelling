@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Collections.Graph;
+﻿namespace ScenarioModelling.Collections.Graph;
 
 public class SemiLinearSubGraph<T> where T : IDirectedGraphNode<T>
 {

@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Expressions.Evaluation;
+﻿namespace ScenarioModelling.Expressions.Evaluation;
 
 //public enum ExpressionValueType
 //{

@@ -1,6 +1,6 @@
-﻿using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.Execution.Events.Interfaces;
+namespace ScenarioModelling.Execution.Events.Interfaces;
 
 public interface IScenarioEvent
 {

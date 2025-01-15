@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ScenarioModel.Tests.HumanReadableGrammar;
+namespace ScenarioModelling.Tests.HumanReadableGrammar;
 
 public class HumanReadableGrammarTestDataProviderAttribute : Attribute, ITestDataSource
 {

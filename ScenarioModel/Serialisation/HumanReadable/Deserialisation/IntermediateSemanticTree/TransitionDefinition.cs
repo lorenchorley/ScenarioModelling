@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+﻿namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
 public record TransitionDefinition : UnnamedDefinition
 {

@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Execution.EventSourcing;
+﻿namespace ScenarioModelling.Execution.EventSourcing;
 
 public class EventSourceLog
 {

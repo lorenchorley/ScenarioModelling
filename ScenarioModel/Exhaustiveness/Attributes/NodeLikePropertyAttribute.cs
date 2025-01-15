@@ -1,4 +1,4 @@
-﻿namespace ScenarioModel.Exhaustiveness.Attributes;
+﻿namespace ScenarioModelling.Exhaustiveness.Attributes;
 
 public enum OptionalBoolSetting
 {

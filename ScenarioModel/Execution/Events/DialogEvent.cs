@@ -1,11 +1,11 @@
-﻿using ScenarioModel.Execution.Events.Interfaces;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Execution.Events;
+namespace ScenarioModelling.Execution.Events;
 
 [NodeLike<IScenarioNode, IfNode>]
 public record DialogEvent : IScenarioEvent<DialogNode>

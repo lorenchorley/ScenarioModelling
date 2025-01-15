@@ -1,9 +1,9 @@
 ﻿using GOLD;
-using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Parsers;
+using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Parsers;
 using System.Text;
 
-namespace ScenarioModel.Expressions.Interpreter;
+namespace ScenarioModelling.Expressions.Interpreter;
 
 public partial class ExpressionInterpreter
 {

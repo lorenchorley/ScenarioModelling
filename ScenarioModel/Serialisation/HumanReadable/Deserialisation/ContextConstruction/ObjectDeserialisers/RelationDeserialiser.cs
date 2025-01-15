@@ -1,13 +1,13 @@
 ﻿using LanguageExt;
-using ScenarioModel.ContextConstruction;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.References;
-using ScenarioModel.References.GeneralisedReferences;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
+using ScenarioModelling.ContextConstruction;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.References;
+using ScenarioModelling.References.GeneralisedReferences;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers.Interfaces;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers;
 
 [ObjectLike<IDefinitionToObjectDeserialiser, Relation>]
 public class RelationDeserialiser(System System, Instanciator Instanciator) : DefinitionToObjectDeserialiser<Relation, RelationReference>

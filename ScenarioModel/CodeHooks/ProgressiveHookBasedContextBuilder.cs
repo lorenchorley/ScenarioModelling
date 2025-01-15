@@ -1,8 +1,8 @@
 ﻿using LanguageExt.Common;
-using ScenarioModel.ContextConstruction;
-using ScenarioModel.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.ContextConstruction;
+using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 
-namespace ScenarioModel.CodeHooks;
+namespace ScenarioModelling.CodeHooks;
 
 public class HookContextBuilderInputs : IContextBuilderInputs
 {

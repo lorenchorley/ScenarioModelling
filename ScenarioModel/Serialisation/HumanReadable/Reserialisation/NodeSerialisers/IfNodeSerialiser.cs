@@ -1,10 +1,10 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.Reserialisation;
-using ScenarioModel.Objects.ScenarioNodes;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Expressions.Reserialisation;
+using ScenarioModelling.Objects.ScenarioNodes;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.NodeSerialisers.Interfaces;
 using System.Text;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.NodeSerialisers;
 
 [NodeLike<INodeSerialiser, IfNode>]
 public class IfNodeSerialiser(string IndentSegment, ScenarioSerialiser ScenarioSerialiser) : INodeSerialiser<IfNode>

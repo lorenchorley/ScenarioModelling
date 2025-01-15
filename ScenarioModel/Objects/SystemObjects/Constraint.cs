@@ -1,12 +1,12 @@
-﻿using ScenarioModel.Execution.Events;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.Visitors;
-using ScenarioModel.References;
+﻿using ScenarioModelling.Execution.Events;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.Visitors;
+using ScenarioModelling.References;
 using System.Text.Json.Serialization;
 
-namespace ScenarioModel.Objects.SystemObjects;
+namespace ScenarioModelling.Objects.SystemObjects;
 
 [ObjectLike<ISystemObject, Constraint>]
 public record Constraint : ISystemObject<ConstraintReference>

@@ -1,7 +1,7 @@
-﻿using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Parsers;
+﻿using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Parsers;
 
-namespace ScenarioModel.Expressions.Interpreter;
+namespace ScenarioModelling.Expressions.Interpreter;
 
 public class ExpressionParserResult : IParserResult<Expression>
 {

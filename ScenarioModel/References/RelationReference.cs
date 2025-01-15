@@ -1,12 +1,12 @@
 ﻿using LanguageExt;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Expressions.SemanticTree;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.References.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Expressions.SemanticTree;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.References.Interfaces;
 using System.Text.Json.Serialization;
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
+using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel.References;
+namespace ScenarioModelling.References;
 
 [ObjectLike<IReference, Relation>]
 public record RelationReference : IReference<Relation>, IStatefulObjectReference

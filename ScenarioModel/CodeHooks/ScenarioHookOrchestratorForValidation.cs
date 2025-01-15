@@ -1,6 +1,6 @@
-﻿using ScenarioModel.CodeHooks.HookDefinitions;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions;
 
-namespace ScenarioModel.CodeHooks;
+namespace ScenarioModelling.CodeHooks;
 
 public class ScenarioHookOrchestratorForValidation(Context context) : ScenarioHookOrchestrator(context)
 {

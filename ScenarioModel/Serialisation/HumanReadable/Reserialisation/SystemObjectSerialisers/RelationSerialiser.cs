@@ -1,12 +1,12 @@
 ﻿using LanguageExt;
-using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
+using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
+using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
 [ObjectLike<IObjectSerialiser, Relation>]
 public class RelationSerialiser(string IndentSegment) : IObjectSerialiser<Relation>

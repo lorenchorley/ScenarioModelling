@@ -1,8 +1,8 @@
-﻿using ScenarioModel.Exhaustiveness.Attributes;
-using ScenarioModel.Exhaustiveness.Common;
-using ScenarioModel.Objects.ScenarioNodes;
+﻿using ScenarioModelling.Exhaustiveness.Attributes;
+using ScenarioModelling.Exhaustiveness.Common;
+using ScenarioModelling.Objects.ScenarioNodes;
 
-namespace ScenarioModel.Exhaustiveness;
+namespace ScenarioModelling.Exhaustiveness;
 
 public static class ScenarioNodeExhaustivity
 {

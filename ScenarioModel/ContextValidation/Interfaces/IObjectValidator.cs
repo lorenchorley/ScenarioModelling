@@ -1,6 +1,6 @@
-﻿using ScenarioModel.ContextValidation.Errors;
+﻿using ScenarioModelling.ContextValidation.Errors;
 
-namespace ScenarioModel.ContextValidation.Interfaces;
+namespace ScenarioModelling.ContextValidation.Interfaces;
 
 public interface IObjectValidator
 {

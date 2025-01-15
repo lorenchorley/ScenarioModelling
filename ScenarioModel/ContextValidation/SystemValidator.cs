@@ -1,15 +1,15 @@
 ﻿using LanguageExt;
-using ScenarioModel.ContextValidation.Errors;
-using ScenarioModel.ContextValidation.Interfaces;
-using ScenarioModel.ContextValidation.SystemValidation;
-using ScenarioModel.Exhaustiveness;
-using ScenarioModel.Objects.SystemObjects;
-using ScenarioModel.Objects.SystemObjects.Interfaces;
-using ScenarioModel.Objects.Visitors;
-using ScenarioModel.References.Interfaces;
-using Relation = ScenarioModel.Objects.SystemObjects.Relation;
+using ScenarioModelling.ContextValidation.Errors;
+using ScenarioModelling.ContextValidation.Interfaces;
+using ScenarioModelling.ContextValidation.SystemValidation;
+using ScenarioModelling.Exhaustiveness;
+using ScenarioModelling.Objects.SystemObjects;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
+using ScenarioModelling.Objects.Visitors;
+using ScenarioModelling.References.Interfaces;
+using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
-namespace ScenarioModel.ContextValidation;
+namespace ScenarioModelling.ContextValidation;
 
 public class SystemValidator : ISystemVisitor
 {
