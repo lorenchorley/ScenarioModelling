@@ -73,7 +73,8 @@ public partial class ChooseAndJumpHookTest
 
 
         hooks.DeclareDialog("The actor {Actor.State} says hello and introduces themselves")
-             .SetCharacter("Actor");
+             .SetCharacter("Actor")
+             .Build();
 
         Debug.WriteLine($"{ActorName}: Hello");
         Debug.WriteLine($"{ActorName}: My name is {ActorName}");
@@ -82,12 +83,14 @@ public partial class ChooseAndJumpHookTest
         hooks.DeclareChoose(new ChoiceList() { ("Change", "Change name and repeat") })
              .GetConditionHook(out ChooseHook φ)
              .SetId("LoopStart")
-             .WithJump("GoodBye", "Ciao");
+             .WithJump("GoodBye", "Ciao")
+             .Build();
 
         while (φ(choices.Dequeue()) == "Change name and repeat")
         {
             hooks.DeclareTransition("Actor", "ChangeName")
-                 .SetId("Change");
+                 .SetId("Change")
+                 .Build();
 
             if (ActorName == "Bob")
                 ActorName = "Alice";
@@ -96,28 +99,33 @@ public partial class ChooseAndJumpHookTest
 
 
             hooks.DeclareIfBranch(@"Actor.State != ""Alice""")
-                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook)
+                 .Build();
 
             if (ψ(ActorName == "Alice"))
             {
-                hooks.DeclareDialog("Actor", "The actor declares themselves to be Alice");
+                hooks.DeclareDialog("Actor", "The actor declares themselves to be Alice")
+                     .Build();
+
                 Debug.WriteLine($"{ActorName}: I am now Alice !");
 
                 ifBlockEndHook();
             }
 
-            hooks.DeclareJump("LoopStart");
+            hooks.DeclareJump("LoopStart")
+                 .Build();
         }
 
         hooks.DeclareDialog("Actor", "The actor {Actor.State} says goodbye")
-            .SetId("GoodBye");
+             .SetId("GoodBye")
+             .Build();
 
         Debug.WriteLine($"{ActorName}: Bubye");
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Construction")]
-    public void ScenarioWithChooseAndIf_ScenarioConstructionTest()
+    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
+    public void ChooseAndIf_MetaStoryConstructionTest()
     {
         // Arrange
         // =======
@@ -175,9 +183,9 @@ public partial class ChooseAndJumpHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Execution")]
+    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
     [Ignore]
-    public async Task ScenarioWithChooseAndIf_ScenarioExecutionTest()
+    public async Task ChooseAndIf_StoryExtractionTest()
     {
         // Arrange
         // =======

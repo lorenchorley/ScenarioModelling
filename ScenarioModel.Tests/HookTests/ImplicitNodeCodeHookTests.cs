@@ -65,10 +65,12 @@ public partial class ImplicitNodeCodeHookTests
     private static void OneDialogAndOneJump_FullScenario(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareJump("D1")
-             .SetAsImplicit();
+             .SetAsImplicit()
+             .Build();
 
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
     }
 
     private static void OneDialogAndOneJump_ImplicitScenario(ScenarioHookOrchestrator hooks)
@@ -77,19 +79,23 @@ public partial class ImplicitNodeCodeHookTests
         //     .SetAsImplicit();
 
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
     }
     
     private static void TwoDialogsAndOneJump_FullScenario(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareJump("D2")
-             .SetAsImplicit();
+             .SetAsImplicit()
+             .Build();
 
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
 
         hooks.DeclareDialog("Some more text")
-             .SetId("D2");
+             .SetId("D2")
+             .Build();
     }
 
     private static void TwoDialogsAndOneJump_ImplicitScenario(ScenarioHookOrchestrator hooks)
@@ -101,7 +107,8 @@ public partial class ImplicitNodeCodeHookTests
         //     .SetId("D1");
 
         hooks.DeclareDialog("Some more text")
-             .SetId("D2");
+             .SetId("D2")
+             .Build();
     }
     #endregion
 
@@ -110,16 +117,19 @@ public partial class ImplicitNodeCodeHookTests
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
              .SetAsImplicit()
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
         }
         ifBlockEndHook();
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
 
     private static void IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode(ScenarioHookOrchestrator hooks)
@@ -132,11 +142,13 @@ public partial class ImplicitNodeCodeHookTests
         //if (φ(condition))
         if (condition)
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
         }
         //ifBlockEndHook();
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
     #endregion
 
@@ -145,16 +157,20 @@ public partial class ImplicitNodeCodeHookTests
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
              .SetAsImplicit()
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 2;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
+
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
 
     private static void WhileExecutesTwiceWithTransition_ImplicitWhileNode(ScenarioHookOrchestrator hooks)
@@ -167,11 +183,14 @@ public partial class ImplicitNodeCodeHookTests
         //while (φ(count > 0))
         while (count > 0)
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
+
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
     #endregion
 
@@ -182,9 +201,9 @@ public partial class ImplicitNodeCodeHookTests
     // More ?
 
     [DataTestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Construction"), TestCategory("Implicit Nodes")]
+    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]
-    public void ImplicitNodeCodeHook_ConstructionTests(string scenarioWithImplicitNodeMethodName, string scenarioWithoutImplicitNodeMethodName, string systemMethodName)
+    public void ImplicitNode_CodeHook_MetaStoryConstructionTests(string scenarioWithImplicitNodeMethodName, string scenarioWithoutImplicitNodeMethodName, string systemMethodName)
     {
         // Arrange
         // =======
@@ -237,9 +256,9 @@ public partial class ImplicitNodeCodeHookTests
     }
     
     [DataTestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Execution"), TestCategory("Implicit Nodes")]
+    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]
-    public void ImplicitNodeCodeHook_ExecutionTests(string scenarioWithImplicitNodeMethodName, string scenarioWithoutImplicitNodeMethodName, string systemMethodName)
+    public void ImplicitNode_CodeHook_StoryExtractionTests(string scenarioWithImplicitNodeMethodName, string scenarioWithoutImplicitNodeMethodName, string systemMethodName)
     {
         // Arrange
         // =======

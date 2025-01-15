@@ -15,15 +15,18 @@ public class WhileHookDefinition : INodeHookDefinition
     private DefinitionScope? _whileLoopScope;
     private readonly EnterScopeDelegate _enterScope;
     private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
+    private readonly Action _verifyPreviousDefinition;
+    private readonly Action _finaliseDefinition;
 
     [NodeLikeProperty]
     public List<bool> RecordedWhileLoopEvents { get; } = new();
 
     public bool Validated { get; private set; } = false;
-    public DefinitionScope CurrentScope { get; }
     public WhileNode Node { get; private set; }
+    public DefinitionScope Scope { get; }
+    public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public WhileHookDefinition(DefinitionScope currentScope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
+    public WhileHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, Action finaliseDefinition)
     {
         Node = new WhileNode();
 
@@ -36,10 +39,12 @@ public class WhileHookDefinition : INodeHookDefinition
 
         Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
-        CurrentScope = currentScope;
+        Scope = scope;
+        ScopeSnapshot = Scope.TakeSnapshot();
         _enterScope = enterScope;
         _returnOneScopeLevel = returnOneScopeLevel;
-
+        _verifyPreviousDefinition = verifyPreviousDefinition;
+        _finaliseDefinition = finaliseDefinition;
     }
 
     private bool WhileHook(bool result)
@@ -58,10 +63,7 @@ public class WhileHookDefinition : INodeHookDefinition
                 return result;
 
             // Continue the loop
-            _whileLoopScope = new DefinitionScope()
-            {
-                SubGraph = Node.SubGraph
-            };
+            _whileLoopScope = new DefinitionScope(Node.SubGraph, _verifyPreviousDefinition);
             _enterScope(_whileLoopScope);
         }
 
@@ -100,5 +102,19 @@ public class WhileHookDefinition : INodeHookDefinition
     public void Validate()
     {
         Validated = true;
+    }
+
+    public void Build()
+    {
+        Validate();
+        _finaliseDefinition();
+    }
+
+    public void ReplaceNodeWithExisting(IScenarioNode preexistingNode)
+    {
+        if (preexistingNode is not WhileNode node)
+            throw new Exception($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
+
+        Node = node;
     }
 }

@@ -10,17 +10,22 @@ public delegate string ChooseHook(string result);
 [NodeLike<INodeHookDefinition, ChooseNode>]
 public class ChooseHookDefinition : INodeHookDefinition
 {
+    private readonly Action _finaliseDefinition;
+
     [NodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
 
     public bool Validated { get; private set; } = false;
     public ChooseNode Node { get; private set; }
-    public DefinitionScope CurrentScope { get; }
+    public DefinitionScope Scope { get; }
+    public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public ChooseHookDefinition(DefinitionScope currentScope)
+    public ChooseHookDefinition(DefinitionScope scope, Action finaliseDefinition)
     {
         Node = new ChooseNode();
-        CurrentScope = currentScope;
+        Scope = scope;
+        _finaliseDefinition = finaliseDefinition;
+        ScopeSnapshot = Scope.TakeSnapshot();
     }
 
     private string ChooseHook(string result)
@@ -61,5 +66,19 @@ public class ChooseHookDefinition : INodeHookDefinition
     public void Validate()
     {
         Validated = true;
+    }
+
+    public void Build()
+    {
+        Validate();
+        _finaliseDefinition();
+    }
+
+    public void ReplaceNodeWithExisting(IScenarioNode preexistingNode)
+    {
+        if (preexistingNode is not ChooseNode node)
+            throw new Exception($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
+
+        Node = node;
     }
 }

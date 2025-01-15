@@ -13,8 +13,8 @@ namespace ScenarioModel.Tests.ScenarioRuns;
 public partial class ScenarioRunTests
 {
     [TestMethod]
-    [TestCategory("Scenario Execution")]
-    public async Task ScenarioWithChooseJumpAndIfTest()
+    [TestCategory("MetaStory -> Story")]
+    public async Task ChooseJumpAndIfTest()
     {
         // Arrange
         // =======
@@ -91,8 +91,8 @@ public partial class ScenarioRunTests
     }
 
     [TestMethod]
-    [TestCategory("Scenario Execution")]
-    public async Task ScenarioWithLoopTest()
+    [TestCategory("MetaStory -> Story")]
+    public async Task LoopTest()
     {
         // Arrange
         // =======

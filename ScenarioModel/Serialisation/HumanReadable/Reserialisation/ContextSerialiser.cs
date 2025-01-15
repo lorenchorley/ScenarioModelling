@@ -40,7 +40,7 @@ public class ContextSerialiser : ISerialiser
         ContextBuilderInputs inputs = new();
         inputs.DefinitionTreeTopLevel.AddRange(result.ParsedObject!);
 
-        return contextBuilder.BuildContextFromInputs(inputs);
+        return contextBuilder.RefreshContextWithInputs(inputs);
     }
 
     public Result<string> SerialiseContext(Context context)

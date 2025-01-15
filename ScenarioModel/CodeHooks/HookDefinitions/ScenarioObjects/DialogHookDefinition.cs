@@ -8,17 +8,22 @@ namespace ScenarioModel.CodeHooks.HookDefinitions.ScenarioObjects;
 [NodeLike<INodeHookDefinition, DialogNode>]
 public class DialogHookDefinition : INodeHookDefinition
 {
+    private readonly Action _finaliseDefinition;
+
     public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
-    public DefinitionScope CurrentScope { get; }
+    public DefinitionScope Scope { get; }
+    public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public DialogHookDefinition(DefinitionScope currentScope, string text)
+    public DialogHookDefinition(DefinitionScope scope, string text, Action finaliseDefinition)
     {
         Node = new DialogNode()
         {
             TextTemplate = text
         };
-        CurrentScope = currentScope;
+        Scope = scope;
+        _finaliseDefinition = finaliseDefinition;
+        ScopeSnapshot = Scope.TakeSnapshot();
     }
 
     public IScenarioNode GetNode()
@@ -41,6 +46,19 @@ public class DialogHookDefinition : INodeHookDefinition
     public void Validate()
     {
         Validated = true;
+    }
 
+    public void Build()
+    {
+        Validate();
+        _finaliseDefinition();
+    }
+
+    public void ReplaceNodeWithExisting(IScenarioNode preexistingNode)
+    {
+        if (preexistingNode is not DialogNode node)
+            throw new Exception($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
+
+        Node = node;
     }
 }

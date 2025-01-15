@@ -6,18 +6,31 @@ namespace ScenarioModel.CodeHooks;
 
 public class DefinitionScope
 {
+    private readonly Action _verifyPreviousDefinition;
+
     public List<INodeHookDefinition> NodeHookDefinitions { get; set; } = new();
     public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = null!;
     public int CurrentIndex { get; set; } = 0;
 
-    public void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add)
+    public DefinitionScope(SemiLinearSubGraph<IScenarioNode> subGraph, Action verifyPreviousDefinition)
+    {
+        SubGraph = subGraph;
+        _verifyPreviousDefinition = verifyPreviousDefinition;
+    }
+
+    public DefinitionScopeSnapshot TakeSnapshot()
+    {
+        return new DefinitionScopeSnapshot() { Index = CurrentIndex };
+    }
+
+    public void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add, Action<IScenarioNode> existing)
     {
         IScenarioNode newNode = newNodeDefinition.GetNode();
 
-        if (CurrentIndex > SubGraph.NodeSequence.Count + 1)
+        if (newNodeDefinition.ScopeSnapshot.Index > SubGraph.NodeSequence.Count + 1)
             throw new Exception("Current index is too far beyond the end of the subgraph");
 
-        bool atEndOfSubgraph = SubGraph.NodeSequence.Count == CurrentIndex;
+        bool atEndOfSubgraph = SubGraph.NodeSequence.Count == newNodeDefinition.ScopeSnapshot.Index;
 
         // If the index points to just after the last position, then we must be missing the next mode. We add it
         if (atEndOfSubgraph)
@@ -30,8 +43,11 @@ public class DefinitionScope
         }
         else // Otherwise we check that the current node corresponds to the new definition
         {
-            var currentNode = SubGraph.NodeSequence[CurrentIndex];
+            var currentNode = SubGraph.NodeSequence[newNodeDefinition.ScopeSnapshot.Index];
             int indexAdvance = VerifyInPhaseWithGraph(currentNode, newNode);
+
+            existing(currentNode);
+
             CurrentIndex += indexAdvance; // TODO This should be managed by the verify method because in looking ahead we will need to skip nodes
         }
     }
@@ -66,19 +82,9 @@ public class DefinitionScope
 
     internal void ReturnToStartOfScope()
     {
+        _verifyPreviousDefinition();
+
         CurrentIndex = 0;
     }
 
-    //internal void SetCurrentNodeDefintion(INodeHookDefinition nodeDefinition)
-    //{
-    //    var node = nodeDefinition.GetNode();
-    //    int? index = SubGraph.NodeSequence.IndexOf(node);
-
-    //    if (index is null)
-    //    {
-    //        throw new Exception("Node not found in subgraph");
-    //    }
-
-    //    CurrentIndex = (int)index;
-    //}
 }

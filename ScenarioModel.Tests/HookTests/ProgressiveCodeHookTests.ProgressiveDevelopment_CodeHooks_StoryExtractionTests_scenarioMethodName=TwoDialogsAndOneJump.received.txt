@@ -1,0 +1,2 @@
+﻿* JumpEvent {"Target":"D2"}
+* DialogEvent {"Text":"Some more text","Character":null}

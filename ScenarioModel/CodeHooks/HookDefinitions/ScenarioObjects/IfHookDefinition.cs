@@ -15,15 +15,18 @@ public class IfHookDefinition : INodeHookDefinition
 {
     private readonly EnterScopeDelegate _enterScope;
     private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
+    private readonly Action _verifyPreviousDefinition;
+    private readonly Action _finaliseDefinition;
 
     [NodeLikeProperty]
     public List<bool> RecordedIfEvents { get; } = new();
 
     public bool Validated { get; private set; } = false;
     public IfNode Node { get; private set; }
-    public DefinitionScope CurrentScope { get; }
+    public DefinitionScope Scope { get; }
+    public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public IfHookDefinition(DefinitionScope currentScope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel)
+    public IfHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, Action finaliseDefinition)
     {
         Node = new IfNode();
 
@@ -36,19 +39,19 @@ public class IfHookDefinition : INodeHookDefinition
 
         Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
-        CurrentScope = currentScope;
+        Scope = scope;
+        ScopeSnapshot = Scope.TakeSnapshot();
         _enterScope = enterScope;
         _returnOneScopeLevel = returnOneScopeLevel;
+        _verifyPreviousDefinition = verifyPreviousDefinition;
+        _finaliseDefinition = finaliseDefinition;
     }
 
     private bool IfConditionHook(bool result)
     {
         if (result)
         {
-            _enterScope(new DefinitionScope()
-            {
-                SubGraph = Node.SubGraph
-            });
+            _enterScope(new DefinitionScope(Node.SubGraph, _verifyPreviousDefinition));
         }
 
         RecordedIfEvents.Add(result);
@@ -111,5 +114,19 @@ public class IfHookDefinition : INodeHookDefinition
         // If condition == true, then one recorded event
         // How to take into account multiple usages ?
         Validated = true;
+    }
+
+    public void Build()
+    {
+        Validate();
+        _finaliseDefinition();
+    }
+
+    public void ReplaceNodeWithExisting(IScenarioNode preexistingNode)
+    {
+        if (preexistingNode is not IfNode node)
+            throw new Exception($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
+
+        Node = node;
     }
 }

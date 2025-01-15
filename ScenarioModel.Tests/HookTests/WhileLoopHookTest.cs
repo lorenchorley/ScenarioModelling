@@ -103,23 +103,26 @@ public partial class WhileLoopHookTest
 
         hooks.DeclareDialog("The actor {Actor.State} says hello and introduces themselves")
              .SetId("SayName")
-             .SetCharacter("Actor");
+             .SetCharacter("Actor")
+             .Build();
 
         Debug.WriteLine($"Hi, this is {actorName}");
 
 
         hooks.DeclareWhileBranch(@"Actor.State != ""Dee Zaster""")
-             .GetConditionHook(out WhileHook whileHook);
+             .GetConditionHook(out WhileHook whileHook)
+             .Build();
 
         IfBlockEndHook ifBlockEndHook;
 
         while (whileHook(actorName != ActorName.DeeZaster))
         {
             hooks.DeclareIfBranch(@"Actor.State == ""Amy Stake""")
-                 .GetConditionHooks(out IfConditionHook ifHookAmy, out ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ifHookAmy, out ifBlockEndHook)
+                 .Build();
             if (ifHookAmy(actorName == ActorName.AmyStake))
             {
-                hooks.DeclareDialog("Actor", "The actor Mrs Stake makes a bad pun to do with their name");
+                hooks.DeclareDialog("Actor", "The actor Mrs Stake makes a bad pun to do with their name").Build();
                 Debug.WriteLine($"Amy's name was well chosen");
 
                 ifBlockEndHook();
@@ -127,10 +130,11 @@ public partial class WhileLoopHookTest
 
 
             hooks.DeclareIfBranch(@"Actor.State == ""Brock Lee""")
-                 .GetConditionHooks(out IfConditionHook ifHookBrock, out ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ifHookBrock, out ifBlockEndHook)
+                 .Build();
             if (ifHookBrock(actorName == ActorName.BrockLee))
             {
-                hooks.DeclareDialog("Actor", "The actor Mr Lee makes a bad pun to do with their name");
+                hooks.DeclareDialog("Actor", "The actor Mr Lee makes a bad pun to do with their name").Build();
                 Debug.WriteLine($"Brock didn't like his vegies");
 
                 ifBlockEndHook();
@@ -138,17 +142,20 @@ public partial class WhileLoopHookTest
 
 
             hooks.DeclareIfBranch(@"Actor.State == ""Clara Nett""")
-                 .GetConditionHooks(out IfConditionHook ifHookClara, out ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ifHookClara, out ifBlockEndHook)
+                 .Build();
+
             if (ifHookClara(actorName == ActorName.ClaraNett))
             {
-                hooks.DeclareDialog("Actor", "The actor Mrs Nett makes a bad pun to do with their name");
+                hooks.DeclareDialog("Actor", "The actor Mrs Nett makes a bad pun to do with their name").Build();
                 Debug.WriteLine($"Clara hated music");
 
                 ifBlockEndHook();
             }
 
 
-            hooks.DeclareTransition("Actor", "ChangeName");
+            hooks.DeclareTransition("Actor", "ChangeName")
+                 .Build();
 
             actorName = actorName switch
             {
@@ -161,10 +168,11 @@ public partial class WhileLoopHookTest
         }
 
         hooks.DeclareIfBranch(@"Actor.State == ""Dee Zaster""")
-             .GetConditionHooks(out IfConditionHook ifHookDee, out ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook ifHookDee, out ifBlockEndHook)
+             .Build();
         if (ifHookDee(actorName == ActorName.DeeZaster))
         {
-            hooks.DeclareDialog("Actor", "The actor Mr Zaster makes a bad pun to do with their name");
+            hooks.DeclareDialog("Actor", "The actor Mr Zaster makes a bad pun to do with their name").Build();
             Debug.WriteLine($"Well, that went well !");
 
             ifBlockEndHook();
@@ -173,8 +181,8 @@ public partial class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Construction")]
-    public void ScenarioWithWhileLoop_ScenarioConstructionTest()
+    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
+    public void WhileLoop_MetaStoryConstructionTest()
     {
         // Arrange
         // =======
@@ -225,8 +233,8 @@ public partial class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Execution")]
-    public async Task ScenarioWithWhileLoop_ScenarioRunTest()
+    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
+    public async Task WhileLoop_StoryExtractionTest()
     {
         // Arrange
         // =======

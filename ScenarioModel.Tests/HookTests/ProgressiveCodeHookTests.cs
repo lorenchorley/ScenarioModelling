@@ -115,58 +115,69 @@ public partial class ProgressiveCodeHookTests
     #region Dialog
     private static void OneDialog(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareDialog("Hello");
+        hooks.DeclareDialog("Hello")
+             .Build();
     }
 
     private static void OneDialogWithMultipleWords(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareDialog("Hello with multiple words");
+        hooks.DeclareDialog("Hello with multiple words")
+             .Build();
     }
 
     private static void OneDialogWithId(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Hello")
-             .SetId("custom dialog id");
+             .SetId("custom dialog id")
+             .Build();
     }
 
     private static void OneDialogWithCharacter(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Hello")
-             .SetCharacter("Actor");
+             .SetCharacter("Actor")
+             .Build();
     }
     #endregion
 
     #region Transition
     private static void TwoStatesOneTransition(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareTransition("Actor", "T1");
+        hooks.DeclareTransition("Actor", "T1")
+             .Build();
     }
 
     private static void TwoStatesOneTransitionWithId(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareTransition("Actor", "T1")
-             .SetId("custom transition id");
+             .SetId("custom transition id")
+             .Build();
     }
     #endregion
 
     #region Jump
     private static void OneDialogAndOneJump(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareJump("D1");
+        hooks.DeclareJump("D1")
+             .Build();
 
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
     }
     
     private static void TwoDialogsAndOneJump(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareJump("D2");
+        hooks.DeclareJump("D2")
+             .Build();
 
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
 
         hooks.DeclareDialog("Some more text")
-             .SetId("D2");
+             .SetId("D2")
+             .Build();
     }
 
     #endregion
@@ -179,15 +190,18 @@ public partial class ProgressiveCodeHookTests
     private static void OneConstraintAlwaysValid(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
     }
 
     private static void OneConstraintFailsOnTransition(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Some text")
-             .SetId("D1");
+             .SetId("D1")
+             .Build();
 
-        hooks.DeclareTransition("Actor", "T1");
+        hooks.DeclareTransition("Actor", "T1")
+             .Build();
     }
 
     // TODO more constraints
@@ -198,30 +212,36 @@ public partial class ProgressiveCodeHookTests
     private static void IfDoesNotExecute_DialogAfterOnly(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = false;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
 
             ifBlockEndHook();
         }
 
-        hooks.DeclareDialog("After if block only");
+        hooks.DeclareDialog("After if block only")
+             .Build();
     }
 
     private static void IfDoesNotExecute_DialogBeforeOnly(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareDialog("Before if block only");
+        hooks.DeclareDialog("Before if block only")
+             .Build();
 
         hooks.DeclareIfBranch(@"Actor.State == S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = false;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
 
             ifBlockEndHook();
         }
@@ -229,31 +249,37 @@ public partial class ProgressiveCodeHookTests
 
     private static void IfDoesNotExecute_DialogBeforeAndAfter(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareDialog("Before if block");
+        hooks.DeclareDialog("Before if block")
+             .Build();
 
         hooks.DeclareIfBranch(@"Actor.State == S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = false;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
 
             ifBlockEndHook();
         }
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
 
     private static void IfDoesNotExecute_NoDialogAround(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = false;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside naked if block");
+            hooks.DeclareDialog("Inside naked if block")
+                 .Build();
 
             ifBlockEndHook();
         }
@@ -261,15 +287,18 @@ public partial class ProgressiveCodeHookTests
 
     private static void IfExecutesWithDialog_DialogBeforeOnly(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareDialog("Before if block only");
+        hooks.DeclareDialog("Before if block only")
+             .Build();
 
         hooks.DeclareIfBranch(@"Actor.State == S1")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
 
             ifBlockEndHook();
         }
@@ -278,46 +307,55 @@ public partial class ProgressiveCodeHookTests
     private static void IfExecutesWithDialog_DialogAfterOnly(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
 
             ifBlockEndHook();
         }
 
-        hooks.DeclareDialog("After if block only");
+        hooks.DeclareDialog("After if block only")
+             .Build();
     }
 
     private static void IfExecutesWithDialog_DialogBeforeAndAfter(ScenarioHookOrchestrator hooks)
     {
-        hooks.DeclareDialog("Before if block");
+        hooks.DeclareDialog("Before if block")
+             .Build();
 
         hooks.DeclareIfBranch(@"Actor.State == S1")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
 
             ifBlockEndHook();
         }
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
 
     private static void IfExecutesWithDialog_NoDialogAround(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside naked if block");
+            hooks.DeclareDialog("Inside naked if block")
+                 .Build();
 
             ifBlockEndHook();
         }
@@ -326,81 +364,96 @@ public partial class ProgressiveCodeHookTests
     private static void IfDoesNotExecute_HookOutsideBlock(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = false;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
         }
         ifBlockEndHook();
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
 
     private static void IfExecutesWithDialog_HookOutsideBlock(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block");
+            hooks.DeclareDialog("Inside if block")
+                 .Build();
         }
         ifBlockEndHook();
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
     
     private static void IfDoesNotExecute_UsingHook(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
-             .GetConditionUsingHook(out IfConditionHook φ, out IfBlockUsingHook ifBlockUsingHook);
+             .GetConditionUsingHook(out IfConditionHook φ, out IfBlockUsingHook ifBlockUsingHook)
+             .Build();
 
         bool condition = false;
         using (ifBlockUsingHook())
         {
             if (φ(condition))
             {
-                hooks.DeclareDialog("Inside if block");
+                hooks.DeclareDialog("Inside if block")
+                     .Build();
             }
         }
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
 
     private static void IfExecutesWithDialog_UsingHook(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
-             .GetConditionUsingHook(out IfConditionHook φ, out IfBlockUsingHook ifBlockUsingHook);
+             .GetConditionUsingHook(out IfConditionHook φ, out IfBlockUsingHook ifBlockUsingHook)
+             .Build();
 
         bool condition = true;
         using (ifBlockUsingHook())
         {
             if (φ(condition))
             {
-                hooks.DeclareDialog("Inside if block");
+                hooks.DeclareDialog("Inside if block")
+                     .Build();
             }
         }
 
-        hooks.DeclareDialog("After if block");
+        hooks.DeclareDialog("After if block")
+             .Build();
     }
 
     private static void TwoNestedIfsThatExecute(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State != S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook1);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook1)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
             hooks.DeclareIfBranch(@"Actor.State != S3")
-                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook2);
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook2)
+                 .Build();
 
             if (ψ(condition))
             {
-                hooks.DeclareDialog("Inside if block");
+                hooks.DeclareDialog("Inside if block")
+                     .Build();
 
                 ifBlockEndHook2();
             }
@@ -408,33 +461,39 @@ public partial class ProgressiveCodeHookTests
             ifBlockEndHook1();
         }
 
-        hooks.DeclareDialog("After if blocks");
+        hooks.DeclareDialog("After if blocks")
+             .Build();
     }
 
     private static void TwoConsecutiveIfsThatExecute(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State != S2")
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook1);
+             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook1)
+             .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if first block");
+            hooks.DeclareDialog("Inside if first block")
+                 .Build();
 
             ifBlockEndHook1();
         }
 
         hooks.DeclareIfBranch(@"Actor.State != S3")
-             .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook2);
+             .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook2)
+             .Build();
 
         if (ψ(condition))
         {
-            hooks.DeclareDialog("Inside if second block");
+            hooks.DeclareDialog("Inside if second block")
+                 .Build();
 
             ifBlockEndHook2();
         }
 
-        hooks.DeclareDialog("After if blocks");
+        hooks.DeclareDialog("After if blocks")
+             .Build();
     }
 
     // TODO Combining scenarios (new test class maybe)
@@ -459,81 +518,103 @@ public partial class ProgressiveCodeHookTests
     private static void WhileDoesNotExecute(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S1")
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 0;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
+
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
 
     private static void WhileExecutesOnceWithTransition(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S2")
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 1;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
+
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
 
     private static void WhileExecutesTwiceWithTransition(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 2;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
+
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
     
     private static void WhileExecutesTwiceWithTransitionAndDialog(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 2;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
-            hooks.DeclareDialog("Doing T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
+
+            hooks.DeclareDialog("Doing T1")
+                 .Build();
+
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
 
     private static void WhileExecutesTwiceWithNestedIf(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 2;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
 
             hooks.DeclareIfBranch(@"Actor.State != S3")
-                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook)
+                 .Build();
 
             bool condition = true;
             if (ψ(condition))
             {
-                hooks.DeclareDialog("Some text");
+                hooks.DeclareDialog("Some text")
+                     .Build();
 
                 ifBlockEndHook();
             }
@@ -541,26 +622,31 @@ public partial class ProgressiveCodeHookTests
             count--;
         }
 
-        hooks.DeclareDialog("After while block");
+        hooks.DeclareDialog("After while block")
+             .Build();
     }
 
     private static void WhileExecutesTwiceWithNestedIf_NoDialogAfter(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
-             .GetConditionHook(out WhileHook φ);
+             .GetConditionHook(out WhileHook φ)
+             .Build();
 
         int count = 2;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1");
+            hooks.DeclareTransition("Actor", "T1")
+                 .Build();
 
             hooks.DeclareIfBranch(@"Actor.State != S3")
-                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook);
+                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook)
+                 .Build();
 
             bool condition = true;
             if (ψ(condition))
             {
-                hooks.DeclareDialog("Some text");
+                hooks.DeclareDialog("Some text")
+                     .Build();
 
                 ifBlockEndHook();
             }
@@ -571,9 +657,9 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     [DataTestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Construction")]
+    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveCodeHookTestSuite(string scenarioMethodName, string systemMethodName)
+    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string scenarioMethodName, string systemMethodName)
     {
         // Arrange
         // =======
@@ -612,9 +698,9 @@ public partial class ProgressiveCodeHookTests
     }
 
     [DataTestMethod]
-    [TestCategory("Code Hooks"), TestCategory("Scenario Execution")]
+    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveCodeHookRerunTestSuite(string scenarioMethodName, string systemMethodName)
+    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string scenarioMethodName, string systemMethodName)
     {
         // Arrange
         // =======

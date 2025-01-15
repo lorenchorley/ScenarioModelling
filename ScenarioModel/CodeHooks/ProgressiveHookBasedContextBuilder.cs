@@ -30,7 +30,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
         _instanciator = new(_context.System);
     }
 
-    public Result<Context> BuildContextFromInputs(HookContextBuilderInputs inputs)
+    public Result<Context> RefreshContextWithInputs(HookContextBuilderInputs inputs)
     {
 
         // Transform all definitions into objects with references to other objects

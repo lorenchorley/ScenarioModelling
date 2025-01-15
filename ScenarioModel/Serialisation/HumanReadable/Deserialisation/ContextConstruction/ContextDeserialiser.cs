@@ -72,7 +72,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         };
     }
 
-    public Result<Context> BuildContextFromInputs(ContextBuilderInputs inputs)
+    public Result<Context> RefreshContextWithInputs(ContextBuilderInputs inputs)
     {
         if (HasBeenUsedAlready)
             throw new Exception("This instance of ContextBuilder has already been used.");
