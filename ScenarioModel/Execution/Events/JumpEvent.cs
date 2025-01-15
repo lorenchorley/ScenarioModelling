@@ -1,23 +1,22 @@
-﻿using ScenarioModelling.Execution.Events.Interfaces;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.ScenarioNodes;
 using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Execution.Events;
 
 [NodeLike<IScenarioNode, IfNode>]
 public record JumpEvent : IScenarioEvent<JumpNode>
 {
-    public string Target { get; init; } = "";
+    public string Target { get; set; } = "";
 
     [JsonIgnore]
-    public JumpNode ProducerNode { get; init; } = null!;
+    public JumpNode ProducerNode { get; set; } = null!;
 
     public override string ToString()
     {
-        string objText = JsonSerializer.Serialize(this);
+        string objText = JsonConvert.SerializeObject(this);
         return $"{GetType().Name} {objText}";
     }
 }

@@ -1,9 +1,9 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
 using ScenarioModelling.Objects.Visitors;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 

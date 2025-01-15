@@ -2,9 +2,9 @@
 
 public record ExpressionDefinition : Definition
 {
-    public StringValue Name { get; init; } = null!;
-    public ExpressionBlock Block { get; init; } = null!;
-    public Definitions Definitions { get; init; } = new();
+    public StringValue Name { get; set; } = null!;
+    public ExpressionBlock Block { get; set; } = null!;
+    public Definitions Definitions { get; set; } = new();
 
     public override string ToString()
     {

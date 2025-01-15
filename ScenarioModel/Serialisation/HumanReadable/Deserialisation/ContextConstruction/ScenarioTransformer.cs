@@ -10,8 +10,8 @@ namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextC
 
 public class ScenarioTransformer(System System, Instanciator Instanciator) : DefinitionToObjectDeserialiser<MetaStory, MetaStory>
 {
-    public Dictionary<string, IDefinitionToNodeDeserialiser> NodeProfilesByName { get; init; }
-    public Dictionary<Func<Definition, bool>, IDefinitionToNodeDeserialiser> NodeProfilesByPredicate { get; init; }
+    public Dictionary<string, IDefinitionToNodeDeserialiser> NodeProfilesByName { get; set; }
+    public Dictionary<Func<Definition, bool>, IDefinitionToNodeDeserialiser> NodeProfilesByPredicate { get; set; }
 
     protected override Option<MetaStory> Transform(Definition def, TransformationType type)
     {

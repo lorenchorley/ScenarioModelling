@@ -244,7 +244,7 @@ public class Context
 
     public void ResetToInitialState()
     {
-        foreach(var statefulObject in System.AllStateful)
+        foreach (var statefulObject in System.AllStateful)
         {
             if (!statefulObject.State.IsSet)
             {

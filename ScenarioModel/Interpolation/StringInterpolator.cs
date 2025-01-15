@@ -1,5 +1,5 @@
-﻿using System.Text;
-using YamlDotNet.Core;
+﻿using System.Data;
+using System.Text;
 
 namespace ScenarioModelling.Interpolation;
 public class StringInterpolator(System System)
@@ -30,7 +30,8 @@ public class StringInterpolator(System System)
 
         sb.Append(substr.Substring(0, index));
 
-        ScanForEnd(sb, substr[(index + 1)..]);
+        //ScanForEnd(sb, substr[(index + 1)..]);
+        ScanForEnd(sb, substr.Substring(index + 1));
     }
 
     private void ScanForEnd(StringBuilder sb, string substr)
@@ -46,7 +47,8 @@ public class StringInterpolator(System System)
 
         sb.Append(Interpolate(expression));
 
-        ScanForStart(sb, substr[(index + 1)..]);
+        //ScanForStart(sb, substr[(index + 1)..]);
+        ScanForStart(sb, substr.Substring(index + 1));
     }
 
     private string Interpolate(string expression)

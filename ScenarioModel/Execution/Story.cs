@@ -14,7 +14,7 @@ namespace ScenarioModelling.Execution;
 /// </summary>
 public class Story
 {
-    public MetaStory Scenario { get; init; } = null!;
+    public MetaStory Scenario { get; set; } = null!;
     public List<IScenarioEvent> Events { get; set; } = new();
     public Stack<GraphScope> GraphScopeStack { get; set; } = new();
     public ExpressionEvalator Evaluator { get; set; } = null!;
@@ -191,7 +191,7 @@ public class Story
     }
 }
 
-public interface StoryRunResult
+public class StoryRunResult
 {
     public static StoryRunResult ConstraintFailure(string value) => new ConstraintFailure(value);
     public static StoryRunResult Successful(Story story) => new Successful(story);

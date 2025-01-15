@@ -1,11 +1,10 @@
-﻿using ScenarioModelling.Execution.Events.Interfaces;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.ScenarioNodes;
 using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Execution.Events;
 
@@ -18,11 +17,11 @@ public record StateChangeEvent : IScenarioEvent<TransitionNode>
     public string TransitionName { get; set; } = null!;
 
     [JsonIgnore]
-    public TransitionNode ProducerNode { get; init; } = null!;
+    public TransitionNode ProducerNode { get; set; } = null!;
 
     public override string ToString()
     {
-        string objText = JsonSerializer.Serialize(this);
+        string objText = JsonConvert.SerializeObject(this);
         return $"{GetType().Name} {objText}";
     }
 }

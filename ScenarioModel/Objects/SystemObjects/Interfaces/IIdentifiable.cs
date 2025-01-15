@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace ScenarioModelling.Objects.SystemObjects.Interfaces;
 

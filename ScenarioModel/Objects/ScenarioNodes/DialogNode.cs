@@ -52,7 +52,7 @@ public record DialogNode : ScenarioNode<DialogEvent>
 
         if (!otherNode.Name.IsEqv(Name))
             return false;
-        
+
         if (!otherNode.TextTemplate.IsEqv(TextTemplate))
             return false;
 

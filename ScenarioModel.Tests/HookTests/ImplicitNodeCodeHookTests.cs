@@ -16,7 +16,7 @@ namespace ScenarioModelling.Tests.HookTests;
 [UsesVerify]
 public partial class ImplicitNodeCodeHookTests
 {
-    
+
     private record ImplicitNodeTestCase(string ScenarioWithImplicitNodeMethodName, string ScenarioWithoutImplicitNodeMethodName, string SystemMethodName);
     private class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
     {
@@ -82,7 +82,7 @@ public partial class ImplicitNodeCodeHookTests
              .SetId("D1")
              .Build();
     }
-    
+
     private static void TwoDialogsAndOneJump_FullScenario(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareJump("D2")
@@ -229,9 +229,9 @@ public partial class ImplicitNodeCodeHookTests
         // ===
 
         // Build scenario with the implicit defintion first
-        orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
+        orchestrator.StartMetaStory("Scenario recorded by hooks");
         scenarioWithoutImplicitNodeMethod(orchestrator);
-        orchestrator.DeclareScenarioEnd();
+        orchestrator.EndMetaStory();
 
         var firstSerialisedContext =
             context.Serialise()
@@ -239,9 +239,9 @@ public partial class ImplicitNodeCodeHookTests
                    .Trim();
 
         // The build scenario without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second scenario
-        orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
+        orchestrator.StartMetaStory("Scenario recorded by hooks");
         scenarioWithImplicitNodeMethod(orchestrator);
-        orchestrator.DeclareScenarioEnd();
+        orchestrator.EndMetaStory();
 
         var secondSerialisedContext =
             context.Serialise()
@@ -254,7 +254,7 @@ public partial class ImplicitNodeCodeHookTests
 
         DiffAssert.DiffIfNotEqual(firstSerialisedContext, secondSerialisedContext);
     }
-    
+
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]
@@ -290,16 +290,16 @@ public partial class ImplicitNodeCodeHookTests
         // ===
 
         // Build scenario with the implicit defintion first
-        orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
+        orchestrator.StartMetaStory("Scenario recorded by hooks");
         scenarioWithoutImplicitNodeMethod(orchestrator);
-        orchestrator.DeclareScenarioEnd();
+        orchestrator.EndMetaStory();
 
         Story firstRun = runner.Run("Scenario recorded by hooks");
 
         // The build scenario without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second scenario
-        orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
+        orchestrator.StartMetaStory("Scenario recorded by hooks");
         scenarioWithImplicitNodeMethod(orchestrator);
-        orchestrator.DeclareScenarioEnd();
+        orchestrator.EndMetaStory();
 
         Story secondRun = runner.Run("Scenario recorded by hooks");
 

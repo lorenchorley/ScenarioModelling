@@ -70,7 +70,7 @@ public class WhileHookDefinition : INodeHookDefinition
         if (result)
         {
             // Reset the position in the while loop subgraph to the beginning
-            ArgumentNullException.ThrowIfNull(_whileLoopScope);
+            ArgumentNullExceptionStandard.ThrowIfNull(_whileLoopScope);
             _whileLoopScope.ReturnToStartOfScope();
         }
         else

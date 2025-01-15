@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
+using Newtonsoft.Json;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.References.GeneralisedReferences;
 

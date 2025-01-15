@@ -1,8 +1,8 @@
-﻿using ScenarioModelling.Objects.SystemObjects.Interfaces;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -15,7 +15,7 @@ public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialis
 
     [JsonIgnore]
     public Type Type => typeof(AspectType);
-    public StateMachineProperty StateMachine { get; private init; }
+    public StateMachineProperty StateMachine { get; private set; }
 
     public bool ExistanceOriginallyInferred { get; set; } = false;
     public bool ShouldReserialise

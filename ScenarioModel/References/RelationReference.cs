@@ -1,9 +1,9 @@
 ﻿using LanguageExt;
+using Newtonsoft.Json;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.SemanticTree;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
 namespace ScenarioModelling.References;
@@ -43,8 +43,8 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
         if (!relation.IsEqv(this)) // Type and name
             return false;
 
-        ArgumentNullException.ThrowIfNull(relation.LeftEntity);
-        ArgumentNullException.ThrowIfNull(Left);
+        ArgumentNullExceptionStandard.ThrowIfNull(relation.LeftEntity);
+        ArgumentNullExceptionStandard.ThrowIfNull(Left);
 
         if (Left.ValueList.Count != 1)
             throw new Exception("Left value list count is not 1");
@@ -52,8 +52,8 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
         if (!Left.ValueList[0].IsEqv(relation.LeftEntity.Name))
             return false;
 
-        ArgumentNullException.ThrowIfNull(relation.RightEntity);
-        ArgumentNullException.ThrowIfNull(Right);
+        ArgumentNullExceptionStandard.ThrowIfNull(relation.RightEntity);
+        ArgumentNullExceptionStandard.ThrowIfNull(Right);
 
         if (Right.ValueList.Count != 1)
             throw new Exception("Right value list count is not 1");

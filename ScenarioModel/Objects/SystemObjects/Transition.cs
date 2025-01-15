@@ -1,10 +1,9 @@
-﻿using ScenarioModelling.Exhaustiveness.Attributes;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -18,8 +17,8 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
     [JsonIgnore]
     public Type Type => typeof(Transition);
 
-    public StateProperty SourceState { get; private init; }
-    public StateProperty DestinationState { get; private init; }
+    public StateProperty SourceState { get; private set; }
+    public StateProperty DestinationState { get; private set; }
 
     public Transition(System system)
     {
@@ -65,6 +64,6 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
                x.DestinationState.Name.IsEqvCountingNulls(y.DestinationState.Name);
     }
 
-    public int GetHashCode([DisallowNull] Transition obj)
+    public int GetHashCode(/*[DisallowNull]*/ Transition obj)
         => obj.Name.GetHashCode();
 }

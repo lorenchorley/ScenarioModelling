@@ -1,19 +1,26 @@
 ﻿using LanguageExt;
+using Newtonsoft.Json;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.References;
 
 [ObjectLike<IReference, Aspect>]
-public record AspectReference(System System) : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference
+public record AspectReference : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string Name { get; set; } = "";
 
     [JsonIgnore]
     public Type Type => typeof(Aspect);
+
+    public System System { get; }
+
+    public AspectReference(System system)
+    {
+        System = system;
+    }
 
     public Option<Aspect> ResolveReference()
         => System.Aspects.Find(x => x.IsEqv(this));

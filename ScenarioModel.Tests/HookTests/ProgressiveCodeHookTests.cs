@@ -165,7 +165,7 @@ public partial class ProgressiveCodeHookTests
              .SetId("D1")
              .Build();
     }
-    
+
     private static void TwoDialogsAndOneJump(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareJump("D2")
@@ -396,7 +396,7 @@ public partial class ProgressiveCodeHookTests
         hooks.DeclareDialog("After if block")
              .Build();
     }
-    
+
     private static void IfDoesNotExecute_UsingHook(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
@@ -571,7 +571,7 @@ public partial class ProgressiveCodeHookTests
         hooks.DeclareDialog("After while block")
              .Build();
     }
-    
+
     private static void WhileExecutesTwiceWithTransitionAndDialog(ScenarioHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
@@ -681,9 +681,9 @@ public partial class ProgressiveCodeHookTests
         orchestrator.DefineSystem(systemHooksMethod);
 
         // Build scenario
-        orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
+        orchestrator.StartMetaStory("Scenario recorded by hooks");
         scenarioHooksMethod(orchestrator);
-        orchestrator.DeclareScenarioEnd();
+        orchestrator.EndMetaStory();
 
 
         // Assert
@@ -721,9 +721,9 @@ public partial class ProgressiveCodeHookTests
         });
 
         // Build scenario
-        orchestrator.DeclareScenarioStart("Scenario recorded by hooks");
+        orchestrator.StartMetaStory("Scenario recorded by hooks");
         scenarioHooksMethod(orchestrator);
-        orchestrator.DeclareScenarioEnd();
+        orchestrator.EndMetaStory();
 
         ExpressionEvalator evalator = new(context.System);
         DialogExecutor executor = new(context, evalator);
@@ -745,7 +745,7 @@ public partial class ProgressiveCodeHookTests
             .UseParameters(scenarioMethodName);
 
     }
-    
+
     private Action<T> GetAction<T>(string systemMethodName)
     {
         var methodRef =

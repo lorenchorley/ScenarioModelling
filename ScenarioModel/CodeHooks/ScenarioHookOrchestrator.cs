@@ -1,6 +1,7 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModelling.Execution;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
@@ -13,8 +14,9 @@ public delegate void EnterScopeDelegate(DefinitionScope scope);
 public abstract class ScenarioHookOrchestrator
 {
     public Context Context { get; }
+    public Story? Story { get; private set; }
 
-    protected ScenarioHookDefinition? _scenarioDefintion;
+    protected MetaStoryHookDefinition? _metaStoryDefintion;
     protected readonly Stack<DefinitionScope> _scopeStack = new();
     protected readonly HookContextBuilderInputs _contextBuilderInputs;
     protected readonly ProgressiveHookBasedContextBuilder _contextBuilder;
@@ -22,7 +24,7 @@ public abstract class ScenarioHookOrchestrator
 
     protected DefinitionScope CurrentScope => _scopeStack.Peek();
     protected System System => Scenario.System;
-    protected MetaStory Scenario => _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException();
+    protected MetaStory Scenario => _metaStoryDefintion?.GetMetaStory() ?? throw new ArgumentNullException();
 
     protected ScenarioHookOrchestrator(Context context)
     {
@@ -47,32 +49,26 @@ public abstract class ScenarioHookOrchestrator
         _scopeStack.Push(scope);
     }
 
-    public virtual ScenarioHookDefinition? DeclareScenarioStart(string name)
+    public virtual MetaStoryHookDefinition? StartMetaStory(string name)
     {
-        _scenarioDefintion = new ScenarioHookDefinition(name, Context);
+        _metaStoryDefintion = new MetaStoryHookDefinition(name, Context);
 
         _scopeStack.Push(new DefinitionScope(Scenario.Graph.PrimarySubGraph, VerifyPreviousDefinition));
 
         _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
-        return _scenarioDefintion;
+        return _metaStoryDefintion;
     }
 
-    public MetaStory DeclareScenarioEnd()
+    public MetaStory EndMetaStory()
     {
         VerifyPreviousDefinition();
 
-        // Validate all hooks
-        //foreach (var hook in _newlyCreatedHooks)
-        //{
-        //    hook.ValidateFinalState();
-        //}
-
-        return _scenarioDefintion?.GetScenario() ?? throw new ArgumentNullException(nameof(_scenarioDefintion));
+        return _metaStoryDefintion?.GetMetaStory() ?? throw new ArgumentNullException(nameof(_metaStoryDefintion));
     }
 
     public virtual DialogHookDefinition DeclareDialog(string text)
     {
-        ArgumentException.ThrowIfNullOrEmpty(text);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(text);
 
         VerifyPreviousDefinition();
 
@@ -85,8 +81,8 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual DialogHookDefinition DeclareDialog(string character, string text)
     {
-        ArgumentException.ThrowIfNullOrEmpty(character);
-        ArgumentException.ThrowIfNullOrEmpty(text);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(character);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(text);
 
         VerifyPreviousDefinition();
 
@@ -115,8 +111,8 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual TransitionHookDefinition DeclareTransition(string statefulObjectName, string transition)
     {
-        ArgumentException.ThrowIfNullOrEmpty(statefulObjectName);
-        ArgumentException.ThrowIfNullOrEmpty(transition);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(statefulObjectName);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(transition);
 
         VerifyPreviousDefinition();
 
@@ -129,7 +125,7 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual IfHookDefinition DeclareIfBranch(string condition)
     {
-        ArgumentException.ThrowIfNullOrEmpty(condition);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(condition);
 
         VerifyPreviousDefinition();
 
@@ -145,7 +141,7 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual JumpHookDefinition DeclareJump(string target)
     {
-        ArgumentException.ThrowIfNullOrEmpty(target);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(target);
 
         VerifyPreviousDefinition();
 
@@ -158,7 +154,7 @@ public abstract class ScenarioHookOrchestrator
 
     public virtual WhileHookDefinition DeclareWhileBranch(string condition)
     {
-        ArgumentException.ThrowIfNullOrEmpty(condition);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(condition);
 
         VerifyPreviousDefinition();
 
@@ -207,7 +203,7 @@ public abstract class ScenarioHookOrchestrator
         // Must be done after all properties have been set via the fluent API
         INodeHookDefinition previousDefinition = _newlyCreatedHooks.Dequeue();
         previousDefinition.Scope.AddOrVerifyInPhase(
-            previousDefinition, 
+            previousDefinition,
             add: () =>
             {
                 IScenarioNode newNode = previousDefinition.GetNode();

@@ -2,8 +2,8 @@
 
 public record UnnamedLinkDefinition : Definition
 {
-    public StringValue Source { get; init; } = null!;
-    public StringValue Destination { get; init; } = null!;
+    public StringValue Source { get; set; } = null!;
+    public StringValue Destination { get; set; } = null!;
 
     public override string ToString()
     {

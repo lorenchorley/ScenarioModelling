@@ -2,7 +2,7 @@
 
 public record NamedDefinition : UnnamedDefinition
 {
-    public StringValue Name { get; init; } = null!;
+    public StringValue Name { get; set; } = null!;
 
     public override string ToString()
     {

@@ -2,6 +2,6 @@
 
 public abstract record Definition
 {
-    public Definition? ParentDefinition { get; init; }
-    public int? Line { get; init; }
+    public Definition? ParentDefinition { get; set; }
+    public int? Line { get; set; }
 }

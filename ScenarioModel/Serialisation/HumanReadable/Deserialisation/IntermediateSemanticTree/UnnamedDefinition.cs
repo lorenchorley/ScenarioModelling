@@ -2,8 +2,8 @@
 
 public record UnnamedDefinition : Definition
 {
-    public StringValue Type { get; init; } = null!;
-    public Definitions Definitions { get; init; } = new();
+    public StringValue Type { get; set; } = null!;
+    public Definitions Definitions { get; set; } = new();
 
     public override string ToString()
     {

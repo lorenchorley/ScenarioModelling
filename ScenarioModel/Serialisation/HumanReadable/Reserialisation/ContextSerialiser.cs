@@ -32,7 +32,7 @@ public class ContextSerialiser : ISerialiser
 
         if (result.HasErrors)
         {
-            return new Result<Context>(new Exception(string.Join('\n', result.Errors)));
+            return new Result<Context>(new Exception(string.Join("\n", result.Errors)));
         }
 
         ContextDeserialiser contextBuilder = new();

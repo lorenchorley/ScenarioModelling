@@ -155,7 +155,7 @@ public partial class ChooseAndJumpHookTest
         // ===
 
         // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.DeclareScenarioStart("Scenario recorded by hooks");
+        hooks.StartMetaStory("Scenario recorded by hooks");
 
         // Run the code and produce the scenario from the called hooks
 
@@ -163,7 +163,7 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks, choices);
 
-        MetaStory generatedScenario = hooks.DeclareScenarioEnd();
+        MetaStory generatedScenario = hooks.EndMetaStory();
 
 
         // Assert
@@ -222,7 +222,7 @@ public partial class ChooseAndJumpHookTest
         // ===
 
         // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.DeclareScenarioStart("Scenario recorded by hooks");
+        hooks.StartMetaStory("Scenario recorded by hooks");
 
         // Run the code and produce the scenario from the called hooks
 
@@ -230,7 +230,7 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks, choices);
 
-        MetaStory generatedScenario = hooks.DeclareScenarioEnd();
+        MetaStory generatedScenario = hooks.EndMetaStory();
 
         Story scenarioRun = runner.Run("Scenario recorded by hooks");
 

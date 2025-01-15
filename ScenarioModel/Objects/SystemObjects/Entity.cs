@@ -1,10 +1,10 @@
-﻿using ScenarioModelling.Exhaustiveness.Attributes;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -19,11 +19,11 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
     public Type Type => typeof(Entity);
 
     public string CharacterStyle { get; set; } = "";
-    public EntityTypeProperty EntityType { get; private init; }
-    public RelationListProperty Relations { get; private init; }
-    public AspectListProperty Aspects { get; private init; }
-    public StateProperty InitialState { get; private init; }
-    public StateProperty State { get; private init; }
+    public EntityTypeProperty EntityType { get; private set; }
+    public RelationListProperty Relations { get; private set; }
+    public AspectListProperty Aspects { get; private set; }
+    public StateProperty InitialState { get; private set; }
+    public StateProperty State { get; private set; }
 
     public Entity(System system)
     {

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<langversion>preview</langversion>
+		<langversion>latest</langversion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,8 +20,8 @@
 	<ItemGroup>
 	  <PackageReference Include="GoldEngine" Version="1.0.0" />
 	  <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	  <PackageReference Include="OneOf" Version="3.0.271" />
-	  <PackageReference Include="YamlDotNet" Version="16.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>

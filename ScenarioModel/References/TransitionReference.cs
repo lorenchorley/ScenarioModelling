@@ -1,9 +1,8 @@
 ﻿using LanguageExt;
+using Newtonsoft.Json;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects;
 using ScenarioModelling.References.Interfaces;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.References;
 
@@ -11,7 +10,7 @@ namespace ScenarioModelling.References;
 // They are unique only on the triplet (name, source, dest)
 // (related : TransitionEquivalanceComparer, )
 [ObjectLike<IReference, Transition>]
-public record TransitionReference(System System) : IReferences<Transition>, IEqualityComparer<TransitionReference>
+public record TransitionReference : IReferences<Transition>, IEqualityComparer<TransitionReference>
 {
     public string Name { get; set; } = "";
     public string? SourceName { get; set; } = "";
@@ -19,6 +18,13 @@ public record TransitionReference(System System) : IReferences<Transition>, IEqu
 
     [JsonIgnore]
     public Type Type => typeof(Transition);
+
+    public System System { get; }
+
+    public TransitionReference(System system)
+    {
+        System = system;
+    }
 
     public IEnumerable<Transition> ResolveReferences()
         => System.Transitions.Where(s => s.IsEqv(this)); // TODO Need to search with only the information that is available
@@ -42,6 +48,6 @@ public record TransitionReference(System System) : IReferences<Transition>, IEqu
                x.DestinationName.IsEqvCountingNulls(y.DestinationName);
     }
 
-    public int GetHashCode([DisallowNull] TransitionReference obj)
+    public int GetHashCode(/*[DisallowNull]*/ TransitionReference obj)
         => obj.Name.GetHashCode();
 }

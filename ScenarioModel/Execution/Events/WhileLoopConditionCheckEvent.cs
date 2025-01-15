@@ -1,9 +1,8 @@
-﻿using ScenarioModelling.Execution.Events.Interfaces;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.ScenarioNodes;
 using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Execution.Events;
 
@@ -13,11 +12,11 @@ public record WhileLoopConditionCheckEvent : IScenarioEvent<WhileNode>
     public bool LoopBlockRun { get; set; }
 
     [JsonIgnore]
-    public WhileNode ProducerNode { get; init; } = null!;
+    public WhileNode ProducerNode { get; set; } = null!;
 
     public override string ToString()
     {
-        string objText = JsonSerializer.Serialize(this);
+        string objText = JsonConvert.SerializeObject(this);
         return $"{GetType().Name} {objText}";
     }
 }

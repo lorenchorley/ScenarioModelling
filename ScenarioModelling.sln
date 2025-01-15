@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel", "ScenarioModel\ScenarioModel.csproj", "{184C6E70-1580-44E9-BB75-0F07F1F19236}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModelling", "ScenarioModel\ScenarioModelling.csproj", "{184C6E70-1580-44E9-BB75-0F07F1F19236}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModel.Tests", "ScenarioModel.Tests\ScenarioModel.Tests.csproj", "{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDesignerAPI", "WebDesignerAPI\WebDesignerAPI.csproj", "{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioModelling.Tests", "ScenarioModel.Tests\ScenarioModelling.Tests.csproj", "{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AEC3B80-AF73-4CB3-8DE8-3B81F42A4370}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFAF9B69-D7E6-45B0-AD44-19F2F5E2E552}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

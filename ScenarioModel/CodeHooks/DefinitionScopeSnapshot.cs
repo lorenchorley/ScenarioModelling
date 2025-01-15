@@ -2,5 +2,5 @@
 
 public class DefinitionScopeSnapshot
 {
-    public int Index { get; init; }
+    public int Index { get; set; }
 }

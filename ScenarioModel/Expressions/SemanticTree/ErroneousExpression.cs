@@ -2,8 +2,14 @@
 
 namespace ScenarioModelling.Expressions.SemanticTree;
 
-public record ErroneousExpression(string Name) : IExpressionNode
+public record ErroneousExpression : IExpressionNode
 {
+    public string Name { get; }
+
+    public ErroneousExpression(string name)
+    {
+        Name = name;
+    }
 
     public object Accept(IExpressionVisitor visitor)
         => visitor.VisitErroneousExpression(this);

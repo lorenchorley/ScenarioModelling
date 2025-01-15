@@ -53,14 +53,14 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
 
     public void Transform(HookContextBuilderInputs inputs)
     {
-        while (inputs.NewObjects.TryDequeue(out var obj))
+        while (inputs.NewObjects.Count > 0)
         {
-
+            inputs.NewObjects.Dequeue();
         }
 
-        while (inputs.NewNodes.TryDequeue(out var node))
+        while (inputs.NewNodes.Count > 0)
         {
-
+            inputs.NewNodes.Dequeue();
         }
     }
 

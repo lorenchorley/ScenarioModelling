@@ -1,10 +1,10 @@
-﻿using ScenarioModelling.Execution.Events;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.SemanticTree;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 

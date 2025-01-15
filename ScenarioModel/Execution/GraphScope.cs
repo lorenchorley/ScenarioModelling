@@ -51,7 +51,7 @@ public class GraphScope
 
     public void EnterSubGraph(SemiLinearSubGraph<IScenarioNode> subGraph)
     {
-        ArgumentNullException.ThrowIfNull(CurrentNode);
+        ArgumentNullExceptionStandard.ThrowIfNull(CurrentNode);
 
         subGraph.ParentSubgraph = CurrentSubGraph;
 

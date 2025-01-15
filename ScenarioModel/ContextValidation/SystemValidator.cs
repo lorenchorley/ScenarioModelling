@@ -152,56 +152,56 @@ public class SystemValidator : ISystemVisitor
 
     public object VisitAspect(Aspect aspect)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _aspectValidator.Validate(_system, aspect);
     }
 
     public object VisitAspectType(AspectType aspectType)
     {
         throw new NotImplementedException();
-        //ArgumentNullException.ThrowIfNull(_system);
+        //ArgumentNullExceptionStandard.ThrowIfNull(_system);
         //return _aspectTypeValidator.Validate(_system, aspectType);
     }
 
     public object VisitConstraint(Constraint constraint)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _constraintValidator.Validate(_system, constraint);
     }
 
     public object VisitEntity(Entity entity)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _entityValidator.Validate(_system, entity);
     }
 
     public object VisitEntityType(EntityType entityType)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _entityTypeValidator.Validate(_system, entityType);
     }
 
     public object VisitRelation(Relation relation)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _relationValidator.Validate(_system, relation);
     }
 
     public object VisitState(State state)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _stateValidator.Validate(_system, state);
     }
 
     public object VisitStateMachine(StateMachine stateMachine)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _stateMachineValidator.Validate(_system, stateMachine);
     }
 
     public object VisitTransition(Transition transition)
     {
-        ArgumentNullException.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
         return _transitionValidator.Validate(_system, transition);
     }
 }

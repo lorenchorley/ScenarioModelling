@@ -1,10 +1,10 @@
 ﻿using LanguageExt;
+using Newtonsoft.Json;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 

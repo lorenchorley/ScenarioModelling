@@ -10,7 +10,7 @@ public partial class HumanReadableInterpreter
 {
     private string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = $"{GrammarLocalisation.Namespace}.HumanReadableGrammar.egt";
 
-    private Parser _parser { get; init; }
+    private Parser _parser { get; set; }
 
     public HumanReadableInterpreter()
     {

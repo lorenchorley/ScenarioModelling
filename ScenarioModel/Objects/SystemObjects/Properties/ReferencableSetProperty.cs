@@ -1,9 +1,8 @@
-﻿using OneOf;
+﻿using Newtonsoft.Json;
+using OneOf;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.References.Interfaces;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects.Properties;
 
@@ -91,6 +90,6 @@ public class OneOfValOrRefEquivalanceComparer<TValue, TReference> : IEqualityCom
     protected virtual bool AreEqual(TReference rx, TReference ry)
         => rx.IsEqv(ry);
 
-    public int GetHashCode([DisallowNull] OneOf<TValue, TReference> obj)
+    public int GetHashCode(/*[DisallowNull] */OneOf<TValue, TReference> obj)
         => obj.GetHashCode();
 }

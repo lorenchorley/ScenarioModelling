@@ -55,48 +55,48 @@ public class ScenarioValidator : IScenarioVisitor
 
     public object VisitChooseNode(ChooseNode chooseNode)
     {
-        ArgumentNullException.ThrowIfNull(_system);
-        ArgumentNullException.ThrowIfNull(_scenario);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_scenario);
 
         return _chooseNodeValidator.Validate(_system, _scenario, chooseNode);
     }
 
     public object VisitDialogNode(DialogNode dialogNode)
     {
-        ArgumentNullException.ThrowIfNull(_system);
-        ArgumentNullException.ThrowIfNull(_scenario);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_scenario);
 
         return _dialogNodeValidator.Validate(_system, _scenario, dialogNode);
     }
 
     public object VisitIfNode(IfNode ifNode)
     {
-        ArgumentNullException.ThrowIfNull(_system);
-        ArgumentNullException.ThrowIfNull(_scenario);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_scenario);
 
         return VisitSubgraph(ifNode.SubGraph);
     }
 
     public object VisitJumpNode(JumpNode jumpNode)
     {
-        ArgumentNullException.ThrowIfNull(_system);
-        ArgumentNullException.ThrowIfNull(_scenario);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_scenario);
 
         return _jumpNodeValidator.Validate(_system, _scenario, jumpNode);
     }
 
     public object VisitTransitionNode(TransitionNode transitionNode)
     {
-        ArgumentNullException.ThrowIfNull(_system);
-        ArgumentNullException.ThrowIfNull(_scenario);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_scenario);
 
         return _transitionNodeValidator.Validate(_system, _scenario, transitionNode);
     }
 
     public object VisitWhileNode(WhileNode whileNode)
     {
-        ArgumentNullException.ThrowIfNull(_system);
-        ArgumentNullException.ThrowIfNull(_scenario);
+        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_scenario);
 
         return _whileNodeValidator.Validate(_system, _scenario, whileNode);
     }

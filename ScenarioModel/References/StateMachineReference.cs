@@ -1,18 +1,25 @@
 ﻿using LanguageExt;
+using Newtonsoft.Json;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.References;
 
 [ObjectLike<IReference, StateMachine>]
-public record StateMachineReference(System System) : IReference<StateMachine>
+public record StateMachineReference : IReference<StateMachine>
 {
     public string Name { get; set; } = "";
 
     [JsonIgnore]
     public Type Type => typeof(StateMachine);
+
+    public System System { get; }
+
+    public StateMachineReference(System system)
+    {
+        System = system;
+    }
 
     public Option<StateMachine> ResolveReference()
         => System.StateMachines.Find(s => s.IsEqv(this));

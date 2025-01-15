@@ -1,7 +1,7 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling;
 

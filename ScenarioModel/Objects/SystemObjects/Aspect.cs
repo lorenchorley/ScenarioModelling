@@ -1,10 +1,10 @@
-﻿using ScenarioModelling.Exhaustiveness.Attributes;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -18,10 +18,10 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
     [JsonIgnore]
     public Type Type => typeof(Aspect);
     public AspectType? AspectType { get; set; } // TODO Propertyise
-    public EntityProperty Entity { get; private init; }
-    public RelationListProperty Relations { get; private init; }
-    public StateProperty InitialState { get; private init; }
-    public StateProperty State { get; private init; }
+    public EntityProperty Entity { get; private set; }
+    public RelationListProperty Relations { get; private set; }
+    public StateProperty InitialState { get; private set; }
+    public StateProperty State { get; private set; }
 
     public Aspect(System system)
     {

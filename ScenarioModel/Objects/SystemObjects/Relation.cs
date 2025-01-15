@@ -1,11 +1,11 @@
-﻿using ScenarioModelling.Exhaustiveness.Attributes;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
 using ScenarioModelling.References.GeneralisedReferences;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -21,7 +21,7 @@ public record Relation : ISystemObject<RelationReference>, IStateful
 
     public RelatableObjectReference? LeftEntity { get; set; } // TODO Propertyise
     public RelatableObjectReference? RightEntity { get; set; } // TODO Propertyise
-    public StateProperty InitialState { get; private init; }
+    public StateProperty InitialState { get; private set; }
     public StateProperty State { get; }
 
     public Relation(System system)
@@ -32,7 +32,7 @@ public record Relation : ISystemObject<RelationReference>, IStateful
         system.Relations.Add(this);
 
         InitialState = new StateProperty(system);
-        State = new(system); 
+        State = new(system);
     }
 
     public RelationReference GenerateReference()

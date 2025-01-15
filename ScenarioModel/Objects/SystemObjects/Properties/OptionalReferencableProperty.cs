@@ -1,7 +1,7 @@
-﻿using OneOf;
+﻿using Newtonsoft.Json;
+using OneOf;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.References.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects.Properties;
 

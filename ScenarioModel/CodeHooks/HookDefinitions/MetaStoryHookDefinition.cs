@@ -1,13 +1,13 @@
 ﻿namespace ScenarioModelling.CodeHooks.HookDefinitions;
 
-public class ScenarioHookDefinition
+public class MetaStoryHookDefinition
 {
     public string Name { get; }
     public Context Context { get; }
 
     private MetaStory _activeScenario;
 
-    public ScenarioHookDefinition(string Name, Context Context)
+    public MetaStoryHookDefinition(string Name, Context Context)
     {
         this.Name = Name;
         this.Context = Context;
@@ -23,7 +23,7 @@ public class ScenarioHookDefinition
         _activeScenario = scenario;
     }
 
-    public MetaStory GetScenario()
+    public MetaStory GetMetaStory()
     {
         return _activeScenario;
     }

@@ -26,7 +26,7 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
 
     public override StateChangeEvent GenerateEvent(EventGenerationDependencies dependencies)
     {
-        ArgumentNullException.ThrowIfNull(StatefulObject);
+        ArgumentNullExceptionStandard.ThrowIfNull(StatefulObject);
 
         StateChangeEvent e = new StateChangeEvent()
         {
@@ -86,8 +86,8 @@ public record TransitionNode : ScenarioNode<StateChangeEvent>
         if (!otherNode.TransitionName.IsEqv(TransitionName))
             return false;
 
-        ArgumentNullException.ThrowIfNull(StatefulObject);
-        ArgumentNullException.ThrowIfNull(otherNode.StatefulObject);
+        ArgumentNullExceptionStandard.ThrowIfNull(StatefulObject);
+        ArgumentNullExceptionStandard.ThrowIfNull(otherNode.StatefulObject);
 
         if (!otherNode.StatefulObject.IsEqv(StatefulObject))
             return false;

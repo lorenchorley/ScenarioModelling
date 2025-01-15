@@ -2,7 +2,7 @@
 
 public record TransitionDefinition : UnnamedDefinition
 {
-    public StringValue TransitionName { get; init; } = null!;
+    public StringValue TransitionName { get; set; } = null!;
 
     public override string ToString()
     {

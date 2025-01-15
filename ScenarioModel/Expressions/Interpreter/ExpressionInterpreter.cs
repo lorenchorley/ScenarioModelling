@@ -7,9 +7,9 @@ namespace ScenarioModelling.Expressions.Interpreter;
 
 public partial class ExpressionInterpreter
 {
-    private const string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = "ScenarioModel.Expressions.Grammar.ExpressionGrammar.egt";
+    private const string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = "ScenarioModelling.Expressions.Grammar.ExpressionGrammar.egt";
 
-    private Parser _parser { get; init; }
+    private Parser _parser { get; set; }
 
     public ExpressionInterpreter()
     {

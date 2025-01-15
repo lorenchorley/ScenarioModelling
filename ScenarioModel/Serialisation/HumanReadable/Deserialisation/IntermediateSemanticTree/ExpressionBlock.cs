@@ -2,7 +2,7 @@
 
 public record ExpressionBlock
 {
-    public StringValue ExpressionText { get; init; } = null!;
+    public StringValue ExpressionText { get; set; } = null!;
 
     public override string ToString()
     {

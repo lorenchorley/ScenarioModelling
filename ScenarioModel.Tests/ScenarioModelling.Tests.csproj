@@ -26,7 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ScenarioModel\ScenarioModel.csproj" />
+		<ProjectReference Include="..\ScenarioModel\ScenarioModelling.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

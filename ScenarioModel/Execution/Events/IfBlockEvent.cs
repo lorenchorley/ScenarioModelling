@@ -1,9 +1,8 @@
-﻿using ScenarioModelling.Execution.Events.Interfaces;
+﻿using Newtonsoft.Json;
+using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.ScenarioNodes;
 using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ScenarioModelling.Execution.Events;
 
@@ -14,11 +13,11 @@ public record IfBlockEvent : IScenarioEvent<IfNode>
     public bool IfBlockRun { get; set; }
 
     [JsonIgnore]
-    public IfNode ProducerNode { get; init; } = null!;
+    public IfNode ProducerNode { get; set; } = null!;
 
     public override string ToString()
     {
-        string objText = JsonSerializer.Serialize(this);
+        string objText = JsonConvert.SerializeObject(this);
         return $"{GetType().Name} {objText}";
     }
 }
