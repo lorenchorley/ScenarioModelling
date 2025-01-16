@@ -35,13 +35,13 @@
 //        // Act
 //        // ===
 //        StoryRunResult resultFromExplicit =
-//            explicitContext.MetaStorys
+//            explicitContext.MetaStories
 //                           .Where(s => s.Name == nameof(ValidMetaStory1))
 //                           .First()
 //                           .StartAtStep("S1");
 
 //        StoryRunResult resultFromSerialised =
-//            fromSerialisedContext.MetaStorys
+//            fromSerialisedContext.MetaStories
 //                           .Where(s => s.Name == nameof(ValidMetaStory1))
 //                           .First()
 //                           .StartAtStep("S1");

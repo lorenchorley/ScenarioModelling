@@ -30,7 +30,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
 
         ValidationErrors validationErrors = new();
 
-        // Name is unique among MetaStorys
+        // Name is unique among MetaStories
         // InitialNode is in the graph
 
         validationErrors.Incorporate(VisitSubgraph(MetaStory.Graph.PrimarySubGraph));

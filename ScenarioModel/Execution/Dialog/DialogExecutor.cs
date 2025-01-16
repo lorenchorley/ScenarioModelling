@@ -29,7 +29,7 @@ public class DialogExecutor : IExecutor
     {
         Context.ResetToInitialState();
 
-        _metaStory = Context.MetaStorys.FirstOrDefault(s => s.Name == name);
+        _metaStory = Context.MetaStories.FirstOrDefault(s => s.Name == name);
 
         if (_metaStory == null)
             throw new InvalidOperationException($"No MetaStory with name {name}");

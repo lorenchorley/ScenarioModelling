@@ -10,7 +10,7 @@ public class ContextValidator
         MetaStoryValidator MetaStoryValidator = new();
         SystemValidator systemValidator = new();
 
-        foreach (var MetaStory in context.MetaStorys)
+        foreach (var MetaStory in context.MetaStories)
         {
             validationErrors.Incorporate(MetaStoryValidator.Validate(context.System, MetaStory));
         }

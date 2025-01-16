@@ -29,7 +29,7 @@ public class MetaStoryTransformer(System System, Instanciator Instanciator) : De
             return null;
 
         if (type == TransformationType.Property)
-            throw new InvalidOperationException("MetaStorys should not be properties");
+            throw new InvalidOperationException("MetaStories should not be properties");
 
         MetaStory value = Instanciator.NewMetaStory(definition: def);
 

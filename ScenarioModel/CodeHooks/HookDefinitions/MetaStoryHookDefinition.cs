@@ -12,12 +12,12 @@ public class MetaStoryHookDefinition
         this.Name = Name;
         this.Context = Context;
 
-        MetaStory? MetaStory = Context.MetaStorys.FirstOrDefault(s => s.Name == Name);
+        MetaStory? MetaStory = Context.MetaStories.FirstOrDefault(s => s.Name == Name);
 
         if (MetaStory == null)
         {
             MetaStory = new MetaStory() { Name = Name, System = Context.System };
-            Context.MetaStorys.Add(MetaStory);
+            Context.MetaStories.Add(MetaStory);
         }
 
         _activeMetaStory = MetaStory;

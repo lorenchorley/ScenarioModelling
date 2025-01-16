@@ -103,9 +103,9 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
         var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
         var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
-        var (MetaStorys, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
+        var (MetaStories, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
 
-        _context.MetaStorys.AddRange(MetaStorys);
+        _context.MetaStories.AddRange(MetaStories);
         _remainingLast.AddRange(remainingLast);
     }
 
@@ -133,7 +133,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
             constraint: () => _context.System.Constraints.ForEach(_constraintTransformer.Initialise)
         );
 
-        _context.MetaStorys.ForEach(_metaStoryTransformer.Initialise);
+        _context.MetaStories.ForEach(_metaStoryTransformer.Initialise);
 
         // Initialise expressions
         var nodes =

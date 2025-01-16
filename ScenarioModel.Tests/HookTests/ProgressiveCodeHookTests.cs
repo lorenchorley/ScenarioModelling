@@ -496,7 +496,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    // TODO Combining MetaStorys (new test class maybe)
+    // TODO Combining MetaStories (new test class maybe)
 
     // if (true)
     //   first dialog

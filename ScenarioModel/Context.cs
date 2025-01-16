@@ -13,7 +13,7 @@ namespace ScenarioModelling;
 public class Context
 {
     public List<ISerialiser> Serialisers { get; set; } = new();
-    public List<MetaStory> MetaStorys { get; set; } = new();
+    public List<MetaStory> MetaStories { get; set; } = new();
     public System System { get; set; } = new();
     public ValidationErrors ValidationErrors { get; set; } = new();
 
@@ -63,7 +63,7 @@ public class Context
         System = newSystem;
         system = newSystem;
 
-        foreach (var MetaStory in MetaStorys)
+        foreach (var MetaStory in MetaStories)
         {
             MetaStory.System = system;
         }
@@ -81,7 +81,7 @@ public class Context
     //            system = (System)result.Case;
     //            System = system;
 
-    //            foreach (var MetaStory in MetaStorys)
+    //            foreach (var MetaStory in MetaStories)
     //            {
     //                MetaStory.System = system;
     //            }
@@ -105,30 +105,30 @@ public class Context
 
     public Context LoadMetaStory(MetaStory newMetaStory, out MetaStory MetaStory)
     {
-        MetaStorys.Add(newMetaStory);
+        MetaStories.Add(newMetaStory);
         newMetaStory.System = System;
         MetaStory = newMetaStory;
         return this;
     }
 
-    //public Context LoadMetaStorys(string serialisedMetaStorys)
+    //public Context LoadMetaStories(string serialisedMetaStories)
     //{
-    //    return LoadMetaStorys(serialisedMetaStorys, out _);
+    //    return LoadMetaStories(serialisedMetaStories, out _);
     //}
 
-    //public Context LoadMetaStorys(string serialisedMetaStorys, out List<MetaStory> MetaStorys)
+    //public Context LoadMetaStories(string serialisedMetaStories, out List<MetaStory> MetaStories)
     //{
     //    foreach (var serialiser in Serialisers)
     //    {
-    //        var result = serialiser.DeserialiseMetaStorys(serialisedMetaStorys, this);
+    //        var result = serialiser.DeserialiseMetaStories(serialisedMetaStories, this);
     //        if (result.IsSome)
     //        {
-    //            MetaStorys = (List<MetaStory>)result.Case;
+    //            MetaStories = (List<MetaStory>)result.Case;
 
-    //            foreach (MetaStory MetaStory in MetaStorys)
+    //            foreach (MetaStory MetaStory in MetaStories)
     //            {
     //                MetaStory.System = System;
-    //                MetaStorys.Add(MetaStory);
+    //                MetaStories.Add(MetaStory);
     //            }
 
     //            return this;
@@ -165,7 +165,7 @@ public class Context
 
     public Context Incorporate(Context newContext)
     {
-        MetaStorys.AddRange(newContext.MetaStorys);
+        MetaStories.AddRange(newContext.MetaStories);
 
         SystemObjectExhaustivity.DoForEachObjectType(
             entity: () => System.Entities.AddRange(newContext.System.Entities),
