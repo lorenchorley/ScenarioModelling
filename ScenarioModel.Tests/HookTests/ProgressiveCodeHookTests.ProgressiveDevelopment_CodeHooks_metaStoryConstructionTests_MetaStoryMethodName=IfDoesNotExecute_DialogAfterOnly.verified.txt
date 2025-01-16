@@ -1,0 +1,17 @@
+﻿Entity Actor {
+  State S1
+}
+
+SM SM1 {
+  State S1
+  State S2
+  S1 -> S2 : T1
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  If <Actor.State == S2> {
+  }
+  Dialog {
+    Text "After if block only"
+  }
+}

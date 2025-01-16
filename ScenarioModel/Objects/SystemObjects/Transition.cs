@@ -7,7 +7,7 @@ using ScenarioModelling.References;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
-[ObjectLike<ISystemObject, Transition>]
+[SystemObjectLike<ISystemObject, Transition>]
 public record Transition : ISystemObject<TransitionReference>, IEqualityComparer<Transition>
 {
     private readonly System _system;

@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
-using ScenarioModelling.Objects.ScenarioNodes;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution.Events;
 
-[NodeLike<IScenarioNode, IfNode>]
-public record JumpEvent : IScenarioEvent<JumpNode>
+[StoryNodeLike<IStoryNode, IfNode>]
+public record JumpEvent : IMetaStoryEvent<JumpNode>
 {
     public string Target { get; set; } = "";
 

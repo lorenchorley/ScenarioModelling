@@ -1,36 +1,36 @@
 ﻿using ScenarioModelling.Execution.Events.Interfaces;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution.Analysis;
 
 public class AnalysisExecutor : IExecutor
 {
-    public IScenarioEvent? GetLastEvent()
+    public IStoryEvent? GetLastEvent()
     {
         throw new NotImplementedException();
     }
 
-    public bool IsLastEventOfType<T>() where T : IScenarioEvent
+    public bool IsLastEventOfType<T>() where T : IStoryEvent
     {
         throw new NotImplementedException();
     }
 
-    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IScenarioEvent
+    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IStoryEvent
     {
         throw new NotImplementedException();
     }
 
-    public IScenarioNode? NextNode()
+    public IStoryNode? NextNode()
     {
         throw new NotImplementedException();
     }
 
-    public void RegisterEvent(IScenarioEvent @event)
+    public void RegisterEvent(IStoryEvent @event)
     {
         throw new NotImplementedException();
     }
 
-    public Story StartScenario(string name)
+    public Story StartMetaStory(string name)
     {
         throw new NotImplementedException();
     }

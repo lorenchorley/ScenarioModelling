@@ -8,7 +8,7 @@ using ScenarioModelling.References;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
-[ObjectLike<ISystemObject, Constraint>]
+[SystemObjectLike<ISystemObject, Constraint>]
 public record Constraint : ISystemObject<ConstraintReference>
 {
     private readonly System _system;
@@ -18,10 +18,10 @@ public record Constraint : ISystemObject<ConstraintReference>
     [JsonIgnore]
     public Type Type => typeof(Constraint);
 
-    [ObjectLikeProperty(serialise: false)]
+    [SystemObjectLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
 
-    [ObjectLikeProperty(serialise: false)]
+    [SystemObjectLikeProperty(serialise: false)]
     public string OriginalConditionText { get; set; } = "";
 
     public Constraint(System system)

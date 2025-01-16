@@ -5,26 +5,26 @@ public class MetaStoryHookDefinition
     public string Name { get; }
     public Context Context { get; }
 
-    private MetaStory _activeScenario;
+    private MetaStory _activeMetaStory;
 
     public MetaStoryHookDefinition(string Name, Context Context)
     {
         this.Name = Name;
         this.Context = Context;
 
-        MetaStory? scenario = Context.Scenarios.FirstOrDefault(s => s.Name == Name);
+        MetaStory? MetaStory = Context.MetaStorys.FirstOrDefault(s => s.Name == Name);
 
-        if (scenario == null)
+        if (MetaStory == null)
         {
-            scenario = new MetaStory() { Name = Name, System = Context.System };
-            Context.Scenarios.Add(scenario);
+            MetaStory = new MetaStory() { Name = Name, System = Context.System };
+            Context.MetaStorys.Add(MetaStory);
         }
 
-        _activeScenario = scenario;
+        _activeMetaStory = MetaStory;
     }
 
     public MetaStory GetMetaStory()
     {
-        return _activeScenario;
+        return _activeMetaStory;
     }
 }

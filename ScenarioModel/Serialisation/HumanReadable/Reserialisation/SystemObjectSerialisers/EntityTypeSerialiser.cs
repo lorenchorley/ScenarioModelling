@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
-[ObjectLike<IObjectSerialiser, EntityType>]
+[SystemObjectLike<IObjectSerialiser, EntityType>]
 public class EntityTypeSerialiser(string IndentSegment) : IObjectSerialiser<EntityType>
 {
     public void WriteObject(StringBuilder sb, System system, EntityType obj, string currentIndent)

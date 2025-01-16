@@ -1,8 +1,8 @@
-﻿using ScenarioModelling.Objects.ScenarioNodes;
+﻿using ScenarioModelling.Objects.StoryNodes;
 
 namespace ScenarioModelling.Objects.Visitors;
 
-public interface IScenarioVisitor
+public interface IMetaStoryVisitor
 {
     object VisitChooseNode(ChooseNode chooseNode);
     object VisitDialogNode(DialogNode dialogNode);

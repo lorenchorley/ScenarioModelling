@@ -26,18 +26,18 @@ This section is still under construction, here are all the essential ideas :
 * Exportable into standard artefacts like UML diagrams.
 * Can be put in place after development to analyse, comprehend and strengthen a legacy project.
 
-* It is a tool that allows for the creation of scenarios that can be run and analysed. 
-* The scenarios are created using a simple DSL and can be run interactively like a game dialog. 
-* The scenarios are based on state machines that represent all state in the scenario. 
+* It is a tool that allows for the creation of meta stories that can be run and analysed. 
+* The meta stories are created using a simple DSL and can be run interactively like a game dialog. 
+* The meta stories are based on state machines that represent all state in the meta story. 
 * The tool is designed to be used from the beginning of the development process to the end and can be used by all roles in the process. 
-* The scenarios can be used to model a program before it is written, to validate a program after it is completed, to analyse bugs, to verify that user stories are coherent, to explore unthought of possibilities, to suggest new scenarios, to analyse bugs
+* The meta stories can be used to model a program before it is written, to validate a program after it is completed, to analyse bugs, to verify that user stories are coherent, to explore unthought of possibilities, to suggest new meta stories, to analyse bugs
 * This tool relies on an intermédiate artifact (called a meta story) that acts as the glue between all stages of the software development cycle and can in theory be used by any actor, however technical, in the process.
 * This intermediate artifact is a simplified model of the program that is humanly comprehensible and can be used to analyse, comprehend and strengthen a project.
 * The tool is designed to be used in a shift left methodology, to model a program before it is written and to validate it after it is written.
 * A behaviour modelling and requirements validation tool.
-* A minimal DSL allows for the quick creation of scenarios.
-* A game dialog like interface allows the user to interact with their scenarios.
-* State machines are used to represent all state in a scenario which allows for both easy comprehension and exhaustive analysis.
+* A minimal DSL allows for the quick creation of meta stories.
+* A game dialog like interface allows the user to interact with their meta stories.
+* State machines are used to represent all state in a meta stories which allows for both easy comprehension and exhaustive analysis.
 
 # Specific nomenclature
 
@@ -47,7 +47,7 @@ run/execution/conversation, could almost be called a user story except that name
 
 ## Meta story
 
-scenario/encapsulates all possible stories for a situation
+Scenario/encapsulates all possible stories for a situation
 
 
 # Advantages
@@ -58,7 +58,7 @@ scenario/encapsulates all possible stories for a situation
 * An entire story or meta story can be shared and explored statically allowing for better requirement communication, or debugging.
 * Model can be analysed separately from code.
 * Model can be run like a dialogue independently of program for ease of comprehension.
-* Can be run by anyone not just a developer. A product owner, a tester, or support can test scenarios to predict behaviour.
+* Can be run by anyone not just a developer. A product owner, a tester, or support can test meta stories to predict behaviour.
 * State machines as values might allow for some level of exhaustive analysis.
 * We have a client that with A po develops a set of user stories. Gives them a new way to exchange and validate the requirements in a more reliable way. Allows interaction by all parties (client, po, Dev, test).
 * Verification that user stories are coherent.
@@ -72,9 +72,9 @@ scenario/encapsulates all possible stories for a situation
 * Strong verifiable link to code
     * Construction and validation using hooks
     * Construction and validation directly from traces/logs
-    * Progressive generation allows for building a scenario bit by bit from several executions or trace sets, each time adding new parts and checking validity against what's already been established
+    * Progressive generation allows for building a meta story bit by bit from several executions or trace sets, each time adding new parts and checking validity against what's already been established
     * Could be used in TDD
-    * Coverage check over all tests to make sure that a maximum of the scenario is covered by tests
+    * Coverage check over all tests to make sure that a maximum of the meta story is covered by tests
 
 # Disadvantages
 
@@ -94,7 +94,7 @@ scenario/encapsulates all possible stories for a situation
 
 * Builds a simplified model of the program/scenario with finite possibilities.
 * Not Turing complete which helps analysis, but just complete enough so as to be able to model complex scenarios and be humanly comprehensible.
-* Model abstracts out fine implementation details, like extraneous code, stack information, etc so that the scenario can concentrate on the desired logic.
+* Model abstracts out fine implementation details, like extraneous code, stack information, etc so that the meta story can concentrate on the desired logic.
 * Stories and meta stories are human readable allowing for manual construction and modification, but can also be manipulated automatically in several ways.
 
 
@@ -102,11 +102,11 @@ scenario/encapsulates all possible stories for a situation
 
 ## Web UI
 
-All data is stored in the URL of the page like PlantUML. This allows for easy sharing of scenarios. Just copy the URL and send it to a friend.
+All data is stored in the URL of the page like PlantUML. This allows for easy sharing of meta stories. Just copy the URL and send it to a friend.
 
-To the left is the scenario editor. Here you can write your scenario using the DSL. The scenario is automatically updated as you type.
+To the left is the meta story editor. Here you can write your meta stories using the DSL.
 
-To the right is the scenario runner. Here you can interact with your scenario like a game dialog or run an exhaustivity analysis to find weak points in the scenario conception.
+To the right is the meta story runner. Here you can interact with your meta story like a game dialog or run an exhaustivity analysis to find weak points in the meta story conception.
 
 ## Integrating into an existing code base via hooks
 
@@ -147,7 +147,7 @@ These are described in more detail below.
 
 An entity can represent a character, a place, or an object, anything you want just as long as you can name it. 
 
-An entity is never created or destroyed, it will exist throughout the lifetime of a scenario.
+An entity is never created or destroyed, it will exist throughout the lifetime of a meta story.
 
 An entity may also have a set of aspects. An aspect is a property of an entity that may itself have its own state machine. Aspects allows for more complex entities.
 
@@ -220,7 +220,7 @@ Jean-Luc -> Enterprise : "Assigned To"
 
 ## Constraints
 
-Constraints are rules that must always be true in a scenario. They can be used to ensure that your scenario remains valid according to how you imagine it.
+Constraints are rules that must always be true in a meta story. They can be used to ensure that your meta story remains valid according to how you imagine it.
 
 They can apply to entities, aspects, states, transitions or relations.
 
@@ -264,7 +264,7 @@ Constraint "Jean-Luc is always a Capitain"
 
 ## Example
 
-In the following scenario, we have a system that describes an actor that has a name. Their name is part of their state and so may change according to the associated state machine. The state machine allows for a simple progression from one name to the next covering a total of 4 names.
+In the following meta story, we have a system that describes an actor that has a name. Their name is part of their state and so may change according to the associated state machine. The state machine allows for a simple progression from one name to the next covering a total of 4 names.
 
 The meta story reads as follows :
 * The entity Actor starts with an intial name
@@ -347,15 +347,15 @@ State : not implemented
 
 State : partial implementation
 
-* * Each TU adds to a named scenario so that it can represent several paths through the execution
+* * Each TU adds to a named meta story so that it can represent several paths through the execution
 * A commun system is defined
-* The scenario is tested at the end of the TU against it's initial state and assertions can be made against it's final state
-* Static functions positioned throughout the production code allow for both initial construction of the scenarios and, on subsequent runs, validation on the already established scenarios
+* The meta story is tested at the end of the TU against it's initial state and assertions can be made against it's final state
+* Static functions positioned throughout the production code allow for both initial construction of the meta stories and, on subsequent runs, validation on the already established meta stories
 * Declare state transitions
 * Declare if condition, along with whether the condition was true or false.
 * Or loop start and end, along with weather the loop continued or ended
 * Declare dialogue by actors in code like traces
-* Hook code could throw exceptions in TU instead of at end, so that you can debug the scenario at the same time as debugging the code to ensure correctness and facilitate comprehension. For example on a constraint violation or an impossible state transition.
+* Hook code could throw exceptions in TU instead of at end, so that you can debug the meta story at the same time as debugging the code to ensure correctness and facilitate comprehension. For example on a constraint violation or an impossible state transition.
 * Visual studio add-on to show state machine and entities as execution progresses
 * Multiple choice steps could derive from having multiple state transitions possible
 
@@ -412,18 +412,18 @@ State : not implemented
 
 State : not implemented
 
-* Have all possibilities been modelled by a scenario?
-* Use AI to build a scenario that hasn't yet been modelled
+* Have all possibilities been modelled by a meta story?
+* Use AI to build a meta story that hasn't yet been modelled
 * Not sure if possible like this
-* Analysis of scenarios using exhaustive search in the possibility space
-	* Discovery of unmentionned paths through a scenario
+* Analysis of meta stories using exhaustive search in the possibility space
+	* Discovery of unmentionned paths through a meta story
 
-## New scenario suggestions
+## New meta story suggestions
 
 State : not implemented
 
 * If the exhaustivity idea can't work
-* Try suggesting the beginning of a new scenario that hasn't been done yet or the continuation of an existing one.
+* Try suggesting the beginning of a new meta story that hasn't been done yet or the continuation of an existing one.
 
 ## Backtracking satisfiability analysis
 

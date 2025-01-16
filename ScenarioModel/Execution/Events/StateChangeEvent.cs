@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
-using ScenarioModelling.Objects.ScenarioNodes;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.Execution.Events;
 
-[NodeLike<IScenarioNode, IfNode>]
-public record StateChangeEvent : IScenarioEvent<TransitionNode>
+[StoryNodeLike<IStoryNode, IfNode>]
+public record StateChangeEvent : IMetaStoryEvent<TransitionNode>
 {
     public IReference StatefulObject { get; set; } = null!;
     public StateReference InitialState { get; set; } = null!;

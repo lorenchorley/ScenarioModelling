@@ -6,7 +6,7 @@ using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.References;
 
-[ObjectLike<IReference, StateMachine>]
+[SystemObjectLike<IReference, StateMachine>]
 public record StateMachineReference : IReference<StateMachine>
 {
     public string Name { get; set; } = "";

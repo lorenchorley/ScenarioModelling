@@ -1,11 +1,11 @@
-﻿using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 
 public interface INodeHookDefinition : IHookDefinition
 {
-    IScenarioNode GetNode();
-    void ReplaceNodeWithExisting(IScenarioNode preexistingNode);
+    IStoryNode GetNode();
+    void ReplaceNodeWithExisting(IStoryNode preexistingNode);
     DefinitionScope Scope { get; }
     DefinitionScopeSnapshot ScopeSnapshot { get; }
     void Build();

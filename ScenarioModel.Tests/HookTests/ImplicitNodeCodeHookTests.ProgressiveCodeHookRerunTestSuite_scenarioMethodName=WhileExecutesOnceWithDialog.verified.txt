@@ -1,3 +1,0 @@
-﻿* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
-* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"S1"},"FinalState":{"Name":"S2"},"TransitionName":"T1"}
-* WhileLoopConditionCheckEvent {"LoopBlockRun":false}

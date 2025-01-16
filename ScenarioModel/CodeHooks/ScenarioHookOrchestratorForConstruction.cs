@@ -1,6 +1,6 @@
 ﻿namespace ScenarioModelling.CodeHooks;
 
-public class ScenarioHookOrchestratorForConstruction(Context context) : ScenarioHookOrchestrator(context)
+public class MetaStoryHookOrchestratorForConstruction(Context context) : MetaStoryHookOrchestrator(context)
 {
 }
 

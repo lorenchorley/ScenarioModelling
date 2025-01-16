@@ -8,7 +8,7 @@ using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
-[ObjectLike<IObjectSerialiser, Relation>]
+[SystemObjectLike<IObjectSerialiser, Relation>]
 public class RelationSerialiser(string IndentSegment) : IObjectSerialiser<Relation>
 {
     public void WriteObject(StringBuilder sb, System system, Relation obj, string currentIndent)

@@ -3,11 +3,11 @@ using LanguageExt.Common;
 using ScenarioModelling.ContextConstruction;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Expressions.Initialisation;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.Objects.SystemObjects;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.NodeDeserialisers.Intefaces;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.ObjectDeserialisers;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
+using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
@@ -32,7 +32,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     private readonly StateMachineDeserialiser _stateMachineTransformer;
     private readonly EntityTypeDeserialiser _entityTypeTransformer;
     private readonly EntityDeserialiser _entityTransformer;
-    private readonly ScenarioTransformer _scenarioTransformer;
+    private readonly MetaStoryTransformer _metaStoryTransformer;
 
     private readonly IfNodeDeserialiser _ifNodeDeserialiser = new();
     private readonly WhileNodeDeserialiser _whileNodeDeserialiser = new();
@@ -44,9 +44,9 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
 
     public ContextDeserialiser()
     {
-        ScenarioNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeDeserialiser>();
+        MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeDeserialiser>();
 
-        ScenarioNodeExhaustivity.DoForEachNodeType(
+        MetaStoryNodeExhaustivity.DoForEachNodeType(
             chooseNode: () => RegisterNodeProfile(new ChooseNodeDeserialiser()),
             dialogNode: () => RegisterNodeProfile(new DialogNodeDeserialiser()),
             ifNode: () => RegisterNodeProfile(_ifNodeDeserialiser),
@@ -65,7 +65,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         _stateMachineTransformer = new(_context.System, _instanciator, _stateTransformer, _transitionTransformer);
         _entityTypeTransformer = new(_context.System, _instanciator, _stateMachineTransformer);
         _entityTransformer = new(_context.System, _instanciator, _stateTransformer, _aspectTransformer, _entityTypeTransformer, _relationTransformer);
-        _scenarioTransformer = new(_context.System, _instanciator)
+        _metaStoryTransformer = new(_context.System, _instanciator)
         {
             NodeProfilesByName = _nodeProfilesByName,
             NodeProfilesByPredicate = _nodeProfilesByPredicate
@@ -103,9 +103,9 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
         var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
         var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
-        var (scenarios, remainingLast) = remaining5.PartitionByChoose(_scenarioTransformer.TransformAsObject);
+        var (MetaStorys, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
 
-        _context.Scenarios.AddRange(scenarios);
+        _context.MetaStorys.AddRange(MetaStorys);
         _remainingLast.AddRange(remainingLast);
     }
 
@@ -133,11 +133,11 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
             constraint: () => _context.System.Constraints.ForEach(_constraintTransformer.Initialise)
         );
 
-        _context.Scenarios.ForEach(_scenarioTransformer.Initialise);
+        _context.MetaStorys.ForEach(_metaStoryTransformer.Initialise);
 
         // Initialise expressions
         var nodes =
-            Enumerable.Empty<IScenarioNodeWithExpression>()
+            Enumerable.Empty<IStoryNodeWithExpression>()
                       .Concat(_ifNodeDeserialiser.ConditionsToInitialise)
                       .Concat(_whileNodeDeserialiser.ConditionsToInitialise);
 

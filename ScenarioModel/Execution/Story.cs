@@ -3,19 +3,19 @@ using LanguageExt.SomeHelp;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Expressions.Evaluation;
-using ScenarioModelling.Objects.ScenarioNodes;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.Execution;
 
 /// <summary>
-/// A story is an instance or a play through of a scenario.
+/// A story is an instance or a play through of a MetaStory.
 /// </summary>
 public class Story
 {
-    public MetaStory Scenario { get; set; } = null!;
-    public List<IScenarioEvent> Events { get; set; } = new();
+    public MetaStory MetaStory { get; set; } = null!;
+    public List<IStoryEvent> Events { get; set; } = new();
     public Stack<GraphScope> GraphScopeStack { get; set; } = new();
     public ExpressionEvalator Evaluator { get; set; } = null!;
 
@@ -23,13 +23,13 @@ public class Story
 
     public void Init()
     {
-        GraphScopeStack.Push(new GraphScope(Scenario.Graph));
+        GraphScopeStack.Push(new GraphScope(MetaStory.Graph));
     }
 
-    public IScenarioNode? NextNode()
+    public IStoryNode? NextNode()
     {
         var failedConstraintEvents =
-            Scenario.System
+            MetaStory.System
                     .Constraints
                     .Choose(CheckConstraint)
                     .ToList();
@@ -94,7 +94,7 @@ public class Story
         return null;
     }
 
-    private IScenarioNode? ManangeTransitionNode(IScenarioEvent? currentEvent, TransitionNode currentScopeNode)
+    private IStoryNode? ManangeTransitionNode(IStoryEvent? currentEvent, TransitionNode currentScopeNode)
     {
         // The last event must be a state change event
         if (currentEvent is null ||
@@ -104,7 +104,7 @@ public class Story
         return CurrentScope.GetNextInSequence();
     }
 
-    private IScenarioNode? ManangeChoseNode(IScenarioEvent? currentEvent, ChooseNode currentScopeNode)
+    private IStoryNode? ManangeChoseNode(IStoryEvent? currentEvent, ChooseNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -112,7 +112,7 @@ public class Story
             throw new Exception($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
 
         // Find the next node based on the choice
-        IScenarioNode? newCurrentScopeNode =
+        IStoryNode? newCurrentScopeNode =
             CurrentScope
                 .Graph
                 .Find(s => s.Name.IsEqv(choiceEvent.Choice));
@@ -125,7 +125,7 @@ public class Story
         return newCurrentScopeNode;
     }
 
-    private IScenarioNode? ManageJumpNode(IScenarioEvent? currentEvent, JumpNode currentScopeNode)
+    private IStoryNode? ManageJumpNode(IStoryEvent? currentEvent, JumpNode currentScopeNode)
     {
         // The last event must be a jump event
         if (currentEvent is null ||
@@ -133,7 +133,7 @@ public class Story
             throw new Exception($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
 
         // Find the next node based on the choice
-        IScenarioNode? newCurrentScopeNode =
+        IStoryNode? newCurrentScopeNode =
             CurrentScope
                 .Graph
                 .Find(s => s.Name.IsEqv(jumpEvent.Target));
@@ -147,7 +147,7 @@ public class Story
         return CurrentScope.GetNextInSequence();
     }
 
-    private IScenarioNode? ManageIfNode(IScenarioEvent? currentEvent, IScenarioNode? currentScopeNode)
+    private IStoryNode? ManageIfNode(IStoryEvent? currentEvent, IStoryNode? currentScopeNode)
     {
         // The last event must be an if event
         if (currentEvent is null ||
@@ -166,7 +166,7 @@ public class Story
         }
     }
 
-    private IScenarioNode? ManageWhileNode(IScenarioEvent? currentEvent, WhileNode currentScopeNode)
+    private IStoryNode? ManageWhileNode(IStoryEvent? currentEvent, WhileNode currentScopeNode)
     {
         // The last event must be an while event
         if (currentEvent is null ||
@@ -185,7 +185,7 @@ public class Story
         }
     }
 
-    public void RegisterEvent(IScenarioEvent @event)
+    public void RegisterEvent(IStoryEvent @event)
     {
         Events.Add(@event);
     }

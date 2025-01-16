@@ -1,6 +1,6 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.Collections.Graph;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks;
 
@@ -9,10 +9,10 @@ public class DefinitionScope
     private readonly Action _verifyPreviousDefinition;
 
     public List<INodeHookDefinition> NodeHookDefinitions { get; set; } = new();
-    public SemiLinearSubGraph<IScenarioNode> SubGraph { get; set; } = null!;
+    public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = null!;
     public int CurrentIndex { get; set; } = 0;
 
-    public DefinitionScope(SemiLinearSubGraph<IScenarioNode> subGraph, Action verifyPreviousDefinition)
+    public DefinitionScope(SemiLinearSubGraph<IStoryNode> subGraph, Action verifyPreviousDefinition)
     {
         SubGraph = subGraph;
         _verifyPreviousDefinition = verifyPreviousDefinition;
@@ -23,9 +23,9 @@ public class DefinitionScope
         return new DefinitionScopeSnapshot() { Index = CurrentIndex };
     }
 
-    public void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add, Action<IScenarioNode> existing)
+    public void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add, Action<IStoryNode> existing)
     {
-        IScenarioNode newNode = newNodeDefinition.GetNode();
+        IStoryNode newNode = newNodeDefinition.GetNode();
 
         if (newNodeDefinition.ScopeSnapshot.Index > SubGraph.NodeSequence.Count + 1)
             throw new Exception("Current index is too far beyond the end of the subgraph");
@@ -52,7 +52,7 @@ public class DefinitionScope
         }
     }
 
-    private int VerifyInPhaseWithGraph(IScenarioNode existingNode, IScenarioNode newNode)
+    private int VerifyInPhaseWithGraph(IStoryNode existingNode, IStoryNode newNode)
     {
         bool nodesAreEssentiallyTheSame = existingNode.IsFullyEqv(newNode);
         if (!nodesAreEssentiallyTheSame)
@@ -68,7 +68,7 @@ public class DefinitionScope
                 if (CurrentIndex + 1 >= SubGraph.NodeSequence.Count)
                     throw new Exception("Current index is too far beyond the end of the subgraph : To be implemented");
 
-                IScenarioNode next = SubGraph.NodeSequence[CurrentIndex + 1];
+                IStoryNode next = SubGraph.NodeSequence[CurrentIndex + 1];
                 VerifyInPhaseWithGraph(next, newNode);
             }
             else

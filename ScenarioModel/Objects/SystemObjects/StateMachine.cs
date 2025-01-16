@@ -11,7 +11,7 @@ namespace ScenarioModelling.Objects.SystemObjects;
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
-[ObjectLike<ISystemObject, StateMachine>]
+[SystemObjectLike<ISystemObject, StateMachine>]
 public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSerialisability
 {
     private readonly System _system;

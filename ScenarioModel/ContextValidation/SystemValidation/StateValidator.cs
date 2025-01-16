@@ -5,7 +5,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.ContextValidation.SystemValidation;
 
-[ObjectLike<IObjectValidator, State>]
+[SystemObjectLike<IObjectValidator, State>]
 public class StateValidator : IObjectValidator<State>
 {
     public ValidationErrors Validate(System system, State state)

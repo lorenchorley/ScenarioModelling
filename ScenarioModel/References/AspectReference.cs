@@ -7,7 +7,7 @@ using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.References;
 
-[ObjectLike<IReference, Aspect>]
+[SystemObjectLike<IReference, Aspect>]
 public record AspectReference : IReference<Aspect>, IRelatableObjectReference, IStatefulObjectReference
 {
     public string Name { get; set; } = "";

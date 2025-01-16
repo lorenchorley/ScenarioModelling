@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness.Attributes;
-using ScenarioModelling.Objects.ScenarioNodes;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution.Events;
 
-[NodeLike<IScenarioNode, IfNode>]
-public record DialogEvent : IScenarioEvent<DialogNode>
+[StoryNodeLike<IStoryNode, IfNode>]
+public record DialogEvent : IMetaStoryEvent<DialogNode>
 {
     public string Text { get; set; } = null!;
     public string? Character { get; set; } = null;

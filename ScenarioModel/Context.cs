@@ -13,7 +13,7 @@ namespace ScenarioModelling;
 public class Context
 {
     public List<ISerialiser> Serialisers { get; set; } = new();
-    public List<MetaStory> Scenarios { get; set; } = new();
+    public List<MetaStory> MetaStorys { get; set; } = new();
     public System System { get; set; } = new();
     public ValidationErrors ValidationErrors { get; set; } = new();
 
@@ -63,9 +63,9 @@ public class Context
         System = newSystem;
         system = newSystem;
 
-        foreach (var scenario in Scenarios)
+        foreach (var MetaStory in MetaStorys)
         {
-            scenario.System = system;
+            MetaStory.System = system;
         }
 
         return this;
@@ -81,9 +81,9 @@ public class Context
     //            system = (System)result.Case;
     //            System = system;
 
-    //            foreach (var scenario in Scenarios)
+    //            foreach (var MetaStory in MetaStorys)
     //            {
-    //                scenario.System = system;
+    //                MetaStory.System = system;
     //            }
 
     //            return this;
@@ -98,44 +98,44 @@ public class Context
     //    return LoadSystem(serialisedSystem, out _);
     //}
 
-    public Context LoadScenario(MetaStory scenario)
+    public Context LoadMetaStory(MetaStory MetaStory)
     {
-        return LoadScenario(scenario, out _);
+        return LoadMetaStory(MetaStory, out _);
     }
 
-    public Context LoadScenario(MetaStory newScenario, out MetaStory scenario)
+    public Context LoadMetaStory(MetaStory newMetaStory, out MetaStory MetaStory)
     {
-        Scenarios.Add(newScenario);
-        newScenario.System = System;
-        scenario = newScenario;
+        MetaStorys.Add(newMetaStory);
+        newMetaStory.System = System;
+        MetaStory = newMetaStory;
         return this;
     }
 
-    //public Context LoadScenarios(string serialisedScenarios)
+    //public Context LoadMetaStorys(string serialisedMetaStorys)
     //{
-    //    return LoadScenarios(serialisedScenarios, out _);
+    //    return LoadMetaStorys(serialisedMetaStorys, out _);
     //}
 
-    //public Context LoadScenarios(string serialisedScenarios, out List<Scenario> scenarios)
+    //public Context LoadMetaStorys(string serialisedMetaStorys, out List<MetaStory> MetaStorys)
     //{
     //    foreach (var serialiser in Serialisers)
     //    {
-    //        var result = serialiser.DeserialiseScenarios(serialisedScenarios, this);
+    //        var result = serialiser.DeserialiseMetaStorys(serialisedMetaStorys, this);
     //        if (result.IsSome)
     //        {
-    //            scenarios = (List<Scenario>)result.Case;
+    //            MetaStorys = (List<MetaStory>)result.Case;
 
-    //            foreach (Scenario scenario in scenarios)
+    //            foreach (MetaStory MetaStory in MetaStorys)
     //            {
-    //                scenario.System = System;
-    //                Scenarios.Add(scenario);
+    //                MetaStory.System = System;
+    //                MetaStorys.Add(MetaStory);
     //            }
 
     //            return this;
     //        }
     //    }
 
-    //    throw new Exception("Failed to load scenario, no serialiser was able to deserialise the incoming text");
+    //    throw new Exception("Failed to load MetaStory, no serialiser was able to deserialise the incoming text");
     //}
 
     public Context Initialise()
@@ -165,7 +165,7 @@ public class Context
 
     public Context Incorporate(Context newContext)
     {
-        Scenarios.AddRange(newContext.Scenarios);
+        MetaStorys.AddRange(newContext.MetaStorys);
 
         SystemObjectExhaustivity.DoForEachObjectType(
             entity: () => System.Entities.AddRange(newContext.System.Entities),

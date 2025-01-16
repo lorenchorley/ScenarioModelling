@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
-[ObjectLike<IObjectSerialiser, Constraint>]
+[SystemObjectLike<IObjectSerialiser, Constraint>]
 public class ConstraintSerialiser(string IndentSegment) : IObjectSerialiser<Constraint>
 {
     public void WriteObject(StringBuilder sb, System system, Constraint obj, string currentIndent)
@@ -16,7 +16,7 @@ public class ConstraintSerialiser(string IndentSegment) : IObjectSerialiser<Cons
         var result = (string)obj.Condition.Accept(visitor);
 
         string subIndent = currentIndent + IndentSegment;
-        ScenarioNodeExhaustivity.DoForEachNodeProperty(obj, (attr, prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
+        MetaStoryNodeExhaustivity.DoForEachNodeProperty(obj, (attr, prop, value) => sb.AppendLine($"{subIndent}{prop} {value}"));
 
         sb.AppendLine($"{currentIndent}Constraint <{result}> {{"); // TODO Serialise the expression correctly
 

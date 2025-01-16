@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.Collections.Graph.Validation;
-using ScenarioModelling.Objects.ScenarioNodes.Interfaces;
+using ScenarioModelling.Objects.StoryNodes.Interfaces;
 
 namespace ScenarioModelling.Collections.Graph;
 

@@ -1,14 +1,14 @@
 ﻿using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Expressions.Evaluation;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution.Dialog;
 
 public class DialogExecutor : IExecutor
 {
     public Context Context { get; set; }
-    private MetaStory? _scenario;
-    private Story? _scenarioRun;
+    private MetaStory? _metaStory;
+    private Story? _metaStoryRun;
     private readonly ExpressionEvalator _evalator;
 
     public DialogExecutor(Context context, ExpressionEvalator evalator)
@@ -17,59 +17,59 @@ public class DialogExecutor : IExecutor
         _evalator = evalator;
     }
 
-    public IScenarioEvent? GetLastEvent()
+    public IStoryEvent? GetLastEvent()
     {
-        if (_scenario == null || _scenarioRun == null)
-            throw new InvalidOperationException("Scenario not started");
+        if (_metaStory == null || _metaStoryRun == null)
+            throw new InvalidOperationException("MetaStory not started");
 
-        return _scenarioRun.Events.LastOrDefault();
+        return _metaStoryRun.Events.LastOrDefault();
     }
 
-    public Story StartScenario(string name)
+    public Story StartMetaStory(string name)
     {
         Context.ResetToInitialState();
 
-        _scenario = Context.Scenarios.FirstOrDefault(s => s.Name == name);
+        _metaStory = Context.MetaStorys.FirstOrDefault(s => s.Name == name);
 
-        if (_scenario == null)
-            throw new InvalidOperationException($"No scenario with name {name}");
+        if (_metaStory == null)
+            throw new InvalidOperationException($"No MetaStory with name {name}");
 
-        _scenarioRun = new Story { Scenario = _scenario, Evaluator = _evalator };
-        _scenarioRun.Init();
+        _metaStoryRun = new Story { MetaStory = _metaStory, Evaluator = _evalator };
+        _metaStoryRun.Init();
 
-        return _scenarioRun;
+        return _metaStoryRun;
     }
 
-    public IScenarioNode? NextNode()
+    public IStoryNode? NextNode()
     {
-        if (_scenario == null || _scenarioRun == null)
-            throw new InvalidOperationException("Scenario not started");
+        if (_metaStory == null || _metaStoryRun == null)
+            throw new InvalidOperationException("MetaStory not started");
 
-        return _scenarioRun.NextNode();
+        return _metaStoryRun.NextNode();
     }
 
-    public void RegisterEvent(IScenarioEvent @event)
+    public void RegisterEvent(IStoryEvent @event)
     {
-        if (_scenario == null || _scenarioRun == null)
-            throw new InvalidOperationException("Scenario not started");
+        if (_metaStory == null || _metaStoryRun == null)
+            throw new InvalidOperationException("MetaStory not started");
 
-        _scenarioRun.RegisterEvent(@event);
+        _metaStoryRun.RegisterEvent(@event);
     }
 
-    public bool IsLastEventOfType<T>() where T : IScenarioEvent
+    public bool IsLastEventOfType<T>() where T : IStoryEvent
     {
         return IsLastEventOfType<T>(_ => true);
     }
 
-    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IScenarioEvent
+    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IStoryEvent
     {
-        IScenarioEvent? scenarioEvent = _scenarioRun?.Events.LastOrDefault();
+        IStoryEvent? MetaStoryEvent = _metaStoryRun?.Events.LastOrDefault();
 
-        if (scenarioEvent == null)
+        if (MetaStoryEvent == null)
         {
             return false;
         }
 
-        return scenarioEvent is T t && pred(t);
+        return MetaStoryEvent is T t && pred(t);
     }
 }

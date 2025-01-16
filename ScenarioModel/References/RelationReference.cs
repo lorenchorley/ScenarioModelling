@@ -8,7 +8,7 @@ using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
 namespace ScenarioModelling.References;
 
-[ObjectLike<IReference, Relation>]
+[SystemObjectLike<IReference, Relation>]
 public record RelationReference : IReference<Relation>, IStatefulObjectReference
 {
     private readonly System _system;

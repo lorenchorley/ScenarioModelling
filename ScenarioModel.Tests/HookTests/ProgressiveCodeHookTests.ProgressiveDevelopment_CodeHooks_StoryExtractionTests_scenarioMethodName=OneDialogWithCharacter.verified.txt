@@ -1,1 +1,0 @@
-﻿* DialogEvent {"Text":"Hello","Character":"Actor"}

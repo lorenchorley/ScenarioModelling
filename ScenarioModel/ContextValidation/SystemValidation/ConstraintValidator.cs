@@ -6,7 +6,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.ContextValidation.SystemValidation;
 
-[ObjectLike<IObjectValidator, Constraint>]
+[SystemObjectLike<IObjectValidator, Constraint>]
 public class ConstraintValidator : IObjectValidator<Constraint>
 {
     public ValidationErrors Validate(System system, Constraint constraint)

@@ -1,0 +1,9 @@
+﻿Entity Actor {
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  Dialog {
+    Text Hello
+    Character Actor
+  }
+}

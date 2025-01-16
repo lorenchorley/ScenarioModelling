@@ -1,13 +1,13 @@
 ﻿using LanguageExt.Common;
 using ScenarioModelling.ContextConstruction;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks;
 
 public class HookContextBuilderInputs : IContextBuilderInputs
 {
     public Queue<object> NewObjects { get; } = new();
-    public Queue<IScenarioNode> NewNodes { get; } = new();
+    public Queue<IStoryNode> NewNodes { get; } = new();
 
     public void Reset()
     {

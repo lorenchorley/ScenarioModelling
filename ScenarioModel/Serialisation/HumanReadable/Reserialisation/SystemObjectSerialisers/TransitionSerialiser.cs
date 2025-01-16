@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
-[ObjectLike<IObjectSerialiser, Transition>]
+[SystemObjectLike<IObjectSerialiser, Transition>]
 public class TransitionSerialiser(string IndentSegment) : IObjectSerialiser<Transition>
 {
     public void WriteObject(StringBuilder sb, System system, Transition obj, string currentIndent)

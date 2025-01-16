@@ -1,0 +1,8 @@
+﻿Entity Actor {
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  Dialog {
+    Text "Hello with multiple words"
+  }
+}

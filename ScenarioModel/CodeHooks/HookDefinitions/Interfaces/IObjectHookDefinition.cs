@@ -3,8 +3,8 @@
 public enum HookExecutionMode
 {
     Simulation,
-    FirstScenarioConstruction,
-    SubsequentScenarioConstruction
+    FirstMetaStoryConstruction,
+    SubsequentMetaStoryConstruction
 }
 
 public interface IObjectHookDefinition : IHookDefinition

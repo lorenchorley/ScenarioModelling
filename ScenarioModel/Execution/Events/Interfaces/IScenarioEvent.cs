@@ -1,14 +1,14 @@
-﻿using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+﻿using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution.Events.Interfaces;
 
-public interface IScenarioEvent
+public interface IStoryEvent
 {
 
 }
 
-public interface IScenarioEvent<T> : IScenarioEvent
-    where T : IScenarioNode
+public interface IMetaStoryEvent<T> : IStoryEvent
+    where T : IStoryNode
 {
     T ProducerNode { get; }
 }

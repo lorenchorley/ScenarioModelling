@@ -5,7 +5,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.ContextValidation.SystemValidation;
 
-[ObjectLike<IObjectValidator, Aspect>]
+[SystemObjectLike<IObjectValidator, Aspect>]
 public class AspectValidator : IObjectValidator<Aspect>
 {
     public ValidationErrors Validate(System system, Aspect aspect)

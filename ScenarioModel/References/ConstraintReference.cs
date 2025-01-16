@@ -6,7 +6,7 @@ using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.References;
 
-[ObjectLike<IReference, Constraint>]
+[SystemObjectLike<IReference, Constraint>]
 public record ConstraintReference : IReference<Constraint>
 {
     public string Name { get; set; } = "";

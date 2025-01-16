@@ -13,9 +13,9 @@ public class SystemHookDefinition
 {
     public Context Context { get; }
     private readonly Instanciator _instanciator;
-    protected List<EntityHookDefinition> _entityDefintions = new();
-    protected List<StateMachineHookDefinition> _stateMachineDefintions = new();
-    protected List<ConstraintHookDefinition> _constraintDefintions = new();
+    internal List<EntityHookDefinition> EntityDefintions = new();
+    internal List<StateMachineHookDefinition> StateMachineDefintions = new();
+    internal List<ConstraintHookDefinition> ConstraintDefintions = new();
 
     public SystemHookDefinition(Context context)
     {
@@ -26,55 +26,64 @@ public class SystemHookDefinition
     public EntityHookDefinition DefineEntity(string name)
     {
         EntityHookDefinition nodeDef = new(Context.System, _instanciator, name);
-        _entityDefintions.Add(nodeDef);
+        EntityDefintions.Add(nodeDef);
         return nodeDef;
     }
 
     public StateMachineHookDefinition DefineStateMachine(string name)
     {
         StateMachineHookDefinition nodeDef = new(Context.System, _instanciator, name);
-        _stateMachineDefintions.Add(nodeDef);
+        StateMachineDefintions.Add(nodeDef);
         return nodeDef;
     }
 
     public ConstraintHookDefinition DefineConstraint(string name)
     {
         ConstraintHookDefinition nodeDef = new(Context.System, _instanciator, name);
-        _constraintDefintions.Add(nodeDef);
+        ConstraintDefintions.Add(nodeDef);
         return nodeDef;
     }
 
     internal void Initialise()
     {
-        foreach (var entityDefintion in _entityDefintions)
+        foreach (var entityDefintion in EntityDefintions)
         {
-            ValidateDefinition(entityDefintion);
-            Entity newlyDefinedEntity = entityDefintion.Entity;
-            CreateNewIfNotSet<EntityType, EntityTypeReference, EntityTypeProperty>(newlyDefinedEntity.EntityType, newlyDefinedEntity.Name);
-            // TODO Make sure there are no duplicates
+            if (!entityDefintion.Validated)
+            {
+                ValidateDefinition(entityDefintion);
+                Entity newlyDefinedEntity = entityDefintion.Entity;
+                CreateNewIfNotSet<EntityType, EntityTypeReference, EntityTypeProperty>(newlyDefinedEntity.EntityType, newlyDefinedEntity.Name);
+                // TODO Make sure there are no duplicates
+            }
         }
 
-        foreach (var stateMachineDefintions in _stateMachineDefintions)
+        foreach (var stateMachineDefintions in StateMachineDefintions)
         {
-            ValidateDefinition(stateMachineDefintions);
-            StateMachine newlyDefinedStateMachine = stateMachineDefintions.StateMachine;
-            StateMachine? existingCorrespondingStateMachine = Context.System.StateMachines.FirstOrDefault(e => e.Name.IsEqv(newlyDefinedStateMachine.Name));
+            if (!stateMachineDefintions.Validated)
+            {
+                ValidateDefinition(stateMachineDefintions);
+                StateMachine newlyDefinedStateMachine = stateMachineDefintions.StateMachine;
+                StateMachine? existingCorrespondingStateMachine = Context.System.StateMachines.FirstOrDefault(e => e.Name.IsEqv(newlyDefinedStateMachine.Name));
 
-            //    if (existingCorrespondingStateMachine == null)
-            //    {
-            //        // No worries, we add it to complete the system
-            //        Context.System.StateMachines.Add(newlyDefinedStateMachine);
-            //    }
-            //    else
-            //    {
-            //        // If it exists already, we have to verify that all properties are the same
-            //        existingCorrespondingStateMachine.AssertDeepEqv(newlyDefinedStateMachine);
-            //    }
+                //    if (existingCorrespondingStateMachine == null)
+                //    {
+                //        // No worries, we add it to complete the system
+                //        Context.System.StateMachines.Add(newlyDefinedStateMachine);
+                //    }
+                //    else
+                //    {
+                //        // If it exists already, we have to verify that all properties are the same
+                //        existingCorrespondingStateMachine.AssertDeepEqv(newlyDefinedStateMachine);
+                //    }
+            }
         }
 
-        foreach (var constraintDefintion in _constraintDefintions)
+        foreach (var constraintDefintion in ConstraintDefintions)
         {
-            ValidateDefinition(constraintDefintion);
+            if (!constraintDefintion.Validated)
+            {
+                ValidateDefinition(constraintDefintion);
+            }
         }
 
         //Context.System.Entities.ForEach(UpdateStateMachineOnEntity);

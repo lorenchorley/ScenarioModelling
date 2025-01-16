@@ -4,7 +4,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.Execution.Events;
 
-public record ConstraintFailedEvent : IScenarioEvent
+public record ConstraintFailedEvent : IStoryEvent
 {
     public string Expression { get; set; } = ""; // Progressive series of evaluations to improve readability
 

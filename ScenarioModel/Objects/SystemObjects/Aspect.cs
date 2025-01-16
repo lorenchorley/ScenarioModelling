@@ -8,7 +8,7 @@ using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
-[ObjectLike<ISystemObject, Aspect>]
+[SystemObjectLike<ISystemObject, Aspect>]
 public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
 {
     private readonly System _system;

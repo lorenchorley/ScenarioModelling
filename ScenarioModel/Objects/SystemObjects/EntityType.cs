@@ -10,7 +10,7 @@ namespace ScenarioModelling.Objects.SystemObjects;
 /// <summary>
 /// Types exist only to allow grouping and reuse of entities (that would then have the same state type and aspects)
 /// </summary>
-[ObjectLike<ISystemObject, EntityType>]
+[SystemObjectLike<ISystemObject, EntityType>]
 public record EntityType : ISystemObject<EntityTypeReference>, IOptionalSerialisability
 {
     private readonly System _system;

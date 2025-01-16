@@ -1,24 +1,24 @@
 //using FluentAssertions;
-//using ScenarioModel.Execution;
-//using ScenarioModel.Serialisation.HumanReadable.Reserialisation;
-//using ScenarioModel.Tests.Valid;
+//using MetaStoryModel.Execution;
+//using MetaStoryModel.Serialisation.HumanReadable.Reserialisation;
+//using MetaStoryModel.Tests.Valid;
 
-//namespace ScenarioModel.Tests;
+//namespace MetaStoryModel.Tests;
 
 //[TestClass]
 //public class ValidExplicitVsSerialisedTests
 //{
 //    [TestMethod]
 //    [TestCategory("Valid"), TestCategory("Serialisation")]
-//    public void Scenario1_ExplicitAndSerialised_ValidatesRunsEquals()
+//    public void MetaStory1_ExplicitAndSerialised_ValidatesRunsEquals()
 //    {
 //        // Arrange
 //        // =======
 //        var explicitContext =
 //            Context.New()
 //                   .UseSerialiser<HumanReadableSerialiser>()
-//                   .LoadSystem(ValidScenario1.System, out System system)
-//                   .LoadScenario(ValidScenario1.Scenario, out Scenario scenario)
+//                   .LoadSystem(ValidMetaStory1.System, out System system)
+//                   .LoadMetaStory(ValidMetaStory1.MetaStory, out MetaStory MetaStory)
 //                   .Initialise();
 
 //        explicitContext.ValidationErrors.Should().BeEmpty();
@@ -26,7 +26,7 @@
 //        var fromSerialisedContext =
 //            Context.New()
 //                   .UseSerialiser<HumanReadableSerialiser>()
-//                   .LoadContext<HumanReadableSerialiser>(ValidScenario1.SerialisedContext)
+//                   .LoadContext<HumanReadableSerialiser>(ValidMetaStory1.SerialisedContext)
 //                   .Initialise();
 
 //        fromSerialisedContext.ValidationErrors.Should().BeEmpty();
@@ -35,14 +35,14 @@
 //        // Act
 //        // ===
 //        StoryRunResult resultFromExplicit =
-//            explicitContext.Scenarios
-//                           .Where(s => s.Name == nameof(ValidScenario1))
+//            explicitContext.MetaStorys
+//                           .Where(s => s.Name == nameof(ValidMetaStory1))
 //                           .First()
 //                           .StartAtStep("S1");
 
 //        StoryRunResult resultFromSerialised =
-//            fromSerialisedContext.Scenarios
-//                           .Where(s => s.Name == nameof(ValidScenario1))
+//            fromSerialisedContext.MetaStorys
+//                           .Where(s => s.Name == nameof(ValidMetaStory1))
 //                           .First()
 //                           .StartAtStep("S1");
 

@@ -1,12 +1,12 @@
 namespace ScenarioModelling.Tests.Valid;
 
-public static class ValidScenario1
+public static class ValidMetaStory1
 {
-    //public static Scenario Scenario
+    //public static MetaStory MetaStory
     //{
     //    get => new()
     //    {
-    //        Name = nameof(ValidScenario1),
+    //        Name = nameof(ValidMetaStory1),
     //        Graph = new()
     //        {
     //            new DialogNode() { Name = "D1", TextTemplate = "Hello" },
@@ -59,7 +59,7 @@ public static class ValidScenario1
               S1 -> S2
             }
 
-            Scenario ValidScenario1 {
+            MetaStory ValidMetaStory1 {
               Dialog D1 {
                 Text Hello
               }

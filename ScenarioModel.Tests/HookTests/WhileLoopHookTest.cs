@@ -1,13 +1,13 @@
 using FluentAssertions;
 using ScenarioModelling.CodeHooks;
-using ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
-using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.StoryNodes.DataClasses;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModelling.Tests.ScenarioRuns;
+using ScenarioModelling.Tests.Stories;
 using System.Diagnostics;
 
 namespace ScenarioModelling.Tests.HookTests;
@@ -16,7 +16,7 @@ namespace ScenarioModelling.Tests.HookTests;
 [UsesVerify]
 public partial class WhileLoopHookTest
 {
-    private string _scenarioText = """
+    private string _metaStoryText = """
         Entity Actor {
           EntityType ET1
           State "Amy Stake"
@@ -37,7 +37,7 @@ public partial class WhileLoopHookTest
           "Clara Nett" -> "Dee Zaster" : ChangeName
         }
         
-        Scenario "Scenario recorded by hooks" {
+        MetaStory "MetaStory recorded by hooks" {
           Dialog SayName {
             Text "The actor {Actor.State} says hello and introduces themselves"
             Character Actor
@@ -82,7 +82,7 @@ public partial class WhileLoopHookTest
         DeeZaster
     }
 
-    void ProducerMethod(ScenarioHookOrchestrator hooks)
+    void ProducerMethod(MetaStoryHookOrchestrator hooks)
     {
         hooks.DefineSystem(configuration =>
         {
@@ -182,7 +182,7 @@ public partial class WhileLoopHookTest
 
     [TestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
-    public void WhileLoop_MetaStoryConstructionTest()
+    public void WhileLoop_metaStoryConstructionTest()
     {
         // Arrange
         // =======
@@ -191,12 +191,12 @@ public partial class WhileLoopHookTest
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestratorForConstruction hooks = new ScenarioHookOrchestratorForConstruction(context);
+        MetaStoryHookOrchestratorForConstruction hooks = new MetaStoryHookOrchestratorForConstruction(context);
 
         var reserialisedContext =
             Context.New()
                    .UseSerialiser<ContextSerialiser>()
-                   .LoadContext(_scenarioText)
+                   .LoadContext(_metaStoryText)
                    .Initialise()
                    .Serialise()
                    .Match(v => v, e => throw e);
@@ -205,20 +205,20 @@ public partial class WhileLoopHookTest
         // Act
         // ===
 
-        // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.StartMetaStory("Scenario recorded by hooks");
+        // The MetaStory declaration is made outside the producer because the MetaStory depends on how the producer is called (here the choices could be different)
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        // Run the code and produce the scenario from the called hooks
+        // Run the code and produce the MetaStory from the called hooks
         Debug.WriteLine("");
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
 
-        MetaStory generatedScenario = hooks.EndMetaStory();
+        MetaStory generatedMetaStory = hooks.EndMetaStory();
 
 
         // Assert
         // ======
-        generatedScenario.Should().NotBeNull();
+        generatedMetaStory.Should().NotBeNull();
 
         var contextBuiltFromHooks =
             context.Serialise()
@@ -228,7 +228,7 @@ public partial class WhileLoopHookTest
         Debug.WriteLine("Final serialised context :");
         Debug.WriteLine(contextBuiltFromHooks);
 
-        var originalContext = _scenarioText;
+        var originalContext = _metaStoryText;
         DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
     }
 
@@ -243,30 +243,30 @@ public partial class WhileLoopHookTest
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestratorForConstruction hooks = new ScenarioHookOrchestratorForConstruction(context);
+        MetaStoryHookOrchestratorForConstruction hooks = new MetaStoryHookOrchestratorForConstruction(context);
 
-        // Everything necessary to run the scenario
+        // Everything necessary to run the MetaStory
         ExpressionEvalator evalator = new(context.System);
         DialogExecutor executor = new(context, evalator);
         StringInterpolator interpolator = new(context.System);
         EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
-        ScenarioTestRunner runner = new(executor, dependencies);
+        StoryTestRunner runner = new(executor, dependencies);
 
 
         // Act
         // ===
 
-        // The scenario declaration is made outside the producer because the scenario depends on how the producer is called (here the choices could be different)
-        hooks.StartMetaStory("Scenario recorded by hooks");
+        // The MetaStory declaration is made outside the producer because the MetaStory depends on how the producer is called (here the choices could be different)
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        // Run the code and produce the scenario from the called hooks
+        // Run the code and produce the MetaStory from the called hooks
         Debug.WriteLine("");
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
 
         hooks.EndMetaStory();
 
-        Story story = runner.Run("Scenario recorded by hooks");
+        Story story = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert

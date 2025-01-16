@@ -5,7 +5,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.ContextValidation.SystemValidation;
 
-[ObjectLike<IObjectValidator, EntityType>]
+[SystemObjectLike<IObjectValidator, EntityType>]
 public class EntityTypeValidator : IObjectValidator<EntityType>
 {
     public ValidationErrors Validate(System system, EntityType entity)

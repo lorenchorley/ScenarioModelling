@@ -7,7 +7,7 @@ namespace ScenarioModelling.Tests;
 [TestClass]
 public class StringInterpolationTests
 {
-    private string _scenarioText = """
+    private string _metaStoryText = """
         Entity E1 {
             State S1
         }
@@ -25,7 +25,7 @@ public class StringInterpolationTests
         Context context =
             Context.New()
                    .UseSerialiser<ContextSerialiser>()
-                   .LoadContext(_scenarioText)
+                   .LoadContext(_metaStoryText)
                    .Initialise();
 
         StringInterpolator stringInterpolator = new StringInterpolator(context.System);

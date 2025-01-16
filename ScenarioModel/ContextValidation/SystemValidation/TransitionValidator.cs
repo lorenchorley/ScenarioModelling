@@ -5,7 +5,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.ContextValidation.SystemValidation;
 
-[ObjectLike<IObjectValidator, Transition>]
+[SystemObjectLike<IObjectValidator, Transition>]
 public class TransitionValidator : IObjectValidator<Transition>
 {
     public ValidationErrors Validate(System system, Transition transition)

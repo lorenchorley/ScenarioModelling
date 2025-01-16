@@ -2,13 +2,13 @@
 
 namespace ScenarioModelling.CodeHooks;
 
-public class ScenarioHookOrchestratorForValidation(Context context) : ScenarioHookOrchestrator(context)
+public class MetaStoryHookOrchestratorForValidation(Context context) : MetaStoryHookOrchestrator(context)
 {
     public override MetaStoryHookDefinition? StartMetaStory(string name)
     {
-        if (Context.Scenarios.Any(s => s.Name == name))
+        if (Context.MetaStorys.Any(s => s.Name == name))
         {
-            throw new InvalidOperationException($"Scenario name {name} does not exist in context");
+            throw new InvalidOperationException($"MetaStory name {name} does not exist in context");
         }
 
         return base.StartMetaStory(name);

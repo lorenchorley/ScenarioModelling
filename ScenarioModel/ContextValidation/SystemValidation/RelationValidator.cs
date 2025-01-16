@@ -5,7 +5,7 @@ using ScenarioModelling.Objects.SystemObjects;
 
 namespace ScenarioModelling.ContextValidation.SystemValidation;
 
-[ObjectLike<IObjectValidator, Relation>]
+[SystemObjectLike<IObjectValidator, Relation>]
 public class RelationValidator : IObjectValidator<Relation>
 {
     public ValidationErrors Validate(System system, Relation relation)

@@ -1,11 +1,11 @@
 ﻿using ScenarioModelling.Collections.Graph;
-using ScenarioModelling.Objects.ScenarioNodes;
-using ScenarioModelling.Objects.ScenarioNodes.BaseClasses;
+using ScenarioModelling.Objects.StoryNodes;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution;
 
-// Assertions in C# code that works directly on the object model defined by the system and the scenario?
-// Time series graphs and sequence diagrams derived from the scenario ?
+// Assertions in C# code that works directly on the object model defined by the system and the MetaStory?
+// Time series graphs and sequence diagrams derived from the MetaStory ?
 // Component diagrams derived from the system?
 // Code skeltons generated from the system?
 // State exhaustiveness and reachability analysis?
@@ -14,23 +14,23 @@ namespace ScenarioModelling.Execution;
 
 public class GraphScope
 {
-    public IScenarioNode? CurrentNode { get; set; }
-    public SemiLinearSubGraph<IScenarioNode> CurrentSubGraph { get; set; }
-    public DirectedGraph<IScenarioNode> Graph { get; }
+    public IStoryNode? CurrentNode { get; set; }
+    public SemiLinearSubGraph<IStoryNode> CurrentSubGraph { get; set; }
+    public DirectedGraph<IStoryNode> Graph { get; }
 
-    public GraphScope(DirectedGraph<IScenarioNode> graph)
+    public GraphScope(DirectedGraph<IStoryNode> graph)
     {
         Graph = graph;
         CurrentSubGraph = graph.PrimarySubGraph;
         CurrentNode = graph.PrimarySubGraph.GetNextInSequenceOrNull();
     }
 
-    public void SetExplicitNextNode(IScenarioNode node)
+    public void SetExplicitNextNode(IStoryNode node)
     {
         CurrentSubGraph.SetExplicitNextNode(node);
     }
 
-    public IScenarioNode? GetNextInSequence()
+    public IStoryNode? GetNextInSequence()
     {
         CurrentNode = CurrentSubGraph.GetNextInSequenceOrNull();
 
@@ -49,7 +49,7 @@ public class GraphScope
         return GetNextInSequence(); // Explicit reentry point is handled by this method if set
     }
 
-    public void EnterSubGraph(SemiLinearSubGraph<IScenarioNode> subGraph)
+    public void EnterSubGraph(SemiLinearSubGraph<IStoryNode> subGraph)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(CurrentNode);
 
@@ -65,7 +65,7 @@ public class GraphScope
         CurrentNode = subGraph.GetNextInSequenceOrNull();
     }
 
-    public void EnterSubGraphOnNode(SemiLinearSubGraph<IScenarioNode> subGraph, IScenarioNode node)
+    public void EnterSubGraphOnNode(SemiLinearSubGraph<IStoryNode> subGraph, IStoryNode node)
     {
         if (!subGraph.NodeSequence.Contains(node))
             throw new Exception("Node not found in subgraph");

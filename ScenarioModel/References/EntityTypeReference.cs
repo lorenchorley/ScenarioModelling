@@ -6,7 +6,7 @@ using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.References;
 
-[ObjectLike<IReference, EntityType>]
+[SystemObjectLike<IReference, EntityType>]
 public record EntityTypeReference : IReference<EntityType>
 {
     public string Name { get; set; } = "";

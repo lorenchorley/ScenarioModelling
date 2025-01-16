@@ -9,7 +9,7 @@ namespace ScenarioModelling.References;
 // Transition reference cannot base themselves only on the name
 // They are unique only on the triplet (name, source, dest)
 // (related : TransitionEquivalanceComparer, )
-[ObjectLike<IReference, Transition>]
+[SystemObjectLike<IReference, Transition>]
 public record TransitionReference : IReferences<Transition>, IEqualityComparer<TransitionReference>
 {
     public string Name { get; set; } = "";

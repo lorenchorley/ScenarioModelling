@@ -1,13 +1,13 @@
 ﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
-using ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
-using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.StoryNodes.DataClasses;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModelling.Tests.ScenarioRuns;
+using ScenarioModelling.Tests.Stories;
 using System.Reflection;
 
 namespace ScenarioModelling.Tests.HookTests;
@@ -17,17 +17,17 @@ namespace ScenarioModelling.Tests.HookTests;
 public partial class ImplicitNodeCodeHookTests
 {
 
-    private record ImplicitNodeTestCase(string ScenarioWithImplicitNodeMethodName, string ScenarioWithoutImplicitNodeMethodName, string SystemMethodName);
+    private record ImplicitNodeTestCase(string MetaStoryWithImplicitNodeMethodName, string MetaStoryWithoutImplicitNodeMethodName, string SystemMethodName);
     private class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
     {
         private List<ImplicitNodeTestCase> TestData = [
-            new(nameof(OneDialogAndOneJump_ImplicitScenario), nameof(OneDialogAndOneJump_FullScenario), nameof(SystemEmpty)),
-            new(nameof(TwoDialogsAndOneJump_ImplicitScenario), nameof(TwoDialogsAndOneJump_FullScenario), nameof(SystemEmpty)),
-            new(nameof(IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode), nameof(IfExecutesWithDialog_HookOutsideBlock_FullScenario), nameof(SystemOneActorTwoStates)),
-            new(nameof(WhileExecutesTwiceWithTransition_ImplicitWhileNode), nameof(WhileExecutesTwiceWithTransition_FullScenario), nameof(SystemOneActorThreeStatesSingleTransition)),
+            new(nameof(OneDialogAndOneJump_ImplicitMetaStory), nameof(OneDialogAndOneJump_FullMetaStory), nameof(SystemEmpty)),
+            new(nameof(TwoDialogsAndOneJump_ImplicitMetaStory), nameof(TwoDialogsAndOneJump_FullMetaStory), nameof(SystemEmpty)),
+            new(nameof(IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode), nameof(IfExecutesWithDialog_HookOutsideBlock_FullMetaStory), nameof(SystemOneActorTwoStates)),
+            new(nameof(WhileExecutesTwiceWithTransition_ImplicitWhileNode), nameof(WhileExecutesTwiceWithTransition_FullMetaStory), nameof(SystemOneActorThreeStatesSingleTransition)),
         ];
 
-        public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<ImplicitNodeTestCase, object[]>)(t => [t.ScenarioWithImplicitNodeMethodName, t.ScenarioWithoutImplicitNodeMethodName, t.SystemMethodName]));
+        public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<ImplicitNodeTestCase, object[]>)(t => [t.MetaStoryWithImplicitNodeMethodName, t.MetaStoryWithoutImplicitNodeMethodName, t.SystemMethodName]));
         public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
     }
 
@@ -62,7 +62,7 @@ public partial class ImplicitNodeCodeHookTests
     #endregion
 
     #region Jump
-    private static void OneDialogAndOneJump_FullScenario(ScenarioHookOrchestrator hooks)
+    private static void OneDialogAndOneJump_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareJump("D1")
              .SetAsImplicit()
@@ -73,7 +73,7 @@ public partial class ImplicitNodeCodeHookTests
              .Build();
     }
 
-    private static void OneDialogAndOneJump_ImplicitScenario(ScenarioHookOrchestrator hooks)
+    private static void OneDialogAndOneJump_ImplicitMetaStory(MetaStoryHookOrchestrator hooks)
     {
         //hooks.DeclareJump("D1")
         //     .SetAsImplicit();
@@ -83,7 +83,7 @@ public partial class ImplicitNodeCodeHookTests
              .Build();
     }
 
-    private static void TwoDialogsAndOneJump_FullScenario(ScenarioHookOrchestrator hooks)
+    private static void TwoDialogsAndOneJump_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareJump("D2")
              .SetAsImplicit()
@@ -98,7 +98,7 @@ public partial class ImplicitNodeCodeHookTests
              .Build();
     }
 
-    private static void TwoDialogsAndOneJump_ImplicitScenario(ScenarioHookOrchestrator hooks)
+    private static void TwoDialogsAndOneJump_ImplicitMetaStory(MetaStoryHookOrchestrator hooks)
     {
         //hooks.DeclareJump("D2")
         //     .SetAsImplicit();
@@ -113,7 +113,7 @@ public partial class ImplicitNodeCodeHookTests
     #endregion
 
     #region If
-    private static void IfExecutesWithDialog_HookOutsideBlock_FullScenario(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_HookOutsideBlock_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
              .SetAsImplicit()
@@ -132,7 +132,7 @@ public partial class ImplicitNodeCodeHookTests
              .Build();
     }
 
-    private static void IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode(MetaStoryHookOrchestrator hooks)
     {
         //hooks.DeclareIfBranch(@"Actor.State == S1")
         //     .SetAsImplicit()
@@ -153,7 +153,7 @@ public partial class ImplicitNodeCodeHookTests
     #endregion
 
     #region While
-    private static void WhileExecutesTwiceWithTransition_FullScenario(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithTransition_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
              .SetAsImplicit()
@@ -173,7 +173,7 @@ public partial class ImplicitNodeCodeHookTests
              .Build();
     }
 
-    private static void WhileExecutesTwiceWithTransition_ImplicitWhileNode(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithTransition_ImplicitWhileNode(MetaStoryHookOrchestrator hooks)
     {
         //hooks.DeclareWhileBranch(@"Actor.State != S3")
         //     .SetAsImplicit()
@@ -203,7 +203,7 @@ public partial class ImplicitNodeCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]
-    public void ImplicitNode_CodeHook_MetaStoryConstructionTests(string scenarioWithImplicitNodeMethodName, string scenarioWithoutImplicitNodeMethodName, string systemMethodName)
+    public void ImplicitNode_CodeHook_metaStoryConstructionTests(string MetaStoryWithImplicitNodeMethodName, string MetaStoryWithoutImplicitNodeMethodName, string systemMethodName)
     {
         // Arrange
         // =======
@@ -212,11 +212,11 @@ public partial class ImplicitNodeCodeHookTests
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestrator orchestrator = new ScenarioHookOrchestratorForConstruction(context);
+        MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
 
         var systemHooksMethod = GetAction<SystemHookDefinition>(systemMethodName);
-        var scenarioWithImplicitNodeMethod = GetAction<ScenarioHookOrchestrator>(scenarioWithImplicitNodeMethodName);
-        var scenarioWithoutImplicitNodeMethod = GetAction<ScenarioHookOrchestrator>(scenarioWithoutImplicitNodeMethodName);
+        var MetaStoryWithImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
+        var MetaStoryWithoutImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
 
         // Build system
         orchestrator.DefineSystem(sysConf =>
@@ -228,9 +228,9 @@ public partial class ImplicitNodeCodeHookTests
         // Act
         // ===
 
-        // Build scenario with the implicit defintion first
-        orchestrator.StartMetaStory("Scenario recorded by hooks");
-        scenarioWithoutImplicitNodeMethod(orchestrator);
+        // Build MetaStory with the implicit defintion first
+        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        MetaStoryWithoutImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
         var firstSerialisedContext =
@@ -238,9 +238,9 @@ public partial class ImplicitNodeCodeHookTests
                    .Match(v => v, e => throw e)
                    .Trim();
 
-        // The build scenario without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second scenario
-        orchestrator.StartMetaStory("Scenario recorded by hooks");
-        scenarioWithImplicitNodeMethod(orchestrator);
+        // The build MetaStory without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second MetaStory
+        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        MetaStoryWithImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
         var secondSerialisedContext =
@@ -258,7 +258,7 @@ public partial class ImplicitNodeCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]
-    public void ImplicitNode_CodeHook_StoryExtractionTests(string scenarioWithImplicitNodeMethodName, string scenarioWithoutImplicitNodeMethodName, string systemMethodName)
+    public void ImplicitNode_CodeHook_StoryExtractionTests(string MetaStoryWithImplicitNodeMethodName, string MetaStoryWithoutImplicitNodeMethodName, string systemMethodName)
     {
         // Arrange
         // =======
@@ -267,11 +267,11 @@ public partial class ImplicitNodeCodeHookTests
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestrator orchestrator = new ScenarioHookOrchestratorForConstruction(context);
+        MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
 
         var systemHooksMethod = GetAction<SystemHookDefinition>(systemMethodName);
-        var scenarioWithImplicitNodeMethod = GetAction<ScenarioHookOrchestrator>(scenarioWithImplicitNodeMethodName);
-        var scenarioWithoutImplicitNodeMethod = GetAction<ScenarioHookOrchestrator>(scenarioWithoutImplicitNodeMethodName);
+        var MetaStoryWithImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
+        var MetaStoryWithoutImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
 
         // Build system
         orchestrator.DefineSystem(sysConf =>
@@ -283,25 +283,25 @@ public partial class ImplicitNodeCodeHookTests
         DialogExecutor executor = new(context, evalator);
         StringInterpolator interpolator = new(context.System);
         EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
-        ScenarioTestRunner runner = new(executor, dependencies);
+        StoryTestRunner runner = new(executor, dependencies);
 
 
         // Act
         // ===
 
-        // Build scenario with the implicit defintion first
-        orchestrator.StartMetaStory("Scenario recorded by hooks");
-        scenarioWithoutImplicitNodeMethod(orchestrator);
+        // Build MetaStory with the implicit defintion first
+        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        MetaStoryWithoutImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
-        Story firstRun = runner.Run("Scenario recorded by hooks");
+        Story firstRun = runner.Run("MetaStory recorded by hooks");
 
-        // The build scenario without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second scenario
-        orchestrator.StartMetaStory("Scenario recorded by hooks");
-        scenarioWithImplicitNodeMethod(orchestrator);
+        // The build MetaStory without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second MetaStory
+        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        MetaStoryWithImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
-        Story secondRun = runner.Run("Scenario recorded by hooks");
+        Story secondRun = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert

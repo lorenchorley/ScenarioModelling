@@ -9,12 +9,12 @@ public class ContextSerialiser : ISerialiser
 {
     private const string _indentSegment = "  ";
 
-    private readonly ScenarioSerialiser _scenarioSerialiser;
+    private readonly MetaStorySerialiser _metaStorySerialiser;
     private readonly SystemSerialiser _systemSerialiser;
 
     public ContextSerialiser()
     {
-        _scenarioSerialiser = new(_indentSegment);
+        _metaStorySerialiser = new(_indentSegment);
         _systemSerialiser = new(_indentSegment);
     }
 
@@ -50,9 +50,9 @@ public class ContextSerialiser : ISerialiser
 
         _systemSerialiser.WriteSystem(sb, context.System, "");
 
-        foreach (var scenario in context.Scenarios)
+        foreach (var MetaStory in context.MetaStorys)
         {
-            _scenarioSerialiser.WriteScenario(sb, scenario, "");
+            _metaStorySerialiser.WriteMetaStory(sb, MetaStory, "");
         }
 
         return sb.ToString();

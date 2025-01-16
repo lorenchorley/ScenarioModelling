@@ -6,7 +6,7 @@ using ScenarioModelling.References.Interfaces;
 
 namespace ScenarioModelling.References;
 
-[ObjectLike<IReference, State>]
+[SystemObjectLike<IReference, State>]
 public record StateReference : IReference<State>
 {
     private readonly System _system;

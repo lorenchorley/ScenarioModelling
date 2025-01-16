@@ -8,7 +8,7 @@ namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpre
 
 public partial class HumanReadableInterpreter
 {
-    private string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = $"{GrammarLocalisation.Namespace}.HumanReadableGrammar.egt";
+    private static string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = $"{HumanReadableGrammarLocalisation.Namespace}.HumanReadableGrammar.egt";
 
     private Parser _parser { get; set; }
 

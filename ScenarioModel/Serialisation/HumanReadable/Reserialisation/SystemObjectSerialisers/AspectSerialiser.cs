@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
 
-[ObjectLike<IObjectSerialiser, Aspect>]
+[SystemObjectLike<IObjectSerialiser, Aspect>]
 public class AspectSerialiser(string IndentSegment) : IObjectSerialiser<Aspect>
 {
     public void WriteObject(StringBuilder sb, System system, Aspect obj, string currentIndent)

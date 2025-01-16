@@ -1,13 +1,13 @@
 ﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
-using ScenarioModelling.CodeHooks.HookDefinitions.ScenarioObjects;
+using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
-using ScenarioModelling.Objects.ScenarioNodes.DataClasses;
+using ScenarioModelling.Objects.StoryNodes.DataClasses;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModelling.Tests.ScenarioRuns;
+using ScenarioModelling.Tests.Stories;
 using System.Reflection;
 
 namespace ScenarioModelling.Tests.HookTests;
@@ -16,7 +16,7 @@ namespace ScenarioModelling.Tests.HookTests;
 [UsesVerify]
 public partial class ProgressiveCodeHookTests
 {
-    private record TestCase(string ScenarioMethodName, string SystemMethodName);
+    private record TestCase(string MetaStoryMethodName, string SystemMethodName);
     private class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
     {
         private List<TestCase> TestData = [
@@ -57,7 +57,7 @@ public partial class ProgressiveCodeHookTests
             new(nameof(WhileExecutesTwiceWithNestedIf_NoDialogAfter), nameof(SystemOneActorThreeStatesSingleTransition)),
         ];
 
-        public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<TestCase, object[]>)(t => [t.ScenarioMethodName, t.SystemMethodName]));
+        public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, t.SystemMethodName]));
         public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
     }
 
@@ -113,26 +113,26 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     #region Dialog
-    private static void OneDialog(ScenarioHookOrchestrator hooks)
+    private static void OneDialog(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Hello")
              .Build();
     }
 
-    private static void OneDialogWithMultipleWords(ScenarioHookOrchestrator hooks)
+    private static void OneDialogWithMultipleWords(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Hello with multiple words")
              .Build();
     }
 
-    private static void OneDialogWithId(ScenarioHookOrchestrator hooks)
+    private static void OneDialogWithId(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Hello")
              .SetId("custom dialog id")
              .Build();
     }
 
-    private static void OneDialogWithCharacter(ScenarioHookOrchestrator hooks)
+    private static void OneDialogWithCharacter(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Hello")
              .SetCharacter("Actor")
@@ -141,13 +141,13 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     #region Transition
-    private static void TwoStatesOneTransition(ScenarioHookOrchestrator hooks)
+    private static void TwoStatesOneTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareTransition("Actor", "T1")
              .Build();
     }
 
-    private static void TwoStatesOneTransitionWithId(ScenarioHookOrchestrator hooks)
+    private static void TwoStatesOneTransitionWithId(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareTransition("Actor", "T1")
              .SetId("custom transition id")
@@ -156,7 +156,7 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     #region Jump
-    private static void OneDialogAndOneJump(ScenarioHookOrchestrator hooks)
+    private static void OneDialogAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareJump("D1")
              .Build();
@@ -166,7 +166,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void TwoDialogsAndOneJump(ScenarioHookOrchestrator hooks)
+    private static void TwoDialogsAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareJump("D2")
              .Build();
@@ -187,14 +187,14 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     #region Constraint
-    private static void OneConstraintAlwaysValid(ScenarioHookOrchestrator hooks)
+    private static void OneConstraintAlwaysValid(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Some text")
              .SetId("D1")
              .Build();
     }
 
-    private static void OneConstraintFailsOnTransition(ScenarioHookOrchestrator hooks)
+    private static void OneConstraintFailsOnTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Some text")
              .SetId("D1")
@@ -209,7 +209,7 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     #region If
-    private static void IfDoesNotExecute_DialogAfterOnly(ScenarioHookOrchestrator hooks)
+    private static void IfDoesNotExecute_DialogAfterOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
@@ -228,7 +228,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfDoesNotExecute_DialogBeforeOnly(ScenarioHookOrchestrator hooks)
+    private static void IfDoesNotExecute_DialogBeforeOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Before if block only")
              .Build();
@@ -247,7 +247,7 @@ public partial class ProgressiveCodeHookTests
         }
     }
 
-    private static void IfDoesNotExecute_DialogBeforeAndAfter(ScenarioHookOrchestrator hooks)
+    private static void IfDoesNotExecute_DialogBeforeAndAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Before if block")
              .Build();
@@ -269,7 +269,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfDoesNotExecute_NoDialogAround(ScenarioHookOrchestrator hooks)
+    private static void IfDoesNotExecute_NoDialogAround(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
@@ -285,7 +285,7 @@ public partial class ProgressiveCodeHookTests
         }
     }
 
-    private static void IfExecutesWithDialog_DialogBeforeOnly(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_DialogBeforeOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Before if block only")
              .Build();
@@ -304,7 +304,7 @@ public partial class ProgressiveCodeHookTests
         }
     }
 
-    private static void IfExecutesWithDialog_DialogAfterOnly(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_DialogAfterOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
@@ -323,7 +323,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfExecutesWithDialog_DialogBeforeAndAfter(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_DialogBeforeAndAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareDialog("Before if block")
              .Build();
@@ -345,7 +345,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfExecutesWithDialog_NoDialogAround(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_NoDialogAround(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
@@ -361,7 +361,7 @@ public partial class ProgressiveCodeHookTests
         }
     }
 
-    private static void IfDoesNotExecute_HookOutsideBlock(ScenarioHookOrchestrator hooks)
+    private static void IfDoesNotExecute_HookOutsideBlock(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
@@ -379,7 +379,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfExecutesWithDialog_HookOutsideBlock(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_HookOutsideBlock(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
@@ -397,7 +397,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfDoesNotExecute_UsingHook(ScenarioHookOrchestrator hooks)
+    private static void IfDoesNotExecute_UsingHook(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S2")
              .GetConditionUsingHook(out IfConditionHook φ, out IfBlockUsingHook ifBlockUsingHook)
@@ -417,7 +417,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void IfExecutesWithDialog_UsingHook(ScenarioHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_UsingHook(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State == S1")
              .GetConditionUsingHook(out IfConditionHook φ, out IfBlockUsingHook ifBlockUsingHook)
@@ -437,7 +437,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void TwoNestedIfsThatExecute(ScenarioHookOrchestrator hooks)
+    private static void TwoNestedIfsThatExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State != S2")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook1)
@@ -465,7 +465,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void TwoConsecutiveIfsThatExecute(ScenarioHookOrchestrator hooks)
+    private static void TwoConsecutiveIfsThatExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareIfBranch(@"Actor.State != S2")
              .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook1)
@@ -496,7 +496,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    // TODO Combining scenarios (new test class maybe)
+    // TODO Combining MetaStorys (new test class maybe)
 
     // if (true)
     //   first dialog
@@ -515,7 +515,7 @@ public partial class ProgressiveCodeHookTests
     #endregion
 
     #region While
-    private static void WhileDoesNotExecute(ScenarioHookOrchestrator hooks)
+    private static void WhileDoesNotExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S1")
              .GetConditionHook(out WhileHook φ)
@@ -534,7 +534,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void WhileExecutesOnceWithTransition(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesOnceWithTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S2")
              .GetConditionHook(out WhileHook φ)
@@ -553,7 +553,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void WhileExecutesTwiceWithTransition(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
              .GetConditionHook(out WhileHook φ)
@@ -572,7 +572,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void WhileExecutesTwiceWithTransitionAndDialog(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithTransitionAndDialog(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
              .GetConditionHook(out WhileHook φ)
@@ -594,7 +594,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void WhileExecutesTwiceWithNestedIf(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithNestedIf(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
              .GetConditionHook(out WhileHook φ)
@@ -626,7 +626,7 @@ public partial class ProgressiveCodeHookTests
              .Build();
     }
 
-    private static void WhileExecutesTwiceWithNestedIf_NoDialogAfter(ScenarioHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithNestedIf_NoDialogAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.DeclareWhileBranch(@"Actor.State != S3")
              .GetConditionHook(out WhileHook φ)
@@ -659,7 +659,7 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string scenarioMethodName, string systemMethodName)
+    public async Task ProgressiveDevelopment_CodeHooks_metaStoryConstructionTests(string MetaStoryMethodName, string systemMethodName)
     {
         // Arrange
         // =======
@@ -668,10 +668,10 @@ public partial class ProgressiveCodeHookTests
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestrator orchestrator = new ScenarioHookOrchestratorForConstruction(context);
+        MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
 
         var systemHooksMethod = GetAction<SystemHookDefinition>(systemMethodName);
-        var scenarioHooksMethod = GetAction<ScenarioHookOrchestrator>(scenarioMethodName);
+        var MetaStoryHooksMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryMethodName);
 
 
         // Act
@@ -680,9 +680,9 @@ public partial class ProgressiveCodeHookTests
         // Build system
         orchestrator.DefineSystem(systemHooksMethod);
 
-        // Build scenario
-        orchestrator.StartMetaStory("Scenario recorded by hooks");
-        scenarioHooksMethod(orchestrator);
+        // Build MetaStory
+        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        MetaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 
 
@@ -694,13 +694,13 @@ public partial class ProgressiveCodeHookTests
                    .Trim();
 
         await Verify(serialisedContext)
-            .UseParameters(scenarioMethodName);
+            .UseParameters(MetaStoryMethodName);
     }
 
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string scenarioMethodName, string systemMethodName)
+    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string MetaStoryMethodName, string systemMethodName)
     {
         // Arrange
         // =======
@@ -709,10 +709,10 @@ public partial class ProgressiveCodeHookTests
                    .UseSerialiser<ContextSerialiser>()
                    .Initialise();
 
-        ScenarioHookOrchestrator orchestrator = new ScenarioHookOrchestratorForConstruction(context);
+        MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
 
         var systemHooksMethod = GetAction<SystemHookDefinition>(systemMethodName);
-        var scenarioHooksMethod = GetAction<ScenarioHookOrchestrator>(scenarioMethodName);
+        var MetaStoryHooksMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryMethodName);
 
         // Build system
         orchestrator.DefineSystem(sysConf =>
@@ -720,29 +720,29 @@ public partial class ProgressiveCodeHookTests
             systemHooksMethod(sysConf);
         });
 
-        // Build scenario
-        orchestrator.StartMetaStory("Scenario recorded by hooks");
-        scenarioHooksMethod(orchestrator);
+        // Build MetaStory
+        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        MetaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 
         ExpressionEvalator evalator = new(context.System);
         DialogExecutor executor = new(context, evalator);
         StringInterpolator interpolator = new(context.System);
         EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
-        ScenarioTestRunner runner = new(executor, dependencies);
+        StoryTestRunner runner = new(executor, dependencies);
 
 
         // Act
         // ===
-        Story scenarioRun = runner.Run("Scenario recorded by hooks");
+        Story MetaStoryRun = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert
         // ======
-        string target = scenarioRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string target = MetaStoryRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         await Verify(target)
-            .UseParameters(scenarioMethodName);
+            .UseParameters(MetaStoryMethodName);
 
     }
 

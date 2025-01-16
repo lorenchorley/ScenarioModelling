@@ -47,10 +47,10 @@ public static class SystemObjectExhaustivity
         constraint();
     }
 
-    private static readonly PropertyExhaustivityFunctions<ObjectLikePropertyAttribute> _propertyExhaustivityFunctions = new();
-    private static readonly TypeExhaustivityFunctions _typeExhaustivityFunctions = new(AllObjectTypes, typeof(ObjectLikeAttribute<,>), "object");
+    private static readonly PropertyExhaustivityFunctions<SystemObjectLikePropertyAttribute> _propertyExhaustivityFunctions = new();
+    private static readonly TypeExhaustivityFunctions _typeExhaustivityFunctions = new(AllObjectTypes, typeof(SystemObjectLikeAttribute<,>), "object");
 
-    public static void DoForEachNodeProperty<TNode>(TNode node, Action<ObjectLikePropertyAttribute, string, object?> callback)
+    public static void DoForEachNodeProperty<TNode>(TNode node, Action<SystemObjectLikePropertyAttribute, string, object?> callback)
     {
         _propertyExhaustivityFunctions.DoForEachProperty<TNode>(node, callback);
     }

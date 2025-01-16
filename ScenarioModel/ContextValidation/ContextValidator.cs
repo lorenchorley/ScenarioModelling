@@ -7,12 +7,12 @@ public class ContextValidator
     public ValidationErrors Validate(Context context)
     {
         ValidationErrors validationErrors = new();
-        ScenarioValidator scenarioValidator = new();
+        MetaStoryValidator MetaStoryValidator = new();
         SystemValidator systemValidator = new();
 
-        foreach (var scenario in context.Scenarios)
+        foreach (var MetaStory in context.MetaStorys)
         {
-            validationErrors.Incorporate(scenarioValidator.Validate(context.System, scenario));
+            validationErrors.Incorporate(MetaStoryValidator.Validate(context.System, MetaStory));
         }
 
         validationErrors.Incorporate(systemValidator.Validate(context.System));

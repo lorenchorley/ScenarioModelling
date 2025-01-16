@@ -1,4 +1,5 @@
 ﻿using GOLD;
+using ScenarioModelling.Expressions.Grammar;
 using ScenarioModelling.Expressions.SemanticTree;
 using ScenarioModelling.Parsers;
 using System.Text;
@@ -7,7 +8,7 @@ namespace ScenarioModelling.Expressions.Interpreter;
 
 public partial class ExpressionInterpreter
 {
-    private const string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = "ScenarioModelling.Expressions.Grammar.ExpressionGrammar.egt";
+    private static string COMPILED_GRAMMAR_EMBEDDED_RESSOURCE = $"{ExpressionGrammarLocalisation.Namespace}.ExpressionGrammar.egt";
 
     private Parser _parser { get; set; }
 

@@ -33,14 +33,14 @@ public class Instanciator(System System)
             );
     }
 
-    public MetaStory NewScenario(Definition definition)
+    public MetaStory NewMetaStory(Definition definition)
     {
-        MetaStory scenario = new MetaStory()
+        MetaStory MetaStory = new MetaStory()
         {
             System = System
         };
 
-        return Name<MetaStory, MetaStory>(scenario, def: definition);
+        return Name<MetaStory, MetaStory>(MetaStory, def: definition);
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class Instanciator(System System)
             nameof(Transition) => new Transition(System),
             nameof(Relation) => new Relation(System),
             nameof(Constraint) => new Constraint(System),
-            //nameof(Scenario) => new Scenario() { System = System },
+            //nameof(MetaStory) => new MetaStory() { System = System },
             _ => throw new NotImplementedException($"Reference type {typeof(TVal).Name} not implemented.")
         };
 

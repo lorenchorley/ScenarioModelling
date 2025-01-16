@@ -14,23 +14,23 @@ public class Third { }
 #region Fully implemented
 internal interface IFullyImplementedTestNodeBase { }
 
-[NodeLike<IFullyImplementedTestNodeBase, First>]
+[StoryNodeLike<IFullyImplementedTestNodeBase, First>]
 internal class FirstFullyImplemented : IFullyImplementedTestNodeBase { }
 
-[NodeLike<IFullyImplementedTestNodeBase, Second>]
+[StoryNodeLike<IFullyImplementedTestNodeBase, Second>]
 internal class SecondFullyImplemented : IFullyImplementedTestNodeBase { }
 
-[NodeLike<IFullyImplementedTestNodeBase, Third>]
+[StoryNodeLike<IFullyImplementedTestNodeBase, Third>]
 internal class ThirdFullyImplemented : IFullyImplementedTestNodeBase { }
 #endregion
 
 #region Not fully implemented
 internal interface INotFullyImplementedTestNodeBase { }
 
-[NodeLike<INotFullyImplementedTestNodeBase, First>]
+[StoryNodeLike<INotFullyImplementedTestNodeBase, First>]
 internal class FirstNotFullyImplemented : INotFullyImplementedTestNodeBase { }
 
-[NodeLike<INotFullyImplementedTestNodeBase, Second>]
+[StoryNodeLike<INotFullyImplementedTestNodeBase, Second>]
 internal class SecondNotFullyImplemented : INotFullyImplementedTestNodeBase { }
 
 //[NodeLike<INotFullyImplementedTestNodeBase, Third>]
@@ -40,17 +40,17 @@ internal class SecondNotFullyImplemented : INotFullyImplementedTestNodeBase { }
 #region Doubly implemented
 internal interface IDoublyImplementedTestNodeBase { }
 
-[NodeLike<IDoublyImplementedTestNodeBase, First>]
+[StoryNodeLike<IDoublyImplementedTestNodeBase, First>]
 internal class FirstDoublyImplemented : IDoublyImplementedTestNodeBase { }
 
-[NodeLike<IDoublyImplementedTestNodeBase, Second>]
+[StoryNodeLike<IDoublyImplementedTestNodeBase, Second>]
 internal class SecondDoublyImplemented : IDoublyImplementedTestNodeBase { }
 
-[NodeLike<IDoublyImplementedTestNodeBase, Third>]
+[StoryNodeLike<IDoublyImplementedTestNodeBase, Third>]
 internal class FirstThirdDoublyImplemented : IDoublyImplementedTestNodeBase { }
 
 // Secon class that is annotated with the same target class (Third)
-[NodeLike<IDoublyImplementedTestNodeBase, Third>]
+[StoryNodeLike<IDoublyImplementedTestNodeBase, Third>]
 internal class SecondThirdDoublyImplemented : IDoublyImplementedTestNodeBase { }
 #endregion
 
@@ -59,16 +59,16 @@ public class Fourth { } // Shall not be present in the complete list of types
 
 internal interface IOverlyImplementedTestNodeBase { }
 
-[NodeLike<IOverlyImplementedTestNodeBase, First>]
+[StoryNodeLike<IOverlyImplementedTestNodeBase, First>]
 internal class FirstOverlyImplemented : IOverlyImplementedTestNodeBase { }
 
-[NodeLike<IOverlyImplementedTestNodeBase, Second>]
+[StoryNodeLike<IOverlyImplementedTestNodeBase, Second>]
 internal class SecondOverlyImplemented : IOverlyImplementedTestNodeBase { }
 
-[NodeLike<IOverlyImplementedTestNodeBase, Third>]
+[StoryNodeLike<IOverlyImplementedTestNodeBase, Third>]
 internal class ThirdOverlyImplemented : IOverlyImplementedTestNodeBase { }
 
-[NodeLike<IOverlyImplementedTestNodeBase, Fourth>]
+[StoryNodeLike<IOverlyImplementedTestNodeBase, Fourth>]
 internal class FourthOverlyImplemented : IOverlyImplementedTestNodeBase { }
 #endregion
 
@@ -83,7 +83,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(StoryNodeLikeAttribute<,>), "test");
 
 
         // Act && Assert
@@ -98,7 +98,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(StoryNodeLikeAttribute<,>), "test");
 
 
         // Act
@@ -119,7 +119,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(StoryNodeLikeAttribute<,>), "test");
 
 
         // Act
@@ -140,7 +140,7 @@ public class ExhaustivenssTests
     {
         // Arrange
         // =======
-        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(NodeLikeAttribute<,>), "test");
+        TypeExhaustivityFunctions functions = new(_completeTypeList, typeof(StoryNodeLikeAttribute<,>), "test");
 
 
         // Act
