@@ -14,7 +14,7 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
     public Story Run(string MetaStoryName)
     {
         // Initialize the MetaStory
-        var MetaStoryRun = executor.StartMetaStory(MetaStoryName);
+        var story = executor.StartMetaStory(MetaStoryName);
 
         // Generate first node
         IStoryNode? node = null;
@@ -29,7 +29,7 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
             executor.RegisterEvent(e);
         }
 
-        return MetaStoryRun;
+        return story;
     }
 
     private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode? node, IStoryEvent e)

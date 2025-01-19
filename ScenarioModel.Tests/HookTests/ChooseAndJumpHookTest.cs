@@ -125,7 +125,7 @@ public partial class ChooseAndJumpHookTest
 
     [TestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
-    public void ChooseAndIf_metaStoryConstructionTest()
+    public void ChooseAndIf_MetaStoryConstructionTest()
     {
         // Arrange
         // =======
@@ -232,14 +232,14 @@ public partial class ChooseAndJumpHookTest
 
         MetaStory generatedMetaStory = hooks.EndMetaStory();
 
-        Story MetaStoryRun = runner.Run("MetaStory recorded by hooks");
+        Story story = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert
         // ======
         generatedMetaStory.Should().NotBeNull();
 
-        string events = MetaStoryRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string events = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised events :");

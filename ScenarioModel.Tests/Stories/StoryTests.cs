@@ -7,7 +7,7 @@ using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.Tests.Stories;
 using System.Data;
 
-namespace ScenarioModelling.Tests.MetaStoryRuns;
+namespace ScenarioModelling.Tests.storys;
 
 [TestClass]
 [UsesVerify]
@@ -81,13 +81,13 @@ public partial class StoryRunTests
 
         // Act
         // ===
-        Story MetaStoryRun = runner.Run("First");
+        Story story = runner.Run("First");
 
 
         // Assert
         // ======
-        string target = MetaStoryRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        await Verify(target);
+        string serialisedStory = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        await Verify(serialisedStory);
 
     }
 
@@ -159,13 +159,13 @@ public partial class StoryRunTests
 
         // Act
         // ===
-        Story MetaStoryRun = runner.Run("NameSwappingPuns");
+        Story story = runner.Run("NameSwappingPuns");
 
 
         // Assert
         // ======
-        string target = MetaStoryRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        await Verify(target);
+        string serialisedStory = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        await Verify(serialisedStory);
 
     }
 }

@@ -734,14 +734,14 @@ public partial class ProgressiveCodeHookTests
 
         // Act
         // ===
-        Story MetaStoryRun = runner.Run("MetaStory recorded by hooks");
+        Story story = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert
         // ======
-        string target = MetaStoryRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string serialisedStory = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
-        await Verify(target)
+        await Verify(serialisedStory)
             .UseParameters(MetaStoryMethodName);
 
     }

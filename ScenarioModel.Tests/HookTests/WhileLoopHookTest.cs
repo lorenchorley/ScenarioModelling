@@ -182,7 +182,7 @@ public partial class WhileLoopHookTest
 
     [TestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
-    public void WhileLoop_metaStoryConstructionTest()
+    public void WhileLoop_MetaStoryConstructionTest()
     {
         // Arrange
         // =======

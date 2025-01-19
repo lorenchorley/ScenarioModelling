@@ -6,6 +6,7 @@ using ScenarioModelling.Objects.SystemObjects;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
 using ScenarioModelling.Serialisation;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
 namespace ScenarioModelling;
@@ -140,6 +141,11 @@ public class Context
 
     public Context Initialise()
     {
+        if (Serialisers.Count == 0)
+        {
+            UseSerialiser<ContextSerialiser>();
+        }
+
         // Context validation
         ValidationErrors.Incorporate(new ContextValidator().Validate(this));
 
@@ -165,7 +171,7 @@ public class Context
 
     public Context Incorporate(Context newContext)
     {
-        MetaStories.AddRange(newContext.MetaStories);
+        MetaStories.AddRange(newContext.MetaStories); // TODO Merge existing meta stories with the same name, or throw on inconsistency
 
         SystemObjectExhaustivity.DoForEachObjectType(
             entity: () => System.Entities.AddRange(newContext.System.Entities),

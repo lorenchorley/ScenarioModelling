@@ -98,6 +98,11 @@ Scenario/encapsulates all possible stories for a situation
 * Model abstracts out fine implementation details, like extraneous code, stack information, etc so that the meta story can concentrate on the desired logic.
 * Stories and meta stories are human readable allowing for manual construction and modification, but can also be manipulated automatically in several ways.
 
+# Get started
+
+The following sections will guide you through opening the project, launching the unit tests, and launching the web designer. The section "Usage" below describes in more details how to use each part of the project.
+
+<TODO>
 
 # Usage
 
@@ -330,6 +335,15 @@ MetaStory "Face off" {
 }
 ```
 
+# Code hooks
+
+<TODO>
+
+## Example
+
+<TODO>
+
+
 # Next steps
 
 ## Event sourcing
@@ -344,19 +358,20 @@ State : not implemented
 
 * Export to UML diagrams like sequence diagrams, state diagrams, activity diagrams, etc
 
-## Unit test intégration
+## Unit test integration
 
 State : partial implementation
 
-* * Each TU adds to a named meta story so that it can represent several paths through the execution
+* Generate the story for each test while running the test using the code hooks, regenerate the story at the end using just the meta story to validate that the hooks generated the correct story
+* Hook code could throw exceptions in test instead of at end, so that you can debug the meta story at the same time as debugging the code to ensure correctness and facilitate comprehension. For example on a constraint violation or an impossible state transition.
+* Each test adds to a named meta story so that a single context can represent several meta stories which each can represent several paths through the execution or stories
 * A commun system is defined
-* The meta story is tested at the end of the TU against it's initial state and assertions can be made against it's final state
+* The meta story is tested at the end of the test against it's initial state and assertions can be made against it's final state
 * Static functions positioned throughout the production code allow for both initial construction of the meta stories and, on subsequent runs, validation on the already established meta stories
 * Declare state transitions
 * Declare if condition, along with whether the condition was true or false.
 * Or loop start and end, along with weather the loop continued or ended
 * Declare dialogue by actors in code like traces
-* Hook code could throw exceptions in TU instead of at end, so that you can debug the meta story at the same time as debugging the code to ensure correctness and facilitate comprehension. For example on a constraint violation or an impossible state transition.
 * Visual studio add-on to show state machine and entities as execution progresses
 * Multiple choice steps could derive from having multiple state transitions possible
 

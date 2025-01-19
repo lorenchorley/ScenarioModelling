@@ -49,7 +49,7 @@ public class WhileNodeDeserialiser : IDefinitionToNodeDeserialiser
 
         node.SubGraph.ParentSubgraph = currentSubgraph;
         //node.SubGraph.ReentryPoint = node; // Node is probaby wrong here
-        currentSubgraph.NodeSequence.AddRange(expDef.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, node.SubGraph), "Unknown node types not taken into account : {0}").ToList());
+        node.SubGraph.NodeSequence.AddRange(expDef.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, node.SubGraph), "Unknown node types not taken into account : {0}").ToList());
 
         return node;
     }

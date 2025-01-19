@@ -50,9 +50,9 @@ public class ContextSerialiser : ISerialiser
 
         _systemSerialiser.WriteSystem(sb, context.System, "");
 
-        foreach (var MetaStory in context.MetaStories)
+        foreach (var metaStory in context.MetaStories)
         {
-            _metaStorySerialiser.WriteMetaStory(sb, MetaStory, "");
+            _metaStorySerialiser.WriteMetaStory(sb, metaStory, "");
         }
 
         return sb.ToString();

@@ -28,7 +28,7 @@ public class MetaStory : IIdentifiable
 
     //public StoryRunResult StartAtNode(string nodeName)
     //{
-    //    MetaStoryRun story = new() { MetaStory = this };
+    //    story story = new() { MetaStory = this };
 
     //    IMetaStoryNode? initialAction = Graph.PrimarySubGraph.NodeSequence.FirstOrDefault(step => step.Name == nodeName);
 

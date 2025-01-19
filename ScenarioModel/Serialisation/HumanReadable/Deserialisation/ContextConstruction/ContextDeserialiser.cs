@@ -103,9 +103,9 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
         var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
         var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
-        var (MetaStories, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
+        var (metaStories, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
 
-        _context.MetaStories.AddRange(MetaStories);
+        _context.MetaStories.AddRange(metaStories);
         _remainingLast.AddRange(remainingLast);
     }
 
