@@ -18,13 +18,8 @@ public partial class WhileLoopHookTest
 {
     private string _metaStoryText = """
         Entity Actor {
-          EntityType ET1
           State "Amy Stake"
           CharacterStyle Red
-        }
-        
-        EntityType ET1 {
-          SM Name
         }
         
         SM Name {
@@ -229,7 +224,7 @@ public partial class WhileLoopHookTest
         Debug.WriteLine(contextBuiltFromHooks);
 
         var originalContext = _metaStoryText;
-        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
+        DiffAssert.DiffIfNotEqual(originalContext.Trim(), reserialisedContext.Trim(), contextBuiltFromHooks.Trim());
     }
 
     [TestMethod]

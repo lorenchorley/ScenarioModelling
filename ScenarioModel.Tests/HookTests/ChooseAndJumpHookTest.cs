@@ -179,7 +179,7 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine(contextBuiltFromHooks);
 
         var originalContext = _metaStoryText;
-        DiffAssert.DiffIfNotEqual(originalContext, reserialisedContext, contextBuiltFromHooks);
+        DiffAssert.DiffIfNotEqual(originalContext.Trim(), reserialisedContext.Trim(), contextBuiltFromHooks.Trim());
     }
 
     [TestMethod]

@@ -1,1 +1,22 @@
-﻿
+﻿* DialogEvent {"Text":"The actor Amy Stake says hello and introduces themselves","Character":"Actor"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* IfBlockEvent {"Expression":"Actor.State == \"Amy Stake\"","IfBlockRun":true}
+* DialogEvent {"Text":"The actor Mrs Stake makes a bad pun to do with their name","Character":"Actor"}
+* IfBlockEvent {"Expression":"Actor.State == \"Brock Lee\"","IfBlockRun":false}
+* IfBlockEvent {"Expression":"Actor.State == \"Clara Nett\"","IfBlockRun":false}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Amy Stake"},"FinalState":{"Name":"Brock Lee"},"TransitionName":"ChangeName"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* IfBlockEvent {"Expression":"Actor.State == \"Amy Stake\"","IfBlockRun":false}
+* IfBlockEvent {"Expression":"Actor.State == \"Brock Lee\"","IfBlockRun":true}
+* DialogEvent {"Text":"The actor Mr Lee makes a bad pun to do with their name","Character":"Actor"}
+* IfBlockEvent {"Expression":"Actor.State == \"Clara Nett\"","IfBlockRun":false}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Brock Lee"},"FinalState":{"Name":"Clara Nett"},"TransitionName":"ChangeName"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* IfBlockEvent {"Expression":"Actor.State == \"Amy Stake\"","IfBlockRun":false}
+* IfBlockEvent {"Expression":"Actor.State == \"Brock Lee\"","IfBlockRun":false}
+* IfBlockEvent {"Expression":"Actor.State == \"Clara Nett\"","IfBlockRun":true}
+* DialogEvent {"Text":"The actor Mrs Nett makes a bad pun to do with their name","Character":"Actor"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Clara Nett"},"FinalState":{"Name":"Dee Zaster"},"TransitionName":"ChangeName"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":false}
+* IfBlockEvent {"Expression":"Actor.State == \"Dee Zaster\"","IfBlockRun":true}
+* DialogEvent {"Text":"The actor Mr Zaster makes a bad pun to do with their name","Character":"Actor"}
