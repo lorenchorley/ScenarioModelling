@@ -7,16 +7,16 @@ using ScenarioModelling.References.GeneralisedReferences;
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
 [StoryNodeLike<INodeHookDefinition, TransitionNode>]
-public class TransitionHookDefinition : INodeHookDefinition
+public class TransitionHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly Action _finaliseDefinition;
+    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
 
     public bool Validated { get; private set; } = false;
     public TransitionNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, Action finaliseDefinition)
+    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, FinaliseDefinitionDelegate finaliseDefinition)
     {
         Node = new TransitionNode()
         {
@@ -45,10 +45,10 @@ public class TransitionHookDefinition : INodeHookDefinition
         Validated = true;
     }
 
-    public void Build()
+    public void BuildAndRegister()
     {
         Validate();
-        _finaliseDefinition();
+        _finaliseDefinition(this);
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

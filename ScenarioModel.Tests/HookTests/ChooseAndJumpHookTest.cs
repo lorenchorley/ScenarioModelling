@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using ScenarioModelling.CodeHooks;
-using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Expressions.Evaluation;
@@ -60,10 +59,10 @@ public partial class ChooseAndJumpHookTest
     {
         hooks.DefineSystem(configuration =>
         {
-            configuration.DefineEntity("Actor")
+            configuration.Entity("Actor")
                          .SetState("Bob");
 
-            configuration.DefineStateMachine("Name")
+            configuration.StateMachine("Name")
                          .WithTransition("Bob", "Alice", "ChangeName")
                          .WithTransition("Alice", "Bob", "ChangeName");
         });
@@ -72,25 +71,25 @@ public partial class ChooseAndJumpHookTest
         string ActorName = "Bob";
 
 
-        hooks.DeclareDialog("The actor {Actor.State} says hello and introduces themselves")
-             .SetCharacter("Actor")
-             .Build();
+        hooks.Dialog("The actor {Actor.State} says hello and introduces themselves")
+             .WithCharacter("Actor")
+             .BuildAndRegister();
 
         Debug.WriteLine($"{ActorName}: Hello");
         Debug.WriteLine($"{ActorName}: My name is {ActorName}");
 
 
-        hooks.DeclareChoose(new ChoiceList() { ("Change", "Change name and repeat") })
-             .GetConditionHook(out ChooseHook φ)
+        hooks.Choose(new ChoiceList() { ("Change", "Change name and repeat") })
+             .GetConditionHook(out ArbitraryBranchingHook φ)
              .SetId("LoopStart")
              .WithJump("GoodBye", "Ciao")
              .Build();
 
-        while (φ(choices.Dequeue()) == "Change name and repeat")
+        while (φ(choices.Dequeue()) == "Change name and repeat") // TODO choose hook needs to reregister the choice event
         {
-            hooks.DeclareTransition("Actor", "ChangeName")
+            hooks.Transition("Actor", "ChangeName")
                  .SetId("Change")
-                 .Build();
+                 .BuildAndRegister();
 
             if (ActorName == "Bob")
                 ActorName = "Alice";
@@ -98,27 +97,28 @@ public partial class ChooseAndJumpHookTest
                 ActorName = "Bob";
 
 
-            hooks.DeclareIfBranch(@"Actor.State != ""Alice""")
-                 .GetConditionHooks(out IfConditionHook ψ, out IfBlockEndHook ifBlockEndHook)
+            hooks.If(@"Actor.State != ""Alice""")
+                 .GetConditionHook(out BifurcatingHook ψ)
+                 .GetEndBlockHook(out BlockEndHook ifBlockEndHook)
                  .Build();
 
             if (ψ(ActorName == "Alice"))
             {
-                hooks.DeclareDialog("Actor", "The actor declares themselves to be Alice")
-                     .Build();
+                hooks.Dialog("Actor", "The actor declares themselves to be Alice")
+                     .BuildAndRegister();
 
                 Debug.WriteLine($"{ActorName}: I am now Alice !");
 
                 ifBlockEndHook();
             }
 
-            hooks.DeclareJump("LoopStart")
-                 .Build();
+            hooks.Jump("LoopStart")
+                 .BuildAndRegister();
         }
 
-        hooks.DeclareDialog("Actor", "The actor {Actor.State} says goodbye")
-             .SetId("GoodBye")
-             .Build();
+        hooks.Dialog("Actor", "The actor {Actor.State} says goodbye")
+             .WithId("GoodBye")
+             .BuildAndRegister();
 
         Debug.WriteLine($"{ActorName}: Bubye");
     }
@@ -163,7 +163,7 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks, choices);
 
-        MetaStory generatedMetaStory = hooks.EndMetaStory();
+        (MetaStory generatedMetaStory, _) = hooks.EndMetaStory();
 
 
         // Assert
@@ -184,7 +184,7 @@ public partial class ChooseAndJumpHookTest
 
     [TestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
-    [Ignore]
+    [Ignore("This tests loops infinitely because the scenario is not correctly constructed")]
     public async Task ChooseAndIf_StoryExtractionTest()
     {
         // Arrange
@@ -230,21 +230,24 @@ public partial class ChooseAndJumpHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks, choices);
 
-        MetaStory generatedMetaStory = hooks.EndMetaStory();
+        (MetaStory generatedMetaStory, Story hookGeneratedStory) = hooks.EndMetaStory();
 
-        Story story = runner.Run("MetaStory recorded by hooks");
+        Story rerunStory = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert
         // ======
         generatedMetaStory.Should().NotBeNull();
 
-        string events = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string hookGeneratedEvents = hookGeneratedStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string rerunEvents = rerunStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+
+        DiffAssert.DiffIfNotEqual(hookGeneratedEvents, rerunEvents);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised events :");
-        Debug.WriteLine(events);
+        Debug.WriteLine(rerunEvents);
 
-        await Verify(events);
+        await Verify(rerunEvents);
     }
 }

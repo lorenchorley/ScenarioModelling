@@ -6,16 +6,16 @@ using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
 [StoryNodeLike<INodeHookDefinition, JumpNode>]
-public class JumpHookDefinition : INodeHookDefinition
+public class JumpHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly Action _finaliseDefinition;
+    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
 
     public bool Validated { get; private set; } = false;
     public JumpNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public JumpHookDefinition(DefinitionScope scope, string target, Action finaliseDefinition)
+    public JumpHookDefinition(DefinitionScope scope, string target, FinaliseDefinitionDelegate finaliseDefinition)
     {
         Node = new JumpNode()
         {
@@ -49,12 +49,11 @@ public class JumpHookDefinition : INodeHookDefinition
         Validated = true;
     }
 
-    public void Build()
+    public void BuildAndRegister()
     {
         Validate();
-        _finaliseDefinition();
+        _finaliseDefinition(this);
     }
-
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)
     {

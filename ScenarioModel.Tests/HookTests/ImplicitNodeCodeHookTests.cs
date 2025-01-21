@@ -1,6 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
-using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Expressions.Evaluation;
@@ -38,10 +37,10 @@ public partial class ImplicitNodeCodeHookTests
 
     private static void SystemOneActorTwoStates(SystemHookDefinition sysConf)
     {
-        sysConf.DefineEntity("Actor")
+        sysConf.Entity("Actor")
                .SetState("S1");
 
-        sysConf.DefineStateMachine("SM1")
+        sysConf.StateMachine("SM1")
                .WithState("S1")
                .WithState("S2")
                .WithTransition("S1", "S2", "T1");
@@ -49,10 +48,10 @@ public partial class ImplicitNodeCodeHookTests
 
     private static void SystemOneActorThreeStatesSingleTransition(SystemHookDefinition sysConf)
     {
-        sysConf.DefineEntity("Actor")
+        sysConf.Entity("Actor")
                .SetState("S1");
 
-        sysConf.DefineStateMachine("SM1")
+        sysConf.StateMachine("SM1")
                .WithState("S1")
                .WithState("S2")
                .WithState("S3")
@@ -64,13 +63,13 @@ public partial class ImplicitNodeCodeHookTests
     #region Jump
     private static void OneDialogAndOneJump_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
-        hooks.DeclareJump("D1")
+        hooks.Jump("D1")
              .SetAsImplicit()
-             .Build();
+             .BuildAndRegister();
 
-        hooks.DeclareDialog("Some text")
-             .SetId("D1")
-             .Build();
+        hooks.Dialog("Some text")
+             .WithId("D1")
+             .BuildAndRegister();
     }
 
     private static void OneDialogAndOneJump_ImplicitMetaStory(MetaStoryHookOrchestrator hooks)
@@ -78,24 +77,24 @@ public partial class ImplicitNodeCodeHookTests
         //hooks.DeclareJump("D1")
         //     .SetAsImplicit();
 
-        hooks.DeclareDialog("Some text")
-             .SetId("D1")
-             .Build();
+        hooks.Dialog("Some text")
+             .WithId("D1")
+             .BuildAndRegister();
     }
 
     private static void TwoDialogsAndOneJump_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
-        hooks.DeclareJump("D2")
+        hooks.Jump("D2")
              .SetAsImplicit()
-             .Build();
+             .BuildAndRegister();
 
-        hooks.DeclareDialog("Some text")
-             .SetId("D1")
-             .Build();
+        hooks.Dialog("Some text")
+             .WithId("D1")
+             .BuildAndRegister();
 
-        hooks.DeclareDialog("Some more text")
-             .SetId("D2")
-             .Build();
+        hooks.Dialog("Some more text")
+             .WithId("D2")
+             .BuildAndRegister();
     }
 
     private static void TwoDialogsAndOneJump_ImplicitMetaStory(MetaStoryHookOrchestrator hooks)
@@ -106,30 +105,31 @@ public partial class ImplicitNodeCodeHookTests
         //hooks.DeclareDialog("Some text")
         //     .SetId("D1");
 
-        hooks.DeclareDialog("Some more text")
-             .SetId("D2")
-             .Build();
+        hooks.Dialog("Some more text")
+             .WithId("D2")
+             .BuildAndRegister();
     }
     #endregion
 
     #region If
     private static void IfExecutesWithDialog_HookOutsideBlock_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
-        hooks.DeclareIfBranch(@"Actor.State == S1")
+        hooks.If(@"Actor.State == S1")
              .SetAsImplicit()
-             .GetConditionHooks(out IfConditionHook φ, out IfBlockEndHook ifBlockEndHook)
+             .GetConditionHook(out BifurcatingHook φ)
+             .GetEndBlockHook(out BlockEndHook ifBlockEndHook)
              .Build();
 
         bool condition = true;
         if (φ(condition))
         {
-            hooks.DeclareDialog("Inside if block")
-                 .Build();
+            hooks.Dialog("Inside if block")
+                 .BuildAndRegister();
         }
         ifBlockEndHook();
 
-        hooks.DeclareDialog("After if block")
-             .Build();
+        hooks.Dialog("After if block")
+             .BuildAndRegister();
     }
 
     private static void IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode(MetaStoryHookOrchestrator hooks)
@@ -142,35 +142,35 @@ public partial class ImplicitNodeCodeHookTests
         //if (φ(condition))
         if (condition)
         {
-            hooks.DeclareDialog("Inside if block")
-                 .Build();
+            hooks.Dialog("Inside if block")
+                 .BuildAndRegister();
         }
         //ifBlockEndHook();
 
-        hooks.DeclareDialog("After if block")
-             .Build();
+        hooks.Dialog("After if block")
+             .BuildAndRegister();
     }
     #endregion
 
     #region While
     private static void WhileExecutesTwiceWithTransition_FullMetaStory(MetaStoryHookOrchestrator hooks)
     {
-        hooks.DeclareWhileBranch(@"Actor.State != S3")
+        hooks.While(@"Actor.State != S3")
              .SetAsImplicit()
-             .GetConditionHook(out WhileHook φ)
+             .GetConditionHook(out BifurcatingHook φ)
              .Build();
 
         int count = 2;
         while (φ(count > 0))
         {
-            hooks.DeclareTransition("Actor", "T1")
-                 .Build();
+            hooks.Transition("Actor", "T1")
+                 .BuildAndRegister();
 
             count--;
         }
 
-        hooks.DeclareDialog("After while block")
-             .Build();
+        hooks.Dialog("After while block")
+             .BuildAndRegister();
     }
 
     private static void WhileExecutesTwiceWithTransition_ImplicitWhileNode(MetaStoryHookOrchestrator hooks)
@@ -183,14 +183,14 @@ public partial class ImplicitNodeCodeHookTests
         //while (φ(count > 0))
         while (count > 0)
         {
-            hooks.DeclareTransition("Actor", "T1")
-                 .Build();
+            hooks.Transition("Actor", "T1")
+                 .BuildAndRegister();
 
             count--;
         }
 
-        hooks.DeclareDialog("After while block")
-             .Build();
+        hooks.Dialog("After while block")
+             .BuildAndRegister();
     }
     #endregion
 

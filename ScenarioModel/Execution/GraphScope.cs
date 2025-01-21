@@ -22,8 +22,14 @@ public class GraphScope
     {
         Graph = graph;
         CurrentSubGraph = graph.PrimarySubGraph;
+        graph.Reinitalise();
         CurrentNode = graph.PrimarySubGraph.GetNextInSequenceOrNull();
     }
+
+    //public IStoryNode GetCurrentNode()
+    //{
+
+    //}
 
     public void SetExplicitNextNode(IStoryNode node)
     {

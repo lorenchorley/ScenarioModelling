@@ -1,6 +1,5 @@
 using FluentAssertions;
 using ScenarioModelling.CodeHooks;
-using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Expressions.Evaluation;
@@ -81,76 +80,78 @@ public partial class WhileLoopHookTest
     {
         hooks.DefineSystem(configuration =>
         {
-            configuration.DefineEntity("Actor")
+            configuration.Entity("Actor")
                          .SetState("Amy Stake")
                          .SetType("ET1")
                          .SetCharacterStyle("Red");
 
-            configuration.DefineStateMachine("Name")
+            configuration.StateMachine("Name")
                          .WithTransition("Amy Stake", "Brock Lee", "ChangeName")
                          .WithTransition("Brock Lee", "Clara Nett", "ChangeName")
                          .WithTransition("Clara Nett", "Dee Zaster", "ChangeName");
-
         });
 
         ActorName actorName = ActorName.AmyStake;
 
 
-        hooks.DeclareDialog("The actor {Actor.State} says hello and introduces themselves")
-             .SetId("SayName")
-             .SetCharacter("Actor")
-             .Build();
+        hooks.Dialog("The actor {Actor.State} says hello and introduces themselves")
+             .WithId("SayName")
+             .WithCharacter("Actor")
+             .BuildAndRegister();
 
         Debug.WriteLine($"Hi, this is {actorName}");
 
 
-        hooks.DeclareWhileBranch(@"Actor.State != ""Dee Zaster""")
-             .GetConditionHook(out WhileHook whileHook)
+        hooks.While(@"Actor.State != ""Dee Zaster""")
+             .GetConditionHook(out var whileHook)
              .Build();
 
-        IfBlockEndHook ifBlockEndHook;
+        BlockEndHook ifBlockEndHook;
 
         while (whileHook(actorName != ActorName.DeeZaster))
         {
-            hooks.DeclareIfBranch(@"Actor.State == ""Amy Stake""")
-                 .GetConditionHooks(out IfConditionHook ifHookAmy, out ifBlockEndHook)
+            hooks.If(@"Actor.State == ""Amy Stake""")
+                 .GetConditionHook(out var ifHookAmy)
+                 .GetEndBlockHook(out ifBlockEndHook)
                  .Build();
             if (ifHookAmy(actorName == ActorName.AmyStake))
             {
-                hooks.DeclareDialog("Actor", "The actor Mrs Stake makes a bad pun to do with their name").Build();
+                hooks.Dialog("Actor", "The actor Mrs Stake makes a bad pun to do with their name").BuildAndRegister();
                 Debug.WriteLine($"Amy's name was well chosen");
 
                 ifBlockEndHook();
             }
 
 
-            hooks.DeclareIfBranch(@"Actor.State == ""Brock Lee""")
-                 .GetConditionHooks(out IfConditionHook ifHookBrock, out ifBlockEndHook)
+            hooks.If(@"Actor.State == ""Brock Lee""")
+                 .GetConditionHook(out var ifHookBrock)
+                 .GetEndBlockHook(out ifBlockEndHook)
                  .Build();
             if (ifHookBrock(actorName == ActorName.BrockLee))
             {
-                hooks.DeclareDialog("Actor", "The actor Mr Lee makes a bad pun to do with their name").Build();
+                hooks.Dialog("Actor", "The actor Mr Lee makes a bad pun to do with their name").BuildAndRegister();
                 Debug.WriteLine($"Brock didn't like his vegies");
 
                 ifBlockEndHook();
             }
 
 
-            hooks.DeclareIfBranch(@"Actor.State == ""Clara Nett""")
-                 .GetConditionHooks(out IfConditionHook ifHookClara, out ifBlockEndHook)
+            hooks.If(@"Actor.State == ""Clara Nett""")
+                 .GetConditionHook(out var ifHookClara)
+                 .GetEndBlockHook(out ifBlockEndHook)
                  .Build();
 
             if (ifHookClara(actorName == ActorName.ClaraNett))
             {
-                hooks.DeclareDialog("Actor", "The actor Mrs Nett makes a bad pun to do with their name").Build();
+                hooks.Dialog("Actor", "The actor Mrs Nett makes a bad pun to do with their name").BuildAndRegister();
                 Debug.WriteLine($"Clara hated music");
 
                 ifBlockEndHook();
             }
 
 
-            hooks.DeclareTransition("Actor", "ChangeName")
-                 .Build();
+            hooks.Transition("Actor", "ChangeName")
+                 .BuildAndRegister();
 
             actorName = actorName switch
             {
@@ -162,12 +163,13 @@ public partial class WhileLoopHookTest
 
         }
 
-        hooks.DeclareIfBranch(@"Actor.State == ""Dee Zaster""")
-             .GetConditionHooks(out IfConditionHook ifHookDee, out ifBlockEndHook)
+        hooks.If(@"Actor.State == ""Dee Zaster""")
+             .GetConditionHook(out var ifHookDee)
+             .GetEndBlockHook(out ifBlockEndHook)
              .Build();
         if (ifHookDee(actorName == ActorName.DeeZaster))
         {
-            hooks.DeclareDialog("Actor", "The actor Mr Zaster makes a bad pun to do with their name").Build();
+            hooks.Dialog("Actor", "The actor Mr Zaster makes a bad pun to do with their name").BuildAndRegister();
             Debug.WriteLine($"Well, that went well !");
 
             ifBlockEndHook();
@@ -208,7 +210,7 @@ public partial class WhileLoopHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
 
-        MetaStory generatedMetaStory = hooks.EndMetaStory();
+        (MetaStory generatedMetaStory, _) = hooks.EndMetaStory();
 
 
         // Assert
@@ -259,20 +261,23 @@ public partial class WhileLoopHookTest
         Debug.WriteLine("Producer method output :");
         ProducerMethod(hooks);
 
-        hooks.EndMetaStory();
+        (MetaStory generatedMetaStory, Story hookGeneratedStory) = hooks.EndMetaStory();
 
-        Story story = runner.Run("MetaStory recorded by hooks");
+        Story rerunStory = runner.Run("MetaStory recorded by hooks");
 
 
         // Assert
         // ======
-        string events = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string hookGeneratedEvents = hookGeneratedStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string rerunEvents = rerunStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+
+        DiffAssert.DiffIfNotEqual(hookGeneratedEvents, rerunEvents);
 
         Debug.WriteLine("");
         Debug.WriteLine("Final serialised events :");
-        Debug.WriteLine(events);
+        Debug.WriteLine(rerunEvents);
 
-        await Verify(events);
+        await Verify(rerunEvents);
     }
 
 }

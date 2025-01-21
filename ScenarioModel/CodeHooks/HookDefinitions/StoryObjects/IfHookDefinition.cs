@@ -6,17 +6,13 @@ using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
-public delegate bool IfConditionHook(bool result);
-public delegate void IfBlockEndHook();
-public delegate IDisposable IfBlockUsingHook();
-
 [StoryNodeLike<INodeHookDefinition, IfNode>]
-public class IfHookDefinition : INodeHookDefinition
+public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookDefinition, BifurcatingHook>
 {
     private readonly EnterScopeDelegate _enterScope;
     private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
     private readonly Action _verifyPreviousDefinition;
-    private readonly Action _finaliseDefinition;
+    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedIfEvents { get; } = new();
@@ -26,7 +22,7 @@ public class IfHookDefinition : INodeHookDefinition
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public IfHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, Action finaliseDefinition)
+    public IfHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, FinaliseDefinitionDelegate finaliseDefinition)
     {
         Node = new IfNode();
 
@@ -49,6 +45,9 @@ public class IfHookDefinition : INodeHookDefinition
 
     private bool IfConditionHook(bool result)
     {
+        // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
+        _finaliseDefinition(this); 
+
         if (result)
         {
             _enterScope(new DefinitionScope(Node.SubGraph, _verifyPreviousDefinition));
@@ -82,19 +81,42 @@ public class IfHookDefinition : INodeHookDefinition
         return new UsingHookScope(IfBlockEndHook);
     }
 
-    public IfHookDefinition GetConditionHooks(out IfConditionHook ifconditionHook, out IfBlockEndHook ifBlockEndHook)
+    private bool _gotConditionHook = false;
+    public IfHookDefinition GetConditionHook(out BifurcatingHook ifconditionHook)
     {
+        _gotConditionHook = true;
         ifconditionHook = IfConditionHook;
+        return this;
+    }
+
+    private bool _gotEndHook = false;
+    public IfHookDefinition GetEndBlockHook(out BlockEndHook ifBlockEndHook)
+    {
+        _gotEndHook = true;
         ifBlockEndHook = IfBlockEndHook;
         return this;
     }
 
-    public IfHookDefinition GetConditionUsingHook(out IfConditionHook ifconditionHook, out IfBlockUsingHook ifBlockUsingHook)
+    public IfHookDefinition GetScopeHook(out ScopeDefiningHook ifBlockUsingHook)
     {
-        ifconditionHook = IfConditionHook;
+        _gotEndHook = true;
         ifBlockUsingHook = IfBlockUsingHook;
         return this;
     }
+
+    //public IfHookDefinition GetConditionHooks(out IfConditionHook ifconditionHook, out IfBlockEndHook ifBlockEndHook)
+    //{
+    //    ifconditionHook = IfConditionHook;
+    //    ifBlockEndHook = IfBlockEndHook;
+    //    return this;
+    //}
+
+    //public IfHookDefinition GetConditionUsingHook(out IfConditionHook ifconditionHook, out IfBlockUsingHook ifBlockUsingHook)
+    //{
+    //    ifconditionHook = IfConditionHook;
+    //    ifBlockUsingHook = IfBlockUsingHook;
+    //    return this;
+    //}
 
     public IfHookDefinition SetAsImplicit()
     {
@@ -109,6 +131,16 @@ public class IfHookDefinition : INodeHookDefinition
 
     public void Validate()
     {
+        if (!_gotEndHook)
+        {
+            throw new Exception($"The hook declaration did not ask for a hook scoping callback, call either {nameof(GetEndBlockHook)} or {nameof(GetScopeHook)}");
+        }
+
+        if (!_gotConditionHook)
+        {
+            throw new Exception($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
+        }
+
         // TODO
         // If condition == false, then no recorded events
         // If condition == true, then one recorded event
@@ -119,7 +151,6 @@ public class IfHookDefinition : INodeHookDefinition
     public void Build()
     {
         Validate();
-        _finaliseDefinition();
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

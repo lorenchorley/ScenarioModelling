@@ -5,12 +5,11 @@ using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
-public delegate string ChooseHook(string result);
 
 [StoryNodeLike<INodeHookDefinition, ChooseNode>]
-public class ChooseHookDefinition : INodeHookDefinition
+public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<ChooseHookDefinition, ArbitraryBranchingHook>
 {
-    private readonly Action _finaliseDefinition;
+    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
 
     [StoryNodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
@@ -20,7 +19,7 @@ public class ChooseHookDefinition : INodeHookDefinition
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public ChooseHookDefinition(DefinitionScope scope, Action finaliseDefinition)
+    public ChooseHookDefinition(DefinitionScope scope, FinaliseDefinitionDelegate finaliseDefinition)
     {
         Node = new ChooseNode();
         Scope = scope;
@@ -30,13 +29,18 @@ public class ChooseHookDefinition : INodeHookDefinition
 
     private string ChooseHook(string result)
     {
+        // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
+        _finaliseDefinition(this);
+
         RecordedChooseEvents.Add(result);
         return result;
     }
 
-    public ChooseHookDefinition GetConditionHook(out ChooseHook chooseCondition)
+    private bool _gotConditionHook = false;
+    public ChooseHookDefinition GetConditionHook(out ArbitraryBranchingHook hook)
     {
-        chooseCondition = ChooseHook;
+        _gotConditionHook = true;
+        hook = ChooseHook;
         return this;
     }
 
@@ -65,13 +69,17 @@ public class ChooseHookDefinition : INodeHookDefinition
 
     public void Validate()
     {
+        if (!_gotConditionHook)
+        {
+            throw new Exception($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
+        }
+
         Validated = true;
     }
 
     public void Build()
     {
         Validate();
-        _finaliseDefinition();
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

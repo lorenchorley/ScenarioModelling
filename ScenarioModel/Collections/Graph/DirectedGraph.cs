@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.Collections.Graph.Validation;
+using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.Objects.StoryNodes.Interfaces;
 
 namespace ScenarioModelling.Collections.Graph;
@@ -77,4 +78,28 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
         }
     }
 
+    /// <summary>
+    /// Reinitialise all subgraphs
+    /// </summary>
+    internal void Reinitalise()
+    {
+        HashSet<SemiLinearSubGraph<T>> visited = new();
+        RecursivelyReinitialise(PrimarySubGraph, visited);
+    }
+
+    private void RecursivelyReinitialise(SemiLinearSubGraph<T> subgraph, HashSet<SemiLinearSubGraph<T>> visited)
+    {
+        subgraph.Reinitalise();
+        visited.Add(subgraph);
+
+        foreach (var subsubgraph in subgraph.NodeSequence.SelectMany(node => node.TargetSubgraphs()))
+        {
+            if (visited.Contains(subsubgraph))
+            {
+                continue;
+            }
+
+            RecursivelyReinitialise(subsubgraph, visited);
+        }
+    }
 }

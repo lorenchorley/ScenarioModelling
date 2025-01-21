@@ -23,14 +23,14 @@ public class SystemHookDefinition
         _instanciator = new Instanciator(context.System);
     }
 
-    public EntityHookDefinition DefineEntity(string name)
+    public EntityHookDefinition Entity(string name)
     {
         EntityHookDefinition nodeDef = new(Context.System, _instanciator, name);
         EntityDefintions.Add(nodeDef);
         return nodeDef;
     }
 
-    public StateMachineHookDefinition DefineStateMachine(string name)
+    public StateMachineHookDefinition StateMachine(string name)
     {
         StateMachineHookDefinition nodeDef = new(Context.System, _instanciator, name);
         StateMachineDefintions.Add(nodeDef);

@@ -10,5 +10,6 @@ public interface IExecutor
     bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IStoryEvent;
     IStoryNode? NextNode();
     void RegisterEvent(IStoryEvent @event);
-    Story StartMetaStory(string name);
+    void StartMetaStory(string name);
+    Story EndMetaStory();
 }

@@ -6,17 +6,16 @@ using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
-public delegate bool WhileHook(bool result);
 
 [StoryNodeLike<INodeHookDefinition, WhileNode>]
-public class WhileHookDefinition : INodeHookDefinition
+public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<WhileHookDefinition, BifurcatingHook>
 {
     private int _whileLoopCount = 0;
     private DefinitionScope? _whileLoopScope;
     private readonly EnterScopeDelegate _enterScope;
     private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
     private readonly Action _verifyPreviousDefinition;
-    private readonly Action _finaliseDefinition;
+    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedWhileLoopEvents { get; } = new();
@@ -26,7 +25,7 @@ public class WhileHookDefinition : INodeHookDefinition
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public WhileHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, Action finaliseDefinition)
+    public WhileHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, FinaliseDefinitionDelegate finaliseDefinition)
     {
         Node = new WhileNode();
 
@@ -50,14 +49,17 @@ public class WhileHookDefinition : INodeHookDefinition
     private bool WhileHook(bool result)
     {
         _whileLoopCount++;
-
-        RecordedWhileLoopEvents.Add(result);
-
         bool firstRun = _whileLoopCount == 1;
+        
+        RecordedWhileLoopEvents.Add(result);
 
         // Otherwise on the first run we need to enter the loop's scope
         if (firstRun)
         {
+            // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
+            // But only on the first usage for a loop
+            _finaliseDefinition(this);
+
             // If the first result is false, we don't enter the loop at all
             if (!result)
                 return result;
@@ -82,8 +84,11 @@ public class WhileHookDefinition : INodeHookDefinition
         return result;
     }
 
-    public WhileHookDefinition GetConditionHook(out WhileHook whileHook)
+    private bool _gotConditionHook = false;
+
+    public WhileHookDefinition GetConditionHook(out BifurcatingHook whileHook)
     {
+        _gotConditionHook = true;
         whileHook = WhileHook;
         return this;
     }
@@ -101,13 +106,17 @@ public class WhileHookDefinition : INodeHookDefinition
 
     public void Validate()
     {
+        if (!_gotConditionHook)
+        {
+            throw new Exception($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
+        }
+
         Validated = true;
     }
 
     public void Build()
     {
         Validate();
-        _finaliseDefinition();
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

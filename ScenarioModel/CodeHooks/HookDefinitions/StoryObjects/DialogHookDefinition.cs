@@ -6,16 +6,16 @@ using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
 [StoryNodeLike<INodeHookDefinition, DialogNode>]
-public class DialogHookDefinition : INodeHookDefinition
+public class DialogHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly Action _finaliseDefinition;
+    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
 
     public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public DialogHookDefinition(DefinitionScope scope, string text, Action finaliseDefinition)
+    public DialogHookDefinition(DefinitionScope scope, string text, FinaliseDefinitionDelegate finaliseDefinition)
     {
         Node = new DialogNode()
         {
@@ -31,13 +31,13 @@ public class DialogHookDefinition : INodeHookDefinition
         return Node;
     }
 
-    public DialogHookDefinition SetCharacter(string character)
+    public DialogHookDefinition WithCharacter(string character)
     {
         Node.Character = character;
         return this;
     }
 
-    public DialogHookDefinition SetId(string id)
+    public DialogHookDefinition WithId(string id)
     {
         Node.Name = id;
         return this;
@@ -48,10 +48,10 @@ public class DialogHookDefinition : INodeHookDefinition
         Validated = true;
     }
 
-    public void Build()
+    public void BuildAndRegister()
     {
         Validate();
-        _finaliseDefinition();
+        _finaliseDefinition(this);
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

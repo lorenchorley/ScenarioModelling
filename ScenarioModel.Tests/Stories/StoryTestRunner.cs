@@ -11,10 +11,10 @@ namespace ScenarioModelling.Tests.Stories;
 
 public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null)
 {
-    public Story Run(string MetaStoryName)
+    public Story Run(string metaStoryName)
     {
         // Initialize the MetaStory
-        var story = executor.StartMetaStory(MetaStoryName);
+        executor.StartMetaStory(metaStoryName);
 
         // Generate first node
         IStoryNode? node = null;
@@ -29,7 +29,7 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
             executor.RegisterEvent(e);
         }
 
-        return story;
+        return executor.EndMetaStory();
     }
 
     private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode? node, IStoryEvent e)

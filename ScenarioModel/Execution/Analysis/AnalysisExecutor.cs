@@ -5,6 +5,11 @@ namespace ScenarioModelling.Execution.Analysis;
 
 public class AnalysisExecutor : IExecutor
 {
+    public Story EndMetaStory()
+    {
+        throw new NotImplementedException();
+    }
+
     public IStoryEvent? GetLastEvent()
     {
         throw new NotImplementedException();
@@ -30,8 +35,9 @@ public class AnalysisExecutor : IExecutor
         throw new NotImplementedException();
     }
 
-    public Story StartMetaStory(string name)
+    public void StartMetaStory(string name)
     {
         throw new NotImplementedException();
     }
+
 }

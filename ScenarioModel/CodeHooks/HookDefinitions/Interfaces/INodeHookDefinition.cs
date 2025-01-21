@@ -8,5 +8,4 @@ public interface INodeHookDefinition : IHookDefinition
     void ReplaceNodeWithExisting(IStoryNode preexistingNode);
     DefinitionScope Scope { get; }
     DefinitionScopeSnapshot ScopeSnapshot { get; }
-    void Build();
 }
