@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects.Properties;
 

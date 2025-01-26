@@ -6,6 +6,7 @@ using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
 using ScenarioModelling.References.GeneralisedReferences;
 using ScenarioModelling.References.Interfaces;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -17,12 +18,19 @@ public record Relation : ISystemObject<RelationReference>, IStateful
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(Relation);
 
     public RelatableObjectReference? LeftEntity { get; set; } // TODO Propertyise
     public RelatableObjectReference? RightEntity { get; set; } // TODO Propertyise
     public StateProperty InitialState { get; private set; }
     public StateProperty State { get; }
+
+
+    private Relation()
+    {
+
+    }
 
     public Relation(System system)
     {

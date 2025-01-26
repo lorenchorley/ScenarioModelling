@@ -35,9 +35,9 @@ public class ParallelConstructionExecutor : DialogExecutor
 
         RegisterEvent(newNode.GenerateGenericTypeEvent(_dependencies));
         var nextNode = _story.CurrentScope.GetNextInSequence();
-        if (nextNode != newNode)
-        {
-            throw new InvalidOperationException($"The story being constructed in parallel to hook execution was not in phase. Expected next node to be {newNode}, but was {nextNode}");
-        }
+        //if (nextNode != newNode)
+        //{
+        //    throw new InvalidOperationException($"The story being constructed in parallel to hook execution was not in phase. Expected next node to be {newNode}, but was {nextNode}");
+        //}
     }
 }

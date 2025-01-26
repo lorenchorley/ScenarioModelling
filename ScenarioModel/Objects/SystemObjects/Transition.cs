@@ -4,6 +4,7 @@ using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -15,10 +16,16 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(Transition);
 
     public StateProperty SourceState { get; private set; }
     public StateProperty DestinationState { get; private set; }
+
+    private Transition()
+    {
+
+    }
 
     public Transition(System system)
     {

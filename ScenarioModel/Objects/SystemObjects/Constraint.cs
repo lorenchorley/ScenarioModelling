@@ -5,6 +5,7 @@ using ScenarioModelling.Expressions.SemanticTree;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -16,6 +17,7 @@ public record Constraint : ISystemObject<ConstraintReference>
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(Constraint);
 
     [SystemObjectLikeProperty(serialise: false)]
@@ -23,6 +25,11 @@ public record Constraint : ISystemObject<ConstraintReference>
 
     [SystemObjectLikeProperty(serialise: false)]
     public string OriginalConditionText { get; set; } = "";
+    
+    private Constraint()
+    {
+        
+    }
 
     public Constraint(System system)
     {

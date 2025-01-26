@@ -7,18 +7,22 @@ using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
 using ScenarioModelling.Serialisation;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using YamlDotNet.Serialization;
 using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
 namespace ScenarioModelling;
 
 public class Context
 {
-    public List<ISerialiser> Serialisers { get; set; } = new();
     public List<MetaStory> MetaStories { get; set; } = new();
     public System System { get; set; } = new();
+
+    [YamlIgnore]
+    public List<ISerialiser> Serialisers { get; set; } = new();
+    [YamlIgnore]
     public ValidationErrors ValidationErrors { get; set; } = new();
 
-    private Context()
+    public Context()
     {
     }
 

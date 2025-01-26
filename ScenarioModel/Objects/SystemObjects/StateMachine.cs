@@ -5,6 +5,7 @@ using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -19,6 +20,7 @@ public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSeri
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(StateMachine);
 
     public StateListProperty States { get; set; }
@@ -40,6 +42,11 @@ public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSeri
 
             return true;
         }
+    }
+
+    private StateMachine()
+    {
+
     }
 
     public StateMachine(System system)

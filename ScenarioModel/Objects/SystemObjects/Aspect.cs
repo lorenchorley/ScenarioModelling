@@ -5,6 +5,7 @@ using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -16,12 +17,19 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(Aspect);
+
     public AspectType? AspectType { get; set; } // TODO Propertyise
     public EntityProperty Entity { get; private set; }
     public RelationListProperty Relations { get; private set; }
     public StateProperty InitialState { get; private set; }
     public StateProperty State { get; private set; }
+
+    private Aspect()
+    {
+
+    }
 
     public Aspect(System system)
     {

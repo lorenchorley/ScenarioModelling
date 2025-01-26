@@ -3,6 +3,7 @@ using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -14,6 +15,7 @@ public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialis
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(AspectType);
     public StateMachineProperty StateMachine { get; private set; }
 
@@ -24,6 +26,11 @@ public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialis
         {
             return !ExistanceOriginallyInferred;
         }
+    }
+
+    private AspectType()
+    {
+
     }
 
     public AspectType(System system)

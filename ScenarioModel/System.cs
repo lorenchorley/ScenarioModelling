@@ -2,6 +2,7 @@
 using ScenarioModelling.Objects.SystemObjects;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling;
 
@@ -16,6 +17,7 @@ public class System
     public List<Transition> Transitions { get; set; } = new();
     public List<Constraint> Constraints { get; set; } = new();
 
+    [YamlIgnore]
     public IEnumerable<EntityReference> AllEntityReferences
     {
         get => Enumerable.Empty<EntityReference>()
@@ -24,6 +26,7 @@ public class System
                          .Cast<EntityReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<EntityTypeReference> AllEntityTypeReferences
     {
         get => Enumerable.Empty<EntityTypeReference>()
@@ -32,6 +35,7 @@ public class System
                          .Cast<EntityTypeReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<AspectReference> AllAspectReferences
     {
         get => Enumerable.Empty<AspectReference>()
@@ -40,6 +44,7 @@ public class System
                          .Cast<AspectReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<StateReference> AllStateReferences
     {
         get => AllStateful.Select(e => e.State.ReferenceOnly)
@@ -50,6 +55,7 @@ public class System
                           .Cast<StateReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<StateMachineReference> AllStateMachineReferences
     {
         get => Enumerable.Empty<StateMachineReference>()
@@ -59,6 +65,7 @@ public class System
                          .Cast<StateMachineReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<RelationReference> AllRelationReferences
     {
         get => Enumerable.Empty<RelationReference>()
@@ -67,6 +74,7 @@ public class System
                          .Cast<RelationReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<TransitionReference> AllTransitionReferences
     {
         get => Enumerable.Empty<TransitionReference>()
@@ -75,6 +83,7 @@ public class System
                          .Cast<TransitionReference>();
     }
 
+    [YamlIgnore]
     public IEnumerable<IStateful> AllStateful
     {
         get => Enumerable.Empty<IStateful>()
@@ -83,6 +92,7 @@ public class System
                          .Concat(Relations);
     }
 
+    [YamlIgnore]
     public IEnumerable<IRelatable> AllRelatable
     {
         get => Enumerable.Empty<IRelatable>()
@@ -90,12 +100,14 @@ public class System
                          .Concat(Entities.SelectMany(x => x.Aspects));
     }
 
+    [YamlIgnore]
     public IEnumerable<Aspect> AllAspects
     {
         get => Enumerable.Empty<Aspect>()
                          .Concat(Entities.SelectMany(x => x.Aspects));
     }
 
+    [YamlIgnore]
     public IEnumerable<ConstraintReference> AllConstraintReferences
     {
         get => Enumerable.Empty<ConstraintReference>();

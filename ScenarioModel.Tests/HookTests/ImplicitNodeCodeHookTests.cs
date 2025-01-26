@@ -7,27 +7,33 @@ using ScenarioModelling.Interpolation;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.Tests.Stories;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace ScenarioModelling.Tests.HookTests;
-
-[TestClass]
-[UsesVerify]
-public partial class ImplicitNodeCodeHookTests
+public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
 {
-
     private record ImplicitNodeTestCase(string MetaStoryWithImplicitNodeMethodName, string MetaStoryWithoutImplicitNodeMethodName, string SystemMethodName);
-    private class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
-    {
-        private List<ImplicitNodeTestCase> TestData = [
-            new(nameof(OneDialogAndOneJump_ImplicitMetaStory), nameof(OneDialogAndOneJump_FullMetaStory), nameof(SystemEmpty)),
+
+    private List<ImplicitNodeTestCase> TestData = [
+        new(nameof(OneDialogAndOneJump_ImplicitMetaStory), nameof(OneDialogAndOneJump_FullMetaStory), nameof(SystemEmpty)),
             new(nameof(TwoDialogsAndOneJump_ImplicitMetaStory), nameof(TwoDialogsAndOneJump_FullMetaStory), nameof(SystemEmpty)),
             new(nameof(IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode), nameof(IfExecutesWithDialog_HookOutsideBlock_FullMetaStory), nameof(SystemOneActorTwoStates)),
             new(nameof(WhileExecutesTwiceWithTransition_ImplicitWhileNode), nameof(WhileExecutesTwiceWithTransition_FullMetaStory), nameof(SystemOneActorThreeStatesSingleTransition)),
         ];
 
-        public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<ImplicitNodeTestCase, object[]>)(t => [t.MetaStoryWithImplicitNodeMethodName, t.MetaStoryWithoutImplicitNodeMethodName, t.SystemMethodName]));
-        public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
+    public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<ImplicitNodeTestCase, object[]>)(t => [t.MetaStoryWithImplicitNodeMethodName, t.MetaStoryWithoutImplicitNodeMethodName, t.SystemMethodName]));
+    public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
+
+    [DebuggerNonUserCode]
+    public static Action<T> GetAction<T>(string systemMethodName)
+    {
+        var methodRef =
+            typeof(ImplicitNodeCodeHookTestDataProviderAttribute)
+                .GetMethod(systemMethodName, BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new Exception($"Method {systemMethodName} not found in {nameof(ImplicitNodeCodeHookTestDataProviderAttribute)}");
+
+        return (T parameter) => methodRef.Invoke(typeof(ImplicitNodeCodeHookTestDataProviderAttribute), [parameter]);
     }
 
     #region Systems
@@ -199,7 +205,12 @@ public partial class ImplicitNodeCodeHookTests
     // * An implicit node followed by an implicit node in a subgraph
     // * An implicit node followed by an implicit node in the parent graph
     // More ?
+}
 
+[TestClass]
+[UsesVerify]
+public partial class ImplicitNodeCodeHookTests
+{
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]

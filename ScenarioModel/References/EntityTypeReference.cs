@@ -16,6 +16,11 @@ public record EntityTypeReference : IReference<EntityType>
 
     public System System { get; }
 
+    private EntityTypeReference()
+    {
+        
+    }
+
     public EntityTypeReference(System system)
     {
         System = system;

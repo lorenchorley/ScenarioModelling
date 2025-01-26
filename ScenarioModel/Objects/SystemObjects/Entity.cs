@@ -5,6 +5,7 @@ using ScenarioModelling.Objects.SystemObjects.Properties;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
 using ScenarioModelling.References.Interfaces;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -16,14 +17,21 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(Entity);
 
     public string CharacterStyle { get; set; } = "";
+
     public EntityTypeProperty EntityType { get; private set; }
     public RelationListProperty Relations { get; private set; }
     public AspectListProperty Aspects { get; private set; }
     public StateProperty InitialState { get; private set; }
     public StateProperty State { get; private set; }
+
+    private Entity()
+    {
+        
+    }
 
     public Entity(System system)
     {

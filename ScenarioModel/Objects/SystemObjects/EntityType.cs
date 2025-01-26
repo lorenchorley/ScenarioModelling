@@ -39,6 +39,11 @@ public record EntityType : ISystemObject<EntityTypeReference>, IOptionalSerialis
 
     // AspectType ?
 
+    private EntityType()
+    {
+        
+    }
+
     public EntityType(System system)
     {
         _system = system;

@@ -3,6 +3,7 @@ using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.Visitors;
 using ScenarioModelling.References;
+using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
@@ -14,6 +15,7 @@ public record State : ISystemObject<StateReference>
     public string Name { get; set; } = "";
 
     [JsonIgnore]
+    [YamlIgnore]
     public Type Type => typeof(State);
 
     private StateMachine? _stateMachine;
@@ -42,6 +44,11 @@ public record State : ISystemObject<StateReference>
     {
         get => StateMachine.Transitions
                            .Where(t => t.SourceState.IsEqv(this) || t.DestinationState.IsEqv(this)); // TODO Cache
+    }
+
+    private State()
+    {
+
     }
 
     public State(System system)
