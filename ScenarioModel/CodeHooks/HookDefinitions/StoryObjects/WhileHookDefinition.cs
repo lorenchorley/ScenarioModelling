@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.Interpreter;
 using ScenarioModelling.Objects.StoryNodes;
@@ -12,10 +13,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
 {
     private int _whileLoopCount = 0;
     private DefinitionScope? _whileLoopScope;
-    private readonly EnterScopeDelegate _enterScope;
-    private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
-    private readonly Action _verifyPreviousDefinition;
-    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
+    private readonly HookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedWhileLoopEvents { get; } = new();
@@ -25,8 +23,10 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public WhileHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, FinaliseDefinitionDelegate finaliseDefinition)
+    public WhileHookDefinition(DefinitionScope scope, string expression, HookFunctions hookFunctions)
     {
+        _hookFunctions = hookFunctions;
+
         Node = new WhileNode();
 
         // Parse the expression before adding it to the node
@@ -40,10 +40,6 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
         Scope = scope;
         ScopeSnapshot = Scope.TakeSnapshot();
-        _enterScope = enterScope;
-        _returnOneScopeLevel = returnOneScopeLevel;
-        _verifyPreviousDefinition = verifyPreviousDefinition;
-        _finaliseDefinition = finaliseDefinition;
     }
 
     private bool WhileHook(bool result)
@@ -58,15 +54,15 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
         {
             // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
             // But only on the first usage for a loop
-            _finaliseDefinition(this);
+            _hookFunctions.FinaliseDefinition(this);
 
             // If the first result is false, we don't enter the loop at all
             if (!result)
-                return result;
+                return RegisterEventFromConditionResult(result); // We do not register the event here because it is managed by the call to _finaliseDefinition which also adds the node to the graph
 
             // Continue the loop
-            _whileLoopScope = new DefinitionScope(Node.SubGraph, _verifyPreviousDefinition);
-            _enterScope(_whileLoopScope);
+            _whileLoopScope = new DefinitionScope(Node.SubGraph, _hookFunctions.VerifyPreviousDefinition);
+            _hookFunctions.EnterScope(_whileLoopScope);
         }
 
         if (result)
@@ -78,9 +74,17 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
         else
         {
             // End the loop and return to the parent scope
-            _returnOneScopeLevel();
+            _hookFunctions.ReturnOneScopeLevel();
         }
 
+        RegisterEventFromConditionResult(result);
+
+        return result;
+    }
+
+    private bool RegisterEventFromConditionResult(bool result)
+    {
+        _hookFunctions.RegisterEventForHook(this, e => ((WhileLoopConditionCheckEvent)e).LoopBlockRun = result);
         return result;
     }
 

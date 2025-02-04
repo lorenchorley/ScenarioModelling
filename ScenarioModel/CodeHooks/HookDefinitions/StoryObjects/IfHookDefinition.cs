@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.Interpreter;
 using ScenarioModelling.Objects.StoryNodes;
@@ -9,10 +10,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, IfNode>]
 public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookDefinition, BifurcatingHook>
 {
-    private readonly EnterScopeDelegate _enterScope;
-    private readonly ReturnOneScopeLevelDelegate _returnOneScopeLevel;
-    private readonly Action _verifyPreviousDefinition;
-    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
+    private readonly HookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedIfEvents { get; } = new();
@@ -22,8 +20,10 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public IfHookDefinition(DefinitionScope scope, string expression, EnterScopeDelegate enterScope, ReturnOneScopeLevelDelegate returnOneScopeLevel, Action verifyPreviousDefinition, FinaliseDefinitionDelegate finaliseDefinition)
+    public IfHookDefinition(DefinitionScope scope, string expression, HookFunctions hookFunctions)
     {
+        _hookFunctions = hookFunctions;
+
         Node = new IfNode();
 
         // Parse the expression before adding it to the node
@@ -37,23 +37,21 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
         Scope = scope;
         ScopeSnapshot = Scope.TakeSnapshot();
-        _enterScope = enterScope;
-        _returnOneScopeLevel = returnOneScopeLevel;
-        _verifyPreviousDefinition = verifyPreviousDefinition;
-        _finaliseDefinition = finaliseDefinition;
     }
 
     private bool IfConditionHook(bool result)
     {
         // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
-        _finaliseDefinition(this); 
+        _hookFunctions.FinaliseDefinition(this);
+        _hookFunctions.RegisterEventForHook(this, e => ((IfBlockEvent)e).IfBlockRun = result);
 
         if (result)
         {
-            _enterScope(new DefinitionScope(Node.SubGraph, _verifyPreviousDefinition));
+            _hookFunctions.EnterScope(new DefinitionScope(Node.SubGraph, _hookFunctions.VerifyPreviousDefinition));
         }
 
         RecordedIfEvents.Add(result);
+
         return result;
     }
 
@@ -65,7 +63,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
         // Only return the scope if the last recorded event was true
         // This gives flexibility in that this callback can be either inside the if scope at the end or after it outside
         if (RecordedIfEvents.Last() == true)
-            _returnOneScopeLevel();
+            _hookFunctions.ReturnOneScopeLevel();
     }
 
     private class UsingHookScope(Action endScope) : IDisposable

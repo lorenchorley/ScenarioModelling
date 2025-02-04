@@ -9,7 +9,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, ChooseNode>]
 public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<ChooseHookDefinition, ArbitraryBranchingHook>
 {
-    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
+    private readonly HookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
@@ -19,18 +19,20 @@ public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<Cho
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public ChooseHookDefinition(DefinitionScope scope, FinaliseDefinitionDelegate finaliseDefinition)
+    public ChooseHookDefinition(DefinitionScope scope, HookFunctions hookFunctions)
     {
+        _hookFunctions = hookFunctions;
+
         Node = new ChooseNode();
         Scope = scope;
-        _finaliseDefinition = finaliseDefinition;
         ScopeSnapshot = Scope.TakeSnapshot();
     }
 
     private string ChooseHook(string result)
     {
         // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
-        _finaliseDefinition(this);
+        _hookFunctions.FinaliseDefinition(this);
+        _hookFunctions.RegisterEventForHook(this, _ => { });
 
         RecordedChooseEvents.Add(result);
         return result;

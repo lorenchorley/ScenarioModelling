@@ -1,0 +1,15 @@
+﻿Entity Actor {
+  State S2
+}
+
+SM SM1 {
+  State S1
+  State S2
+  S1 -> S2 : T1
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  Transition {
+    Actor : T1
+  }
+}

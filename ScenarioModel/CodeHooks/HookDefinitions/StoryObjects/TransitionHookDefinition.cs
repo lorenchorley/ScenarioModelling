@@ -9,15 +9,17 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, TransitionNode>]
 public class TransitionHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
+    private readonly HookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public TransitionNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, FinaliseDefinitionDelegate finaliseDefinition)
+    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, HookFunctions hookFunctions)
     {
+        _hookFunctions = hookFunctions;
+
         Node = new TransitionNode()
         {
             // Not sure
@@ -25,7 +27,6 @@ public class TransitionHookDefinition : IInSituNodeHookDefinition
             TransitionName = Transition
         };
         Scope = scope;
-        _finaliseDefinition = finaliseDefinition;
         ScopeSnapshot = Scope.TakeSnapshot();
     }
 
@@ -48,7 +49,8 @@ public class TransitionHookDefinition : IInSituNodeHookDefinition
     public void BuildAndRegister()
     {
         Validate();
-        _finaliseDefinition(this);
+        _hookFunctions.FinaliseDefinition(this);
+        _hookFunctions.RegisterEventForHook(this, _ => { });
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

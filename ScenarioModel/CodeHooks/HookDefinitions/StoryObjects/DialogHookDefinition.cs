@@ -8,21 +8,22 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, DialogNode>]
 public class DialogHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
+    private readonly HookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public DialogHookDefinition(DefinitionScope scope, string text, FinaliseDefinitionDelegate finaliseDefinition)
+    public DialogHookDefinition(DefinitionScope scope, string text, HookFunctions hookFunctions)
     {
+        _hookFunctions = hookFunctions;
+
         Node = new DialogNode()
         {
             TextTemplate = text
         };
         Scope = scope;
-        _finaliseDefinition = finaliseDefinition;
         ScopeSnapshot = Scope.TakeSnapshot();
     }
 
@@ -51,7 +52,8 @@ public class DialogHookDefinition : IInSituNodeHookDefinition
     public void BuildAndRegister()
     {
         Validate();
-        _finaliseDefinition(this);
+        _hookFunctions.FinaliseDefinition(this);
+        _hookFunctions.RegisterEventForHook(this, _ => { });
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)

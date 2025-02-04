@@ -46,7 +46,7 @@ public class ProgressiveHookBasedContextBuilder : IContextBuilder<HookContextBui
         // Reinitialize the inputs so that everything is ready to be reused
         inputs.Reset();
 
-        _context.ResetToInitialState(); // TODO Too early !
+        //_context.ResetToInitialState(); // TODO Too early !
 
         return _context;
     }

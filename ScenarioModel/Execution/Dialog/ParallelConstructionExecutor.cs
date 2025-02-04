@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Expressions.Evaluation;
+﻿using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
@@ -39,5 +40,10 @@ public class ParallelConstructionExecutor : DialogExecutor
         //{
         //    throw new InvalidOperationException($"The story being constructed in parallel to hook execution was not in phase. Expected next node to be {newNode}, but was {nextNode}");
         //}
+    }
+
+    internal IStoryEvent GenerateEvent(IStoryNode node)
+    {
+        return node.GenerateGenericTypeEvent(_dependencies);
     }
 }

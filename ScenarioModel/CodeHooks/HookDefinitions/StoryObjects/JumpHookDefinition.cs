@@ -8,21 +8,22 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, JumpNode>]
 public class JumpHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly FinaliseDefinitionDelegate _finaliseDefinition;
+    private readonly HookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public JumpNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public JumpHookDefinition(DefinitionScope scope, string target, FinaliseDefinitionDelegate finaliseDefinition)
+    public JumpHookDefinition(DefinitionScope scope, string target, HookFunctions hookFunctions)
     {
+        _hookFunctions = hookFunctions;
+
         Node = new JumpNode()
         {
             Target = target
         };
         Scope = scope;
-        _finaliseDefinition = finaliseDefinition;
         ScopeSnapshot = Scope.TakeSnapshot();
     }
 
@@ -52,7 +53,8 @@ public class JumpHookDefinition : IInSituNodeHookDefinition
     public void BuildAndRegister()
     {
         Validate();
-        _finaliseDefinition(this);
+        _hookFunctions.FinaliseDefinition(this);
+        _hookFunctions.RegisterEventForHook(this, _ => { });
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)
