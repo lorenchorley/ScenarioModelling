@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using ScenarioModelling.CodeHooks;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
@@ -20,7 +22,7 @@ public partial class ChooseAndJumpHookTest
           State Bob
         }
 
-        SM Name {
+        StateMachine Name {
           State Bob
           State Alice
           Bob -> Alice : ChangeName

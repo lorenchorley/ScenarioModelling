@@ -23,6 +23,7 @@ public class ConstraintSerialiser(string IndentSegment) : IObjectSerialiser<Cons
         sb.AppendLine($"{subIndent}Description {obj.Name.AddQuotes()}");
 
         sb.AppendLine($"{currentIndent}}}");
+        sb.AppendLine($"");
     }
 }
 

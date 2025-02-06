@@ -2,7 +2,7 @@
   State S1
 }
 
-SM SM1 {
+StateMachine SM1 {
   State S1
   State S2
   State S3

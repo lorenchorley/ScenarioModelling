@@ -77,6 +77,12 @@ public class ExhaustivenssTests
 {
     private Type[] _completeTypeList = [typeof(First), typeof(Second), typeof(Third)];
 
+    [AssemblyInitialize()]
+    public static void AssemblyInit(TestContext context)
+    {
+        ExhaustivityFunctions.Active = true;
+    }
+
     [TestMethod]
     [TestCategory("Exhaustivenss")]
     public void FullyImplemented()

@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.Interpreter;
@@ -10,7 +11,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, IfNode>]
 public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookDefinition, BifurcatingHook>
 {
-    private readonly HookFunctions _hookFunctions;
+    private readonly IHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedIfEvents { get; } = new();
@@ -20,7 +21,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public IfHookDefinition(DefinitionScope scope, string expression, HookFunctions hookFunctions)
+    public IfHookDefinition(DefinitionScope scope, string expression, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -8,14 +9,14 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, DialogNode>]
 public class DialogHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly HookFunctions _hookFunctions;
+    private readonly IHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public DialogHookDefinition(DefinitionScope scope, string text, HookFunctions hookFunctions)
+    public DialogHookDefinition(DefinitionScope scope, string text, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

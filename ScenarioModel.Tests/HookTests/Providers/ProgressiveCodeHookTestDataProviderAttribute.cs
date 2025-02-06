@@ -1,53 +1,51 @@
 ﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
+using ScenarioModelling.CodeHooks.Utils;
 using System.Diagnostics;
 using System.Reflection;
 
 namespace ScenarioModelling.Tests.HookTests.Providers;
 
-public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
+public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
 {
-    private record TestCase(string MetaStoryMethodName, string SystemMethodName);
+    private record TestCase(string MetaStoryMethodName);
 
     private List<TestCase> TestData = [
-        new(nameof(OneDialog), nameof(SystemOneActor)),
-            new(nameof(OneDialogWithMultipleWords), nameof(SystemOneActor)),
-            new(nameof(OneDialogWithId), nameof(SystemOneActor)),
-            new(nameof(OneDialogWithCharacter), nameof(SystemOneActor)),
-
-            new(nameof(TwoStatesOneTransition), nameof(SystemOneActorTwoStates)),
-            new(nameof(TwoStatesOneTransitionWithId), nameof(SystemOneActorTwoStates)),
-
-            new(nameof(OneDialogAndOneJump), nameof(SystemEmpty)),
-            new(nameof(TwoDialogsAndOneJump), nameof(SystemEmpty)),
-
-            new(nameof(OneConstraintAlwaysValid), nameof(SystemOneActorTwoStatesWithConstraint)),
-            new(nameof(OneConstraintFailsOnTransition), nameof(SystemOneActorTwoStatesWithConstraint)),
-
-            new(nameof(IfDoesNotExecute_DialogAfterOnly), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfDoesNotExecute_DialogBeforeAndAfter), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfDoesNotExecute_DialogBeforeOnly), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfDoesNotExecute_NoDialogAround), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfExecutesWithDialog_DialogAfterOnly), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfExecutesWithDialog_DialogBeforeAndAfter), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfExecutesWithDialog_DialogBeforeOnly), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfExecutesWithDialog_NoDialogAround), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfDoesNotExecute_HookOutsideBlock), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfExecutesWithDialog_HookOutsideBlock), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfDoesNotExecute_UsingHook), nameof(SystemOneActorTwoStates)),
-            new(nameof(IfExecutesWithDialog_UsingHook), nameof(SystemOneActorTwoStates)),
-            new(nameof(TwoNestedIfsThatExecute), nameof(SystemOneActorThreeStatesSingleTransition)),
-            new(nameof(TwoConsecutiveIfsThatExecute), nameof(SystemOneActorThreeStatesSingleTransition)),
-
-            new(nameof(WhileDoesNotExecute), nameof(SystemOneActorThreeStatesSingleTransition)),
-            new(nameof(WhileExecutesOnceWithTransition), nameof(SystemOneActorThreeStatesSingleTransition)),
-            new(nameof(WhileExecutesTwiceWithTransition), nameof(SystemOneActorThreeStatesSingleTransition)),
-            new(nameof(WhileExecutesTwiceWithTransitionAndDialog), nameof(SystemOneActorThreeStatesSingleTransition)),
-            new(nameof(WhileExecutesTwiceWithNestedIf), nameof(SystemOneActorThreeStatesSingleTransition)),
-            new(nameof(WhileExecutesTwiceWithNestedIf_NoDialogAfter), nameof(SystemOneActorThreeStatesSingleTransition)),
+            new(nameof(OneDialog)),
+            new(nameof(OneDialogWithMultipleWords)),
+            new(nameof(OneDialogWithId)),
+            new(nameof(OneDialogWithCharacter)),
+            new(nameof(TwoStatesOneTransition)),
+            new(nameof(TwoStatesOneTransitionWithId)),
+            new(nameof(OneConstraintAlwaysValid)),
+            new(nameof(OneConstraintFailsOnTransition)),
+            new(nameof(OneDialogAndOneJump)),
+            new(nameof(TwoDialogsAndOneJump)),
+            new(nameof(IfDoesNotExecute_DialogAfterOnly)),
+            new(nameof(IfDoesNotExecute_DialogBeforeAndAfter)),
+            new(nameof(IfDoesNotExecute_DialogBeforeOnly)),
+            new(nameof(IfDoesNotExecute_NoDialogAround)),
+            new(nameof(IfExecutesWithDialog_DialogAfterOnly)),
+            new(nameof(IfExecutesWithDialog_DialogBeforeOnly)),
+            new(nameof(IfExecutesWithDialog_DialogBeforeAndAfter)),
+            new(nameof(IfExecutesWithDialog_NoDialogAround)),
+            new(nameof(IfDoesNotExecute_HookOutsideBlock)),
+            new(nameof(IfExecutesWithDialog_HookOutsideBlock)),
+            new(nameof(IfDoesNotExecute_UsingHook)),
+            new(nameof(IfExecutesWithDialog_UsingHook)),
+            new(nameof(TwoNestedIfsThatExecute)),
+            new(nameof(TwoConsecutiveIfsThatExecute)),
+            new(nameof(WhileDoesNotExecute)),
+            new(nameof(WhileExecutesOnceWithTransition)),
+            new(nameof(WhileExecutesTwiceWithTransition)),
+            new(nameof(WhileExecutesTwiceWithTransitionAndDialog)),
+            new(nameof(WhileExecutesTwiceWithNestedIf)),
+            new(nameof(WhileExecutesTwiceWithNestedIf_NoDialogAfter)),
         ];
 
-    public IEnumerable<object[]> GetData(MethodInfo methodInfo) => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, t.SystemMethodName]));
+    public IEnumerable<object[]> GetData(MethodInfo methodInfo)
+        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedSystemMethodName(t.MetaStoryMethodName)]));
+    
     public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
 
     [DebuggerNonUserCode]
@@ -61,11 +59,42 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         return (parameter) => methodRef.Invoke(typeof(ProgressiveCodeHookTestDataProviderAttribute), [parameter]);
     }
 
+    internal static string GetExpectedText(string metaStoryMethodName)
+    {
+        var attr = NewMethod<ExpectedResultAttribute>(metaStoryMethodName);
+        return attr?.Text ?? $"Text not set. To set this text, apply the attribute ExpectedResult to the hook method {metaStoryMethodName}.";
+    }
+    
+    internal static string GetAssociatedSystemMethodName(string metaStoryMethodName)
+    {
+        var attr = NewMethod<AssociatedSystemHookMethodAttribute>(metaStoryMethodName);
+        return attr?.MethodName ?? $"Method name not set. To set this name, apply the attribute AssociatedSystemHookMethod to the hook method {metaStoryMethodName}.";
+    }
+
+    private static T? NewMethod<T>(string metaStoryMethodName) where T : Attribute
+    {
+        var methodRef =
+            typeof(ProgressiveCodeHookTestDataProviderAttribute)
+                .GetMethod(metaStoryMethodName, BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new Exception($"Method {metaStoryMethodName} not found in {nameof(ProgressiveCodeHookTestDataProviderAttribute)}");
+
+        return methodRef.GetCustomAttribute<T>();
+    }
+
     #region Systems
+    [ExpectedResult(
+    """
+    
+    """)]
     private static void SystemEmpty(SystemHookDefinition sysConf)
     {
     }
 
+    [ExpectedResult(
+    """
+    Entity Actor {
+    }
+    """)]
     private static void SystemOneActor(SystemHookDefinition sysConf)
     {
         sysConf.Entity("Actor");
@@ -73,6 +102,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         // TODO new test on SetType
     }
 
+    [ExpectedResult(
+    """
+    Entity Actor {
+      State S1
+    }
+
+    StateMachine SM1 {
+      State S1
+      State S2
+      S1 -> S2 : T1
+    }
+    """)]
     private static void SystemOneActorTwoStates(SystemHookDefinition sysConf)
     {
         sysConf.Entity("Actor")
@@ -84,6 +125,22 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
                .WithTransition("S1", "S2", "T1");
     }
 
+    [ExpectedResult(
+    """
+    Entity Actor {
+      State S1
+    }
+
+    StateMachine SM1 {
+      State S1
+      State S2
+      S1 -> S2 : T1
+    }
+
+    Constraint <Actor.State != S2> {
+      Description "State must never be S2"
+    }
+    """)]
     private static void SystemOneActorTwoStatesWithConstraint(SystemHookDefinition sysConf)
     {
         sysConf.Entity("Actor")
@@ -98,6 +155,20 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
                .SetExpression("Actor.State != S2");
     }
 
+    [ExpectedResult(
+    """
+    Entity Actor {
+      State S1
+    }
+
+    StateMachine SM1 {
+      State S1
+      State S2
+      State S3
+      S1 -> S2 : T1
+      S2 -> S3 : T1
+    }
+    """)]
     private static void SystemOneActorThreeStatesSingleTransition(SystemHookDefinition sysConf)
     {
         sysConf.Entity("Actor")
@@ -113,18 +184,39 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
     #endregion
 
     #region Dialog
+    [ExpectedResult(
+    """
+    Dialog {
+      Text Hello
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
     private static void OneDialog(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello")
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Dialog {
+      Text "Hello with multiple words"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
     private static void OneDialogWithMultipleWords(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello with multiple words")
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Dialog "custom dialog id" {
+      Text Hello
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
     private static void OneDialogWithId(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello")
@@ -132,6 +224,14 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Dialog {
+      Text Hello
+      Character Actor
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
     private static void OneDialogWithCharacter(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello")
@@ -141,12 +241,26 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
     #endregion
 
     #region Transition
+    [ExpectedResult(
+    """
+    Transition {
+      Actor : T1
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void TwoStatesOneTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Transition "custom transition id" {
+      Actor : T1
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void TwoStatesOneTransitionWithId(MetaStoryHookOrchestrator hooks)
     {
         hooks.Transition("Actor", "T1")
@@ -156,6 +270,16 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
     #endregion
 
     #region Jump
+    [ExpectedResult(
+    """
+    Jump {
+      Target D1
+    }
+    Dialog D1 {
+      Text "Some text"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemEmpty))]
     private static void OneDialogAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.Jump("D1")
@@ -166,6 +290,19 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Jump {
+      Target D2
+    }
+    Dialog D1 {
+      Text "Some text"
+    }
+    Dialog D2 {
+      Text "Some more text"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemEmpty))]
     private static void TwoDialogsAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.Jump("D2")
@@ -187,6 +324,13 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
     #endregion
 
     #region Constraint
+    [ExpectedResult(
+    """
+    Dialog D1 {
+      Text "Some text"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStatesWithConstraint))]
     private static void OneConstraintAlwaysValid(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Some text")
@@ -194,6 +338,16 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Dialog D1 {
+      Text "Some text"
+    }
+    Transition {
+      Actor : T1
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStatesWithConstraint))]
     private static void OneConstraintFailsOnTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Some text")
@@ -209,6 +363,15 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
     #endregion
 
     #region If
+    [ExpectedResult(
+    """
+    If <Actor.State == S2> {
+    }
+    Dialog {
+      Text "After if block only"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfDoesNotExecute_DialogAfterOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -219,6 +382,7 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         bool condition = false;
         if (φ(condition))
         {
+            // This part is not executed so it should not appear in the meta story
             hooks.Dialog("Inside if block")
                  .BuildAndRegister();
 
@@ -229,6 +393,15 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Dialog {
+      Text "Before if block only"
+    }
+    If <Actor.State == S2> {
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfDoesNotExecute_DialogBeforeOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block only")
@@ -242,6 +415,7 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         bool condition = false;
         if (φ(condition))
         {
+            // This part is not executed so it should not appear in the meta story
             hooks.Dialog("Inside if block")
                  .BuildAndRegister();
 
@@ -249,6 +423,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         }
     }
 
+    [ExpectedResult(
+    """
+    Dialog {
+      Text "Before if block"
+    }
+    If <Actor.State == S2> {
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfDoesNotExecute_DialogBeforeAndAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block")
@@ -262,6 +448,7 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         bool condition = false;
         if (φ(condition))
         {
+            // This part is not executed so it should not appear in the meta story
             hooks.Dialog("Inside if block")
                  .BuildAndRegister();
 
@@ -272,6 +459,12 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S2> {
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfDoesNotExecute_NoDialogAround(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -282,6 +475,7 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         bool condition = false;
         if (φ(condition))
         {
+            // This part is not executed so it should not appear in the meta story
             hooks.Dialog("Inside naked if block")
                  .BuildAndRegister();
 
@@ -289,6 +483,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         }
     }
 
+    [ExpectedResult(
+    """
+    Dialog {
+      Text "Before if block only"
+    }
+    If <Actor.State == S1> {
+      Dialog {
+        Text "Inside if block"
+      }
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfExecutesWithDialog_DialogBeforeOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block only")
@@ -309,6 +515,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         }
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S1> {
+      Dialog {
+        Text "Inside if block"
+      }
+    }
+    Dialog {
+      Text "After if block only"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfExecutesWithDialog_DialogAfterOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -329,6 +547,21 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    Dialog {
+      Text "Before if block"
+    }
+    If <Actor.State == S1> {
+      Dialog {
+        Text "Inside if block"
+      }
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfExecutesWithDialog_DialogBeforeAndAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block")
@@ -352,6 +585,15 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S1> {
+      Dialog {
+        Text "Inside naked if block"
+      }
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfExecutesWithDialog_NoDialogAround(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -369,6 +611,15 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         }
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S2> {
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfDoesNotExecute_HookOutsideBlock(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -388,6 +639,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S1> {
+      Dialog {
+        Text "Inside if block"
+      }
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfExecutesWithDialog_HookOutsideBlock(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -407,6 +670,15 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S2> {
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfDoesNotExecute_UsingHook(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -428,6 +700,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State == S1> {
+      Dialog {
+        Text "Inside if block"
+      }
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
     private static void IfExecutesWithDialog_UsingHook(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -449,6 +733,20 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State != S2> {
+      If <Actor.State != S3> {
+        Dialog {
+          Text "Inside if block"
+        }
+      }
+    }
+    Dialog {
+      Text "After if blocks"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void TwoNestedIfsThatExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State != S2")
@@ -479,6 +777,23 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    If <Actor.State != S2> {
+      Dialog {
+        Text "Inside if first block"
+      }
+    }
+    If <Actor.State != S3> {
+      Dialog {
+        Text "Inside if second block"
+      }
+    }
+    Dialog {
+      Text "After if blocks"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void TwoConsecutiveIfsThatExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State != S2")
@@ -531,6 +846,15 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
     #endregion
 
     #region While
+    [ExpectedResult(
+    """
+    While <Actor.State != S1> {
+    }
+    Dialog {
+      Text "After while block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void WhileDoesNotExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S1")
@@ -540,6 +864,7 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         int count = 0;
         while (φ(count > 0))
         {
+            // This part is not executed so it should not appear in the meta story
             hooks.Transition("Actor", "T1")
                  .BuildAndRegister();
 
@@ -550,6 +875,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    While <Actor.State != S2> {
+      Transition {
+        Actor : T1
+      }
+    }
+    Dialog {
+      Text "After while block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesOnceWithTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S2")
@@ -569,6 +906,18 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    While <Actor.State != S3> {
+      Transition {
+        Actor : T1
+      }
+    }
+    Dialog {
+      Text "After while block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -588,6 +937,21 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    While <Actor.State != S3> {
+      Transition {
+        Actor : T1
+      }
+      Dialog {
+        Text "Doing T1"
+      }
+    }
+    Dialog {
+      Text "After while block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithTransitionAndDialog(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -610,6 +974,23 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    While <Actor.State != S3> {
+      Transition {
+        Actor : T1
+      }
+      If <Actor.State != S3> {
+        Dialog {
+          Text "Some text"
+        }
+      }
+    }
+    Dialog {
+      Text "After while block"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithNestedIf(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -643,6 +1024,20 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
              .BuildAndRegister();
     }
 
+    [ExpectedResult(
+    """
+    While <Actor.State != S3> {
+      Transition {
+        Actor : T1
+      }
+      If <Actor.State != S3> {
+        Dialog {
+          Text "Some text"
+        }
+      }
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithNestedIf_NoDialogAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -672,5 +1067,6 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
             count--;
         }
     }
+
     #endregion
 }

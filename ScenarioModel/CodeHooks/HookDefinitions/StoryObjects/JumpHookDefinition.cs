@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -8,14 +9,14 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, JumpNode>]
 public class JumpHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly HookFunctions _hookFunctions;
+    private readonly IHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public JumpNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public JumpHookDefinition(DefinitionScope scope, string target, HookFunctions hookFunctions)
+    public JumpHookDefinition(DefinitionScope scope, string target, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

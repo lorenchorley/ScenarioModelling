@@ -1,5 +1,6 @@
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
@@ -15,7 +16,7 @@ public partial class StoryRunTests
 {
     [TestMethod]
     [TestCategory("MetaStory -> Story")]
-    public async Task ChooseJumpAndIfTest()
+    public async Task ChooseJumpStoryReplayTest()
     {
         // Arrange
         // =======
@@ -93,7 +94,7 @@ public partial class StoryRunTests
 
     [TestMethod]
     [TestCategory("MetaStory -> Story")]
-    public async Task LoopTest()
+    public async Task LoopStoryReplyTest()
     {
         // Arrange
         // =======

@@ -6,12 +6,15 @@ using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.Tests.HookTests.Providers;
 using ScenarioModelling.Tests.Valid;
 using System.Diagnostics;
+using ScenarioModelling.Exhaustiveness.Common;
 
 namespace ScenarioModelling.Tests;
 
 [TestClass]
 public class SerialisationTests
 {
+    private const string MetaStoryName = "MetaStory recorded by hooks";
+
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("HumanReadable")]
     [ReserialisationDataProvider]
@@ -37,16 +40,29 @@ public class SerialisationTests
         orchestrator.DefineSystem(systemHooksMethod);
 
         // Build MetaStory
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(MetaStoryName);
         metaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 
         var serialisedContext =
-            context.Serialise()
+            context.ResetToInitialState()
+                   .Serialise()
                    .Match(v => v, e => throw e)
                    .Trim();
 
-        HumanReadable_Context_DeserialiseReserialise_Common(metaStoryMethodName, serialisedContext, "");
+        var expectedSystemText = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedText(systemMethodName);
+        var expectedMetaStoryText = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedText(metaStoryMethodName);
+
+        var expectedText =
+            $$"""
+            {{expectedSystemText.Trim()}}
+
+            MetaStory "{{MetaStoryName}}" {
+            {{expectedMetaStoryText.Trim().AddIndent("  ")}}
+            }
+            """;
+
+        HumanReadable_Context_DeserialiseReserialise_Common(metaStoryMethodName, serialisedContext, expectedText);
     }
 
     public void HumanReadable_Context_DeserialiseReserialise_Common(string testCaseName, string originalContextText, string expectedFinalContextText)
@@ -95,6 +111,7 @@ public class SerialisationTests
             ex => Assert.Fail(ex.Message)
         );
     }
+
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("Yaml")]
     [ReserialisationDataProvider]
@@ -120,7 +137,7 @@ public class SerialisationTests
         orchestrator.DefineSystem(systemHooksMethod);
 
         // Build MetaStory
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(MetaStoryName);
         metaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 

@@ -1,11 +1,11 @@
 using FluentAssertions;
+using ScenarioModelling.Exhaustiveness.Common;
 
 namespace ScenarioModelling.Tests;
 
 [TestClass]
 public class IEnumerableExtensionsTests
 {
-
     [TestMethod]
     [TestCategory("IEnumerable Extensions")]
     public void AllStates_ReturnsAllStates()

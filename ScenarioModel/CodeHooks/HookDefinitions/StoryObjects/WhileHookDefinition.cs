@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.Interpreter;
@@ -13,7 +14,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
 {
     private int _whileLoopCount = 0;
     private DefinitionScope? _whileLoopScope;
-    private readonly HookFunctions _hookFunctions;
+    private readonly IHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedWhileLoopEvents { get; } = new();
@@ -23,7 +24,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public WhileHookDefinition(DefinitionScope scope, string expression, HookFunctions hookFunctions)
+    public WhileHookDefinition(DefinitionScope scope, string expression, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

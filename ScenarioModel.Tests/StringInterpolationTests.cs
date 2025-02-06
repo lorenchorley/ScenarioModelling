@@ -1,4 +1,5 @@
 using FluentAssertions;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Interpolation;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 

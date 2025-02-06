@@ -2,7 +2,7 @@
 using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
-namespace ScenarioModelling.CodeHooks;
+namespace ScenarioModelling.CodeHooks.Utils;
 
 public class DefinitionScope
 {
@@ -43,6 +43,9 @@ public class DefinitionScope
         }
         else // Otherwise we check that the current node corresponds to the new definition
         {
+            if (newNodeDefinition.ScopeSnapshot.Index >= SubGraph.NodeSequence.Count)
+                throw new Exception("Current index is beyond the end of the subgraph, this indicates something wrong with the graph flow algorithm");
+
             var currentNode = SubGraph.NodeSequence[newNodeDefinition.ScopeSnapshot.Index];
             int indexAdvance = VerifyInPhaseWithGraph(currentNode, newNode);
 

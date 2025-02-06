@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -9,14 +10,14 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, TransitionNode>]
 public class TransitionHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly HookFunctions _hookFunctions;
+    private readonly IHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public TransitionNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, HookFunctions hookFunctions)
+    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

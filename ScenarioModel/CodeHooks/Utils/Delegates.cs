@@ -2,7 +2,7 @@
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Execution.Events.Interfaces;
 
-namespace ScenarioModelling.CodeHooks;
+namespace ScenarioModelling.CodeHooks.Utils;
 
 //public delegate void ReturnOneScopeLevelDelegate();
 //public delegate void EnterScopeDelegate(DefinitionScope scope);

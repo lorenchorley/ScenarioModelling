@@ -1,4 +1,5 @@
 using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Exhaustiveness.Common;
 using System.Diagnostics;
 
 namespace ScenarioModelling.Tests;

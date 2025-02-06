@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -9,7 +10,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, ChooseNode>]
 public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<ChooseHookDefinition, ArbitraryBranchingHook>
 {
-    private readonly HookFunctions _hookFunctions;
+    private readonly IHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
@@ -19,7 +20,7 @@ public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<Cho
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public ChooseHookDefinition(DefinitionScope scope, HookFunctions hookFunctions)
+    public ChooseHookDefinition(DefinitionScope scope, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

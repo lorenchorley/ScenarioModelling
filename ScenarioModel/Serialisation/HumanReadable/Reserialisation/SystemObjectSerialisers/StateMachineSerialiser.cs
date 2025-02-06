@@ -15,7 +15,7 @@ public class StateMachineSerialiser(string IndentSegment, StateSerialiser StateS
 
         string subIndent = currentIndent + IndentSegment;
 
-        sb.AppendLine($"{currentIndent}SM {obj.Name.AddQuotes()} {{");
+        sb.AppendLine($"{currentIndent}StateMachine {obj.Name.AddQuotes()} {{");
 
         foreach (var state in obj.States)
         {
@@ -31,4 +31,3 @@ public class StateMachineSerialiser(string IndentSegment, StateSerialiser StateS
         sb.AppendLine($"");
     }
 }
-

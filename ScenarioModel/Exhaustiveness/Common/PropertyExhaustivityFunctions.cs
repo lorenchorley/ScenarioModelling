@@ -7,6 +7,9 @@ public class PropertyExhaustivityFunctions<TPropertyAttribute>
 {
     public void DoForEachProperty<TType>(TType obj, Action<TPropertyAttribute, string, object?> callback)
     {
+        if (!ExhaustivityFunctions.Active)
+            return;
+
         var type = typeof(TType);
         var properties =
             type.GetProperties()

@@ -18,7 +18,7 @@ public class EntityTypeSerialiser(string IndentSegment) : IObjectSerialiser<Enti
         sb.AppendLine($"{currentIndent}EntityType {obj.Name.AddQuotes()} {{");
 
         if (obj.StateMachine.ResolvedValue != null)
-            sb.AppendLine($"{subIndent}SM {obj.StateMachine.Name?.AddQuotes() ?? ""}");
+            sb.AppendLine($"{subIndent}StateMachine {obj.StateMachine.Name?.AddQuotes() ?? ""}");
 
         sb.AppendLine($"{currentIndent}}}");
         sb.AppendLine($"");

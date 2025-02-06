@@ -18,7 +18,7 @@ public class StateMachineDeserialiser(System System, Instanciator Instanciator, 
             return null;
         }
 
-        if (!unnamed.Type.Value.IsEqv("SM"))
+        if (!unnamed.Type.Value.IsEqv("StateMachine"))
         {
             return null;
         }

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpreter;
 using System.Diagnostics;
 using System.Text.RegularExpressions;

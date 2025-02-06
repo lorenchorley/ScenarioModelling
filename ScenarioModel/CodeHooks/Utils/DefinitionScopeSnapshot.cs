@@ -1,4 +1,4 @@
-﻿namespace ScenarioModelling.CodeHooks;
+﻿namespace ScenarioModelling.CodeHooks.Utils;
 
 public class DefinitionScopeSnapshot
 {

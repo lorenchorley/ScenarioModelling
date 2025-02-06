@@ -2,6 +2,7 @@
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
@@ -51,7 +52,8 @@ public partial class ProgressiveCodeHookTests
         // Assert
         // ======
         var serialisedContext =
-            context.Serialise()
+            context.ResetToInitialState()
+                   .Serialise()
                    .Match(v => v, e => throw e)
                    .Trim();
 

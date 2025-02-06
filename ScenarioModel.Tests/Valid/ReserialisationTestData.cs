@@ -35,7 +35,7 @@ public static class ReserialisationTestData
         yield return new CompleteTestCase(
             Name: "State machine",
             """
-            SM SM1 {
+            StateMachine SM1 {
             }
             """);
 
@@ -43,12 +43,12 @@ public static class ReserialisationTestData
             Name: "State machine without name",
             originalText:
             """
-            SM {
+            StateMachine {
             }
             """,
             expectedFinalText:
             """
-            SM StateMachine1 {
+            StateMachine StateMachine1 {
             }
             """
             );
@@ -61,10 +61,10 @@ public static class ReserialisationTestData
             }
 
             EntityType EntityType1 {
-              SM SM1
+              StateMachine SM1
             }
 
-            SM SM1 {
+            StateMachine SM1 {
             }
             """);
 
@@ -75,7 +75,7 @@ public static class ReserialisationTestData
               State S1
             }
 
-            SM SM1 {
+            StateMachine SM1 {
               State S1
             }
             """);
@@ -87,7 +87,7 @@ public static class ReserialisationTestData
         //      State S1
         //    }
 
-        //    SM SM1 {
+        //    StateMachine SM1 {
         //      State S1
         //    }
         //    """,
@@ -98,10 +98,10 @@ public static class ReserialisationTestData
         //    }
 
         //    EntityType EntityType1 {
-        //      SM SM1
+        //      StateMachine SM1
         //    }
 
-        //    SM SM1 {
+        //    StateMachine SM1 {
         //      State S1
         //    }
         //    """);
@@ -115,10 +115,10 @@ public static class ReserialisationTestData
             }
 
             EntityType EntityType1 {
-              SM SM1
+              StateMachine SM1
             }
 
-            SM SM1 {
+            StateMachine SM1 {
               State S1
             }
             """);
@@ -132,10 +132,10 @@ public static class ReserialisationTestData
             }
 
             EntityType EntityType1 {
-              SM SM1
+              StateMachine SM1
             }
 
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
             }
@@ -150,10 +150,10 @@ public static class ReserialisationTestData
             }
 
             EntityType EntityType1 {
-              SM SM1
+              StateMachine SM1
             }
 
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2
@@ -169,10 +169,10 @@ public static class ReserialisationTestData
             }
 
             EntityType EntityType1 {
-              SM SM1
+              StateMachine SM1
             }
 
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2 : T1
@@ -182,7 +182,7 @@ public static class ReserialisationTestData
         yield return new CompleteTestCase(
             Name: "State machine with two states and a transition",
             """
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2
@@ -192,12 +192,12 @@ public static class ReserialisationTestData
         yield return new IncompleteTestCase(
             Name: "State machine with a transition",
             originalText: """
-            SM SM1 {
+            StateMachine SM1 {
               S1 -> S2
             }
             """,
             expectedFinalText: """
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2
@@ -207,13 +207,13 @@ public static class ReserialisationTestData
         yield return new IncompleteTestCase(
             Name: "State machine with a transition and only one explicit state",
             originalText: """
-            SM SM1 {
+            StateMachine SM1 {
               State S2
               S1 -> S2
             }
             """,
             expectedFinalText: """
-            SM SM1 {
+            StateMachine SM1 {
               State S2
               State S1
               S1 -> S2
@@ -223,7 +223,7 @@ public static class ReserialisationTestData
         yield return new CompleteTestCase(
             Name: "State machine with two states and a named transition",
             """
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2 : T1
@@ -233,12 +233,12 @@ public static class ReserialisationTestData
         yield return new IncompleteTestCase(
             Name: "State machine with a named transition",
             originalText: """
-            SM SM1 {
+            StateMachine SM1 {
               S1 -> S2 : T1
             }
             """,
             expectedFinalText: """
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2 : T1
@@ -248,7 +248,7 @@ public static class ReserialisationTestData
         yield return new CompleteTestCase(
             Name: "State machine with two states, one brokenly named, and a transition",
             """
-            SM SM1 {
+            StateMachine SM1 {
               State "S 1"
               State S2
               "S 1" -> S2 : T1
@@ -258,12 +258,12 @@ public static class ReserialisationTestData
         yield return new IncompleteTestCase(
             Name: "State machine with a transition that has a brokenly named state",
             originalText: """
-            SM SM1 {
+            StateMachine SM1 {
               "S 1" -> S2 : T1
             }
             """,
             expectedFinalText: """
-            SM SM1 {
+            StateMachine SM1 {
               State "S 1"
               State S2
               "S 1" -> S2 : T1
@@ -273,7 +273,7 @@ public static class ReserialisationTestData
         yield return new CompleteTestCase(
             Name: "State machine with two states and a brokenly named transition",
             """
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2 : "T 1"
@@ -283,12 +283,12 @@ public static class ReserialisationTestData
         yield return new IncompleteTestCase(
             Name: "State machine with a brokenly named transition",
             originalText: """
-            SM SM1 {
+            StateMachine SM1 {
               S1 -> S2 : "T 1"
             }
             """,
             expectedFinalText: """
-            SM SM1 {
+            StateMachine SM1 {
               State S1
               State S2
               S1 -> S2 : "T 1"
@@ -334,7 +334,7 @@ public static class ReserialisationTestData
               State S1
             }
             
-            SM StateMachine1 {
+            StateMachine StateMachine1 {
               State S1
             }
             

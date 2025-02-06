@@ -1,8 +1,8 @@
 ﻿Entity Actor {
-  State S2
+  State S1
 }
 
-SM SM1 {
+StateMachine SM1 {
   State S1
   State S2
   S1 -> S2 : T1
@@ -11,6 +11,7 @@ SM SM1 {
 Constraint <Actor.State != S2> {
   Description "State must never be S2"
 }
+
 MetaStory "MetaStory recorded by hooks" {
   Dialog D1 {
     Text "Some text"

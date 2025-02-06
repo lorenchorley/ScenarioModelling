@@ -252,7 +252,7 @@ public class Context
         }
     }
 
-    public void ResetToInitialState()
+    public Context ResetToInitialState()
     {
         foreach (var statefulObject in System.AllStateful)
         {
@@ -272,5 +272,7 @@ public class Context
 
             statefulObject.State.SetReference(resolvedValue.GenerateReference());
         }
+
+        return this;
     }
 }

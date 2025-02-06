@@ -76,4 +76,10 @@ public static class StringExtensions
 
     public static string AddQuotes(this string str)
         => str.Contains(' ') ? $@"""{str}""" : str;
+    
+    public static string AddIndent(this string str, string indent)
+    {
+        return string.Join("\n", str.Split('\n').Select(s => indent + s));
+    }
+
 }

@@ -181,7 +181,7 @@ A state machine is a representation of the possible states an entity or an aspec
 State machines are defined as follows
 
 ```
-SM "Possible Ranks"
+StateMachine "Possible Ranks"
 {
 	Cadet -> Ensign
 	Ensign -> Lieutenant
@@ -285,10 +285,10 @@ Entity Actor {
 }
         
 EntityType ET1 {
-    SM Name
+    StateMachine Name
 }
         
-SM Name {
+StateMachine Name {
     State "Amy Stake"
     State "Brock Lee"
     State "Clara Nett"

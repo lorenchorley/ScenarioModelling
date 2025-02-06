@@ -17,6 +17,9 @@ public class TypeExhaustivityFunctions
 
     public void AssertTypeExhaustivelyImplemented<TBaseType>()
     {
+        if (!ExhaustivityFunctions.Active)
+            return;
+
         Type[] implementations = GetAllImplmentationsOfType<TBaseType>();
         var taggedTypes = GetAllTaggedTypesWithBaseClass<TBaseType>();
 
@@ -25,13 +28,13 @@ public class TypeExhaustivityFunctions
         var unimplementedTypes = allAnnotatedImplementations.Except(_allTypes).ToArray();
         if (unimplementedTypes.Any())
         {
-            //throw new ExhaustivenessException($"These {_objectTypeName} types do not implement the interface {typeof(TBaseType).Name}", unimplementedTypes);
+            throw new ExhaustivenessException($"These {_objectTypeName} types do not implement the interface {typeof(TBaseType).Name}", unimplementedTypes);
         }
 
         var untaggedTargetTypes = _allTypes.Except(allAnnotatedImplementations).ToArray();
         if (untaggedTargetTypes.Any())
         {
-            //throw new ExhaustivenessException($"These target {_objectTypeName} types are not tagged as implementing the interface {typeof(TBaseType).Name}", untaggedTargetTypes);
+            throw new ExhaustivenessException($"These target {_objectTypeName} types are not tagged as implementing the interface {typeof(TBaseType).Name}", untaggedTargetTypes);
         }
 
         var groupedByTargetType = taggedTypes.GroupBy(a => a.GenericTargetType);
@@ -39,7 +42,7 @@ public class TypeExhaustivityFunctions
         {
             if (group.Count() > 1)
             {
-                //throw new ExhaustivenessException($"The {_objectTypeName} type {group.Key.Name} is tagged as implementing the interface {typeof(TBaseType).Name} {group.Count()} times", group.Select(g => g.Type));
+                throw new ExhaustivenessException($"The {_objectTypeName} type {group.Key.Name} is tagged as implementing the interface {typeof(TBaseType).Name} {group.Count()} times", group.Select(g => g.Type));
             }
         }
     }

@@ -1,7 +1,9 @@
 using FluentAssertions;
 using ScenarioModelling.CodeHooks;
+using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Interpolation;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
@@ -218,7 +220,8 @@ public partial class WhileLoopHookTest
         generatedMetaStory.Should().NotBeNull();
 
         var contextBuiltFromHooks =
-            context.Serialise()
+            context.ResetToInitialState() // Reinit back to initial state so that the serialisation is consistent
+                   .Serialise()
                    .Match(v => v, e => throw e);
 
         Debug.WriteLine("");

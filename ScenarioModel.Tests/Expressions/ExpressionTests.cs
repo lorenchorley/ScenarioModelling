@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Newtonsoft.Json;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Expressions.Evaluation;
 using ScenarioModelling.Expressions.Initialisation;
 using ScenarioModelling.Expressions.Interpreter;
@@ -14,6 +15,7 @@ namespace ScenarioModelling.Tests.Expressions;
 [TestClass]
 public class ExpressionTests
 {
+
     [TestMethod]
     [TestCategory("Expressions"), TestCategory("Grammar")]
     [ExpressionGrammarTestDataProvider]
