@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModelling.Collections.Graph;
+using ScenarioModelling.Objects.StoryNodes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 
@@ -10,7 +11,6 @@ namespace ScenarioModelling;
 // Component diagrams derived from the system?
 // Code skeltons generated from the system?
 // State exhaustiveness and reachability analysis?
-
 // What makes relations special?
 
 /// <summary>
@@ -25,13 +25,5 @@ public class MetaStory : IIdentifiable
 
     public System System { get; set; } = new();
     public DirectedGraph<IStoryNode> Graph { get; set; } = new();
-
-    //public StoryRunResult StartAtNode(string nodeName)
-    //{
-    //    story story = new() { MetaStory = this };
-
-    //    IMetaStoryNode? initialAction = Graph.PrimarySubGraph.NodeSequence.FirstOrDefault(step => step.Name == nodeName);
-
-    //    return StoryRunResult.Successful(story);
-    //}
+    public List<MetadataNode> Metadata { get; set; } = new();
 }

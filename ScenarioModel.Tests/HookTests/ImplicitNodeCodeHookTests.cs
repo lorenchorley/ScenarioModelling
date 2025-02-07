@@ -30,9 +30,9 @@ public partial class ImplicitNodeCodeHookTests
 
         MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
 
-        var systemHooksMethod = GetAction<SystemHookDefinition>(systemMethodName);
-        var MetaStoryWithImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
-        var MetaStoryWithoutImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
+        var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<SystemHookDefinition>(systemMethodName);
+        var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
+        var MetaStoryWithoutImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
 
         // Build system
         orchestrator.DefineSystem(sysConf =>
@@ -85,15 +85,12 @@ public partial class ImplicitNodeCodeHookTests
 
         MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
 
-        var systemHooksMethod = GetAction<SystemHookDefinition>(systemMethodName);
-        var MetaStoryWithImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
-        var MetaStoryWithoutImplicitNodeMethod = GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
+        var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<SystemHookDefinition>(systemMethodName);
+        var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
+        var MetaStoryWithoutImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
 
         // Build system
-        orchestrator.DefineSystem(sysConf =>
-        {
-            systemHooksMethod(sysConf);
-        });
+        orchestrator.DefineSystem(systemHooksMethod);
 
         ExpressionEvalator evalator = new(context.System);
         DialogExecutor executor = new(context, evalator);
@@ -126,14 +123,5 @@ public partial class ImplicitNodeCodeHookTests
         string secondSerialisedEvents = secondRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         DiffAssert.DiffIfNotEqual(firstSerialisedEvents, secondSerialisedEvents);
-    }
-
-    private Action<T> GetAction<T>(string systemMethodName)
-    {
-        var methodRef =
-            GetType().GetMethod(systemMethodName, BindingFlags.NonPublic | BindingFlags.Static)
-                     ?? throw new Exception($"Method {systemMethodName} not found in {GetType().Name}");
-
-        return (T parameter) => methodRef.Invoke(this, [parameter]);
     }
 }

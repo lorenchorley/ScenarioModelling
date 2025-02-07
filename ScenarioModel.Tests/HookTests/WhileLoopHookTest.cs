@@ -23,7 +23,7 @@ public partial class WhileLoopHookTest
           CharacterStyle Red
         }
         
-        SM Name {
+        StateMachine Name {
           State "Amy Stake"
           State "Brock Lee"
           State "Clara Nett"

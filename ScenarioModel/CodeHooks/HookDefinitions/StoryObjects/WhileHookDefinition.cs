@@ -27,8 +27,8 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     public WhileHookDefinition(DefinitionScope scope, string expression, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
-
-        Node = new WhileNode();
+        Scope = scope;
+        ScopeSnapshot = Scope.TakeSnapshot();
 
         // Parse the expression before adding it to the node
         ExpressionInterpreter interpreter = new();
@@ -37,10 +37,9 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
         if (result.HasErrors)
             throw new Exception($@"Unable to parse expression ""{expression}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
 
+        Node = new WhileNode();
         Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
-        Scope = scope;
-        ScopeSnapshot = Scope.TakeSnapshot();
     }
 
     private bool WhileHook(bool result)

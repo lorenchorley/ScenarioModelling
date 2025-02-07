@@ -46,4 +46,5 @@ public class ParallelConstructionExecutor : DialogExecutor
     {
         return node.GenerateGenericTypeEvent(_dependencies);
     }
+
 }

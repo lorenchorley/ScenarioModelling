@@ -21,7 +21,7 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
         return def is TransitionDefinition;
     };
 
-    public IStoryNode Transform(Definition def, MetaStory MetaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> transformDefinition)
+    public IStoryNode Transform(Definition def, MetaStory metaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> transformDefinition)
     {
         TransitionNode node = new();
         node.Line = def.Line;
@@ -57,7 +57,7 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
                 {
                     node.TransitionName = transitionDefinition.TransitionName.Value;
 
-                    IStateful? stateful = MetaStory.System.AllStateful.FirstOrDefault(e => e.Name.IsEqv(transitionDefinition.Type));
+                    IStateful? stateful = metaStory.System.AllStateful.FirstOrDefault(e => e.Name.IsEqv(transitionDefinition.Type));
 
                     if (stateful == null)
                     {

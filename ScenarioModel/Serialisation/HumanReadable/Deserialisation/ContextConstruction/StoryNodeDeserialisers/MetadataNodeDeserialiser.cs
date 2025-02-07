@@ -8,11 +8,11 @@ using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Intermediate
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
 
-[StoryNodeLike<IDefinitionToNodeDeserialiser, ChooseNode>]
-public class ChooseNodeDeserialiser : IDefinitionToNodeDeserialiser
+[StoryNodeLike<IDefinitionToNodeDeserialiser, MetadataNode>]
+public class MetadataNodeDeserialiser : IDefinitionToNodeDeserialiser
 {
     [StoryNodeLikeProperty]
-    public string Name => "Choose".ToUpperInvariant();
+    public string Name => "Metadata".ToUpperInvariant();
 
     [StoryNodeLikeProperty]
     public Func<Definition, bool>? Predicate => null;
@@ -21,23 +21,32 @@ public class ChooseNodeDeserialiser : IDefinitionToNodeDeserialiser
     {
         if (def is not UnnamedDefinition unnamed)
         {
-            throw new Exception("Jump node must be unnamed definition");
+            throw new Exception("Metadata node must be unnamed definition");
         }
 
-        ChooseNode node = new();
+        throw new NotImplementedException();
+
+        MetadataNode node = new();
         node.Line = def.Line;
 
         foreach (var item in unnamed.Definitions)
         {
-            if (item is NamedDefinition named)
-            {
-                node.Choices.Add((named.Type.Value, named.Name.Value));
-            }
-            else if (item is UnnamedDefinition unnamedsub)
-            {
-                node.Choices.Add((unnamedsub.Type.Value, ""));
-            }
+            //if (item is NamedDefinition namedDefinition && namedDefinition.Type.Value == "Target") // We accept either an explicitly typed "Target" definition
+            //{
+            //    node.Target = namedDefinition.Name.Value;
+            //    break;
+            //}
+            //else if (item is UnnamedDefinition unnamedDefinition) // Or an unnamed definition as the target node name
+            //{
+            //    node.Target = unnamedDefinition.Type.Value;
+            //    break;
+            //}
         }
+
+        //if (string.IsNullOrEmpty(node.Target))
+        //{
+        //    throw new Exception("Target not set on metadata node");
+        //}
 
         return node;
     }

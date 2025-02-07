@@ -57,6 +57,7 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
             dialogNode => { },
             ifNode => { },
             jumpNode => { },
+            metadataNode => { },
             transitionNode => { },
             whileNode => { }
         );

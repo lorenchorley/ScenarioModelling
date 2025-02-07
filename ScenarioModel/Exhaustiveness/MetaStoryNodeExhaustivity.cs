@@ -12,6 +12,7 @@ public static class MetaStoryNodeExhaustivity
         typeof(DialogNode),
         typeof(IfNode),
         typeof(JumpNode),
+        typeof(MetadataNode),
         typeof(TransitionNode),
         typeof(WhileNode)
     ];
@@ -21,6 +22,7 @@ public static class MetaStoryNodeExhaustivity
         Action dialogNode,
         Action ifNode,
         Action jumpNode,
+        Action metadataNode,
         Action transitionNode,
         Action whileNode)
     {
@@ -28,6 +30,7 @@ public static class MetaStoryNodeExhaustivity
         dialogNode();
         ifNode();
         jumpNode();
+        metadataNode();
         transitionNode();
         whileNode();
     }

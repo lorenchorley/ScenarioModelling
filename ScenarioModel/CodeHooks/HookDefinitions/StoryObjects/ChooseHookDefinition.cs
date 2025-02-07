@@ -23,10 +23,10 @@ public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<Cho
     public ChooseHookDefinition(DefinitionScope scope, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
-
-        Node = new ChooseNode();
         Scope = scope;
         ScopeSnapshot = Scope.TakeSnapshot();
+
+        Node = new ChooseNode();
     }
 
     private string ChooseHook(string result)

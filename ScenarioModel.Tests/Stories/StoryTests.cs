@@ -26,7 +26,7 @@ public partial class StoryRunTests
                 CharacterStyle "Red"
             }
 
-            SM Name {
+            StateMachine Name {
                 Bob -> Alice : ChangeName
                 Alice -> Bob : ChangeName
             }
@@ -104,7 +104,7 @@ public partial class StoryRunTests
                 CharacterStyle "Red"
             }
 
-            SM Name {
+            StateMachine Name {
                 "Amy Stake"-> "Brock Lee" : ChangeName
                 "Brock Lee"-> "Clara Nett" : ChangeName
                 "Clara Nett"-> "Dee Zaster" : ChangeName

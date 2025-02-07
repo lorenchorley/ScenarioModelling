@@ -86,7 +86,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     """
     
     """)]
-    private static void SystemEmpty(SystemHookDefinition sysConf)
+    private static void EmptySystem(SystemHookDefinition sysConf)
     {
     }
 
@@ -180,6 +180,60 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                .WithState("S3")
                .WithTransition("S1", "S2", "T1")
                .WithTransition("S2", "S3", "T1");
+    }
+    #endregion
+
+    #region Metadata
+    [ExpectedResult(
+    """
+    Metadata {
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    private static void EmptyMetadata(MetaStoryHookOrchestrator hooks)
+    {
+        hooks.Metadata("")
+             .BuildAndRegister();
+    }
+
+    [ExpectedResult(
+    """
+    Metadata {
+        Value "Some value"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    private static void MetadataWithValue(MetaStoryHookOrchestrator hooks)
+    {
+        hooks.Metadata("Some value")
+             .BuildAndRegister();
+    }
+    
+    [ExpectedResult(
+    """
+    Metadata "A key" {
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    private static void MetadataWithKey(MetaStoryHookOrchestrator hooks)
+    {
+        hooks.Metadata("")
+             .WithKey("A key")
+             .BuildAndRegister();
+    }
+    
+    [ExpectedResult(
+    """
+    Metadata "A key" {
+        Value "Some value"
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    private static void MetadataWithKeyAndValue(MetaStoryHookOrchestrator hooks)
+    {
+        hooks.Metadata("Some value")
+             .WithKey("A key")
+             .BuildAndRegister();
     }
     #endregion
 
@@ -279,7 +333,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "Some text"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemEmpty))]
+    [AssociatedSystemHookMethod(nameof(EmptySystem))]
     private static void OneDialogAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.Jump("D1")
@@ -302,7 +356,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "Some more text"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemEmpty))]
+    [AssociatedSystemHookMethod(nameof(EmptySystem))]
     private static void TwoDialogsAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.Jump("D2")

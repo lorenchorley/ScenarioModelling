@@ -51,6 +51,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
             dialogNode: () => RegisterNodeProfile(new DialogNodeDeserialiser()),
             ifNode: () => RegisterNodeProfile(_ifNodeDeserialiser),
             jumpNode: () => RegisterNodeProfile(new JumpNodeDeserialiser()),
+            metadataNode: () => RegisterNodeProfile(new MetadataNodeDeserialiser()),
             transitionNode: () => RegisterNodeProfile(new TransitionNodeDeserialiser()),
             whileNode: () => RegisterNodeProfile(_whileNodeDeserialiser)
         );

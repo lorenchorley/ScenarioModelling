@@ -15,6 +15,7 @@ public class MetaStorySerialiser
     private readonly DialogNodeSerialiser _dialogNodeSerialiser;
     private readonly IfNodeSerialiser _ifNodeSerialiser;
     private readonly JumpNodeSerialiser _jumpNodeSerialiser;
+    private readonly MetadataNodeSerialiser _metadataNodeSerialiser;
     private readonly TransitionNodeSerialiser _transitionNodeSerialiser;
     private readonly WhileNodeSerialiser _whileNodeSerialiser;
 
@@ -37,6 +38,8 @@ public class MetaStorySerialiser
     {
         sb.AppendLine($"{currentIndent}MetaStory {MetaStory.Name.AddQuotes()} {{");
 
+        //WriteMetadata(sb, MetaStory.Metadata, currentIndent + _indentSegment);
+
         foreach (var node in MetaStory.Graph.PrimarySubGraph.NodeSequence)
         {
             WriteMetaStoryNode(sb, MetaStory, node, currentIndent + _indentSegment);
@@ -46,7 +49,16 @@ public class MetaStorySerialiser
         sb.AppendLine($"");
     }
 
-    public void WriteMetaStoryNode(StringBuilder sb, MetaStory MetaStory, IStoryNode node, string currentIndent)
+    private void WriteMetadata(StringBuilder sb, List<MetadataNode> metadata, string currentIndent)
+    {
+        foreach (var meta in metadata)
+        {
+            string type = string.IsNullOrWhiteSpace(meta.MetadataType) ? "" : $" ({meta.Type})";
+            sb.AppendLine($"{currentIndent}{meta.Key}{type} {meta.Value}");
+        }
+    }
+
+    public void WriteMetaStoryNode(StringBuilder sb, MetaStory metaStory, IStoryNode node, string currentIndent)
     {
         // TODO Still used ?
         if (node is ITransitionNode transitionNode)
@@ -59,12 +71,13 @@ public class MetaStorySerialiser
         }
 
         node.ToOneOf().Switch(
-            (ChooseNode chooseNode) => _chooseNodeSerialiser.WriteNode(sb, MetaStory, chooseNode, currentIndent),
-            (DialogNode dialogNode) => _dialogNodeSerialiser.WriteNode(sb, MetaStory, dialogNode, currentIndent),
-            (IfNode ifNode) => _ifNodeSerialiser.WriteNode(sb, MetaStory, ifNode, currentIndent),
-            (JumpNode jumpNode) => _jumpNodeSerialiser.WriteNode(sb, MetaStory, jumpNode, currentIndent),
-            (TransitionNode transitionNode) => _transitionNodeSerialiser.WriteNode(sb, MetaStory, transitionNode, currentIndent),
-            (WhileNode whileNode) => _whileNodeSerialiser.WriteNode(sb, MetaStory, whileNode, currentIndent)
+            (ChooseNode chooseNode) => _chooseNodeSerialiser.WriteNode(sb, metaStory, chooseNode, currentIndent),
+            (DialogNode dialogNode) => _dialogNodeSerialiser.WriteNode(sb, metaStory, dialogNode, currentIndent),
+            (IfNode ifNode) => _ifNodeSerialiser.WriteNode(sb, metaStory, ifNode, currentIndent),
+            (JumpNode jumpNode) => _jumpNodeSerialiser.WriteNode(sb, metaStory, jumpNode, currentIndent),
+            (MetadataNode metadata) => _metadataNodeSerialiser.WriteNode(sb, metaStory, metadata, currentIndent),
+            (TransitionNode transitionNode) => _transitionNodeSerialiser.WriteNode(sb, metaStory, transitionNode, currentIndent),
+            (WhileNode whileNode) => _whileNodeSerialiser.WriteNode(sb, metaStory, whileNode, currentIndent)
         );
     }
 

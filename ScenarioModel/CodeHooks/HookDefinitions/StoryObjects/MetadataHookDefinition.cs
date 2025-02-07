@@ -3,30 +3,28 @@ using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
-using ScenarioModelling.References.GeneralisedReferences;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
-[StoryNodeLike<INodeHookDefinition, TransitionNode>]
-public class TransitionHookDefinition : IInSituNodeHookDefinition
+[StoryNodeLike<INodeHookDefinition, MetadataNode>]
+public class MetadataHookDefinition : IInSituNodeHookDefinition
 {
     private readonly IHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
-    public TransitionNode Node { get; private set; }
+    public MetadataNode Node { get; private set; }
     public DefinitionScope Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public TransitionHookDefinition(DefinitionScope scope, System System, string StatefulObjectName, string Transition, IHookFunctions hookFunctions)
+    public MetadataHookDefinition(DefinitionScope scope, string value, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;
         ScopeSnapshot = Scope.TakeSnapshot();
 
-        Node = new TransitionNode()
+        Node = new MetadataNode()
         {
-            StatefulObject = new StatefulObjectReference(System) { Name = StatefulObjectName },
-            TransitionName = Transition
+            Value = value
         };
     }
 
@@ -35,9 +33,15 @@ public class TransitionHookDefinition : IInSituNodeHookDefinition
         return Node;
     }
 
-    public TransitionHookDefinition SetId(string id)
+    public MetadataHookDefinition WithKey(string key)
     {
-        Node.Name = id;
+        Node.Key = key;
+        return this;
+    }
+    
+    public MetadataHookDefinition WithType(string type)
+    {
+        Node.MetadataType = type;
         return this;
     }
 
@@ -55,7 +59,7 @@ public class TransitionHookDefinition : IInSituNodeHookDefinition
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)
     {
-        if (preexistingNode is not TransitionNode node)
+        if (preexistingNode is not MetadataNode node)
             throw new Exception($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
 
         Node = node;

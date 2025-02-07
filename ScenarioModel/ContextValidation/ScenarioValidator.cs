@@ -15,6 +15,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
     private readonly DialogNodeValidator _dialogNodeValidator = new();
     private readonly IfNodeValidator _ifNodeValidator = new();
     private readonly JumpNodeValidator _jumpNodeValidator = new();
+    private readonly MetadataNodeValidator _metadataNodeValidator = new();
     private readonly TransitionNodeValidator _transitionNodeValidator = new();
     private readonly WhileNodeValidator _whileNodeValidator = new();
 
@@ -74,7 +75,11 @@ public class MetaStoryValidator : IMetaStoryVisitor
         ArgumentNullExceptionStandard.ThrowIfNull(_system);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        return VisitSubgraph(ifNode.SubGraph);
+        var errors = _ifNodeValidator.Validate(_system, _metaStory, ifNode);
+
+        errors.Incorporate(VisitSubgraph(ifNode.SubGraph));
+
+        return errors;
     }
 
     public object VisitJumpNode(JumpNode jumpNode)
@@ -83,6 +88,11 @@ public class MetaStoryValidator : IMetaStoryVisitor
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
         return _jumpNodeValidator.Validate(_system, _metaStory, jumpNode);
+    }
+
+    public object VisitMetadataNode(MetadataNode metadataNode)
+    {
+        return _metadataNodeValidator.Validate(_system, _metaStory, metadataNode);
     }
 
     public object VisitTransitionNode(TransitionNode transitionNode)
@@ -98,6 +108,11 @@ public class MetaStoryValidator : IMetaStoryVisitor
         ArgumentNullExceptionStandard.ThrowIfNull(_system);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        return _whileNodeValidator.Validate(_system, _metaStory, whileNode);
+        var errors = _whileNodeValidator.Validate(_system, _metaStory, whileNode);
+
+        errors.Incorporate(VisitSubgraph(whileNode.SubGraph));
+
+        return errors;
     }
+
 }

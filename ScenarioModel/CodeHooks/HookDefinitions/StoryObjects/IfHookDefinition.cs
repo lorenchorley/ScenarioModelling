@@ -24,8 +24,8 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     public IfHookDefinition(DefinitionScope scope, string expression, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
-
-        Node = new IfNode();
+        Scope = scope;
+        ScopeSnapshot = Scope.TakeSnapshot();
 
         // Parse the expression before adding it to the node
         ExpressionInterpreter interpreter = new();
@@ -34,10 +34,9 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
         if (result.HasErrors)
             throw new Exception($@"Unable to parse expression ""{expression}"" on if declaration : \n{result.Errors.CommaSeparatedList()}");
 
+        Node = new IfNode();
         Node.OriginalConditionText = expression;
         Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
-        Scope = scope;
-        ScopeSnapshot = Scope.TakeSnapshot();
     }
 
     private bool IfConditionHook(bool result)

@@ -71,6 +71,28 @@ public abstract class MetaStoryHookOrchestrator
     }
 
     /// <summary>
+    /// Declare a etadata node in the highest subgraph only.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <remarks>
+    /// Inserts the node as soon as the declaration is finalised
+    /// </remarks>
+    /// <returns></returns>
+    public virtual MetadataHookDefinition Metadata(string text)
+    {
+        ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
+        ArgumentExceptionStandard.ThrowIfNullOrEmpty(text);
+
+        _hookFunctions!.VerifyPreviousDefinition();
+
+        MetadataHookDefinition nodeDef = new(CurrentScope, text, _hookFunctions);
+
+        _newlyCreatedHooks.Enqueue(nodeDef);
+
+        return nodeDef;
+    }
+    
+    /// <summary>
     /// Declare a dialog node in the current subgraph.
     /// </summary>
     /// <param name="text"></param>
@@ -278,4 +300,8 @@ public abstract class MetaStoryHookOrchestrator
         _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
     }
 
+    public void ResetToInitialState()
+    {
+        _parallelConstructionExecutor!.ResetToInitialState();
+    }
 }

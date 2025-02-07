@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation.WorkInProgress;
 
 public class StrMkr
 {

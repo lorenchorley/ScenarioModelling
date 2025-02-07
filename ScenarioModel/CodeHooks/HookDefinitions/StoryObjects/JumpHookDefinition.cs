@@ -19,13 +19,13 @@ public class JumpHookDefinition : IInSituNodeHookDefinition
     public JumpHookDefinition(DefinitionScope scope, string target, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
+        Scope = scope;
+        ScopeSnapshot = Scope.TakeSnapshot();
 
         Node = new JumpNode()
         {
             Target = target
         };
-        Scope = scope;
-        ScopeSnapshot = Scope.TakeSnapshot();
     }
 
     public JumpHookDefinition SetId(string id)

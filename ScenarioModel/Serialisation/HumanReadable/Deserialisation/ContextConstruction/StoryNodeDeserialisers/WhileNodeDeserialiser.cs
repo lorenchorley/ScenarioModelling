@@ -20,7 +20,7 @@ public class WhileNodeDeserialiser : IDefinitionToNodeDeserialiser
 
     public List<IStoryNodeWithExpression> ConditionsToInitialise = new();
 
-    public IStoryNode Transform(Definition def, MetaStory MetaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> tryTransform)
+    public IStoryNode Transform(Definition def, MetaStory metaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> tryTransform)
     {
         if (def is not ExpressionDefinition expDef)
         {

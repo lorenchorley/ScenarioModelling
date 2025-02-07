@@ -26,11 +26,16 @@ public class DialogExecutor : IExecutor
         return _story.Events.LastOrDefault();
     }
 
-    public virtual void StartMetaStory(string name)
+    public void ResetToInitialState()
     {
         Context.ResetToInitialState();
+    }
 
-        _metaStory = Context.MetaStories.FirstOrDefault(s => s.Name == name);
+    public virtual void StartMetaStory(string name)
+    {
+        ResetToInitialState();
+
+        _metaStory = Context.MetaStories.FirstOrDefault(s => s.Name.IsEqv(name));
 
         if (_metaStory == null)
             throw new InvalidOperationException($"No MetaStory with name {name}");

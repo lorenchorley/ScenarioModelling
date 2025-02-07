@@ -68,9 +68,10 @@ public class Story
             (DialogNode node) => CurrentScope.GetNextInSequence(),
             (IfNode node) => ManageIfNode(currentEvent, node),
             (JumpNode node) => ManageJumpNode(currentEvent, node),
+            (MetadataNode node) => CurrentScope.GetNextInSequence(),
             (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
             (WhileNode node) => ManageWhileNode(currentEvent, node)
-            );
+        );
 
         return currentScopeNode;
     }
