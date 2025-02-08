@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -9,9 +10,11 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.Objects.StoryNodes;
 
+[ProtoContract]
 [StoryNodeLike<IStoryNode, JumpNode>]
 public record JumpNode : StoryNode<JumpEvent>, IFlowNode
 {
+    [ProtoMember(1)]
     [StoryNodeLikeProperty]
     public string Target { get; set; } = "";
 

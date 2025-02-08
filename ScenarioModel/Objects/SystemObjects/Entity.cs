@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProtoBuf;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
@@ -9,23 +10,35 @@ using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
+[ProtoContract]
 [SystemObjectLike<ISystemObject, Entity>]
 public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
 {
-    private readonly System _system;
-
-    public string Name { get; set; } = "";
+    private System _system = null!;
 
     [JsonIgnore]
     [YamlIgnore]
     public Type Type => typeof(Entity);
 
+    [ProtoMember(1)]
+    public string Name { get; set; } = "";
+
+    [ProtoMember(2)]
     public string CharacterStyle { get; set; } = "";
 
+    [ProtoMember(3)]
     public EntityTypeProperty EntityType { get; private set; }
+
+    [ProtoMember(4)]
     public RelationListProperty Relations { get; private set; }
+
+    [ProtoMember(5)]
     public AspectListProperty Aspects { get; private set; }
+
+    [ProtoMember(6)]
     public StateProperty InitialState { get; private set; }
+
+    [ProtoMember(7)]
     public StateProperty State { get; private set; }
 
     private Entity()
@@ -45,6 +58,11 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
         Relations = new RelationListProperty(system);
         Aspects = new AspectListProperty(system);
         EntityType = new EntityTypeProperty(system);
+    }
+
+    public void InitialiseAfterDeserialisation(System system)
+    {
+        _system = system;
     }
 
     public EntityReference GenerateReference()

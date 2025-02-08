@@ -1,5 +1,6 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
+using ProtoBuf;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
@@ -12,18 +13,23 @@ namespace ScenarioModelling.Objects.SystemObjects;
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
+[ProtoContract]
 [SystemObjectLike<ISystemObject, StateMachine>]
 public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSerialisability
 {
-    private readonly System _system;
-
-    public string Name { get; set; } = "";
+    private System _system = null!;
 
     [JsonIgnore]
     [YamlIgnore]
     public Type Type => typeof(StateMachine);
 
+    [ProtoMember(1)]
+    public string Name { get; set; } = "";
+
+    [ProtoMember(2)]
     public StateListProperty States { get; set; }
+
+    [ProtoMember(3)]
     public TransitionListProperty Transitions { get; set; }
 
     public bool ExistanceOriginallyInferred { get; set; } = false;
@@ -58,6 +64,11 @@ public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSeri
 
         States = new(system);
         Transitions = new(system);
+    }
+
+    public void InitialiseAfterDeserialisation(System system)
+    {
+        _system = system;
     }
 
     public StateMachineReference GenerateReference()

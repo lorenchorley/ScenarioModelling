@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProtoBuf;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.Visitors;
@@ -7,16 +8,18 @@ using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
+[ProtoContract]
 [SystemObjectLike<ISystemObject, State>]
 public record State : ISystemObject<StateReference>
 {
-    private readonly System _system;
-
-    public string Name { get; set; } = "";
+    private System _system = null!;
 
     [JsonIgnore]
     [YamlIgnore]
     public Type Type => typeof(State);
+
+    [ProtoMember(1)]
+    public string Name { get; set; } = "";
 
     private StateMachine? _stateMachine;
     internal bool HasStateMachine => _stateMachine != null;
@@ -57,6 +60,11 @@ public record State : ISystemObject<StateReference>
 
         // Add this to the system
         _system.States.Add(this);
+    }
+
+    public void InitialiseAfterDeserialisation(System system)
+    {
+        _system = system;
     }
 
     public void DoTransition(string transitionName, IStateful statefulObject)

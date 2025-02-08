@@ -1,11 +1,14 @@
-﻿using ScenarioModelling.Collections.Graph.Validation;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph.Validation;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
 using ScenarioModelling.Objects.StoryNodes.Interfaces;
 
 namespace ScenarioModelling.Collections.Graph;
 
+[ProtoContract]
 public class DirectedGraph<T> where T : IDirectedGraphNode<T>
 {
+    [ProtoMember(1)]
     public SemiLinearSubGraph<T> PrimarySubGraph { get; private set; } = new();
 
     public void Add(T node)

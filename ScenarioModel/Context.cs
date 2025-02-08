@@ -1,4 +1,5 @@
 ﻿using LanguageExt.Common;
+using ProtoBuf;
 using ScenarioModelling.ContextValidation;
 using ScenarioModelling.ContextValidation.Errors;
 using ScenarioModelling.Exhaustiveness;
@@ -12,9 +13,12 @@ using Relation = ScenarioModelling.Objects.SystemObjects.Relation;
 
 namespace ScenarioModelling;
 
+[ProtoContract]
 public class Context
 {
+    [ProtoMember(1)]
     public List<MetaStory> MetaStories { get; set; } = new();
+    [ProtoMember(2)]
     public System System { get; set; } = new();
 
     [YamlIgnore]

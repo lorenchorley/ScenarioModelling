@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProtoBuf;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.SemanticTree;
@@ -9,20 +10,24 @@ using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
+[ProtoContract]
 [SystemObjectLike<ISystemObject, Constraint>]
 public record Constraint : ISystemObject<ConstraintReference>
 {
-    private readonly System _system;
-
-    public string Name { get; set; } = "";
+    private System _system = null!;
 
     [JsonIgnore]
     [YamlIgnore]
     public Type Type => typeof(Constraint);
 
+    [ProtoMember(1)]
+    public string Name { get; set; } = "";
+
+    [ProtoMember(2)]
     [SystemObjectLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
 
+    [ProtoMember(3)]
     [SystemObjectLikeProperty(serialise: false)]
     public string OriginalConditionText { get; set; } = "";
     
@@ -37,6 +42,11 @@ public record Constraint : ISystemObject<ConstraintReference>
 
         // Add this to the system
         system.Constraints.Add(this);
+    }
+
+    public void InitialiseAfterDeserialisation(System system)
+    {
+        _system = system;
     }
 
     public ConstraintReference GenerateReference()

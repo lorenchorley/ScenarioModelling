@@ -12,5 +12,6 @@ public interface ISystemObject : IIdentifiable
 public interface ISystemObject<TRef> : ISystemObject, IReferencable<TRef>
     where TRef : IReference
 {
+    void InitialiseAfterDeserialisation(System system);
     TRef GenerateReference();
 }

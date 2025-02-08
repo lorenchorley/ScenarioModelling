@@ -1,7 +1,11 @@
-﻿namespace ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
 
+namespace ScenarioModelling.Collections.Graph;
+
+[ProtoContract]
 public class SemiLinearSubGraph<T> where T : IDirectedGraphNode<T>
 {
+    [ProtoMember(1)]
     public List<T> NodeSequence { get; private set; } = [];
     public SemiLinearSubGraph<T>? ParentSubgraph { get; set; }
 

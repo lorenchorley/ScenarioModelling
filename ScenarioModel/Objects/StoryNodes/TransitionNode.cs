@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -11,12 +12,15 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.Objects.StoryNodes;
 
+[ProtoContract]
 [StoryNodeLike<IStoryNode, TransitionNode>]
 public record TransitionNode : StoryNode<StateChangeEvent>
 {
+    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public IStatefulObjectReference? StatefulObject { get; set; }
 
+    [ProtoMember(2)]
     [StoryNodeLikeProperty(serialise: false)]
     public string TransitionName { get; set; } = "";
 

@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -12,9 +13,11 @@ namespace ScenarioModelling.Objects.StoryNodes;
 // TODO A subgraph for each choice rather than relying on jump nodes
 // Could act more like a switch
 
+[ProtoContract]
 [StoryNodeLike<IStoryNode, ChooseNode>]
 public record ChooseNode : StoryNode<ChoiceSelectedEvent>, IFlowNode
 {
+    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public ChoiceList Choices { get; set; } = new();
 

@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -8,12 +9,15 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.Objects.StoryNodes;
 
+[ProtoContract]
 [StoryNodeLike<IStoryNode, DialogNode>]
 public record DialogNode : StoryNode<DialogEvent>
 {
+    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialisedName: "Text")]
     public string TextTemplate { get; set; } = "";
 
+    [ProtoMember(2)]
     [StoryNodeLikeProperty(doNotSerialiseIfNullOrEmpty: true)]
     public string? Character { get; set; } = null;
 

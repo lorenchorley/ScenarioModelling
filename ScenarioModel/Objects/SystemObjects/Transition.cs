@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProtoBuf;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
 using ScenarioModelling.Objects.SystemObjects.Properties;
@@ -8,18 +9,23 @@ using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.Objects.SystemObjects;
 
+[ProtoContract]
 [SystemObjectLike<ISystemObject, Transition>]
 public record Transition : ISystemObject<TransitionReference>, IEqualityComparer<Transition>
 {
-    private readonly System _system;
-
-    public string Name { get; set; } = "";
+    private System _system = null!;
 
     [JsonIgnore]
     [YamlIgnore]
     public Type Type => typeof(Transition);
 
+    [ProtoMember(1)]
+    public string Name { get; set; } = "";
+
+    [ProtoMember(2)]
     public StateProperty SourceState { get; private set; }
+
+    [ProtoMember(3)]
     public StateProperty DestinationState { get; private set; }
 
     private Transition()
@@ -36,6 +42,11 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
 
         SourceState = new(system);
         DestinationState = new(system);
+    }
+
+    public void InitialiseAfterDeserialisation(System system)
+    {
+        _system = system;
     }
 
     public TransitionReference GenerateReference()

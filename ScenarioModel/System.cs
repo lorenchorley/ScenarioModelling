@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProtoBuf;
 using ScenarioModelling.Expressions.SemanticTree;
 using ScenarioModelling.Objects.SystemObjects;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
@@ -7,15 +8,31 @@ using YamlDotNet.Serialization;
 
 namespace ScenarioModelling;
 
+[ProtoContract]
 public class System
 {
+    [ProtoMember(1)]
     public List<Entity> Entities { get; set; } = new();
+
+    [ProtoMember(2)]
     public List<EntityType> EntityTypes { get; set; } = new();
+
+    [ProtoMember(3)]
     public List<Aspect> Aspects { get; set; } = new();
+
+    [ProtoMember(4)]
     public List<State> States { get; set; } = new();
+
+    [ProtoMember(5)]
     public List<StateMachine> StateMachines { get; set; } = new();
+
+    [ProtoMember(6)]
     public List<Relation> Relations { get; set; } = new();
+
+    [ProtoMember(7)]
     public List<Transition> Transitions { get; set; } = new();
+
+    [ProtoMember(8)]
     public List<Constraint> Constraints { get; set; } = new();
 
     [JsonIgnore]

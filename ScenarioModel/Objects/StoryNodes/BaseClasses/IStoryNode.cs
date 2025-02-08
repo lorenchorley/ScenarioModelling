@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Objects.StoryNodes.DataClasses;
 using ScenarioModelling.Objects.SystemObjects.Interfaces;
@@ -6,6 +7,7 @@ using ScenarioModelling.Objects.Visitors;
 
 namespace ScenarioModelling.Objects.StoryNodes.BaseClasses;
 
+[ProtoContract]
 public interface IStoryNode : IDirectedGraphNode<IStoryNode>, IIdentifiable
 {
     /// <summary>

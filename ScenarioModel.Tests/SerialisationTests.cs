@@ -1,12 +1,16 @@
 using FluentAssertions;
-using ScenarioModelling.CodeHooks.HookDefinitions;
+using ProtoBuf;
 using ScenarioModelling.CodeHooks;
+using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.Serialisation;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.ProtoBuf;
 using ScenarioModelling.Tests.HookTests.Providers;
 using ScenarioModelling.Tests.Valid;
 using System.Diagnostics;
-using ScenarioModelling.Exhaustiveness.Common;
+using System.IO.Compression;
+using System.Net;
+using System.Text;
 
 namespace ScenarioModelling.Tests;
 
@@ -20,7 +24,7 @@ public class SerialisationTests
     [ReserialisationDataProvider]
     public void HumanReadable_Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
         => HumanReadable_Context_DeserialiseReserialise_Common(testCaseName, originalContextText, expectedFinalContextText);
-    
+
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("HumanReadable")]
     [ProgressiveCodeHookTestDataProvider]
@@ -176,13 +180,13 @@ public class SerialisationTests
                 Debug.WriteLine("");
                 Debug.WriteLine(serialisedContextText);
 
-                Context reloadedContext = 
+                Context reloadedContext =
                     Context.New()
                        .UseSerialiser<YamlSerialiser>()
                        .LoadContext(serialisedContextText)
                        .Initialise();
 
-                string reserialisedContext = 
+                string reserialisedContext =
                     reloadedContext.Serialise<YamlSerialiser>()
                                    .Match(v => v, e => throw e);
 
@@ -198,5 +202,112 @@ public class SerialisationTests
             ex => Assert.Fail(ex.Message)
         );
     }
+
+    
+    [TestMethod]
+    [TestCategory("Serialisation"), TestCategory("ProtoBuf")]
+    [ReserialisationDataProvider]
+    public void ProtoBuf_Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
+        => ProtoBuf_Context_SerialiseDeserialise_Common(testCaseName, originalContextText, expectedFinalContextText);
+
+    [TestMethod]
+    [TestCategory("Serialisation"), TestCategory("ProtoBuf")]
+    [ProgressiveCodeHookTestDataProvider]
+    public void ProtoBuf_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName)
+    {
+        var context =
+            Context.New()
+                   .UseSerialiser<ContextSerialiser>()
+                   .Initialise();
+
+        MetaStoryHookOrchestrator orchestrator = new MetaStoryHookOrchestratorForConstruction(context);
+
+        var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<SystemHookDefinition>(systemMethodName);
+        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
+
+        // Build system
+        orchestrator.DefineSystem(systemHooksMethod);
+
+        // Build MetaStory
+        orchestrator.StartMetaStory(MetaStoryName);
+        metaStoryHooksMethod(orchestrator);
+        orchestrator.EndMetaStory();
+
+        var serialisedContext =
+            context.Serialise()
+                   .Match(v => v, e => throw e)
+                   .Trim();
+
+        ProtoBuf_Context_SerialiseDeserialise_Common(metaStoryMethodName, serialisedContext, "");
+    }
+
+    public void ProtoBuf_Context_SerialiseDeserialise_Common(string testCaseName, string originalContextText, string expectedFinalContextText)
+    {
+        // Arrange
+        // =======
+
+        // Act
+        // ===
+
+        Context originalContext =
+            Context.New()
+                   .UseSerialiser<ContextSerialiser>()
+                   .UseSerialiser<ProtoBufSerialiser>()
+                   .UseSerialiser<ProtoBufSerialiser_Uncompressed>()
+                   .LoadContext<ContextSerialiser>(originalContextText)
+                   .Initialise();
+
+        originalContext.ValidationErrors.Count.Should().Be(0, because: originalContext.ValidationErrors.ToString());
+
+        string uncompressedContextText = "";
+        originalContext.Serialise<ProtoBufSerialiser_Uncompressed>().Switch(str => uncompressedContextText = str, ex => Assert.Fail(ex.Message));
+
+        originalContext.Serialise<ProtoBufSerialiser>()
+                       .Switch(
+            serialisedContextText =>
+            {
+                Debug.WriteLine("");
+                Debug.WriteLine("Serialised context");
+                Debug.WriteLine("==================");
+                Debug.WriteLine("");
+                Debug.WriteLine(serialisedContextText);
+                Debug.WriteLine("");
+                Debug.WriteLine("Uncompressed serialised context");
+                Debug.WriteLine("===============================");
+                Debug.WriteLine("");
+                Debug.WriteLine(uncompressedContextText);
+                Debug.WriteLine("");
+                Debug.WriteLine("Comparison");
+                Debug.WriteLine("==========");
+                Debug.WriteLine("");
+                Debug.WriteLine($"{uncompressedContextText.Length} > {serialisedContextText.Length}");
+                Debug.WriteLine("");
+
+                Context reloadedContext =
+                    Context.New()
+                       .UseSerialiser<ProtoBufSerialiser>()
+                       .LoadContext(serialisedContextText)
+                       .Initialise();
+
+                string reserialisedContext =
+                    reloadedContext.Serialise<ProtoBufSerialiser>()
+                                   .Match(v => v, e => throw e);
+
+                // Assert
+                // ======
+
+
+                reloadedContext.ValidationErrors.Count.Should().Be(0, $"because {string.Join('\n', reloadedContext.ValidationErrors)}");
+
+                DiffAssert.DiffIfNotEqual(serialisedContextText.Trim(), reserialisedContext.Trim(), leftName: $@"Expected_{testCaseName.Replace(' ', '_')}", rightName: $@"Result_{testCaseName.Replace(' ', '_')}");
+                
+                //reloadedContext.IsEqv(originalContext).Should().Be(true);
+
+            },
+            ex => Assert.Fail(ex.Message)
+        );
+    }
+
+
 
 }

@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Expressions.SemanticTree;
@@ -10,15 +11,19 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.Objects.StoryNodes;
 
+[ProtoContract]
 [StoryNodeLike<IStoryNode, WhileNode>]
 public record WhileNode : StoryNode<WhileLoopConditionCheckEvent>, IStoryNodeWithExpression, IFlowNode
 {
+    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public Expression Condition { get; set; } = null!;
 
+    [ProtoMember(2)]
     [StoryNodeLikeProperty(serialise: false)]
     public string OriginalConditionText { get; set; } = "";
 
+    [ProtoMember(3)]
     [StoryNodeLikeProperty(serialise: false)]
     public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = new();
 

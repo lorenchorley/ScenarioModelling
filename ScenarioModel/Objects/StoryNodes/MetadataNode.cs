@@ -1,4 +1,5 @@
-﻿using ScenarioModelling.Collections.Graph;
+﻿using ProtoBuf;
+using ScenarioModelling.Collections.Graph;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Attributes;
 using ScenarioModelling.Objects.StoryNodes.BaseClasses;
@@ -7,15 +8,19 @@ using ScenarioModelling.Objects.Visitors;
 
 namespace ScenarioModelling.Objects.StoryNodes;
 
+[ProtoContract]
 [StoryNodeLike<IStoryNode, MetadataNode>]
 public record MetadataNode : StoryNode<MetadataEvent>
 {
+    [ProtoMember(1)]
     [StoryNodeLikeProperty]
     public string Key { get; set; } = "";
 
+    [ProtoMember(2)]
     [StoryNodeLikeProperty]
     public string MetadataType { get; set; } = "";
 
+    [ProtoMember(3)]
     [StoryNodeLikeProperty]
     public string Value { get; set; } = "";
 

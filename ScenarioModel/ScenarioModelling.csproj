@@ -37,8 +37,10 @@
 	<ItemGroup>
 	  <PackageReference Include="GoldEngine" Version="1.0.0" />
 	  <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="OneOf" Version="3.0.271" />
+	  <PackageReference Include="protobuf-net" Version="3.2.46" />
+	  <PackageReference Include="System.Formats.Nrbf" Version="9.0.1" />
 	  <PackageReference Include="YamlDotNet" Version="16.3.0" />
 	</ItemGroup>
 
