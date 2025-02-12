@@ -14,18 +14,8 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Product>Scenario Modelling</Product>
 		<Version>0.1.1-alpha</Version>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <None Remove="Expressions\Grammar\ExpressionGrammar.egt" />
-	  <None Remove="Serialisation\HumanReadable\Deserialisation\Grammar\HumanReadableGrammar.egt" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Expressions\Grammar\ExpressionGrammar.egt" />
-	  <EmbeddedResource Include="Serialisation\HumanReadable\Deserialisation\Grammar\HumanReadableGrammar.egt" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="..\README.md">
@@ -37,11 +27,20 @@
 	<ItemGroup>
 	  <PackageReference Include="GoldEngine" Version="1.0.0" />
 	  <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.1" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="OneOf" Version="3.0.271" />
 	  <PackageReference Include="protobuf-net" Version="3.2.46" />
-	  <PackageReference Include="System.Formats.Nrbf" Version="9.0.1" />
 	  <PackageReference Include="YamlDotNet" Version="16.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ScenarioModelling.CodeHooks\ScenarioModelling.CodeHooks.csproj" />
+	  <ProjectReference Include="..\ScenarioModelling.CoreObjects\ScenarioModelling.CoreObjects.csproj" />
+	  <ProjectReference Include="..\ScenarioModelling.Execution\ScenarioModelling.Execution.csproj" />
+	  <ProjectReference Include="..\ScenarioModelling.Tools\ScenarioModelling.Tools.csproj" />
 	</ItemGroup>
 
 </Project>

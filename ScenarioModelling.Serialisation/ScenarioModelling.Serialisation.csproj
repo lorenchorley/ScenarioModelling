@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+	  <langversion>latest</langversion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Expressions\Grammar\ExpressionGrammar.egt" />
+    <EmbeddedResource Include="HumanReadable\Deserialisation\Grammar\HumanReadableGrammar.egt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GoldEngine" Version="1.0.0" />
+    <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ScenarioModelling.Exhaustiveness\ScenarioModelling.Exhaustiveness.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+<metadata>
+    <id>ScenarioModelling.nuspec</id>
+    <version>0.1.0-alpha</version>
+    <title>Scenario Modelling</title>
+    <authors>Loren Chorley</authors>
+    <owners>Loren Chorley</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description></description>
+    <releaseNotes></releaseNotes>
+    <readme>README.md</readme>
+    <icon></icon>
+    <dependencies>
+        <group targetFramework="netstandard2.0">
+            <dependency id="ScenarioModelling" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.Annotations" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.CodeHooks" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.CoreObjects" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.Execution" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.Exhaustiveness" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.Serialisation" version="0.1.0-alpha" />
+            <dependency id="ScenarioModelling.Tools" version="0.1.0-alpha" />
+            <dependency id="Newtonsoft.Json" version="13.0.1" />
+            <dependency id="YamlDotNet" version="11.2.1" />
+            <dependency id="ProtoBuf" version="3.1.17" />
+            <dependency id="OneOf" version="3.0.271" />
+            <dependency id="LanguageExt.Core" version="4.4.9" />
+            <dependency id="GoldEngine" version="1.0.0" />
+        </group>
+    </dependencies>
+</metadata>

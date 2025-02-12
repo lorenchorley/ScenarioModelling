@@ -1,0 +1,9 @@
+﻿* DialogEvent {"Text":"Hello","Character":"Actor"}
+* DialogEvent {"Text":"My name is Bob","Character":"Actor"}
+* ChoiceSelectedEvent {"Choice":"Change"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Bob"},"FinalState":{"Name":"Alice"},"TransitionName":"ChangeName"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Alice"},"FinalState":{"Name":"Bob"},"TransitionName":"ChangeName"}
+* IfBlockEvent {"Expression":"Actor.State == \u0022Alice\u0022","IfBlockRun":false}
+* JumpEvent {"Target":"SayName"}
+* DialogEvent {"Text":"My name is Bob","Character":"Actor"}
+* DialogEvent {"Text":"Bubye (Actor called Bob in the end)","Character":null}

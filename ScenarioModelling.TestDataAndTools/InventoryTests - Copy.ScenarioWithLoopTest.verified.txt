@@ -1,0 +1,22 @@
+﻿* DialogEvent {"Text":"Hi, this is Amy Stake","Character":"Actor"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* IfBlockEvent {"IfBlockRun":true}
+* DialogEvent {"Text":"Amy\u0027s name was well chosen","Character":"Actor"}
+* IfBlockEvent {"IfBlockRun":false}
+* IfBlockEvent {"IfBlockRun":false}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Amy Stake"},"FinalState":{"Name":"Brock Lee"},"TransitionName":"ChangeName"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* IfBlockEvent {"IfBlockRun":false}
+* IfBlockEvent {"IfBlockRun":true}
+* DialogEvent {"Text":"Brock didn\u0027t like his vegies","Character":"Actor"}
+* IfBlockEvent {"IfBlockRun":false}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Brock Lee"},"FinalState":{"Name":"Clara Nett"},"TransitionName":"ChangeName"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* IfBlockEvent {"IfBlockRun":false}
+* IfBlockEvent {"IfBlockRun":false}
+* IfBlockEvent {"IfBlockRun":true}
+* DialogEvent {"Text":"Clara hated music","Character":"Actor"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Clara Nett"},"FinalState":{"Name":"Dee Zaster"},"TransitionName":"ChangeName"}
+* WhileLoopConditionCheckEvent {"LoopBlockRun":false}
+* IfBlockEvent {"IfBlockRun":true}
+* DialogEvent {"Text":"Well, that went well !","Character":"Actor"}

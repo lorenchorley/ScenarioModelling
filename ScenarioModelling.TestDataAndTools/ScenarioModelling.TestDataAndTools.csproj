@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="MSTest" Version="3.6.4" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ScenarioModelling.CodeHooks\ScenarioModelling.CodeHooks.csproj" />
+    <ProjectReference Include="..\ScenarioModel\ScenarioModelling.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="InventoryTests - Copy.LoopTest.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests - Copy.LoopTest.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests - Copy.ScenarioWithChooseJumpAndIfTest.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests - Copy.ScenarioWithChooseJumpAndIfTest.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests - Copy.ScenarioWithLoopTest.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests - Copy.ScenarioWithLoopTest.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests.LoopTest.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests.LoopTest.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests.ScenarioWithChooseJumpAndIfTest.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests.ScenarioWithChooseJumpAndIfTest.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests.ScenarioWithLoopTest.received.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+    <None Update="InventoryTests.ScenarioWithLoopTest.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0].Split('(')[0])</ParentFile>
+      <DependentUpon>InventoryTests.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
+</Project>

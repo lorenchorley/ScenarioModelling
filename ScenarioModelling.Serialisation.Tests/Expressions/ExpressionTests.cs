@@ -1,0 +1,191 @@
+using FluentAssertions;
+using Newtonsoft.Json;
+using ScenarioModelling.CoreObjects;
+using ScenarioModelling.CoreObjects.Expressions.Evaluation;
+using ScenarioModelling.CoreObjects.Expressions.Initialisation;
+using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.Serialisation.Expressions;
+using ScenarioModelling.Serialisation.Expressions.Interpreter;
+using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.TestDataAndTools.Expressions;
+using ScenarioModelling.Tools.GenericInterfaces;
+using System.Diagnostics;
+
+namespace ScenarioModelling.Serialisation.Tests.Expressions;
+
+[TestClass]
+public class ExpressionTests
+{
+
+    [TestMethod]
+    [TestCategory("Expressions"), TestCategory("Grammar")]
+    [ExpressionGrammarTestDataProvider]
+    public void ExpressionGrammarTests(string name, string text, string systemText, string expectedValuesJson)
+    {
+        // Arrange 
+        // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
+        ExpressionInterpreter interpreter = new();
+
+
+        // Act
+        // ===
+        var result = interpreter.Parse(text);
+
+
+        // Assert
+        // ======
+        result.HasErrors.Should().BeFalse(because: string.Join("\n", result.Errors));
+
+        string serialisedResult = result.ParsedObject.ToString();
+
+        Debug.WriteLine("Result :");
+        Debug.WriteLine(serialisedResult);
+        Debug.WriteLine("");
+
+        //serialisedResult.Should().Be(expectedValues.Expected);
+    }
+
+    [DataTestMethod]
+    [TestCategory("Expressions"), TestCategory("Grammar")]
+    [ExpressionGrammarTestDataProvider]
+    public void ExpressionValidationTests(string name, string text, string systemText, string expectedValuesJson)
+    {
+        // Arrange 
+        // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
+        if (expectedValues.ExpectedEvaluatedValue == null && expectedValues.ExpectedReturnType == null)
+        {
+            Assert.Inconclusive();
+        }
+
+        ScenarioModellingContainer container = new();
+
+        container.Context
+               .UseSerialiser<ContextSerialiser>()
+               .LoadContext(systemText)
+               .Initialise();
+
+        ExpressionInterpreter interpreter = container.GetService<ExpressionInterpreter>();
+        ExpressionInitialiser validator = container.GetService<ExpressionInitialiser>();
+
+        var parsedExpression = interpreter.Parse(text);
+
+
+        // Act
+        // ===
+        parsedExpression.ParsedObject.Accept(validator);
+
+
+        // Assert
+        // ======
+        Assert.AreEqual(expectedValues.IsValid, validator.Errors.Count == 0, validator.Errors.CommaSeparatedList());
+    }
+
+    [DataTestMethod]
+    [TestCategory("Expressions"), TestCategory("Serialisation")]
+    [ExpressionGrammarTestDataProvider]
+    public void ExpressionSerialisationTests(string name, string text, string systemText, string expectedValuesJson)
+    {
+        // Arrange 
+        // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
+        ScenarioModellingContainer container = new();
+
+        MetaState system =
+            container.Context
+                     .UseSerialiser<ContextSerialiser>()
+                     .LoadContext(systemText)
+                     .Initialise()
+                     .MetaState;
+
+        ExpressionInterpreter interpreter = container.GetService<ExpressionInterpreter>();
+        ExpressionSerialiser visitor = container.GetService<ExpressionSerialiser>();
+
+        var parsedExpression = interpreter.Parse(text);
+
+        if (parsedExpression.HasErrors)
+        {
+            Assert.Inconclusive();
+        }
+
+
+        // Act
+        // ===
+        var result = parsedExpression.ParsedObject!.Accept(visitor);
+
+
+        // Assert
+        // ======
+        string resultString = (string)result;
+
+        var actualCleaned = resultString.ToUpperInvariant().Replace("||", "OR").Replace("&&", "AND").Replace(" ", "");
+        var expectedCleaned = text.ToUpperInvariant().Replace("||", "OR").Replace("&&", "AND").Replace(" ", "");
+
+        Assert.AreEqual(expectedCleaned, actualCleaned);
+    }
+
+    [DataTestMethod]
+    [TestCategory("Expressions"), TestCategory("Expression Evaluation")]
+    [ExpressionGrammarTestDataProvider]
+    public void ExpressionEvaluationTests(string name, string text, string systemText, string expectedValuesJson)
+    {
+        // Arrange 
+        // =======
+        ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
+
+        if (expectedValues.ExpectedEvaluatedValue == null && expectedValues.ExpectedReturnType == null)
+        {
+            Assert.Inconclusive();
+        }
+
+        ScenarioModellingContainer container = new();
+
+        container.Context
+                 .UseSerialiser<ContextSerialiser>()
+                 .LoadContext(systemText)
+                 .Initialise();
+
+        ExpressionInterpreter interpreter = container.GetService<ExpressionInterpreter>();
+        ExpressionInitialiser initialiser = container.GetService<ExpressionInitialiser>();
+        ExpressionEvalator evalator = container.GetService<ExpressionEvalator>();
+
+        var parsedExpression = interpreter.Parse(text);
+
+        if (parsedExpression.HasErrors)
+        {
+            Assert.Inconclusive();
+        }
+
+
+        // Act
+        // ===
+        parsedExpression.ParsedObject.Accept(initialiser); // Needed to set return types
+        var result = parsedExpression.ParsedObject!.Accept(evalator);
+
+
+        // Assert
+        // ======
+        Assert.IsNotNull(result, "Valid expression must evaluated to non null value");
+
+        parsedExpression.ParsedObject.Type.Should().Be(expectedValues.ExpectedReturnType);
+
+        if (result is IIdentifiable nameful)
+        {
+            nameful.Name.Should().Be((string)expectedValues.ExpectedEvaluatedValue);
+        }
+        else if (result is Aspect aspect)
+        {
+            aspect.Name.Should().Be((string)expectedValues.ExpectedEvaluatedValue);
+        }
+        else
+        {
+            result.Should().Be(expectedValues.ExpectedEvaluatedValue);
+        }
+
+    }
+
+}
