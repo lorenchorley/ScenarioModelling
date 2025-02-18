@@ -7,6 +7,7 @@ using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
 using ScenarioModelling.CoreObjects.SystemObjects.Properties;
 using ScenarioModelling.Serialisation.ContextConstruction;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions;
 
@@ -120,7 +121,7 @@ public class MetaStateHookDefinition
     private void ValidateDefinition(IHookDefinition definition)
     {
         if (definition.Validated)
-            throw new Exception("Definition already validated");
+            throw new InternalLogicException("Definition already validated");
 
         definition.Validate();
     }

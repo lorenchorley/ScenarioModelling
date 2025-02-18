@@ -5,6 +5,7 @@ using ScenarioModelling.CoreObjects.StoryNodes;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
@@ -18,10 +19,10 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
 
     public bool Validated { get; private set; } = false;
     public IfNode Node { get; private set; }
-    public DefinitionScope Scope { get; }
+    public SubgraphScopedHookSynchroniser Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public IfHookDefinition(DefinitionScope scope, string expression, IHookFunctions hookFunctions)
+    public IfHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;
@@ -32,11 +33,11 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
         var result = interpreter.Parse(expression);
 
         if (result.HasErrors)
-            throw new Exception($@"Unable to parse expression ""{expression}"" on if declaration : \n{result.Errors.CommaSeparatedList()}");
+            throw new ExpressionException($@"Unable to parse expression ""{expression}"" on if declaration : \n{result.Errors.CommaSeparatedList()}");
 
         Node = new IfNode();
         Node.OriginalConditionText = expression;
-        Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
+        Node.Condition = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
     }
 
     private bool IfConditionHook(bool result)
@@ -47,7 +48,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
 
         if (result)
         {
-            _hookFunctions.EnterScope(new DefinitionScope(Node.SubGraph, _hookFunctions.VerifyPreviousDefinition));
+            _hookFunctions.EnterSubgraph(Node.SubGraph);
         }
 
         RecordedIfEvents.Add(result);
@@ -58,7 +59,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     private void IfBlockEndHook()
     {
         if (RecordedIfEvents.Count == 0)
-            throw new Exception("If block end hook called without any recorded events");
+            throw new HookException("If end hook called without registering a condition");
 
         // Only return the scope if the last recorded event was true
         // This gives flexibility in that this callback can be either inside the if scope at the end or after it outside
@@ -102,20 +103,6 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
         return this;
     }
 
-    //public IfHookDefinition GetConditionHooks(out IfConditionHook ifconditionHook, out IfBlockEndHook ifBlockEndHook)
-    //{
-    //    ifconditionHook = IfConditionHook;
-    //    ifBlockEndHook = IfBlockEndHook;
-    //    return this;
-    //}
-
-    //public IfHookDefinition GetConditionUsingHook(out IfConditionHook ifconditionHook, out IfBlockUsingHook ifBlockUsingHook)
-    //{
-    //    ifconditionHook = IfConditionHook;
-    //    ifBlockUsingHook = IfBlockUsingHook;
-    //    return this;
-    //}
-
     public IfHookDefinition SetAsImplicit()
     {
         Node.Implicit = true;
@@ -131,12 +118,12 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     {
         if (!_gotEndHook)
         {
-            throw new Exception($"The hook declaration did not ask for a hook scoping callback, call either {nameof(GetEndBlockHook)} or {nameof(GetScopeHook)}");
+            throw new HookException($"The hook declaration did not ask for a hook scoping callback, call either {nameof(GetEndBlockHook)} or {nameof(GetScopeHook)}");
         }
 
         if (!_gotConditionHook)
         {
-            throw new Exception($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
+            throw new HookException($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
         }
 
         // TODO

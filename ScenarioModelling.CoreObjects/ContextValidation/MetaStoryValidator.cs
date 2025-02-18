@@ -9,6 +9,7 @@ namespace ScenarioModelling.CoreObjects.ContextValidation;
 
 public class MetaStoryValidator : IMetaStoryVisitor
 {
+    private readonly CallMetaStoryNodeValidator _callMetaStoryNodeValidator = new();
     private readonly ChooseNodeValidator _chooseNodeValidator = new();
     private readonly DialogNodeValidator _dialogNodeValidator = new();
     private readonly IfNodeValidator _ifNodeValidator = new();
@@ -17,15 +18,12 @@ public class MetaStoryValidator : IMetaStoryVisitor
     private readonly TransitionNodeValidator _transitionNodeValidator = new();
     private readonly WhileNodeValidator _whileNodeValidator = new();
 
-    private MetaState? _system;
+    private MetaState? _metaState;
     private MetaStory? _metaStory;
 
-    public ValidationErrors Validate(MetaState system, MetaStory MetaStory)
+    public ValidationErrors Validate(MetaState metaState, MetaStory MetaStory)
     {
-        // TODO Put back
-        //SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectValidator>();
-
-        _system = system;
+        _metaState = metaState;
         _metaStory = MetaStory;
 
         ValidationErrors validationErrors = new();
@@ -35,7 +33,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
 
         validationErrors.Incorporate(VisitSubgraph(MetaStory.Graph.PrimarySubGraph));
 
-        _system = null;
+        _metaState = null;
         _metaStory = null;
 
         return validationErrors;
@@ -53,28 +51,36 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return validationErrors;
     }
 
-    public object VisitChooseNode(ChooseNode chooseNode)
+    public object VisitCallMetaStory(CallMetaStoryNode callMetaStoryNode)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        return _chooseNodeValidator.Validate(_system, _metaStory, chooseNode);
+        return _callMetaStoryNodeValidator.Validate(_metaState, _metaStory, callMetaStoryNode);
+    }
+
+    public object VisitChooseNode(ChooseNode chooseNode)
+    {
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
+
+        return _chooseNodeValidator.Validate(_metaState, _metaStory, chooseNode);
     }
 
     public object VisitDialogNode(DialogNode dialogNode)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        return _dialogNodeValidator.Validate(_system, _metaStory, dialogNode);
+        return _dialogNodeValidator.Validate(_metaState, _metaStory, dialogNode);
     }
 
     public object VisitIfNode(IfNode ifNode)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        var errors = _ifNodeValidator.Validate(_system, _metaStory, ifNode);
+        var errors = _ifNodeValidator.Validate(_metaState, _metaStory, ifNode);
 
         errors.Incorporate(VisitSubgraph(ifNode.SubGraph));
 
@@ -83,31 +89,31 @@ public class MetaStoryValidator : IMetaStoryVisitor
 
     public object VisitJumpNode(JumpNode jumpNode)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        return _jumpNodeValidator.Validate(_system, _metaStory, jumpNode);
+        return _jumpNodeValidator.Validate(_metaState, _metaStory, jumpNode);
     }
 
     public object VisitMetadataNode(MetadataNode metadataNode)
     {
-        return _metadataNodeValidator.Validate(_system, _metaStory, metadataNode);
+        return _metadataNodeValidator.Validate(_metaState, _metaStory, metadataNode);
     }
 
     public object VisitTransitionNode(TransitionNode transitionNode)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        return _transitionNodeValidator.Validate(_system, _metaStory, transitionNode);
+        return _transitionNodeValidator.Validate(_metaState, _metaStory, transitionNode);
     }
 
     public object VisitWhileNode(WhileNode whileNode)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_system);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
 
-        var errors = _whileNodeValidator.Validate(_system, _metaStory, whileNode);
+        var errors = _whileNodeValidator.Validate(_metaState, _metaStory, whileNode);
 
         errors.Incorporate(VisitSubgraph(whileNode.SubGraph));
 

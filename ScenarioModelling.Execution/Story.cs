@@ -7,6 +7,7 @@ using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Execution;
 
@@ -15,25 +16,37 @@ namespace ScenarioModelling.Execution;
 /// </summary>
 public class Story
 {
-    public MetaStory MetaStory { get; set; } = null!;
-    public List<IStoryEvent> Events { get; set; } = new();
-    public Stack<GraphScope> GraphScopeStack { get; set; } = new();
-    public ExpressionEvalator Evaluator { get; set; } = null!;
+    public Context Context { get; }
+    public MetaStoryStack MetaStoryStack { get; }
+    public ExpressionEvalator Evaluator { get; }
 
+    public MetaStory MetaStory => MetaStoryStack.Peek();
+    public List<IMetaStoryEvent> Events { get; set; } = new();
+    public Stack<GraphScope> GraphScopeStack { get; set; } = new();
     public GraphScope CurrentScope => GraphScopeStack.Peek();
 
-    public void Init()
+    public Story(Context context, MetaStoryStack metaStoryStack, ExpressionEvalator evaluator)
     {
-        GraphScopeStack.Push(new GraphScope(MetaStory.Graph));
+        Context = context;
+        MetaStoryStack = metaStoryStack;
+        Evaluator = evaluator;
+    }
+
+    public void Init(MetaStory initialMetaStory, bool dontAddToStack = false)
+    {
+        if (!dontAddToStack)
+            MetaStoryStack.Push(initialMetaStory);
+
+        GraphScopeStack.Push(new GraphScope(initialMetaStory.Graph));
     }
 
     public IStoryNode? NextNode()
     {
         var failedConstraintEvents =
-            MetaStory.MetaState
-                    .Constraints
-                    .Choose(CheckConstraint)
-                    .ToList();
+            Context.MetaState
+                   .Constraints
+                   .Choose(CheckConstraint)
+                   .ToList();
 
         if (failedConstraintEvents.Any())
         {
@@ -65,6 +78,7 @@ public class Story
         }
 
         currentScopeNode = currentScopeNode.ToOneOf().Match(
+            (CallMetaStoryNode node) => ManangeCallMetaStoryNode(currentEvent, node),
             (ChooseNode node) => ManangeChoseNode(currentEvent, node),
             (DialogNode node) => CurrentScope.GetNextInSequence(),
             (IfNode node) => ManageIfNode(currentEvent, node),
@@ -101,22 +115,38 @@ public class Story
         return new ConstraintFailedEvent() { ProducerNode = constraint, Expression = constraint.OriginalConditionText };
     }
 
-    private IStoryNode? ManangeTransitionNode(IStoryEvent? currentEvent, TransitionNode currentScopeNode)
+    private IStoryNode? ManangeTransitionNode(IMetaStoryEvent? currentEvent, TransitionNode currentScopeNode)
     {
         // The last event must be a state change event
         if (currentEvent is null ||
             currentEvent is not StateChangeEvent stateChangeEvent)
-            throw new Exception($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
+            throw new InternalLogicException($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
 
         return CurrentScope.GetNextInSequence();
     }
 
-    private IStoryNode? ManangeChoseNode(IStoryEvent? currentEvent, ChooseNode currentScopeNode)
+    private IStoryNode? ManangeCallMetaStoryNode(IMetaStoryEvent? currentEvent, CallMetaStoryNode currentScopeNode)
+    {
+        // The last event must be a choice event
+        if (currentEvent is null ||
+            currentEvent is not MetaStoryCalledEvent choiceEvent)
+            throw new InternalLogicException($"No {nameof(MetaStoryCalledEvent)} was registered after mananging a {nameof(CallMetaStoryNode)}");
+
+        var calledMetaStory = Context.MetaStories.Where(s => s.Name.IsEqv(currentScopeNode.MetaStoryName)).FirstOrDefault();
+        if (calledMetaStory == null)
+            throw new ExecutionException($"No meta story with the name {currentScopeNode.MetaStoryName} was found.");
+
+        GraphScopeStack.Push(new GraphScope(calledMetaStory.Graph));
+
+        return CurrentScope.CurrentNode;
+    }
+
+    private IStoryNode? ManangeChoseNode(IMetaStoryEvent? currentEvent, ChooseNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
             currentEvent is not ChoiceSelectedEvent choiceEvent)
-            throw new Exception($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
+            throw new InternalLogicException($"No {nameof(ChoiceSelectedEvent)} was registered after mananging a {nameof(ChooseNode)}");
 
         // Find the next node based on the choice
         IStoryNode? newCurrentScopeNode =
@@ -132,12 +162,12 @@ public class Story
         return newCurrentScopeNode;
     }
 
-    private IStoryNode? ManageJumpNode(IStoryEvent? currentEvent, JumpNode currentScopeNode)
+    private IStoryNode? ManageJumpNode(IMetaStoryEvent? currentEvent, JumpNode currentScopeNode)
     {
         // The last event must be a jump event
         if (currentEvent is null ||
             currentEvent is not JumpEvent jumpEvent)
-            throw new Exception($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
+            throw new InternalLogicException($"No {nameof(JumpEvent)} was registered after mananging a {nameof(JumpNode)}");
 
         // Find the next node based on the choice
         IStoryNode? newCurrentScopeNode =
@@ -154,12 +184,12 @@ public class Story
         return CurrentScope.GetNextInSequence();
     }
 
-    private IStoryNode? ManageIfNode(IStoryEvent? currentEvent, IStoryNode? currentScopeNode)
+    private IStoryNode? ManageIfNode(IMetaStoryEvent? currentEvent, IStoryNode? currentScopeNode)
     {
         // The last event must be an if event
         if (currentEvent is null ||
             currentEvent is not IfBlockEvent ifEvent)
-            throw new Exception($"No {nameof(IfBlockEvent)} was registered after mananging a {nameof(IfNode)}");
+            throw new InternalLogicException($"No {nameof(IfBlockEvent)} was registered after mananging a {nameof(IfNode)}");
 
         if (ifEvent.IfBlockRun)
         {
@@ -173,12 +203,12 @@ public class Story
         }
     }
 
-    private IStoryNode? ManageWhileNode(IStoryEvent? currentEvent, WhileNode currentScopeNode)
+    private IStoryNode? ManageWhileNode(IMetaStoryEvent? currentEvent, WhileNode currentScopeNode)
     {
         // The last event must be an while event
         if (currentEvent is null ||
             currentEvent is not WhileLoopConditionCheckEvent whileEvent)
-            throw new Exception($"No {nameof(WhileLoopConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
+            throw new InternalLogicException($"No {nameof(WhileLoopConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
 
         if (whileEvent.LoopBlockRun)
         {
@@ -192,29 +222,8 @@ public class Story
         }
     }
 
-    public void RegisterEvent(IStoryEvent @event)
+    public void RegisterEvent(IMetaStoryEvent @event)
     {
         Events.Add(@event);
     }
-}
-
-public class StoryRunResult
-{
-    public static StoryRunResult ConstraintFailure(string value) => new ConstraintFailure(value);
-    public static StoryRunResult Successful(Story story) => new Successful(story);
-    public static StoryRunResult NotStarted() => new NotStarted();
-}
-
-public class ConstraintFailure(string value) : StoryRunResult
-{
-    public string Value { get; } = value;
-}
-
-public class Successful(Story story) : StoryRunResult
-{
-    public Story Story { get; } = story;
-}
-
-public class NotStarted : StoryRunResult
-{
 }

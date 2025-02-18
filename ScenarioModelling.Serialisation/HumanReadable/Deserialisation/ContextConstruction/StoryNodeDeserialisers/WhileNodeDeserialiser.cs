@@ -7,6 +7,7 @@ using ScenarioModelling.Serialisation.Expressions.Interpreter;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.Collections.Graph;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
 
@@ -31,18 +32,20 @@ public class WhileNodeDeserialiser : IDefinitionToNodeDeserialiser
         WhileNode node = new();
         node.Line = def.Line;
 
+        def.HasBeenTransformed = true;
+
         ExpressionInterpreter interpreter = new();
 
         var result = interpreter.Parse(expDef.Block.ExpressionText.Value);
 
         if (result.HasErrors)
         {
-            throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on while node{node.LineInformation} : \n{result.Errors.CommaSeparatedList()}");
+            throw new ExpressionException($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on while node{node.LineInformation} : \n{result.Errors.CommaSeparatedList()}");
         }
 
         if (result.ParsedObject is null)
         {
-            throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on while node{node.LineInformation} : return value not set");
+            throw new InternalLogicException($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on while node{node.LineInformation} : return value not set");
         }
 
         node.Condition = result.ParsedObject;

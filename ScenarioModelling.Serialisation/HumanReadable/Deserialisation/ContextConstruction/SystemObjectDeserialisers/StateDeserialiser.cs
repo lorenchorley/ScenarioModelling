@@ -29,12 +29,15 @@ public class StateDeserialiser(MetaState MetaState, Instanciator Instanciator) :
             return null;
         }
 
+        def.HasBeenTransformed = true;
+
         // If this is meant to be the value of a property in another object, we need to return a reference
         // Otherwise we make a full object that is stored in the system
         if (type == TransformationType.Property)
             return Instanciator.NewReference<State, StateReference>(definition: def);
 
         State value = Instanciator.New<State>(definition: def);
+
 
         return value.GenerateReference();
     }

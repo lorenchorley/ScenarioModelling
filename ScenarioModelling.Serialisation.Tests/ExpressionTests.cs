@@ -4,6 +4,7 @@ using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
 using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
@@ -11,11 +12,17 @@ using ScenarioModelling.TestDataAndTools.Expressions;
 using ScenarioModelling.Tools.GenericInterfaces;
 using System.Diagnostics;
 
-namespace ScenarioModelling.Serialisation.Tests.Expressions;
+namespace ScenarioModelling.Serialisation.Tests;
 
 [TestClass]
 public class ExpressionTests
 {
+
+    [AssemblyInitialize()]
+    public static void AssemblyInit(TestContext context)
+    {
+        ExhaustivityFunctions.Active = true;
+    }
 
     [TestMethod]
     [TestCategory("Expressions"), TestCategory("Grammar")]

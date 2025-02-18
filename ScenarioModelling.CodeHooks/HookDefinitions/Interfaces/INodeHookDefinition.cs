@@ -12,6 +12,6 @@ public interface INodeHookDefinition : IHookDefinition
     /// </summary>
     /// <param name="preexistingNode"></param>
     void ReplaceNodeWithExisting(IStoryNode preexistingNode);
-    DefinitionScope Scope { get; }
+    SubgraphScopedHookSynchroniser Scope { get; }
     DefinitionScopeSnapshot ScopeSnapshot { get; }
 }

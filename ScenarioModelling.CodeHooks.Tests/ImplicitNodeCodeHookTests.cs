@@ -7,6 +7,7 @@ using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
+using ScenarioModelling.TestDataAndTools.CodeHooks;
 
 namespace ScenarioModelling.Tests.HookTests;
 
@@ -45,7 +46,7 @@ public partial class ImplicitNodeCodeHookTests
         // ===
 
         // Build MetaStory with the implicit defintion first
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
         MetaStoryWithoutImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
@@ -55,7 +56,7 @@ public partial class ImplicitNodeCodeHookTests
                    .Trim();
 
         // The build MetaStory without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second MetaStory
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
         MetaStoryWithImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
@@ -78,7 +79,7 @@ public partial class ImplicitNodeCodeHookTests
     {
         // Arrange
         // =======
-        ScenarioModellingContainer container = new();
+        TestContainer container = new();
 
         var context =
             container.Context
@@ -86,6 +87,7 @@ public partial class ImplicitNodeCodeHookTests
                      .Initialise();
 
         MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        StoryTestRunner runner = container.GetService<StoryTestRunner>();
 
         var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
@@ -94,29 +96,23 @@ public partial class ImplicitNodeCodeHookTests
         // Build system
         orchestrator.DefineMetaState(systemHooksMethod);
 
-        ExpressionEvalator evalator = new(context.MetaState);
-        DialogExecutor executor = new(context, evalator);
-        StringInterpolator interpolator = new(context.MetaState);
-        EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
-        StoryTestRunner runner = new(executor, dependencies);
-
 
         // Act
         // ===
 
         // Build MetaStory with the implicit defintion first
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
         MetaStoryWithoutImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
-        Story firstRun = runner.Run("MetaStory recorded by hooks");
+        Story firstRun = runner.Run(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
         // The build MetaStory without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second MetaStory
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
         MetaStoryWithImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
-        Story secondRun = runner.Run("MetaStory recorded by hooks");
+        Story secondRun = runner.Run(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
 
         // Assert

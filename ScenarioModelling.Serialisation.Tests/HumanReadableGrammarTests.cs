@@ -4,7 +4,7 @@ using ScenarioModelling.TestDataAndTools.Serialisation;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace ScenarioModelling.Serialisation.Tests.Contexts;
+namespace ScenarioModelling.Serialisation.Tests;
 
 [TestClass]
 public class HumanReadableGrammarTests

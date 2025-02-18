@@ -4,6 +4,7 @@ namespace ScenarioModelling.CoreObjects.Visitors;
 
 public interface IMetaStoryVisitor
 {
+    object VisitCallMetaStory(CallMetaStoryNode callMetaStory);
     object VisitChooseNode(ChooseNode chooseNode);
     object VisitDialogNode(DialogNode dialogNode);
     object VisitIfNode(IfNode ifNode);

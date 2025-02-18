@@ -25,6 +25,8 @@ public class DialogNodeDeserialiser : IDefinitionToNodeDeserialiser
             throw new Exception("Jump node must be unnamed definition");
         }
 
+        def.HasBeenTransformed = true;
+
         DialogNode node = new();
         node.Line = def.Line;
 
@@ -35,12 +37,14 @@ public class DialogNodeDeserialiser : IDefinitionToNodeDeserialiser
                 if (named.Type.Value.IsEqv("Text"))
                 {
                     node.TextTemplate = named.Name.Value;
+                    item.HasBeenTransformed = true;
                     continue;
                 }
 
                 if (named.Type.Value.IsEqv("Character") || named.Type.Value.IsEqv("Char"))
                 {
                     node.Character = named.Name.Value;
+                    item.HasBeenTransformed = true;
                     continue;
                 }
             }

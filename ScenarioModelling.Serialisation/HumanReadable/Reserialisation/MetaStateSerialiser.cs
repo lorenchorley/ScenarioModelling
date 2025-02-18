@@ -1,7 +1,5 @@
 ﻿using ScenarioModelling.CoreObjects;
-using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
@@ -19,9 +17,6 @@ public class MetaStateSerialiser
 
     public MetaStateSerialiser(AspectSerialiser aspectSerialiser, ConstraintSerialiser constraintSerialiser, EntitySerialiser entitySerialiser, EntityTypeSerialiser entityTypeSerialiser, RelationSerialiser relationSerialiser, StateMachineSerialiser stateMachineSerialiser, StateSerialiser stateSerialiser, TransitionSerialiser transitionSerialiser)
     {
-        // TODO Place somewhere centralised
-        SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectSerialiser>();
-
         _aspectSerialiser = aspectSerialiser;
         _constraintSerialiser = constraintSerialiser;
         _entitySerialiser = entitySerialiser;

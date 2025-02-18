@@ -36,9 +36,6 @@ public class MetaStateValidator : ISystemVisitor
 
     public ValidationErrors Validate(MetaState system)
     {
-        // TODO Put back
-        //SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectValidator>();
-
         _system = system;
 
         ValidationErrors validationErrors = new();

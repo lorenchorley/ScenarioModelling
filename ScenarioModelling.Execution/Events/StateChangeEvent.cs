@@ -3,12 +3,11 @@ using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.StoryNodes;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events.Interfaces;
 
 namespace ScenarioModelling.Execution.Events;
 
-[StoryNodeLike<IStoryNode, IfNode>]
+[StoryNodeLike<IMetaStoryEvent, TransitionNode>]
 public record StateChangeEvent : IMetaStoryEvent<TransitionNode>
 {
     public IReference StatefulObject { get; set; } = null!;

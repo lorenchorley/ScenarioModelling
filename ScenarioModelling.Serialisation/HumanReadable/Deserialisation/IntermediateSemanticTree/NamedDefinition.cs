@@ -4,15 +4,18 @@ public record NamedDefinition : UnnamedDefinition
 {
     public StringValue Name { get; set; } = null!;
 
+    public override string ToEssentialString()
+        => $"NamedDefinition({Type}, {Name})";
+
     public override string ToString()
     {
         if (Definitions.Count == 0)
         {
-            return $"Definition({Type}, {Name})";
+            return ToEssentialString();
         }
         else
         {
-            return $"Definition({Type}, {Name}) {{ {Definitions} }}";
+            return $"{ToEssentialString()} {{ {Definitions} }}";
         }
     }
 }

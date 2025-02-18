@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
+using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
@@ -37,38 +38,49 @@ public static class ServiceExtensions
         services.AddSingleton<ExpressionInitialiser>();
         services.AddSingleton<ExpressionSerialiser>();
 
-        services.AddSingleton<ChooseNodeSerialiser>();
-        services.AddSingleton<DialogNodeSerialiser>();
-        services.AddSingleton<IfNodeSerialiser>();
-        services.AddSingleton<JumpNodeSerialiser>();
-        services.AddSingleton<MetadataNodeSerialiser>();
-        services.AddSingleton<TransitionNodeSerialiser>();
-        services.AddSingleton<WhileNodeSerialiser>();
+        MetaStoryNodeExhaustivity.DoForEachNodeType(
+            callMetaStory: () => services.AddSingleton<CallMetaStoryNodeSerialiser>(),
+            chooseNode: () => services.AddSingleton<ChooseNodeSerialiser>(),
+            dialogNode: () => services.AddSingleton<DialogNodeSerialiser>(),
+            ifNode: () => services.AddSingleton<IfNodeSerialiser>(),
+            jumpNode: () => services.AddSingleton<JumpNodeSerialiser>(),
+            metadataNode: () => services.AddSingleton<MetadataNodeSerialiser>(),
+            transitionNode: () => services.AddSingleton<TransitionNodeSerialiser>(),
+            whileNode: () => services.AddSingleton<WhileNodeSerialiser>()
+        );
 
-        services.AddSingleton<AspectSerialiser>();
-        services.AddSingleton<ConstraintSerialiser>();
-        services.AddSingleton<EntitySerialiser>();
-        services.AddSingleton<EntityTypeSerialiser>();
-        services.AddSingleton<RelationSerialiser>();
-        services.AddSingleton<StateMachineSerialiser>();
-        services.AddSingleton<StateSerialiser>();
-        services.AddSingleton<TransitionSerialiser>();
+        SystemObjectExhaustivity.DoForEachObjectType(
+            entity: () => services.AddSingleton<AspectSerialiser>(),
+            entityType: () => services.AddSingleton<ConstraintSerialiser>(),
+            aspect: () => services.AddSingleton<EntitySerialiser>(),
+            relation: () => services.AddSingleton<EntityTypeSerialiser>(),
+            state: () => services.AddSingleton<RelationSerialiser>(),
+            stateMachine: () => services.AddSingleton<StateSerialiser>(),
+            transition: () => services.AddSingleton<StateMachineSerialiser>(),
+            constraint: () => services.AddSingleton<TransitionSerialiser>()
+        );
 
-        services.AddSingleton<RelationDeserialiser>();
-        services.AddSingleton<ConstraintDeserialiser>();
-        services.AddSingleton<StateDeserialiser>();
-        services.AddSingleton<TransitionDeserialiser>();
-        services.AddSingleton<AspectDeserialiser>();
-        services.AddSingleton<StateMachineDeserialiser>();
-        services.AddSingleton<EntityTypeDeserialiser>();
-        services.AddSingleton<EntityDeserialiser>();
+        MetaStoryNodeExhaustivity.DoForEachNodeType(
+            callMetaStory: () => services.AddSingleton<CallMetaStoryNodeDeserialiser>(),
+            chooseNode: () => services.AddSingleton<ChooseNodeDeserialiser>(),
+            dialogNode: () => services.AddSingleton<DialogNodeDeserialiser>(),
+            ifNode: () => services.AddSingleton<IfNodeDeserialiser>(),
+            jumpNode: () => services.AddSingleton<JumpNodeDeserialiser>(),
+            metadataNode: () => services.AddSingleton<MetadataNodeDeserialiser>(),
+            transitionNode: () => services.AddSingleton<TransitionNodeDeserialiser>(),
+            whileNode: () => services.AddSingleton<WhileNodeDeserialiser>()
+        );
 
-        services.AddSingleton<ChooseNodeDeserialiser>();
-        services.AddSingleton<DialogNodeDeserialiser>();
-        services.AddSingleton<JumpNodeDeserialiser>();
-        services.AddSingleton<MetadataNodeDeserialiser>();
-        services.AddSingleton<TransitionNodeDeserialiser>();
-        services.AddSingleton<IfNodeDeserialiser>();
-        services.AddSingleton<WhileNodeDeserialiser>();
+        SystemObjectExhaustivity.DoForEachObjectType(
+            entity: () => services.AddSingleton<AspectDeserialiser>(),
+            entityType: () => services.AddSingleton<ConstraintDeserialiser>(),
+            aspect: () => services.AddSingleton<EntityDeserialiser>(),
+            relation: () => services.AddSingleton<EntityTypeDeserialiser>(),
+            state: () => services.AddSingleton<RelationDeserialiser>(),
+            stateMachine: () => services.AddSingleton<StateDeserialiser>(),
+            transition: () => services.AddSingleton<StateMachineDeserialiser>(),
+            constraint: () => services.AddSingleton<TransitionDeserialiser>()
+        );
+
     }
 }

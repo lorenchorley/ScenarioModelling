@@ -19,7 +19,7 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
 
         while ((node = executor.NextNode()) != null)
         {
-            IStoryEvent e = node.GenerateEvent(dependencies);
+            IMetaStoryEvent e = node.GenerateEvent(dependencies);
 
             // Custom test context behaviour
             DoCustomRunBehaviour(choicesByNodeName, node, e);
@@ -30,9 +30,10 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
         return executor.EndMetaStory();
     }
 
-    private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode? node, IStoryEvent e)
+    private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode? node, IMetaStoryEvent e)
     {
         node.ToOneOf().Switch(
+            callMetaStory => { },
             chooseNode =>
             {
                 if (choicesByNodeName != null)

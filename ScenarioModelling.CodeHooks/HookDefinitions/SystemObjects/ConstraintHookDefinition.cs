@@ -4,6 +4,7 @@ using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.SystemObjects;
 
@@ -35,10 +36,10 @@ public class ConstraintHookDefinition : IObjectHookDefinition
         var result = interpreter.Parse(expression);
 
         if (result.HasErrors)
-            throw new Exception($@"Unable to parse expression ""{expression}"" on if declaration : \n{result.Errors.CommaSeparatedList()}");
+            throw new ExpressionException($@"Unable to parse expression ""{expression}"" on constraint declaration : \n{result.Errors.CommaSeparatedList()}");
 
         Constraint.OriginalConditionText = expression;
-        Constraint.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
+        Constraint.Condition = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
 
         return this;
     }

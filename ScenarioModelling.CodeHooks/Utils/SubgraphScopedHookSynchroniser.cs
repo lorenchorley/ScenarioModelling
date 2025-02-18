@@ -1,10 +1,14 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Tools.Collections.Graph;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.Utils;
 
-public class DefinitionScope
+/// <summary>
+/// 
+/// </summary>
+public class SubgraphScopedHookSynchroniser
 {
     private readonly Action _verifyPreviousDefinition;
 
@@ -12,22 +16,22 @@ public class DefinitionScope
     public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = null!;
     public int CurrentIndex { get; set; } = 0;
 
-    public DefinitionScope(SemiLinearSubGraph<IStoryNode> subGraph, Action verifyPreviousDefinition)
+    public SubgraphScopedHookSynchroniser(SemiLinearSubGraph<IStoryNode> subGraph, Action verifyPreviousDefinition)
     {
         SubGraph = subGraph;
         _verifyPreviousDefinition = verifyPreviousDefinition;
     }
 
-    public DefinitionScopeSnapshot TakeSnapshot()
+    internal DefinitionScopeSnapshot TakeSnapshot()
     {
-        return new DefinitionScopeSnapshot() 
-        { 
+        return new DefinitionScopeSnapshot()
+        {
             Scope = this,
-            Index = CurrentIndex 
+            Index = CurrentIndex
         };
     }
 
-    public void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add, Action<IStoryNode> existing)
+    internal void AddOrVerifyInPhase(INodeHookDefinition newNodeDefinition, Action add, Action<IStoryNode> existing)
     {
         IStoryNode newNode = newNodeDefinition.GetNode();
 
@@ -45,10 +49,10 @@ public class DefinitionScope
         else // Otherwise we check that the current node corresponds to the new definition
         {
             if (newNodeDefinition.ScopeSnapshot.Scope != this)
-                throw new Exception("Scope snapshot does not correspond to this scope, this indicates something wrong with the graph flow algorithm");
+                throw new InternalLogicException("Scope snapshot does not correspond to this scope, this indicates something wrong with the graph flow algorithm");
 
             if (newNodeDefinition.ScopeSnapshot.Index > SubGraph.NodeSequence.Count)
-                throw new Exception("Current index is too far beyond the end of the subgraph, this indicates something wrong with the graph flow algorithm");
+                throw new InternalLogicException("Current index is too far beyond the end of the subgraph, this indicates something wrong with the graph flow algorithm");
 
             var currentNode = SubGraph.NodeSequence[newNodeDefinition.ScopeSnapshot.Index];
             int indexAdvance = VerifyInPhaseWithGraph(currentNode, newNode);
@@ -73,15 +77,13 @@ public class DefinitionScope
                 // TODO arbitrary look ahead, up and down all possible subgraphs from the current node
 
                 if (CurrentIndex + 1 >= SubGraph.NodeSequence.Count)
-                    throw new Exception("Current index is too far beyond the end of the subgraph : To be implemented");
+                    throw new NotImplementedException("Current index is too far beyond the end of the subgraph : To be implemented");
 
                 IStoryNode next = SubGraph.NodeSequence[CurrentIndex + 1];
-                VerifyInPhaseWithGraph(next, newNode);
+                return VerifyInPhaseWithGraph(next, newNode); // return ?
             }
-            else
-            {
-                throw new Exception("Current node does not match the new definition");
-            }
+
+            throw new InternalLogicException($"Current node does not match the new definition\nCurrent node : {existingNode}\nNew definition : {newNode}");
         }
 
         return 1;
@@ -93,5 +95,4 @@ public class DefinitionScope
 
         CurrentIndex = 0;
     }
-
 }

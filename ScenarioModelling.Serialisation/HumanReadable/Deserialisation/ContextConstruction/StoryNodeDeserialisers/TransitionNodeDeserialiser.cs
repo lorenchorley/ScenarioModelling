@@ -27,6 +27,8 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
         TransitionNode node = new();
         node.Line = def.Line;
 
+        def.HasBeenTransformed = true;
+
         Definitions? defs = null;
 
         if (def is UnnamedDefinition unnamed)

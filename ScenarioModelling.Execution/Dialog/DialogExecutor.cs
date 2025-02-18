@@ -2,6 +2,7 @@
 using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Execution.Dialog;
 
@@ -9,20 +10,22 @@ public class DialogExecutor : IExecutor
 {
     public Context Context { get; set; }
 
-    private MetaStory? _metaStory;
+    protected MetaStory? _metaStory;
     protected Story? _story;
-    private readonly ExpressionEvalator _evalator;
+    private readonly MetaStoryStack _metaStoryStack;
+    private readonly IServiceProvider _serviceProvider;
 
-    public DialogExecutor(Context context, ExpressionEvalator evalator)
+    public DialogExecutor(Context context, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider)
     {
         Context = context;
-        _evalator = evalator;
+        _metaStoryStack = metaStoryStack;
+        _serviceProvider = serviceProvider;
     }
 
-    public IStoryEvent? GetLastEvent()
+    public IMetaStoryEvent? GetLastEvent()
     {
         if (_metaStory == null || _story == null)
-            throw new InvalidOperationException("MetaStory not started");
+            throw new ExecutionException("MetaStory not started");
 
         return _story.Events.LastOrDefault();
     }
@@ -39,23 +42,34 @@ public class DialogExecutor : IExecutor
         _metaStory = Context.MetaStories.FirstOrDefault(s => s.Name.IsEqv(name));
 
         if (_metaStory == null)
-            throw new InvalidOperationException($"No MetaStory with name {name}");
+            throw new ExecutionException($"No MetaStory with name {name}");
 
-        _story = new Story { MetaStory = _metaStory, Evaluator = _evalator };
-        _story.Init();
+        _story = _serviceProvider.GetRequiredService<Story>();
+        InitStory();
+    }
+
+    protected virtual void InitStory()
+    {
+        if (_metaStory == null || _story == null)
+            throw new ExecutionException("MetaStory not started");
+
+        _story.Init(_metaStory);
     }
 
     public Story EndMetaStory()
     {
         if (_metaStory == null || _story == null)
-            throw new InvalidOperationException("MetaStory not started");
+            throw new ExecutionException("MetaStory not started");
 
         // TODO Final validation that we are indend at the end of the metastory
 
         var story = _story;
 
-        _story = null;
-        _metaStory = null;
+        if (_metaStoryStack.Count == 0)
+        {
+            _story = null;
+            _metaStory = null;
+        }
 
         return story;
     }
@@ -63,27 +77,27 @@ public class DialogExecutor : IExecutor
     public IStoryNode? NextNode()
     {
         if (_metaStory == null || _story == null)
-            throw new InvalidOperationException("MetaStory not started");
+            throw new ExecutionException("MetaStory not started");
 
         return _story.NextNode();
     }
 
-    public void RegisterEvent(IStoryEvent @event)
+    public void RegisterEvent(IMetaStoryEvent @event)
     {
         if (_metaStory == null || _story == null)
-            throw new InvalidOperationException("MetaStory not started");
+            throw new ExecutionException("MetaStory not started");
 
         _story.RegisterEvent(@event);
     }
 
-    public bool IsLastEventOfType<T>() where T : IStoryEvent
+    public bool IsLastEventOfType<T>() where T : IMetaStoryEvent
     {
         return IsLastEventOfType<T>(_ => true);
     }
 
-    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IStoryEvent
+    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IMetaStoryEvent
     {
-        IStoryEvent? MetaStoryEvent = _story?.Events.LastOrDefault();
+        IMetaStoryEvent? MetaStoryEvent = _story?.Events.LastOrDefault();
 
         if (MetaStoryEvent == null)
         {

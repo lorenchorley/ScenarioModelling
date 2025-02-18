@@ -25,6 +25,8 @@ public class AspectDeserialiser(MetaState MetaState, Instanciator Instanciator, 
 
         Aspect value = Instanciator.New<Aspect>(definition: def);
 
+        def.HasBeenTransformed = true;
+
         value.Entity.SetReference(entity);
         value.Relations.TryAddReferenceRange(named.Definitions.Choose(RelationTransformer.TransformAsProperty));
         //value.AspectType = named.Definitions.Choose(d => TransformAspectType(System, d)).FirstOrDefault() ?? new AspectType(System) { Name = named.Name.Value }

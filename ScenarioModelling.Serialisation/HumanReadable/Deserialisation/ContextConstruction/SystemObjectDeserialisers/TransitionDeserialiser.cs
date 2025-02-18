@@ -29,6 +29,9 @@ public class TransitionDeserialiser(MetaState MetaState, Instanciator Instanciat
             throw new Exception("A transition must always be the propert of another object");
 
         Transition value = Instanciator.New<Transition>(definition: def);
+
+        def.HasBeenTransformed = true;
+
         value.SourceState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Source.Value));
         value.DestinationState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Destination.Value));
 

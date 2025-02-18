@@ -29,6 +29,8 @@ public class EntityDeserialiser(MetaState MetaState, Instanciator Instanciator, 
 
         Entity value = Instanciator.New<Entity>(definition: def);
 
+        def.HasBeenTransformed = true;
+
         EntityTypeReference typeReference =
             unnamed.Definitions
                    .Choose(EntityTypeTransformer.TransformAsProperty)
@@ -61,6 +63,7 @@ public class EntityDeserialiser(MetaState MetaState, Instanciator Instanciator, 
 
         if (named.Type.IsEqv("CharacterStyle"))
         {
+            definition.HasBeenTransformed = true;
             return named.Name.Value;
         }
 

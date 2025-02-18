@@ -8,7 +8,9 @@ namespace ScenarioModelling.TestDataAndTools.CodeHooks;
 
 public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestDataSource
 {
-    private record TestCase(string MetaStoryMethodName);
+    public static readonly string PrimaryMetaStoryName = "MetaStory recorded by hooks";
+
+    private record TestCase(string MetaStoryMethodName, bool AutoDefineMetaStory = true);
 
     private List<TestCase> TestData = [
             new(nameof(OneDialog)),
@@ -41,10 +43,11 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             new(nameof(WhileExecutesTwiceWithTransitionAndDialog)),
             new(nameof(WhileExecutesTwiceWithNestedIf)),
             new(nameof(WhileExecutesTwiceWithNestedIf_NoDialogAfter)),
+            new(nameof(CallMetaStory_OneLevel), AutoDefineMetaStory: false),
         ];
 
     public IEnumerable<object[]> GetData(MethodInfo methodInfo)
-        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedSystemMethodName(t.MetaStoryMethodName)]));
+        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedSystemMethodName(t.MetaStoryMethodName), t.AutoDefineMetaStory]));
 
     public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
 
@@ -61,17 +64,17 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
     public static string GetExpectedText(string metaStoryMethodName)
     {
-        var attr = NewMethod<ExpectedResultAttribute>(metaStoryMethodName);
+        var attr = GetAssociatedExpectedText<ExpectedResultAttribute>(metaStoryMethodName);
         return attr?.Text ?? $"Text not set. To set this text, apply the attribute ExpectedResult to the hook method {metaStoryMethodName}.";
     }
 
-    public static string GetAssociatedSystemMethodName(string metaStoryMethodName)
+    private static string GetAssociatedSystemMethodName(string metaStoryMethodName)
     {
-        var attr = NewMethod<AssociatedSystemHookMethodAttribute>(metaStoryMethodName);
+        var attr = GetAssociatedExpectedText<AssociatedSystemHookMethodAttribute>(metaStoryMethodName);
         return attr?.MethodName ?? $"Method name not set. To set this name, apply the attribute AssociatedSystemHookMethod to the hook method {metaStoryMethodName}.";
     }
 
-    private static T? NewMethod<T>(string metaStoryMethodName) where T : Attribute
+    private static T? GetAssociatedExpectedText<T>(string metaStoryMethodName) where T : Attribute
     {
         var methodRef =
             typeof(ProgressiveCodeHookTestDataProviderAttribute)
@@ -1122,5 +1125,47 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         }
     }
 
+    #endregion
+
+    #region CallMetaStory
+
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      CallMetaStory {
+        MetaStoryName "Secondary MetaStory"
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+
+    MetaStory "Secondary MetaStory" {
+      Dialog {
+        Text "Inside the inner meta story"
+      }
+    }
+    """)]
+    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    private static void CallMetaStory_OneLevel(MetaStoryHookOrchestrator hooks)
+    {
+        hooks.Dialog("Before call").BuildAndRegister();
+
+        hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
+
+        { // Scope to help understand the inner meta story
+            hooks.StartMetaStory("Secondary MetaStory");
+
+            hooks.Dialog("Inside the inner meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        hooks.Dialog("After call").BuildAndRegister();
+    }
+    
     #endregion
 }

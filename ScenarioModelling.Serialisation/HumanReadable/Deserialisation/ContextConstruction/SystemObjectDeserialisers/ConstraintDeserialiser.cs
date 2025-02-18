@@ -7,11 +7,12 @@ using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 
 [SystemObjectLike<IDefinitionToObjectDeserialiser, Constraint>]
-public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciator) : DefinitionToObjectDeserialiser<Constraint, ConstraintReference>
+public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciator, ExpressionInterpreter Interpreter) : DefinitionToObjectDeserialiser<Constraint, ConstraintReference>
 {
     protected override Option<ConstraintReference> Transform(Definition def, TransformationType type)
     {
@@ -26,21 +27,21 @@ public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciat
 
         Constraint value = Instanciator.New<Constraint>(definition: def);
 
-        ExpressionInterpreter interpreter = new();
+        def.HasBeenTransformed = true;
 
-        var result = interpreter.Parse(expDef.Block.ExpressionText.Value);
+        var result = Interpreter.Parse(expDef.Block.ExpressionText.Value);
 
         if (result.HasErrors)
         {
             //throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node{value.LineInformation} : \n{result.Errors.CommaSeparatedList()}");
-            throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node : \n{result.Errors.CommaSeparatedList()}");
+            throw new ExpressionException($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node : \n{result.Errors.CommaSeparatedList()}");
             // TODO Add line information ISystemObject.LineInformation
         }
 
         if (result.ParsedObject is null)
         {
             //throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node{value.LineInformation} : return value not set");
-            throw new Exception($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node : return value not set");
+            throw new InternalLogicException($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node : return value not set");
             // TODO Add line information ISystemObject.LineInformation
         }
 
@@ -54,6 +55,7 @@ public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciat
                 if (named.Type.Value.IsEqv("Description"))
                 {
                     value.Name = named.Name.Value;
+                    item.HasBeenTransformed = true;
                     continue;
                 }
             }

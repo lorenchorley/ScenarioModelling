@@ -6,6 +6,6 @@ public static class ServiceExtensions
 {
     public static void ConfigureServices(this IServiceCollection services)
     {
-        services.AddScoped<MetaStoryHookOrchestratorForConstruction>();
+        services.AddTransient<MetaStoryHookOrchestratorForConstruction>();
     }
 }

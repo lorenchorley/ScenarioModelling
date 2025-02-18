@@ -1,20 +1,22 @@
 ﻿namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-public record ExpressionDefinition : Definition
+public record ExpressionDefinition : ParentalDefinition
 {
     public StringValue Name { get; set; } = null!;
     public ExpressionBlock Block { get; set; } = null!;
-    public Definitions Definitions { get; set; } = new();
+    
+    public override string ToEssentialString()
+        => $"ExpressionDefinition({Name}, {Block})";
 
     public override string ToString()
     {
-        if (Definitions.Count > 0)
+        if (Definitions.Count == 0)
         {
-            return $"ExpressionDefinition({Name}, <{Block.ExpressionText}>) {{ {Definitions} }}";
+            return ToEssentialString();
         }
         else
         {
-            return $"ExpressionDefinition({Name}, <{Block.ExpressionText}>)";
+            return $"{ToEssentialString()} {{ {Definitions} }}";
         }
     }
 }

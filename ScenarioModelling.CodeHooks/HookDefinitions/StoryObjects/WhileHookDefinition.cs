@@ -5,6 +5,7 @@ using ScenarioModelling.CoreObjects.StoryNodes;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 
@@ -13,7 +14,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<WhileHookDefinition, BifurcatingHook>
 {
     private int _whileLoopCount = 0;
-    private DefinitionScope? _whileLoopScope;
+    private SubgraphScopedHookSynchroniser? _whileLoopScope;
     private readonly IHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
@@ -21,10 +22,10 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
 
     public bool Validated { get; private set; } = false;
     public WhileNode Node { get; private set; }
-    public DefinitionScope Scope { get; }
+    public SubgraphScopedHookSynchroniser Scope { get; }
     public DefinitionScopeSnapshot ScopeSnapshot { get; }
 
-    public WhileHookDefinition(DefinitionScope scope, string expression, IHookFunctions hookFunctions)
+    public WhileHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;
@@ -35,11 +36,11 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
         var result = interpreter.Parse(expression);
 
         if (result.HasErrors)
-            throw new Exception($@"Unable to parse expression ""{expression}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
+            throw new ExpressionException($@"Unable to parse expression ""{expression}"" on while declaration : \n{result.Errors.CommaSeparatedList()}");
 
         Node = new WhileNode();
         Node.OriginalConditionText = expression;
-        Node.Condition = result.ParsedObject ?? throw new Exception("Parsed object is null");
+        Node.Condition = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
     }
 
     private bool WhileHook(bool result)
@@ -61,8 +62,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
                 return RegisterEventFromConditionResult(result); // We do not register the event here because it is managed by the call to _finaliseDefinition which also adds the node to the graph
 
             // Continue the loop
-            _whileLoopScope = new DefinitionScope(Node.SubGraph, _hookFunctions.VerifyPreviousDefinition);
-            _hookFunctions.EnterScope(_whileLoopScope);
+            _whileLoopScope = _hookFunctions.EnterSubgraph(Node.SubGraph);
         }
 
         if (result)
@@ -112,7 +112,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     {
         if (!_gotConditionHook)
         {
-            throw new Exception($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
+            throw new HookException($"The hook declaration did not ask for a condition hook callback, call {nameof(GetConditionHook)}");
         }
 
         Validated = true;
@@ -126,7 +126,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)
     {
         if (preexistingNode is not WhileNode node)
-            throw new Exception($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
+            throw new InternalLogicException($"When trying to replace the hook definition's generated node with a preexisting node, the types did not match (preexisting type : {preexistingNode.GetType().Name}, generated type : {Node.GetType().Name})");
 
         Node = node;
     }

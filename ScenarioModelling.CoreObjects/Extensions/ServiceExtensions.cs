@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ScenarioModelling.CoreObjects.ContextValidation.Errors;
-using ScenarioModelling.CoreObjects.ContextValidation;
-using ScenarioModelling.CoreObjects.Expressions.Evaluation;
-using ScenarioModelling.CoreObjects.Interpolation;
-using ScenarioModelling.CoreObjects.ContextValidation.SystemValidation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ScenarioModelling.CoreObjects.ContextValidation;
+using ScenarioModelling.CoreObjects.ContextValidation.SystemValidation;
+using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.Expressions.Traversal;
+using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.CoreObjects.Visitors;
 
 namespace ScenarioModelling.CoreObjects.Extensions;
@@ -19,7 +18,7 @@ public static class ServiceExtensions
         //  Perhaps a metastory stack. The complete list can be accessed via the context, but the current one is the top of the stack and the sub stories are pushed under it
         services.AddSingleton<Context>();
         services.AddSingleton<MetaState>();
-        services.AddSingleton<MetaStoryStack>(); // Necessary ?
+        services.AddSingleton<MetaStoryStack>(); // Singleton so that the flow of execution through several meta stories can be shared, but also implies that a single container can only run one story at a time !
 
         services.TryAddSingleton<AspectValidator>();
         services.TryAddSingleton<ConstraintValidator>();

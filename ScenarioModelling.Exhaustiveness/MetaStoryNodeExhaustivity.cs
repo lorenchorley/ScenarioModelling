@@ -8,6 +8,7 @@ public static class MetaStoryNodeExhaustivity
 {
     public static Type[] AllNodeTypes =>
     [
+        typeof(CallMetaStoryNode),
         typeof(ChooseNode),
         typeof(DialogNode),
         typeof(IfNode),
@@ -18,6 +19,7 @@ public static class MetaStoryNodeExhaustivity
     ];
 
     public static void DoForEachNodeType(
+        Action callMetaStory,
         Action chooseNode,
         Action dialogNode,
         Action ifNode,
@@ -26,6 +28,7 @@ public static class MetaStoryNodeExhaustivity
         Action transitionNode,
         Action whileNode)
     {
+        callMetaStory();
         chooseNode();
         dialogNode();
         ifNode();

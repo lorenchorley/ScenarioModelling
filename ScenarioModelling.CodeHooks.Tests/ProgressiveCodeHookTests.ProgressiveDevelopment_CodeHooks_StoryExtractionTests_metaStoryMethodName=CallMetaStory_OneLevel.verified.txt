@@ -1,0 +1,5 @@
+﻿* DialogEvent {"Text":"Before call","Character":null}
+* MetaStoryCalledEvent {"Name":"Secondary MetaStory"}
+* DialogEvent {"Text":"Inside the inner meta story","Character":null}
+* MetaStoryReturnedEvent {"Name":"Secondary MetaStory"}
+* DialogEvent {"Text":"After call","Character":null}

@@ -10,17 +10,17 @@ public class AnalysisExecutor : IExecutor
         throw new NotImplementedException();
     }
 
-    public IStoryEvent? GetLastEvent()
+    public IMetaStoryEvent? GetLastEvent()
     {
         throw new NotImplementedException();
     }
 
-    public bool IsLastEventOfType<T>() where T : IStoryEvent
+    public bool IsLastEventOfType<T>() where T : IMetaStoryEvent
     {
         throw new NotImplementedException();
     }
 
-    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IStoryEvent
+    public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IMetaStoryEvent
     {
         throw new NotImplementedException();
     }
@@ -30,7 +30,7 @@ public class AnalysisExecutor : IExecutor
         throw new NotImplementedException();
     }
 
-    public void RegisterEvent(IStoryEvent @event)
+    public void RegisterEvent(IMetaStoryEvent @event)
     {
         throw new NotImplementedException();
     }

@@ -8,8 +8,11 @@ public static class ServiceExtensions
 {
     public static void ConfigureServices(this IServiceCollection services)
     {
-        services.TryAddSingleton<EventGenerationDependencies>();
-        services.TryAddSingleton<IExecutor, DialogExecutor>();
-        services.TryAddSingleton<DialogExecutor>();
+        services.AddTransient<EventGenerationDependencies>();
+        services.AddTransient<IExecutor, DialogExecutor>();
+        services.AddTransient<DialogExecutor>();
+        services.AddTransient<IExecutor, ParallelConstructionExecutor>();
+        services.AddTransient<ParallelConstructionExecutor>();
+        services.AddTransient<Story>();
     }
 }

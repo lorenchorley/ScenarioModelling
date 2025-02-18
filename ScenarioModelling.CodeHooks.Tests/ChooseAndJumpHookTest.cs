@@ -9,6 +9,7 @@ using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
+using ScenarioModelling.TestDataAndTools.CodeHooks;
 using System.Diagnostics;
 
 namespace ScenarioModelling.Tests.HookTests;
@@ -161,7 +162,7 @@ public partial class ChooseAndJumpHookTest
         // ===
 
         // The MetaStory declaration is made outside the producer because the MetaStory depends on how the producer is called (here the choices could be different)
-        hooks.StartMetaStory("MetaStory recorded by hooks");
+        hooks.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
         // Run the code and produce the MetaStory from the called hooks
 
@@ -195,7 +196,7 @@ public partial class ChooseAndJumpHookTest
     {
         // Arrange
         // =======
-        ScenarioModellingContainer container = new();
+        TestContainer container = new();
 
         Context context =
             container.Context
@@ -203,6 +204,7 @@ public partial class ChooseAndJumpHookTest
                      .Initialise();
 
         MetaStoryHookOrchestrator hooks = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        StoryTestRunner runner = container.GetService<StoryTestRunner>();
 
         Queue<string> choices = new();
         choices.Enqueue("Change name and repeat");
@@ -220,19 +222,12 @@ public partial class ChooseAndJumpHookTest
                                     .Serialise()
                                     .Match(v => v, e => throw e);
 
-        // Everything necessary to run the MetaStory
-        ExpressionEvalator evalator = new(context.MetaState);
-        DialogExecutor executor = new(context, evalator);
-        StringInterpolator interpolator = new(context.MetaState);
-        EventGenerationDependencies dependencies = new(interpolator, evalator, executor, context);
-        StoryTestRunner runner = new(executor, dependencies);
-
 
         // Act
         // ===
 
         // The MetaStory declaration is made outside the producer because the MetaStory depends on how the producer is called (here the choices could be different)
-        hooks.StartMetaStory("MetaStory recorded by hooks");
+        hooks.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
         // Run the code and produce the MetaStory from the called hooks
 
@@ -242,7 +237,7 @@ public partial class ChooseAndJumpHookTest
 
         (MetaStory generatedMetaStory, Story hookGeneratedStory) = hooks.EndMetaStory();
 
-        Story rerunStory = runner.Run("MetaStory recorded by hooks");
+        Story rerunStory = runner.Run(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
 
         // Assert

@@ -6,6 +6,6 @@ public class TestContainer : ScenarioModellingContainer
 {
     protected override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<StoryTestRunner>();
+        services.AddTransient<StoryTestRunner>();
     }
 }

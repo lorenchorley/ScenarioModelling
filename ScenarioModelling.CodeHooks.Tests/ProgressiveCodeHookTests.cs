@@ -1,9 +1,7 @@
 ﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
-using ScenarioModelling.CoreObjects.Expressions.Evaluation;
-using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.Execution;
-using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
@@ -14,10 +12,16 @@ namespace ScenarioModelling.Tests.HookTests;
 [UsesVerify]
 public partial class ProgressiveCodeHookTests
 {
+    [AssemblyInitialize()]
+    public static void AssemblyInit(TestContext context)
+    {
+        ExhaustivityFunctions.Active = true;
+    }
+
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_metaStoryConstructionTests(string metaStoryMethodName, string systemMethodName)
+    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
     {
         // Arrange
         // =======
@@ -41,7 +45,7 @@ public partial class ProgressiveCodeHookTests
         orchestrator.DefineMetaState(systemHooksMethod);
 
         // Build MetaStory
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
         metaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 
@@ -61,7 +65,7 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string metaStoryMethodName, string systemMethodName)
+    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
     {
         // Arrange
         // =======
@@ -72,7 +76,7 @@ public partial class ProgressiveCodeHookTests
                      .UseSerialiser<ContextSerialiser>()
                      .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>(); 
+        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var MetaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
@@ -84,7 +88,7 @@ public partial class ProgressiveCodeHookTests
         });
 
         // Build MetaStory
-        orchestrator.StartMetaStory("MetaStory recorded by hooks");
+        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
         MetaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 
@@ -93,7 +97,7 @@ public partial class ProgressiveCodeHookTests
 
         // Act
         // ===
-        Story story = runner.Run("MetaStory recorded by hooks");
+        Story story = runner.Run(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
 
         // Assert

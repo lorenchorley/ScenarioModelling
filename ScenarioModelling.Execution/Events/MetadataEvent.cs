@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.StoryNodes;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events.Interfaces;
 
 namespace ScenarioModelling.Execution.Events;
 
-[StoryNodeLike<IStoryNode, MetadataNode>]
+[StoryNodeLike<IMetaStoryEvent, MetadataNode>]
 public record MetadataEvent : IMetaStoryEvent<MetadataNode>
 {
     [JsonIgnore]

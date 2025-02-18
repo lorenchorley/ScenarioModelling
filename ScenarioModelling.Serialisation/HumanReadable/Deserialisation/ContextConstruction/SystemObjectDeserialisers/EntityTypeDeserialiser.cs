@@ -20,6 +20,8 @@ public class EntityTypeDeserialiser(MetaState metaState, Instanciator Instanciat
         if (!unnamed.Type.Value.IsEqv("EntityType"))
             return null;
 
+        def.HasBeenTransformed = true;
+
         // If this is meant to be the value of a property in another object, we need to return a reference
         // Otherwise we make a full object that is stored in the system
         if (type == TransformationType.Property)

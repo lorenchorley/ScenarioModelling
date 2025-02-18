@@ -2,17 +2,18 @@
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CodeHooks.Utils;
 
 public class ActiveHookFunctions : InactiveHookFunctions
 {
-    private readonly Stack<DefinitionScope> _scopeStack;
+    private readonly Stack<SubgraphScopedHookSynchroniser> _scopeStack;
     private readonly HookContextBuilderInputs _contextBuilderInputs;
     private readonly ProgressiveHookBasedContextBuilder _contextBuilder;
     private readonly ParallelConstructionExecutor? _parallelConstructionExecutor;
 
-    public ActiveHookFunctions(Stack<DefinitionScope> scopeStack, Queue<INodeHookDefinition> newlyCreatedHooks, HookContextBuilderInputs contextBuilderInputs, ProgressiveHookBasedContextBuilder contextBuilder, ParallelConstructionExecutor? parallelConstructionExecutor)
+    public ActiveHookFunctions(Stack<SubgraphScopedHookSynchroniser> scopeStack, Queue<INodeHookDefinition> newlyCreatedHooks, HookContextBuilderInputs contextBuilderInputs, ProgressiveHookBasedContextBuilder contextBuilder, ParallelConstructionExecutor? parallelConstructionExecutor)
         : base(newlyCreatedHooks)
     {
         _scopeStack = scopeStack;
@@ -21,11 +22,15 @@ public class ActiveHookFunctions : InactiveHookFunctions
         _parallelConstructionExecutor = parallelConstructionExecutor;
     }
 
-    public override void EnterScope(DefinitionScope scope)
+    public override SubgraphScopedHookSynchroniser EnterSubgraph(SemiLinearSubGraph<IStoryNode> subgraph)
     {
         VerifyPreviousDefinition();
 
-        _scopeStack.Push(scope);
+        var scopeSynchroniser = new SubgraphScopedHookSynchroniser(subgraph, VerifyPreviousDefinition);
+
+        _scopeStack.Push(scopeSynchroniser);
+
+        return scopeSynchroniser;
     }
 
     public override void ReturnOneScopeLevel()
@@ -55,7 +60,7 @@ public class ActiveHookFunctions : InactiveHookFunctions
         );
     }
 
-    public override void RegisterEventForHook(INodeHookDefinition hookDefinition, Action<IStoryEvent> configure)
+    public override void RegisterEventForHook(INodeHookDefinition hookDefinition, Action<IMetaStoryEvent> configure)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
 

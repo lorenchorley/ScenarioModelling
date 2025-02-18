@@ -26,11 +26,6 @@ public class GraphScope
         CurrentNode = graph.PrimarySubGraph.GetNextInSequenceOrNull();
     }
 
-    //public IStoryNode GetCurrentNode()
-    //{
-
-    //}
-
     public void SetExplicitNextNode(IStoryNode node)
     {
         CurrentSubGraph.SetExplicitNextNode(node);

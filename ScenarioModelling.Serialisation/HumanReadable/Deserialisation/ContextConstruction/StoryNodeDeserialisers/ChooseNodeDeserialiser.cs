@@ -25,6 +25,8 @@ public class ChooseNodeDeserialiser : IDefinitionToNodeDeserialiser
             throw new Exception("Jump node must be unnamed definition");
         }
 
+        def.HasBeenTransformed = true;
+
         ChooseNode node = new();
         node.Line = def.Line;
 
@@ -33,10 +35,15 @@ public class ChooseNodeDeserialiser : IDefinitionToNodeDeserialiser
             if (item is NamedDefinition named)
             {
                 node.Choices.Add((named.Type.Value, named.Name.Value));
+                item.HasBeenTransformed = true;
+                continue;
             }
-            else if (item is UnnamedDefinition unnamedsub)
+            
+            if (item is UnnamedDefinition unnamedsub)
             {
                 node.Choices.Add((unnamedsub.Type.Value, ""));
+                item.HasBeenTransformed = true;
+                continue;
             }
         }
 

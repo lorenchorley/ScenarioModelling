@@ -10,8 +10,9 @@ namespace ScenarioModelling.Execution;
 
 public static class NodeExtensions
 {
-    public static IStoryEvent GenerateEvent(this IStoryNode node, EventGenerationDependencies dependencies)
-        => node.ToOneOf().Match<IStoryEvent>(
+    public static IMetaStoryEvent GenerateEvent(this IStoryNode node, EventGenerationDependencies dependencies)
+        => node.ToOneOf().Match<IMetaStoryEvent>(
+                callMetaStory => callMetaStory.GenerateEvent(dependencies),
                 chooseNode => chooseNode.GenerateEvent(dependencies),
                 dialogNode => dialogNode.GenerateEvent(dependencies),
                 ifNode => ifNode.GenerateEvent(dependencies),
@@ -20,6 +21,31 @@ public static class NodeExtensions
                 transitionNode => transitionNode.GenerateEvent(dependencies),
                 whileNode => whileNode.GenerateEvent(dependencies)
             );
+
+    public static MetaStoryCalledEvent GenerateEvent(this CallMetaStoryNode node, EventGenerationDependencies dependencies)
+    {
+        return new MetaStoryCalledEvent() { ProducerNode = node };
+    }
+
+    public static ChoiceSelectedEvent GenerateEvent(this ChooseNode node, EventGenerationDependencies dependencies)
+    {
+        return new ChoiceSelectedEvent() { ProducerNode = node };
+    }
+
+    public static DialogEvent GenerateEvent(this DialogNode node, EventGenerationDependencies dependencies)
+    {
+        DialogEvent e = new DialogEvent()
+        {
+            Character = node.Character,
+            ProducerNode = node,
+        };
+
+        string text = node.TextTemplate;
+        text = dependencies.Interpolator.ReplaceInterpolations(text);
+        e.Text = text;
+
+        return e;
+    }
 
     public static IfBlockEvent GenerateEvent(this IfNode node, EventGenerationDependencies dependencies)
     {
@@ -38,21 +64,6 @@ public static class NodeExtensions
         return e;
     }
 
-    public static DialogEvent GenerateEvent(this DialogNode node, EventGenerationDependencies dependencies)
-    {
-        DialogEvent e = new DialogEvent()
-        {
-            Character = node.Character,
-            ProducerNode = node,
-        };
-
-        string text = node.TextTemplate;
-        text = dependencies.Interpolator.ReplaceInterpolations(text);
-        e.Text = text;
-
-        return e;
-    }
-
     public static JumpEvent GenerateEvent(this JumpNode node, EventGenerationDependencies dependencies)
     {
         return new JumpEvent()
@@ -60,11 +71,6 @@ public static class NodeExtensions
             Target = node.Target,
             ProducerNode = node,
         };
-    }
-
-    public static ChoiceSelectedEvent GenerateEvent(this ChooseNode node, EventGenerationDependencies dependencies)
-    {
-        return new ChoiceSelectedEvent() { ProducerNode = node };
     }
 
     public static MetadataEvent GenerateEvent(this MetadataNode node, EventGenerationDependencies dependencies)

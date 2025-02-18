@@ -5,6 +5,7 @@ using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
+using ScenarioModelling.TestDataAndTools.CodeHooks;
 using System.Diagnostics;
 
 namespace ScenarioModelling.Tests.HookTests;
@@ -206,7 +207,7 @@ public partial class WhileLoopHookTest
         // ===
 
         // The MetaStory declaration is made outside the producer because the MetaStory depends on how the producer is called (here the choices could be different)
-        hooks.StartMetaStory("MetaStory recorded by hooks");
+        hooks.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
         // Run the code and produce the MetaStory from the called hooks
         Debug.WriteLine("");
@@ -260,7 +261,7 @@ public partial class WhileLoopHookTest
         // ===
 
         // The MetaStory declaration is made outside the producer because the MetaStory depends on how the producer is called (here the choices could be different)
-        hooks.StartMetaStory("MetaStory recorded by hooks");
+        hooks.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
         // Run the code and produce the MetaStory from the called hooks
         Debug.WriteLine("");
@@ -269,7 +270,7 @@ public partial class WhileLoopHookTest
 
         (_, Story hookGeneratedStory) = hooks.EndMetaStory();
 
-        Story rerunStory = runner.Run("MetaStory recorded by hooks");
+        Story rerunStory = runner.Run(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
 
         // Assert

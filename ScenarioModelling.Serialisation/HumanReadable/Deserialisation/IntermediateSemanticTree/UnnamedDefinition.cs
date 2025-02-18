@@ -1,19 +1,23 @@
 ﻿namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 
-public record UnnamedDefinition : Definition
+public record UnnamedDefinition : ParentalDefinition
 {
     public StringValue Type { get; set; } = null!;
-    public Definitions Definitions { get; set; } = new();
+
+    public override string ToEssentialString()
+    {
+        return $"UnnamedDefinition({Type})";
+    }
 
     public override string ToString()
     {
         if (Definitions.Count == 0)
         {
-            return $"Definition({Type}, _)";
+            return ToEssentialString();
         }
         else
         {
-            return $"Definition({Type}, _) {{ {Definitions} }}";
+            return $"{ToEssentialString()} {{ {Definitions} }}";
         }
     }
 }

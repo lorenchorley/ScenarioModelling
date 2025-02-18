@@ -4,8 +4,11 @@ public record TransitionDefinition : UnnamedDefinition
 {
     public StringValue TransitionName { get; set; } = null!;
 
+    public override string ToEssentialString()
+        => ToString();
+
     public override string ToString()
     {
-        return $"Definition({Type} : {TransitionName})";
+        return $"TransitionDefinition({Type} -> {TransitionName})";
     }
 }

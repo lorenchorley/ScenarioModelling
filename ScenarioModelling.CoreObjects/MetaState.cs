@@ -122,7 +122,7 @@ public class MetaState
 
     public MetaState()
     {
-        
+
     }
 
     /// <summary>

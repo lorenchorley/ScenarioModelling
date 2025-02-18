@@ -28,6 +28,8 @@ public class JumpNodeDeserialiser : IDefinitionToNodeDeserialiser
         JumpNode node = new();
         node.Line = def.Line;
 
+        def.HasBeenTransformed = true;
+
         foreach (var item in unnamed.Definitions)
         {
             if (item is NamedDefinition namedDefinition && namedDefinition.Type.Value == "Target") // We accept either an explicitly typed "Target" definition

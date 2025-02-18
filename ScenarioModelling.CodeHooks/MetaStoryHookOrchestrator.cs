@@ -6,8 +6,8 @@ using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.StoryNodes.DataClasses;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
-using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.ContextConstruction;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks;
 
@@ -15,61 +15,125 @@ public abstract class MetaStoryHookOrchestrator
 {
     public Context Context { get; }
 
-    protected readonly Stack<DefinitionScope> _scopeStack = new();
+    protected readonly Stack<SubgraphScopedHookSynchroniser> _scopeStack = new();
     protected readonly HookContextBuilderInputs _contextBuilderInputs;
     protected readonly ProgressiveHookBasedContextBuilder _contextBuilder;
     protected readonly Queue<INodeHookDefinition> _newlyCreatedHooks = new();
     protected readonly Instanciator _instanciator;
+    private readonly MetaStoryStack _metaStoryStack;
+    protected readonly IServiceProvider _serviceProvider;
 
     protected MetaStateHookDefinition? _metaStateHookDefinition;
-    protected MetaStoryHookDefinition? _metaStoryDefintion;
+    protected readonly Stack<MetaStoryHookDefinition> _metaStoryDefintionStack = new();
     protected ParallelConstructionExecutor? _parallelConstructionExecutor;
     protected IHookFunctions _hookFunctions;
 
-    protected DefinitionScope CurrentScope => _scopeStack.Peek();
-    protected MetaState MetaState => MetaStory.MetaState;
-    protected MetaStory MetaStory => _metaStoryDefintion?.GetMetaStory() ?? throw new ArgumentNullException();
+    protected SubgraphScopedHookSynchroniser CurrentScope => _scopeStack.Peek();
 
-    protected MetaStoryHookOrchestrator(Context context, Instanciator instanciator)
+    protected MetaStoryHookOrchestrator(Context context, Instanciator instanciator, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider)
     {
-        MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<INodeHookDefinition>();
-
         Context = context;
         _instanciator = instanciator;
+        _metaStoryStack = metaStoryStack;
+        _serviceProvider = serviceProvider;
         _contextBuilder = new(context);
         _contextBuilderInputs = new();
 
         _hookFunctions = new InactiveHookFunctions(_newlyCreatedHooks);
     }
 
-    public virtual MetaStoryHookDefinition? StartMetaStory(string name)
+    public virtual MetaStoryHookDefinition StartMetaStory(string name)
     {
-        _metaStateHookDefinition = null; // Reinitialise so that it may be called again once per meta story
+        bool noMetaStoryInProgress = _metaStoryStack.Count == 0;
 
-        _metaStoryDefintion = new MetaStoryHookDefinition(name, Context);
-        _parallelConstructionExecutor = new(Context, new(Context.MetaState));
-        _hookFunctions = new ActiveHookFunctions(_scopeStack, _newlyCreatedHooks, _contextBuilderInputs, _contextBuilder, _parallelConstructionExecutor);
+        if (noMetaStoryInProgress)
+        {
+            _metaStateHookDefinition = null; // Reinitialise so that it may be called again once per meta story
 
-        _parallelConstructionExecutor.StartMetaStory(name);
-        _scopeStack.Push(new DefinitionScope(MetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
-        _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
+            MetaStoryHookDefinition metaStoryDefintion = new MetaStoryHookDefinition(name, Context, _metaStoryStack); // This pushes the new meta story onto the stack
+            _metaStoryDefintionStack.Push(metaStoryDefintion); 
+            
+            if (_metaStoryStack.Count != 1)
+            {
+                throw new InternalLogicException("MetaStoryHookDefinition did not push a meta story onto the stack");
+            }
 
-        return _metaStoryDefintion;
+            MetaStory currentMetaStory = _metaStoryStack.Peek();
+
+            if (_parallelConstructionExecutor != null)
+                throw new InternalLogicException("ParallelConstructionExecutor was instancied before starting a new meta story without any on the stack");
+
+            _parallelConstructionExecutor = _serviceProvider.GetRequiredService<ParallelConstructionExecutor>();
+            _hookFunctions = new ActiveHookFunctions(_scopeStack, _newlyCreatedHooks, _contextBuilderInputs, _contextBuilder, _parallelConstructionExecutor);
+
+            _parallelConstructionExecutor.StartMetaStory(name);
+            _scopeStack.Push(new SubgraphScopedHookSynchroniser(currentMetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
+            _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs); // TODO Needed ?
+
+            return metaStoryDefintion;
+        }
+        else
+        {
+            // TODO Needed ?
+            //if (_metaStateHookDefinition == null)
+            //    throw new HookException("A meta state has not been defined already");
+
+            if (_hookFunctions is not ActiveHookFunctions)
+                throw new InternalLogicException("Hook functions are not active when starting a secondary meta story");
+
+            _hookFunctions.VerifyPreviousDefinition();
+
+            MetaStoryHookDefinition metaStoryDefintion = new MetaStoryHookDefinition(name, Context, _metaStoryStack); // This pushes the new meta story onto the stack
+            _metaStoryDefintionStack.Push(metaStoryDefintion);
+
+            MetaStory currentMetaStory = _metaStoryStack.Peek(); // Must be after the creation of MetaStoryHookDefinition because it's that class that pushes the new meta story onto the stack
+
+            if (_metaStoryStack.Count < 2)
+            {
+                throw new InternalLogicException("MetaStoryHookDefinition did not push a meta story onto the stack.");
+            }
+
+            if (_parallelConstructionExecutor == null)
+                throw new InternalLogicException("ParallelConstructionExecutor was not instancied before starting a new meta story with existing meta stories on the stack");
+
+            _parallelConstructionExecutor.StartMetaStory(name);
+            _scopeStack.Push(new SubgraphScopedHookSynchroniser(currentMetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
+            _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs); // TODO Needed ?
+
+            return metaStoryDefintion;
+        }
     }
 
     public (MetaStory, Story) EndMetaStory()
     {
-        _hookFunctions.VerifyPreviousDefinition();
-
         // TODO fill the public story with the events that have been generated by the hooks
         ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
+        _hookFunctions.VerifyPreviousDefinition();
+
+        if (_metaStoryStack.Count == 0)
+            throw new InternalLogicException("When ending a meta story, the meta story stack count was 0, meaning no meta story had been started.");
+
+        if (_metaStoryDefintionStack.Count == 0)
+            throw new InternalLogicException("When ending a meta story, the meta story definition stack count was 0, meaning no meta story had been started.");
+
+        if (_metaStoryStack.Count != _metaStoryDefintionStack.Count)
+            throw new InternalLogicException("When ending a meta story, the meta story stack count did not match the meta story definition stack count. They should always be in sync.");
+
+        MetaStory metaStory = _metaStoryDefintionStack.Pop().EndMetaStory(); // EndMetaStory does the Pop for the MetaStoryStack and returns that instance
 
         var story = _parallelConstructionExecutor!.EndMetaStory();
-        _parallelConstructionExecutor = null;
 
-        MetaStory metaStory = _metaStoryDefintion?.GetMetaStory() ?? throw new ArgumentNullException(nameof(_metaStoryDefintion));
-
-        _hookFunctions = new InactiveHookFunctions(_newlyCreatedHooks);
+        bool noMetaStoryInProgress = _metaStoryStack.Count == 0;
+        if (noMetaStoryInProgress)
+        {
+            // This is the end of the last meta story in the stack, finalise the state of the orchestrator
+            _parallelConstructionExecutor = null; 
+            _hookFunctions = new InactiveHookFunctions(_newlyCreatedHooks); 
+        }
+        else
+        {
+            _scopeStack.Pop(); // Check that it's in phase with the others
+        }
 
         return (metaStory, story);
     }
@@ -86,13 +150,11 @@ public abstract class MetaStoryHookOrchestrator
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(text);
-
         _hookFunctions!.VerifyPreviousDefinition();
 
         MetadataHookDefinition nodeDef = new(CurrentScope, text, _hookFunctions);
 
         _newlyCreatedHooks.Enqueue(nodeDef);
-
         return nodeDef;
     }
 
@@ -108,13 +170,11 @@ public abstract class MetaStoryHookOrchestrator
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(text);
-
         _hookFunctions!.VerifyPreviousDefinition();
 
         DialogHookDefinition nodeDef = new(CurrentScope, text, _hookFunctions);
 
         _newlyCreatedHooks.Enqueue(nodeDef);
-
         return nodeDef;
     }
 
@@ -132,7 +192,6 @@ public abstract class MetaStoryHookOrchestrator
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(character);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(text);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         DialogHookDefinition nodeDef =
@@ -142,7 +201,6 @@ public abstract class MetaStoryHookOrchestrator
         // Parent subgraph is null here in MetaStoryWithWhileLoop_ConstructionTest !
 
         _newlyCreatedHooks.Enqueue(nodeDef);
-
         return nodeDef;
     }
 
@@ -157,14 +215,32 @@ public abstract class MetaStoryHookOrchestrator
     public virtual ChooseHookDefinition Choose(params ChoiceList choices)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         ChooseHookDefinition nodeDef = new(CurrentScope, _hookFunctions);
         nodeDef.Node.Choices.AddRange(choices);
 
         _newlyCreatedHooks.Enqueue(nodeDef);
+        return nodeDef;
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="choices"></param>
+    /// <remarks>
+    /// Inserts the node as soon as the declaration is finalised
+    /// </remarks>
+    /// <returns></returns>
+    public virtual CallMetaStoryHookDefinition CallMetaStory(string name)
+    {
+        ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
+        _hookFunctions.VerifyPreviousDefinition();
 
+        CallMetaStoryHookDefinition nodeDef = new(CurrentScope, _hookFunctions);
+        nodeDef.Node.MetaStoryName = name;
+
+        _newlyCreatedHooks.Enqueue(nodeDef);
         return nodeDef;
     }
 
@@ -182,13 +258,11 @@ public abstract class MetaStoryHookOrchestrator
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(statefulObjectName);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(transition);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         TransitionHookDefinition nodeDef = new(CurrentScope, Context.MetaState, statefulObjectName, transition, _hookFunctions);
 
         _newlyCreatedHooks.Enqueue(nodeDef);
-
         return nodeDef;
     }
 
@@ -204,7 +278,6 @@ public abstract class MetaStoryHookOrchestrator
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(condition);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         IfHookDefinition nodeDef = new(CurrentScope, condition, _hookFunctions);
@@ -212,8 +285,7 @@ public abstract class MetaStoryHookOrchestrator
         // TODO Get the existing node at this point if it exists and return it so that everything is update to date as soon as possible. Otherwise the subgraph is not the correct subgraph going forward
         // May not be possible as we don't have enough information to completely identify the definition at this point
 
-        _newlyCreatedHooks.Enqueue(nodeDef); /// TODO This is not the correct place to add the node to the queue, move to the coniditon hook
-
+        _newlyCreatedHooks.Enqueue(nodeDef); // TODO This is not the correct place to add the node to the queue, move to the coniditon hook
         return nodeDef;
     }
 
@@ -229,13 +301,11 @@ public abstract class MetaStoryHookOrchestrator
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(target);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         JumpHookDefinition nodeDef = new(CurrentScope, target, _hookFunctions);
 
         _newlyCreatedHooks.Enqueue(nodeDef);
-
         return nodeDef;
     }
 
@@ -250,15 +320,12 @@ public abstract class MetaStoryHookOrchestrator
     public virtual WhileHookDefinition While(string condition)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
-
         ArgumentExceptionStandard.ThrowIfNullOrEmpty(condition);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         WhileHookDefinition nodeDef = new(CurrentScope, condition, _hookFunctions);
 
-        _newlyCreatedHooks.Enqueue(nodeDef); /// TODO This is not the correct place to add the node to the queue, move to the coniditon hook
-
+        _newlyCreatedHooks.Enqueue(nodeDef); // TODO This is not the correct place to add the node to the queue, move to the coniditon hook
         return nodeDef;
     }
 
@@ -270,7 +337,6 @@ public abstract class MetaStoryHookOrchestrator
     public void DefineMetaState(Action<MetaStateHookDefinition> configure)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         if (_metaStateHookDefinition != null)
@@ -291,7 +357,6 @@ public abstract class MetaStoryHookOrchestrator
     public void ReconfigureMetaState(Action<MetaStateHookReconfigurationDefinition> configure)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_hookFunctions);
-
         _hookFunctions.VerifyPreviousDefinition();
 
         if (_metaStateHookDefinition == null)

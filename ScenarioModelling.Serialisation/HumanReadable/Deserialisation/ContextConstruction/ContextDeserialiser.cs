@@ -3,19 +3,21 @@ using LanguageExt.Common;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
-using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Tools.Exceptions;
+using System.IO;
+using System.Text;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
 
 public class ContextBuilderInputs : IContextBuilderInputs
 {
-    public List<Definition> DefinitionTreeTopLevel { get; } = new();
+    public List<Definition> TopLevelOfDefinitionTree { get; } = new();
 }
 
 public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
@@ -36,7 +38,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     private readonly StateMachineDeserialiser _stateMachineTransformer;
     private readonly EntityTypeDeserialiser _entityTypeTransformer;
     private readonly EntityDeserialiser _entityTransformer;
-    
+
     private readonly ChooseNodeDeserialiser _chooseNodeDeserialiser;
     private readonly DialogNodeDeserialiser _dialogNodeDeserialiser;
     private readonly JumpNodeDeserialiser _jumpNodeDeserialiser;
@@ -51,29 +53,31 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     public bool HasBeenUsedAlready { get; private set; } = false;
 
     public ContextDeserialiser(
-        Context context, 
-        Instanciator instanciator, 
-        RelationDeserialiser relationTransformer, 
-        ConstraintDeserialiser constraintTransformer, 
-        StateDeserialiser stateTransformer, 
-        TransitionDeserialiser transitionTransformer, 
-        AspectDeserialiser aspectTransformer, 
-        StateMachineDeserialiser stateMachineTransformer, 
-        EntityTypeDeserialiser entityTypeTransformer, 
-        EntityDeserialiser entityTransformer, 
-        MetaStoryTransformer metaStoryTransformer, 
-        ChooseNodeDeserialiser chooseNodeDeserialiser, 
-        DialogNodeDeserialiser dialogNodeDeserialiser, 
-        JumpNodeDeserialiser jumpNodeDeserialiser, 
-        MetadataNodeDeserialiser metadataNodeDeserialiser, 
-        TransitionNodeDeserialiser transitionNodeDeserialiser, 
-        IfNodeDeserialiser ifNodeDeserialiser, 
+        Context context,
+        Instanciator instanciator,
+        RelationDeserialiser relationTransformer,
+        ConstraintDeserialiser constraintTransformer,
+        StateDeserialiser stateTransformer,
+        TransitionDeserialiser transitionTransformer,
+        AspectDeserialiser aspectTransformer,
+        StateMachineDeserialiser stateMachineTransformer,
+        EntityTypeDeserialiser entityTypeTransformer,
+        EntityDeserialiser entityTransformer,
+        MetaStoryTransformer metaStoryTransformer,
+        CallMetaStoryNodeDeserialiser callMetaStoryNodeDeserialiser,
+        ChooseNodeDeserialiser chooseNodeDeserialiser,
+        DialogNodeDeserialiser dialogNodeDeserialiser,
+        JumpNodeDeserialiser jumpNodeDeserialiser,
+        MetadataNodeDeserialiser metadataNodeDeserialiser,
+        TransitionNodeDeserialiser transitionNodeDeserialiser,
+        IfNodeDeserialiser ifNodeDeserialiser,
         WhileNodeDeserialiser whileNodeDeserialiser
         )
     {
-        MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeDeserialiser>();
+        //MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeDeserialiser>();
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
+            callMetaStory: () => RegisterNodeProfile(callMetaStoryNodeDeserialiser),
             chooseNode: () => RegisterNodeProfile(chooseNodeDeserialiser),
             dialogNode: () => RegisterNodeProfile(dialogNodeDeserialiser),
             ifNode: () => RegisterNodeProfile(ifNodeDeserialiser),
@@ -115,6 +119,8 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         // One line for each type of definition that can exist at the top level of the definition tree (that is with a minimum of indentation)
         Transform(inputs);
 
+        CheckForUntransformedInputs(inputs);
+
         // Create objects from unresolvable references
         _context.CreateObjectsFromUnresolvableReferences();
 
@@ -134,7 +140,7 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     {
         _remainingLast.Clear();
 
-        var (entities, remaining1) = inputs.DefinitionTreeTopLevel.PartitionByChoose(_entityTransformer.TransformAsObject);
+        var (entities, remaining1) = inputs.TopLevelOfDefinitionTree.PartitionByChoose(_entityTransformer.TransformAsObject);
         var (entityTypes, remaining2) = remaining1.PartitionByChoose(_entityTypeTransformer.TransformAsObject);
         var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
         var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
@@ -142,6 +148,38 @@ public class ContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         var (metaStories, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
 
         _remainingLast.AddRange(remainingLast);
+    }
+
+    public void CheckForUntransformedInputs(ContextBuilderInputs inputs)
+    {
+        List<string> untransformedDefinitionPaths = new();
+
+        CheckForUntransformedDefinitions(inputs.TopLevelOfDefinitionTree, untransformedDefinitionPaths, "");
+
+        if (untransformedDefinitionPaths.Count > 0)
+        {
+            StringBuilder sb = new();
+
+            sb.AppendLine("The following deserialised definitions were not used in the building of the context :");
+            foreach (var untransformedDefinitionPath in untransformedDefinitionPaths)
+            {
+                sb.AppendLine(untransformedDefinitionPath);
+            }
+
+            throw new InternalLogicException(sb.ToString());
+        }
+    }
+    
+    public void CheckForUntransformedDefinitions(List<Definition> definitions, List<string> untransformedDefinitionPaths, string path)
+    {
+        foreach (Definition definition in definitions)
+        {
+            if (definition is ParentalDefinition parentalDefinition)
+                CheckForUntransformedDefinitions(parentalDefinition.Definitions, untransformedDefinitionPaths, $"{path} -> {definition.ToEssentialString()}");
+
+            if (!definition.HasBeenTransformed)
+                untransformedDefinitionPaths.Add($"{path} -> {definition.ToEssentialString()}");
+        }
     }
 
     public void InitialiseObjects()

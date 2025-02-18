@@ -32,6 +32,8 @@ public class RelationDeserialiser(MetaState MetaState, Instanciator Instanciator
 
         Relation value = Instanciator.New<Relation>(definition: def);
 
+        def.HasBeenTransformed = true;
+
         value.LeftEntity = new RelatableObjectReference(MetaState)
         {
             Name = unnamed.Source.Value

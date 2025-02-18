@@ -1,8 +1,7 @@
 ﻿using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.Expressions.Evaluation;
-using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Execution.Dialog;
 
@@ -10,11 +9,9 @@ public class ParallelConstructionExecutor : DialogExecutor
 {
     private readonly EventGenerationDependencies _dependencies;
 
-    public ParallelConstructionExecutor(Context context, ExpressionEvalator evalator) : base(context, evalator)
+    public ParallelConstructionExecutor(Context context, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider, EventGenerationDependencies dependencies) : base(context, metaStoryStack, serviceProvider)
     {
-        DialogExecutor executor = new(context, evalator);
-        StringInterpolator interpolator = new(context.MetaState);
-        _dependencies = new(interpolator, evalator, executor, context);
+        _dependencies = dependencies;
     }
 
     public override void StartMetaStory(string name)
@@ -26,6 +23,14 @@ public class ParallelConstructionExecutor : DialogExecutor
         {
             throw new Exception("Unexcepted initial node, should be null");
         }
+    }
+
+    protected override void InitStory()
+    {
+        if (_metaStory == null || _story == null)
+            throw new ExecutionException("MetaStory not started");
+
+        _story.Init(_metaStory, dontAddToStack: true);
     }
 
     internal void AddNodeToStoryAndAdvance(IStoryNode newNode)
@@ -42,7 +47,7 @@ public class ParallelConstructionExecutor : DialogExecutor
         //}
     }
 
-    public IStoryEvent GenerateEvent(IStoryNode node)
+    public IMetaStoryEvent GenerateEvent(IStoryNode node)
     {
         return node.GenerateEvent(_dependencies);
     }

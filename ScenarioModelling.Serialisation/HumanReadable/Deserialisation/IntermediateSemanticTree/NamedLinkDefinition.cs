@@ -4,8 +4,11 @@ public record NamedLinkDefinition : UnnamedLinkDefinition
 {
     public StringValue Name { get; set; } = null!;
 
+    public override string ToEssentialString()
+        => ToString();
+
     public override string ToString()
     {
-        return $"Link({Source} -> {Destination}, {Name.Value})";
+        return $"NamedLinkDefinition({Source} -> {Destination}, {Name.Value})";
     }
 }

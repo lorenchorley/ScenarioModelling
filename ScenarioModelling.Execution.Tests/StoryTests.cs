@@ -1,6 +1,7 @@
 using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.Execution.Dialog;
+using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using System.Data;
@@ -11,6 +12,12 @@ namespace ScenarioModelling.Execution.Tests;
 [UsesVerify]
 public partial class StoryRunTests
 {
+    [AssemblyInitialize()]
+    public static void AssemblyInit(TestContext context)
+    {
+        ExhaustivityFunctions.Active = true;
+    }
+
     [Ignore]
     [TestMethod]
     [TestCategory("MetaStory -> Story")]

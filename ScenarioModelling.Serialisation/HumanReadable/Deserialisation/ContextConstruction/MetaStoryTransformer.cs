@@ -6,6 +6,7 @@ using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConst
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.Collections.Graph;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
 
@@ -30,9 +31,11 @@ public class MetaStoryTransformer(MetaState system, Instanciator Instanciator) :
             return null;
 
         if (type == TransformationType.Property)
-            throw new InvalidOperationException("MetaStories should not be properties");
+            throw new InternalLogicException("MetaStories should not be properties");
 
         MetaStory value = Instanciator.NewMetaStory(definition: def);
+
+        def.HasBeenTransformed = true;
 
         var tryTransform = TryTransformDefinitionToNode(value);
         value.Graph.PrimarySubGraph.NodeSequence.AddRange(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, value.Graph.PrimarySubGraph), "Unknown node types not taken into account : {0}"));

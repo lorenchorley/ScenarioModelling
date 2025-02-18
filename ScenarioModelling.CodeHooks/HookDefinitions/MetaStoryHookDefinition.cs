@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.CoreObjects;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions;
 
@@ -7,25 +8,39 @@ public class MetaStoryHookDefinition
     public string Name { get; }
     public Context Context { get; }
 
-    private MetaStory _activeMetaStory;
+    private MetaStory _associatedMetaStory;
+    private readonly MetaStoryStack _metaStoryStack;
 
-    public MetaStoryHookDefinition(string Name, Context Context)
+    public MetaStoryHookDefinition(string name, Context context, MetaStoryStack metaStoryStack)
     {
-        this.Name = Name;
-        this.Context = Context;
+        Name = name;
+        Context = context;
+        _metaStoryStack = metaStoryStack;
+        MetaStory? MetaStory = context.MetaStories.FirstOrDefault(s => s.Name == name);
 
-        MetaStory? MetaStory = Context.MetaStories.FirstOrDefault(s => s.Name == Name);
-
+        // If no existing meta is found, then we have to assume it's the first run through and create it
         if (MetaStory == null)
-        {
-            MetaStory = Context.NewMetaStory(Name);
-        }
+            MetaStory = context.NewMetaStory(name);
 
-        _activeMetaStory = MetaStory;
+        _associatedMetaStory = MetaStory;
+
+        // This hook definition manages the instance of its meta story on the stack
+        _metaStoryStack.Push(_associatedMetaStory);
     }
 
-    public MetaStory GetMetaStory()
+    public MetaStory EndMetaStory()
     {
-        return _activeMetaStory;
+        if (_metaStoryStack.Count == 0)
+            throw new InternalLogicException("There was no meta story on the stack when the hook was called to end a meta story");
+
+        // This hook definition manages the instance of its meta story on the stack
+        MetaStory currentMetaStory = _metaStoryStack.Pop();
+
+        if (currentMetaStory != _associatedMetaStory)
+            throw new InternalLogicException("The meta story from the stack does not correspond to the associated meta story of the hook");
+
+        return _associatedMetaStory;
     }
+
+
 }

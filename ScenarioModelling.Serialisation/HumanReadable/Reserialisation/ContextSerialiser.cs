@@ -40,7 +40,7 @@ public class ContextSerialiser : IContextSerialiser
         }
 
         ContextBuilderInputs inputs = new();
-        inputs.DefinitionTreeTopLevel.AddRange(result.ParsedObject!);
+        inputs.TopLevelOfDefinitionTree.AddRange(result.ParsedObject!);
 
         return _contextBuilder.RefreshContextWithInputs(inputs);
     }
