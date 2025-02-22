@@ -1,7 +1,7 @@
 using FluentAssertions;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Interpolation;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 
 namespace ScenarioModelling.Tools.Tests;
 
@@ -22,15 +22,16 @@ public class StringInterpolationTests
     {
         // Arrange 
         // =======
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         Context context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .LoadContext(_metaStoryText)
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .LoadContext(_metaStoryText)
+                 .Initialise();
 
-        StringInterpolator stringInterpolator = container.GetService<StringInterpolator>();
+        StringInterpolator stringInterpolator = scope.GetService<StringInterpolator>();
 
 
         // Act

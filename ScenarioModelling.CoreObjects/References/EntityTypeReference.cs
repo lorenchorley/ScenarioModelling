@@ -14,6 +14,7 @@ public record EntityTypeReference : IReference<EntityType>
     [JsonIgnore]
     public Type Type => typeof(EntityType);
 
+    [JsonIgnore]
     public MetaState System { get; }
 
     private EntityTypeReference()

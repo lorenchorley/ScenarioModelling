@@ -40,6 +40,7 @@
 	  <ProjectReference Include="..\ScenarioModelling.CodeHooks\ScenarioModelling.CodeHooks.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.CoreObjects\ScenarioModelling.CoreObjects.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.Execution\ScenarioModelling.Execution.csproj" />
+	  <ProjectReference Include="..\ScenarioModelling.Mocks\ScenarioModelling.Mocks.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.Tools\ScenarioModelling.Tools.csproj" />
 	</ItemGroup>
 

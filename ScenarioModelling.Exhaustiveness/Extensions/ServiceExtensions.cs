@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace ScenarioModelling.Exhaustiveness.Extensions;
+﻿namespace ScenarioModelling.Exhaustiveness.Extensions;
 
 public static class ServiceExtensions
 {

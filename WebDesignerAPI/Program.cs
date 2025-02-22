@@ -1,3 +1,10 @@
+using Microsoft.AspNetCore.Mvc;
+using ScenarioModelling;
+using ScenarioModelling.CoreObjects;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
+using ScenarioModelling.Serialisation.ProtoBuf;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -74,6 +81,69 @@ app.MapGet("/getmetastory", () =>
        return metastory;
    })
    .WithName("GetMetaStory")
+   .WithOpenApi();
+
+ScenarioModellingContainer decodingContainer = new();
+
+app.MapPost("/decode", async (HttpRequest request) =>
+    {
+        using var scope = decodingContainer.StartScope(); // Correct usage ?
+
+        using StreamReader reader = new StreamReader(request.Body, CustomContextSerialiser.CompressionEncoding, true, 1024, true);
+        string encodedContextText = await reader.ReadToEndAsync();
+        
+        Context context =
+            scope.GetService<Context>()
+                 .UseSerialiser<CustomContextSerialiser>(new() { { "Compress", "true" } })
+                 .LoadContext<CustomContextSerialiser>(encodedContextText)
+                 .RemoveSerialiser<CustomContextSerialiser>()
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
+
+        var result = context.Serialise<CustomContextSerialiser>();
+        var message = result.Match(s => s, e => e.Message);
+
+        if (result.IsSuccess)
+        {
+            return Results.Ok(message);
+        }
+        else
+        {
+            return Results.BadRequest(message);
+        }
+    })
+   .WithName("Decode")
+   .WithOpenApi();
+
+ScenarioModellingContainer encodingContainer = new();
+app.MapPost("/encode", async (HttpRequest request) =>
+    {
+        using var scope = encodingContainer.StartScope(); // Correct usage ?
+        
+        using StreamReader reader = new StreamReader(request.Body, CustomContextSerialiser.CompressionEncoding, true, 1024, true);
+        string clearContextText = await reader.ReadToEndAsync();
+
+        Context context =
+            scope.GetService<Context>()
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .LoadContext<CustomContextSerialiser>(clearContextText)
+                 .RemoveSerialiser<CustomContextSerialiser>()
+                 .UseSerialiser<CustomContextSerialiser>(new() { { "Compress", "true" } })
+                 .Initialise();
+
+        var result = context.Serialise<CustomContextSerialiser>();
+        var message = result.Match(s => s, e => e.Message);
+
+        if (result.IsSuccess)
+        {
+            return Results.Ok(message);
+        }
+        else
+        {
+            return Results.BadRequest(message);
+        }
+    })
+   .WithName("Encode")
    .WithOpenApi();
 
 app.Run();

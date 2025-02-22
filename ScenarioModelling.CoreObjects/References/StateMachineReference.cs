@@ -14,6 +14,7 @@ public record StateMachineReference : IReference<StateMachine>
     [JsonIgnore]
     public Type Type => typeof(StateMachine);
 
+    [JsonIgnore]
     public MetaState System { get; }
 
     public StateMachineReference(MetaState system)

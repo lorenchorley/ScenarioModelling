@@ -1,6 +1,6 @@
-﻿* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+﻿* WhileConditionCheckEvent {"Expression":"Actor.State != S3","LoopBlockRun":true}
 * StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"S1"},"FinalState":{"Name":"S2"},"TransitionName":"T1"}
-* WhileLoopConditionCheckEvent {"LoopBlockRun":true}
+* WhileConditionCheckEvent {"Expression":"Actor.State != S3","LoopBlockRun":true}
 * StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"S2"},"FinalState":{"Name":"S3"},"TransitionName":"T1"}
-* WhileLoopConditionCheckEvent {"LoopBlockRun":false}
+* WhileConditionCheckEvent {"Expression":"Actor.State != S3","LoopBlockRun":false}
 * DialogEvent {"Text":"After while block","Character":null}

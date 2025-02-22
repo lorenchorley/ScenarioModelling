@@ -51,8 +51,8 @@ public abstract class MetaStoryHookOrchestrator
             _metaStateHookDefinition = null; // Reinitialise so that it may be called again once per meta story
 
             MetaStoryHookDefinition metaStoryDefintion = new MetaStoryHookDefinition(name, Context, _metaStoryStack); // This pushes the new meta story onto the stack
-            _metaStoryDefintionStack.Push(metaStoryDefintion); 
-            
+            _metaStoryDefintionStack.Push(metaStoryDefintion);
+
             if (_metaStoryStack.Count != 1)
             {
                 throw new InternalLogicException("MetaStoryHookDefinition did not push a meta story onto the stack");
@@ -127,8 +127,8 @@ public abstract class MetaStoryHookOrchestrator
         if (noMetaStoryInProgress)
         {
             // This is the end of the last meta story in the stack, finalise the state of the orchestrator
-            _parallelConstructionExecutor = null; 
-            _hookFunctions = new InactiveHookFunctions(_newlyCreatedHooks); 
+            _parallelConstructionExecutor = null;
+            _hookFunctions = new InactiveHookFunctions(_newlyCreatedHooks);
         }
         else
         {
@@ -223,7 +223,7 @@ public abstract class MetaStoryHookOrchestrator
         _newlyCreatedHooks.Enqueue(nodeDef);
         return nodeDef;
     }
-    
+
     /// <summary>
     /// 
     /// </summary>

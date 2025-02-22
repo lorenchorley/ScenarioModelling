@@ -47,9 +47,9 @@ public static class NodeExtensions
         return e;
     }
 
-    public static IfBlockEvent GenerateEvent(this IfNode node, EventGenerationDependencies dependencies)
+    public static IfConditionCheckEvent GenerateEvent(this IfNode node, EventGenerationDependencies dependencies)
     {
-        IfBlockEvent e = new IfBlockEvent() { ProducerNode = node };
+        IfConditionCheckEvent e = new IfConditionCheckEvent() { ProducerNode = node };
 
         var result = node.Condition.Accept(dependencies.Evaluator);
 
@@ -121,9 +121,9 @@ public static class NodeExtensions
         return e;
     }
 
-    public static WhileLoopConditionCheckEvent GenerateEvent(this WhileNode node, EventGenerationDependencies dependencies)
+    public static WhileConditionCheckEvent GenerateEvent(this WhileNode node, EventGenerationDependencies dependencies)
     {
-        WhileLoopConditionCheckEvent e = new()
+        WhileConditionCheckEvent e = new()
         {
             ProducerNode = node,
         };
@@ -135,6 +135,7 @@ public static class NodeExtensions
             throw new Exception($"While loop condition {node.Condition} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
         }
 
+        e.Expression = node.OriginalConditionText;
         e.LoopBlockRun = shouldExecuteBlock;
 
         return e;

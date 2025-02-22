@@ -1,8 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Exhaustiveness.Common;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using System.Data;
 
@@ -73,18 +74,15 @@ public partial class StoryRunTests
             { "ChooseToRepeat", new Queue<string>(["Change name and repeat", "Change name and repeat", "Change name and repeat", "Ciao"]) }
         };
 
-        TestContainer container = new();
+        using TestContainer container = new();
+        using var scope = container.StartScope();
 
-        container.Context
-                 .UseSerialiser<ContextSerialiser>()
-                 .LoadContext(MetaStory)
-                 .Initialise();
+        scope.Context
+             .UseSerialiser<CustomContextSerialiser>()
+             .LoadContext(MetaStory)
+             .Initialise();
 
-        ExpressionEvalator evalator = container.GetService<ExpressionEvalator>();
-        DialogExecutor executor = container.GetService<DialogExecutor>();
-        StringInterpolator interpolator = container.GetService<StringInterpolator>();
-        EventGenerationDependencies dependencies = container.GetService<EventGenerationDependencies>();
-        StoryTestRunner runner = container.GetService<StoryTestRunner>();
+        StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
 
         // Act
@@ -94,7 +92,7 @@ public partial class StoryRunTests
 
         // Assert
         // ======
-        string serialisedStory = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string serialisedStory = story.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
         await Verify(serialisedStory);
 
     }
@@ -154,18 +152,15 @@ public partial class StoryRunTests
             }
         """;
 
-        TestContainer container = new();
+        using TestContainer container = new();
+        using var scope = container.StartScope();
 
-        container.Context
-                 .UseSerialiser<ContextSerialiser>()
-                 .LoadContext(MetaStory)
-                 .Initialise();
+        scope.Context
+             .UseSerialiser<CustomContextSerialiser>()
+             .LoadContext(MetaStory)
+             .Initialise();
 
-        ExpressionEvalator evalator = container.GetService<ExpressionEvalator>();
-        DialogExecutor executor = container.GetService<DialogExecutor>();
-        StringInterpolator interpolator = container.GetService<StringInterpolator>();
-        EventGenerationDependencies dependencies = container.GetService<EventGenerationDependencies>();
-        StoryTestRunner runner = container.GetService<StoryTestRunner>();
+        StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
         // Act
         // ===
@@ -174,7 +169,7 @@ public partial class StoryRunTests
 
         // Assert
         // ======
-        string serialisedStory = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string serialisedStory = story.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
         await Verify(serialisedStory);
 
     }

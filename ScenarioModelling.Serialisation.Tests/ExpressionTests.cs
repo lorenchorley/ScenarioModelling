@@ -7,7 +7,7 @@ using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools.Expressions;
 using ScenarioModelling.Tools.GenericInterfaces;
 using System.Diagnostics;
@@ -68,15 +68,16 @@ public class ExpressionTests
             Assert.Inconclusive();
         }
 
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
-        container.Context
-               .UseSerialiser<ContextSerialiser>()
-               .LoadContext(systemText)
-               .Initialise();
+        scope.Context
+             .UseSerialiser<CustomContextSerialiser>()
+             .LoadContext(systemText)
+             .Initialise();
 
-        ExpressionInterpreter interpreter = container.GetService<ExpressionInterpreter>();
-        ExpressionInitialiser validator = container.GetService<ExpressionInitialiser>();
+        ExpressionInterpreter interpreter = scope.GetService<ExpressionInterpreter>();
+        ExpressionInitialiser validator = scope.GetService<ExpressionInitialiser>();
 
         var parsedExpression = interpreter.Parse(text);
 
@@ -100,17 +101,18 @@ public class ExpressionTests
         // =======
         ExpectedValues expectedValues = JsonConvert.DeserializeObject<ExpectedValues>(expectedValuesJson);
 
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         MetaState system =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .LoadContext(systemText)
-                     .Initialise()
-                     .MetaState;
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .LoadContext(systemText)
+                 .Initialise()
+                 .MetaState;
 
-        ExpressionInterpreter interpreter = container.GetService<ExpressionInterpreter>();
-        ExpressionSerialiser visitor = container.GetService<ExpressionSerialiser>();
+        ExpressionInterpreter interpreter = scope.GetService<ExpressionInterpreter>();
+        ExpressionSerialiser visitor = scope.GetService<ExpressionSerialiser>();
 
         var parsedExpression = interpreter.Parse(text);
 
@@ -149,16 +151,17 @@ public class ExpressionTests
             Assert.Inconclusive();
         }
 
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
-        container.Context
-                 .UseSerialiser<ContextSerialiser>()
-                 .LoadContext(systemText)
-                 .Initialise();
+        scope.Context
+             .UseSerialiser<CustomContextSerialiser>()
+             .LoadContext(systemText)
+             .Initialise();
 
-        ExpressionInterpreter interpreter = container.GetService<ExpressionInterpreter>();
-        ExpressionInitialiser initialiser = container.GetService<ExpressionInitialiser>();
-        ExpressionEvalator evalator = container.GetService<ExpressionEvalator>();
+        ExpressionInterpreter interpreter = scope.GetService<ExpressionInterpreter>();
+        ExpressionInitialiser initialiser = scope.GetService<ExpressionInitialiser>();
+        ExpressionEvalator evalator = scope.GetService<ExpressionEvalator>();
 
         var parsedExpression = interpreter.Parse(text);
 

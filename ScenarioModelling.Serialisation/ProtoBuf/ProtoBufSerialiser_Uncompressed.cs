@@ -6,6 +6,13 @@ namespace ScenarioModelling.Serialisation.ProtoBuf;
 
 public class ProtoBufSerialiser_Uncompressed : IContextSerialiser
 {
+    private Dictionary<string, string> _configuration;
+
+    public void SetConfigurationOptions(Dictionary<string, string> configuration)
+    {
+        _configuration = configuration;
+    }
+
     public Result<Context> DeserialiseContext(string text)
     {
         return SerialisationFunctions.ProtoBufDeserializeFromBase64<Context>(text);

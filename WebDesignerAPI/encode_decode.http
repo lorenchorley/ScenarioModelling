@@ -1,0 +1,13 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+### Encode Request
+POST http://localhost:5210/encode
+Content-Type: text/plain
+
+Entity Actor2
+
+
+### Decode Request (using response from encode request)
+POST http://localhost:5210/decode
+Content-Type: text/plain
+
+H4sIAAAAAAAACnPNK8ksqVRwTC7JLzJSqOblquXl4uUCAL0xKQwWAAAA

@@ -1,5 +1,4 @@
 ﻿using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Tools.Exceptions;
@@ -27,7 +26,7 @@ public class DialogExecutor : IExecutor
         if (_metaStory == null || _story == null)
             throw new ExecutionException("MetaStory not started");
 
-        return _story.Events.LastOrDefault();
+        return _story.Events.GetEnumerable().LastOrDefault();
     }
 
     public void ResetToInitialState()
@@ -97,7 +96,7 @@ public class DialogExecutor : IExecutor
 
     public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IMetaStoryEvent
     {
-        IMetaStoryEvent? MetaStoryEvent = _story?.Events.LastOrDefault();
+        IMetaStoryEvent? MetaStoryEvent = _story?.Events.GetEnumerable().LastOrDefault();
 
         if (MetaStoryEvent == null)
         {

@@ -1,0 +1,4 @@
+﻿namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
+
+public interface IDefinitionToObjectDeserialiser { }
+

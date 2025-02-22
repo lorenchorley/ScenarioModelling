@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace ScenarioModelling.CodeHooks.Extensions;
+﻿namespace ScenarioModelling.CodeHooks.Extensions;
 
 public static class ServiceExtensions
 {

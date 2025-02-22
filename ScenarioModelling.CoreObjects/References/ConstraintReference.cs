@@ -14,6 +14,7 @@ public record ConstraintReference : IReference<Constraint>
     [JsonIgnore]
     public Type Type => typeof(Constraint);
 
+    [JsonIgnore]
     public MetaState System { get; }
 
     public ConstraintReference(MetaState system)

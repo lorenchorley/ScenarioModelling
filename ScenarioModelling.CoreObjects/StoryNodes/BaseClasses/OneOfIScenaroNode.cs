@@ -8,6 +8,6 @@ public class OneOfIScenaroNode : OneOfBase<CallMetaStoryNode, ChooseNode, Dialog
     [DebuggerNonUserCode]
     public OneOfIScenaroNode(OneOf<CallMetaStoryNode, ChooseNode, DialogNode, IfNode, JumpNode, MetadataNode, TransitionNode, WhileNode> input) : base(input)
     {
-        
+
     }
 }

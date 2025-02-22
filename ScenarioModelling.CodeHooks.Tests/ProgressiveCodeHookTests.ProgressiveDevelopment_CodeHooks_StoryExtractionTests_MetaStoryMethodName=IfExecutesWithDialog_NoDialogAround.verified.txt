@@ -1,2 +1,2 @@
-﻿* IfBlockEvent {"Expression":"Actor.State == S1","IfBlockRun":true}
+﻿* IfConditionCheckEvent {"Expression":"Actor.State == S1","IfBlockRun":true}
 * DialogEvent {"Text":"Inside naked if block","Character":null}

@@ -1,16 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ScenarioModelling.CoreObjects;
+﻿using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.StoryNodeSerialisers;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers;
 using ScenarioModelling.Serialisation.ProtoBuf;
 using ScenarioModelling.Serialisation.Yaml;
 
@@ -20,66 +19,66 @@ public static class ServiceExtensions
 {
     public static void ConfigureServices(this IServiceCollection services)
     {
-        services.AddSingleton<IContextSerialiser, ContextSerialiser>();
-        services.AddSingleton<ContextSerialiser>();
-        services.AddSingleton<IContextSerialiser, YamlSerialiser>();
-        services.AddSingleton<YamlSerialiser>();
-        services.AddSingleton<IContextSerialiser, ProtoBufSerialiser>();
-        services.AddSingleton<ProtoBufSerialiser>();
-        services.AddSingleton<IContextSerialiser, ProtoBufSerialiser_Uncompressed>();
-        services.AddSingleton<ProtoBufSerialiser_Uncompressed>();
+        services.AddScoped<IContextSerialiser, CustomContextSerialiser>();
+        services.AddScoped<CustomContextSerialiser>();
+        services.AddScoped<IContextSerialiser, YamlSerialiser>();
+        services.AddScoped<YamlSerialiser>();
+        services.AddScoped<IContextSerialiser, ProtoBufSerialiser>();
+        services.AddScoped<ProtoBufSerialiser>();
+        services.AddScoped<IContextSerialiser, ProtoBufSerialiser_Uncompressed>();
+        services.AddScoped<ProtoBufSerialiser_Uncompressed>();
 
-        services.AddSingleton<Instanciator>();
-        services.AddSingleton<ContextDeserialiser>();
-        services.AddSingleton<MetaStorySerialiser>();
-        services.AddSingleton<MetaStoryTransformer>();
-        services.AddSingleton<MetaStateSerialiser>();
-        services.AddSingleton<ExpressionInterpreter>();
-        services.AddSingleton<ExpressionInitialiser>();
-        services.AddSingleton<ExpressionSerialiser>();
+        services.AddScoped<Instanciator>();
+        services.AddScoped<CustomContextDeserialiser>();
+        services.AddScoped<MetaStorySerialiser>();
+        services.AddScoped<MetaStoryTransformer>();
+        services.AddScoped<MetaStateSerialiser>();
+        services.AddScoped<ExpressionInterpreter>();
+        services.AddScoped<ExpressionInitialiser>();
+        services.AddScoped<ExpressionSerialiser>();
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
-            callMetaStory: () => services.AddSingleton<CallMetaStoryNodeSerialiser>(),
-            chooseNode: () => services.AddSingleton<ChooseNodeSerialiser>(),
-            dialogNode: () => services.AddSingleton<DialogNodeSerialiser>(),
-            ifNode: () => services.AddSingleton<IfNodeSerialiser>(),
-            jumpNode: () => services.AddSingleton<JumpNodeSerialiser>(),
-            metadataNode: () => services.AddSingleton<MetadataNodeSerialiser>(),
-            transitionNode: () => services.AddSingleton<TransitionNodeSerialiser>(),
-            whileNode: () => services.AddSingleton<WhileNodeSerialiser>()
+            callMetaStory: () => services.AddScoped<CallMetaStoryNodeSerialiser>(),
+            chooseNode: () => services.AddScoped<ChooseNodeSerialiser>(),
+            dialogNode: () => services.AddScoped<DialogNodeSerialiser>(),
+            ifNode: () => services.AddScoped<IfNodeSerialiser>(),
+            jumpNode: () => services.AddScoped<JumpNodeSerialiser>(),
+            metadataNode: () => services.AddScoped<MetadataNodeSerialiser>(),
+            transitionNode: () => services.AddScoped<TransitionNodeSerialiser>(),
+            whileNode: () => services.AddScoped<WhileNodeSerialiser>()
         );
 
         SystemObjectExhaustivity.DoForEachObjectType(
-            entity: () => services.AddSingleton<AspectSerialiser>(),
-            entityType: () => services.AddSingleton<ConstraintSerialiser>(),
-            aspect: () => services.AddSingleton<EntitySerialiser>(),
-            relation: () => services.AddSingleton<EntityTypeSerialiser>(),
-            state: () => services.AddSingleton<RelationSerialiser>(),
-            stateMachine: () => services.AddSingleton<StateSerialiser>(),
-            transition: () => services.AddSingleton<StateMachineSerialiser>(),
-            constraint: () => services.AddSingleton<TransitionSerialiser>()
+            entity: () => services.AddScoped<AspectSerialiser>(),
+            entityType: () => services.AddScoped<ConstraintSerialiser>(),
+            aspect: () => services.AddScoped<EntitySerialiser>(),
+            relation: () => services.AddScoped<EntityTypeSerialiser>(),
+            state: () => services.AddScoped<RelationSerialiser>(),
+            stateMachine: () => services.AddScoped<StateSerialiser>(),
+            transition: () => services.AddScoped<StateMachineSerialiser>(),
+            constraint: () => services.AddScoped<TransitionSerialiser>()
         );
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
-            callMetaStory: () => services.AddSingleton<CallMetaStoryNodeDeserialiser>(),
-            chooseNode: () => services.AddSingleton<ChooseNodeDeserialiser>(),
-            dialogNode: () => services.AddSingleton<DialogNodeDeserialiser>(),
-            ifNode: () => services.AddSingleton<IfNodeDeserialiser>(),
-            jumpNode: () => services.AddSingleton<JumpNodeDeserialiser>(),
-            metadataNode: () => services.AddSingleton<MetadataNodeDeserialiser>(),
-            transitionNode: () => services.AddSingleton<TransitionNodeDeserialiser>(),
-            whileNode: () => services.AddSingleton<WhileNodeDeserialiser>()
+            callMetaStory: () => services.AddScoped<CallMetaStoryNodeDeserialiser>(),
+            chooseNode: () => services.AddScoped<ChooseNodeDeserialiser>(),
+            dialogNode: () => services.AddScoped<DialogNodeDeserialiser>(),
+            ifNode: () => services.AddScoped<IfNodeDeserialiser>(),
+            jumpNode: () => services.AddScoped<JumpNodeDeserialiser>(),
+            metadataNode: () => services.AddScoped<MetadataNodeDeserialiser>(),
+            transitionNode: () => services.AddScoped<TransitionNodeDeserialiser>(),
+            whileNode: () => services.AddScoped<WhileNodeDeserialiser>()
         );
 
         SystemObjectExhaustivity.DoForEachObjectType(
-            entity: () => services.AddSingleton<AspectDeserialiser>(),
-            entityType: () => services.AddSingleton<ConstraintDeserialiser>(),
-            aspect: () => services.AddSingleton<EntityDeserialiser>(),
-            relation: () => services.AddSingleton<EntityTypeDeserialiser>(),
-            state: () => services.AddSingleton<RelationDeserialiser>(),
-            stateMachine: () => services.AddSingleton<StateDeserialiser>(),
-            transition: () => services.AddSingleton<StateMachineDeserialiser>(),
-            constraint: () => services.AddSingleton<TransitionDeserialiser>()
+            entity: () => services.AddScoped<AspectDeserialiser>(),
+            entityType: () => services.AddScoped<ConstraintDeserialiser>(),
+            aspect: () => services.AddScoped<EntityDeserialiser>(),
+            relation: () => services.AddScoped<EntityTypeDeserialiser>(),
+            state: () => services.AddScoped<RelationDeserialiser>(),
+            stateMachine: () => services.AddScoped<StateDeserialiser>(),
+            transition: () => services.AddScoped<StateMachineDeserialiser>(),
+            constraint: () => services.AddScoped<TransitionDeserialiser>()
         );
 
     }

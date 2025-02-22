@@ -1,8 +1,12 @@
-﻿using ScenarioModelling.CodeHooks;
+﻿using FluentAssertions.Common;
+using LanguageExt;
+using Microsoft.Extensions.DependencyInjection;
+using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
+using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Exhaustiveness.Common;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
 
@@ -25,14 +29,15 @@ public partial class ProgressiveCodeHookTests
     {
         // Arrange
         // =======
-        ScenarioModellingContainer container = new();
-
+        using TestContainer container = new();
+        using var scope = container.StartScope();
+        
         var context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.GetService<Context>()
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
@@ -69,14 +74,15 @@ public partial class ProgressiveCodeHookTests
     {
         // Arrange
         // =======
-        TestContainer container = new();
+        using TestContainer container = new();
+        using var scope = container.StartScope();
 
         var context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.GetService<Context>()
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var MetaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
@@ -92,7 +98,7 @@ public partial class ProgressiveCodeHookTests
         MetaStoryHooksMethod(orchestrator);
         orchestrator.EndMetaStory();
 
-        StoryTestRunner runner = container.GetService<StoryTestRunner>();
+        StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
 
         // Act
@@ -102,7 +108,7 @@ public partial class ProgressiveCodeHookTests
 
         // Assert
         // ======
-        string serialisedStory = story.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string serialisedStory = story.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         await Verify(serialisedStory)
             .UseParameters(metaStoryMethodName);

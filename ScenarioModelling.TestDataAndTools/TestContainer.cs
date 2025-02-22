@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace ScenarioModelling.TestDataAndTools;
 
 public class TestContainer : ScenarioModellingContainer

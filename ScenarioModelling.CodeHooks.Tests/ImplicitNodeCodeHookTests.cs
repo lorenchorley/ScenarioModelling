@@ -1,11 +1,8 @@
 ﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CodeHooks.Tests;
-using ScenarioModelling.CoreObjects.Expressions.Evaluation;
-using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.Execution;
-using ScenarioModelling.Execution.Dialog;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
 
@@ -22,14 +19,15 @@ public partial class ImplicitNodeCodeHookTests
     {
         // Arrange
         // =======
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         var context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
@@ -79,15 +77,16 @@ public partial class ImplicitNodeCodeHookTests
     {
         // Arrange
         // =======
-        TestContainer container = new();
+        using TestContainer container = new();
+        using var scope = container.StartScope();
 
         var context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
-        StoryTestRunner runner = container.GetService<StoryTestRunner>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
         var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
@@ -117,8 +116,8 @@ public partial class ImplicitNodeCodeHookTests
 
         // Assert
         // ======
-        string firstSerialisedEvents = firstRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        string secondSerialisedEvents = secondRun.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string firstSerialisedEvents = firstRun.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string secondSerialisedEvents = secondRun.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         DiffAssert.DiffIfNotEqual(firstSerialisedEvents, secondSerialisedEvents);
     }

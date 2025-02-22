@@ -2,7 +2,7 @@ using FluentAssertions;
 using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.Serialisation.ProtoBuf;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
@@ -16,25 +16,28 @@ public class ProtoBufSerialisationTests
 {
     private const string MetaStoryName = "MetaStory recorded by hooks";
 
+    [Ignore("ProtoBuf requires quite a lot of individual property and class management and it's positional which means versionning of the DTOs for every positional change")]
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("ProtoBuf")]
     [ReserialisationDataProvider]
     public void ProtoBuf_Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
         => ProtoBuf_Context_SerialiseDeserialise_Common(testCaseName, originalContextText, expectedFinalContextText);
 
+    [Ignore("ProtoBuf requires quite a lot of individual property and class management and it's positional which means versionning of the DTOs for every positional change²")]
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("ProtoBuf")]
     [ProgressiveCodeHookTestDataProvider]
     public void ProtoBuf_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
     {
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         var context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
@@ -63,15 +66,16 @@ public class ProtoBufSerialisationTests
         // Act
         // ===
 
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         Context originalContext =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .UseSerialiser<ProtoBufSerialiser>()
-                     .UseSerialiser<ProtoBufSerialiser_Uncompressed>()
-                     .LoadContext<ContextSerialiser>(originalContextText)
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .UseSerialiser<ProtoBufSerialiser>()
+                 .UseSerialiser<ProtoBufSerialiser_Uncompressed>()
+                 .LoadContext<CustomContextSerialiser>(originalContextText)
+                 .Initialise();
 
         originalContext.ValidationErrors.Count.Should().Be(0, because: originalContext.ValidationErrors.ToString());
 
@@ -99,13 +103,14 @@ public class ProtoBufSerialisationTests
                 Debug.WriteLine($"{uncompressedContextText.Length} > {serialisedContextText.Length}");
                 Debug.WriteLine("");
 
-                ScenarioModellingContainer reloadingContainer = new();
+                using ScenarioModellingContainer reloadingContainer = new();
+                using var reloadingScope = reloadingContainer.StartScope();
 
                 Context reloadedContext =
-                    reloadingContainer.Context
-                                      .UseSerialiser<ProtoBufSerialiser>()
-                                      .LoadContext(serialisedContextText)
-                                      .Initialise();
+                    reloadingScope.Context
+                                  .UseSerialiser<ProtoBufSerialiser>()
+                                  .LoadContext(serialisedContextText)
+                                  .Initialise();
 
                 string reserialisedContext =
                     reloadedContext.Serialise<ProtoBufSerialiser>()

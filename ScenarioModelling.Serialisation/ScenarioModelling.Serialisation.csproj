@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Expressions\Grammar\ExpressionGrammar.egt" />
-    <EmbeddedResource Include="HumanReadable\Deserialisation\Grammar\HumanReadableGrammar.egt" />
+    <EmbeddedResource Include="CustomSerialiser\Deserialisation\Grammar\CustomSerialiserGrammar.egt" />
   </ItemGroup>
 
   <ItemGroup>

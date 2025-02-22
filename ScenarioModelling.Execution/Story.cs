@@ -7,6 +7,7 @@ using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Execution.Events.Interfaces;
+using ScenarioModelling.Execution.EventSourcing;
 using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Execution;
@@ -21,8 +22,8 @@ public class Story
     public ExpressionEvalator Evaluator { get; }
 
     public MetaStory MetaStory => MetaStoryStack.Peek();
-    public List<IMetaStoryEvent> Events { get; set; } = new();
-    public Stack<GraphScope> GraphScopeStack { get; set; } = new();
+    public StoryEventSource Events { get; } = new();
+    public Stack<GraphScope> GraphScopeStack { get; } = new();
     public GraphScope CurrentScope => GraphScopeStack.Peek();
 
     public Story(Context context, MetaStoryStack metaStoryStack, ExpressionEvalator evaluator)
@@ -57,7 +58,7 @@ public class Story
         if (GraphScopeStack.Count == 0)
             return null; // We're finished
 
-        var currentEvent = Events.LastOrDefault(); // Null only on the first run through because no events have yet to be registered
+        var currentEvent = Events.GetEnumerable().LastOrDefault(); // Null only on the first run through because no events have yet to be registered
         var currentScopeNode = CurrentScope.CurrentNode;
 
         bool isFirstNode = currentEvent is null;
@@ -188,8 +189,8 @@ public class Story
     {
         // The last event must be an if event
         if (currentEvent is null ||
-            currentEvent is not IfBlockEvent ifEvent)
-            throw new InternalLogicException($"No {nameof(IfBlockEvent)} was registered after mananging a {nameof(IfNode)}");
+            currentEvent is not IfConditionCheckEvent ifEvent)
+            throw new InternalLogicException($"No {nameof(IfConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
 
         if (ifEvent.IfBlockRun)
         {
@@ -207,8 +208,8 @@ public class Story
     {
         // The last event must be an while event
         if (currentEvent is null ||
-            currentEvent is not WhileLoopConditionCheckEvent whileEvent)
-            throw new InternalLogicException($"No {nameof(WhileLoopConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
+            currentEvent is not WhileConditionCheckEvent whileEvent)
+            throw new InternalLogicException($"No {nameof(WhileConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
 
         if (whileEvent.LoopBlockRun)
         {

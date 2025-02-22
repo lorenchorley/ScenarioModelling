@@ -8,20 +8,21 @@ namespace ScenarioModelling.CoreObjects.References;
 [SystemObjectLike<IReference, State>]
 public record StateReference : IReference<State>
 {
-    private readonly MetaState _system;
-
     public string Name { get; set; } = "";
 
     [JsonIgnore]
     public Type Type => typeof(State);
 
+    [JsonIgnore]
+    public MetaState System { get; }
+
     public StateReference(MetaState system)
     {
-        _system = system;
+        System = system;
     }
 
     public LanguageExt.Option<State> ResolveReference()
-        => _system.States.Find(s => s.IsEqv(this));
+        => System.States.Find(s => s.IsEqv(this));
 
     public bool IsResolvable() => ResolveReference().IsSome;
 

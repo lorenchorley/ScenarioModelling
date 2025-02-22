@@ -1,9 +1,10 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Execution;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
 using System.Diagnostics;
@@ -182,25 +183,27 @@ public partial class WhileLoopHookTest
     {
         // Arrange
         // =======
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         Context context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestratorForConstruction hooks = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestratorForConstruction hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
 
-        ScenarioModellingContainer reserialisationContainer = new();
-
+        using ScenarioModellingContainer reserialisationContainer = new();
+        using var reserialisationScope = reserialisationContainer.StartScope();
+        
         var reserialisedContext =
-            reserialisationContainer.Context
-                                    .UseSerialiser<ContextSerialiser>()
-                                    .LoadContext(_metaStoryText)
-                                    .Initialise()
-                                    .Serialise()
-                                    .Match(v => v, e => throw e);
+            reserialisationScope.Context
+                                .UseSerialiser<CustomContextSerialiser>()
+                                .LoadContext(_metaStoryText)
+                                .Initialise()
+                                .Serialise()
+                                .Match(v => v, e => throw e);
 
 
         // Act
@@ -240,21 +243,18 @@ public partial class WhileLoopHookTest
     {
         // Arrange
         // =======
-        TestContainer container = new();
+        using TestContainer container = new();
+        using var scope = container.StartScope();
 
         Context context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestratorForConstruction hooks = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestratorForConstruction hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         // Everything necessary to run the MetaStory
-        //ExpressionEvalator evalator = container.GetService<ExpressionEvalator>();
-        //DialogExecutor executor = container.GetService<DialogExecutor>();
-        //StringInterpolator interpolator = container.GetService<StringInterpolator>();
-        //EventGenerationDependencies dependencies = container.GetService<EventGenerationDependencies>();
-        StoryTestRunner runner = container.GetService<StoryTestRunner>();
+        StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
 
         // Act
@@ -275,8 +275,8 @@ public partial class WhileLoopHookTest
 
         // Assert
         // ======
-        string hookGeneratedEvents = hookGeneratedStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        string rerunEvents = rerunStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string hookGeneratedEvents = hookGeneratedStory.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string rerunEvents = rerunStory.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         DiffAssert.DiffIfNotEqual(hookGeneratedEvents, rerunEvents);
 

@@ -1,5 +1,4 @@
 ﻿using LanguageExt.Common;
-using Microsoft.Extensions.DependencyInjection;
 using ProtoBuf;
 using ScenarioModelling.CoreObjects.ContextValidation;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
@@ -37,7 +36,31 @@ public class Context
     public Context UseSerialiser<T>() where T : IContextSerialiser
     {
         T? serialiser = _serviceProvider.GetRequiredService<T>();
+        
         Serialisers.Add(serialiser);
+        
+        return this;
+    }
+    
+    public Context UseSerialiser<T>(Dictionary<string, string> configuration) where T : IContextSerialiser
+    {
+        T? serialiser = _serviceProvider.GetRequiredService<T>();
+        serialiser.SetConfigurationOptions(configuration);
+
+        Serialisers.Add(serialiser);
+        
+        return this;
+    }
+
+    public Context RemoveSerialiser<T>() where T : IContextSerialiser
+    {
+        T? serialiser = (T?)Serialisers.FirstOrDefault(s => s is T);
+
+        if (serialiser == null)
+            throw new Exception($"Serialiser of type {typeof(T).Name} was not registered in context");
+
+        Serialisers.Remove(serialiser);
+
         return this;
     }
 
@@ -221,4 +244,5 @@ public class Context
         MetaStories.Add(metaStory);
         return metaStory;
     }
+
 }

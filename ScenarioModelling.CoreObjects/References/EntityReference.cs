@@ -15,6 +15,7 @@ public record EntityReference : IReference<Entity>, IRelatableObjectReference, I
     [JsonIgnore]
     public Type Type => typeof(Entity);
 
+    [JsonIgnore]
     public MetaState System { get; }
 
     public EntityReference(MetaState system)

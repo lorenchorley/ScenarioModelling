@@ -1166,6 +1166,6 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
         hooks.Dialog("After call").BuildAndRegister();
     }
-    
+
     #endregion
 }

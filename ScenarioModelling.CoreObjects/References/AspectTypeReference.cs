@@ -14,6 +14,7 @@ public record AspectTypeReference : IReference<AspectType>, IRelatableObjectRefe
     [JsonIgnore]
     public Type Type => typeof(AspectType);
 
+    [JsonIgnore]
     public MetaState System { get; }
 
     public AspectTypeReference(MetaState system)

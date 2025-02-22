@@ -5,6 +5,13 @@ namespace ScenarioModelling.Serialisation.Export.PlantUML.SequenceDiagram;
 
 public class PlantUMLSequenceDiagramExporter : IContextSerialiser
 {
+    private Dictionary<string, string> _configuration;
+
+    public void SetConfigurationOptions(Dictionary<string, string> configuration)
+    {
+        _configuration = configuration;
+    }
+
     public Result<Context> DeserialiseContext(string text)
     {
         throw new NotImplementedException();

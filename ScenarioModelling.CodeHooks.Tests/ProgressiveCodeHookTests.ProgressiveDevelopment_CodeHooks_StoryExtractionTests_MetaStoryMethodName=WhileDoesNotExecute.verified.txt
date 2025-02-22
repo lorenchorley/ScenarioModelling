@@ -1,2 +1,2 @@
-﻿* WhileLoopConditionCheckEvent {"LoopBlockRun":false}
+﻿* WhileConditionCheckEvent {"Expression":"Actor.State != S1","LoopBlockRun":false}
 * DialogEvent {"Text":"After while block","Character":null}

@@ -19,6 +19,7 @@ public record TransitionReference : IReferences<Transition>, IEqualityComparer<T
     [JsonIgnore]
     public Type Type => typeof(Transition);
 
+    [JsonIgnore]
     public MetaState System { get; }
 
     public TransitionReference(MetaState system)

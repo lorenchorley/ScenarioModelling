@@ -2,7 +2,7 @@ using FluentAssertions;
 using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
 using ScenarioModelling.TestDataAndTools.Serialisation;
@@ -11,29 +11,30 @@ using System.Diagnostics;
 namespace ScenarioModelling.Serialisation.Tests;
 
 [TestClass]
-public class HumanReadableSerialisationTests
+public class CustomSerialiserSerialisationTests
 {
     private const string MetaStoryName = "MetaStory recorded by hooks";
 
     [TestMethod]
-    [TestCategory("Serialisation"), TestCategory("HumanReadable")]
+    [TestCategory("Serialisation"), TestCategory("CustomSerialiser")]
     [ReserialisationDataProvider]
-    public void HumanReadable_Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
-        => HumanReadable_Context_DeserialiseReserialise_Common(testCaseName, originalContextText, expectedFinalContextText);
+    public void CustomSerialiser_Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
+        => CustomSerialiser_Context_DeserialiseReserialise_Common(testCaseName, originalContextText, expectedFinalContextText);
 
     [TestMethod]
-    [TestCategory("Serialisation"), TestCategory("HumanReadable")]
+    [TestCategory("Serialisation"), TestCategory("CustomSerialiser")]
     [ProgressiveCodeHookTestDataProvider]
-    public void HumanReadable_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
+    public void CustomSerialiser_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
     {
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         var context =
-            container.Context
-                   .UseSerialiser<ContextSerialiser>()
-                   .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomSerialiser.Reserialisation.CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
@@ -56,10 +57,10 @@ public class HumanReadableSerialisationTests
         var expectedMetaStoryText = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedText(metaStoryMethodName);
         string expectedText = BuildExpectedText(expectedSystemText, expectedMetaStoryText, autoDefineMetaStory);
 
-        HumanReadable_Context_DeserialiseReserialise_Common(metaStoryMethodName, serialisedContext, expectedText);
+        CustomSerialiser_Context_DeserialiseReserialise_Common(metaStoryMethodName, serialisedContext, expectedText);
     }
 
-    public void HumanReadable_Context_DeserialiseReserialise_Common(string testCaseName, string originalContextText, string expectedFinalContextText)
+    public void CustomSerialiser_Context_DeserialiseReserialise_Common(string testCaseName, string originalContextText, string expectedFinalContextText)
     {
         // Arrange
         // =======
@@ -71,13 +72,14 @@ public class HumanReadableSerialisationTests
         Debug.WriteLine("");
         Debug.WriteLine(originalContextText);
 
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         Context loadedContext =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .LoadContext(originalContextText)
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .LoadContext(originalContextText)
+                 .Initialise();
 
         loadedContext.ValidationErrors.Count.Should().Be(0, because: loadedContext.ValidationErrors.ToString());
 
@@ -92,13 +94,26 @@ public class HumanReadableSerialisationTests
                 Debug.WriteLine("");
                 Debug.WriteLine(reserialisedContextText);
 
-                ScenarioModellingContainer reloadingContainer = new();
+                // Redo the same operation but with compression to compare lengths
+                loadedContext.RemoveSerialiser<CustomContextSerialiser>()
+                             .UseSerialiser<CustomContextSerialiser>(new() { { "Compress", "true" } })
+                             .Serialise<CustomContextSerialiser>()
+                             .Switch(compressedContextText => 
+                             { 
+                                 Debug.WriteLine($"Original serialisation length : {originalContextText.Length}");
+                                 Debug.WriteLine($"Reserialised length : {reserialisedContextText.Length}");
+                                 Debug.WriteLine($"Compressed reserialised length : {compressedContextText.Length}");
+                             }, ex => Assert.Fail(ex.Message));
+
+                // Reload the context using the same serialiser so that w're more sure that it's complete
+                using ScenarioModellingContainer reloadingContainer = new();
+                using var reloadingScope = reloadingContainer.StartScope();
 
                 Context reloadedContext =
-                    reloadingContainer.Context
-                                      .UseSerialiser<ContextSerialiser>()
-                                      .LoadContext(reserialisedContextText)
-                                      .Initialise();
+                    reloadingScope.Context
+                                  .UseSerialiser<CustomContextSerialiser>()
+                                  .LoadContext(reserialisedContextText)
+                                  .Initialise();
 
 
                 // Assert

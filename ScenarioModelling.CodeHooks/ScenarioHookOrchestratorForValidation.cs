@@ -2,7 +2,6 @@
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Tools.Exceptions;
-using System;
 
 namespace ScenarioModelling.CodeHooks;
 

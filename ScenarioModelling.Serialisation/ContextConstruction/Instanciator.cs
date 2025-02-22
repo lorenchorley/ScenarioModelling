@@ -3,7 +3,7 @@ using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.SystemObjects;
 using ScenarioModelling.Exhaustiveness;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.GenericInterfaces;
 using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
 

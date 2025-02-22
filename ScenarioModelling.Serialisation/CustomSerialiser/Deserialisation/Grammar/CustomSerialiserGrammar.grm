@@ -1,0 +1,85 @@
+﻿"Name"    = 'Custom Serialiser Grammar'
+"Author"  = 'LChorley'
+"Version" = '1.0'
+"About"   = ''
+
+"Start Symbol" = <Program>
+"Case Sensitive" = False 
+
+
+!{WS}                  = {Whitespace} - {CR} - {LF} ! Remove newlines from the whitespace def
+!Whitespace            = {WS}+
+!NewLine               = {CR}{LF} | {CR} ! Just one new line
+!<nlp>                   ::= NewLine*      ! New lines possible
+!<nlr>                   ::= NewLine+      ! New lines required
+
+{WS} = {Whitespace} - {CR} - {LF}
+Whitespace = {WS}+
+NewLine = {CR}{LF}|{CR}
+
+<nl>     ::= NewLine <nl>
+          |  NewLine
+
+<nlo>    ::= NewLine <nlo>
+          |
+
+! ----------------------------------------------------------------- Sets
+
+{FirstIdentifierCharacter} = {Letter} + [_]
+{OtherIdentifierCharacter} = {AlphaNumeric} + [_éèàäëïöüùçâêîôûÇÄÅÉæÆÖÜøØƒáíóúñÑÁÂÀãÃðÐÊËÈiÍÎÏÌÓßÔÒõÕµþÞÚÛÙýÝ'']
+{StringCharacter}          = {All Printable} - ["] + {HT} + {CR} + {LF}
+{ExpressionCharacter}      = {All Printable} - [<>] + {HT} + {CR} + {LF}
+
+! ----------------------------------------------------------------- Terminals
+
+!'[a-zA-Z_][a-zA-Z_0-9]*'                                              Identificateur;
+Identifier = {FirstIdentifierCharacter}{OtherIdentifierCharacter}*
+
+!'[^\"]*'                                                              ConstCh;
+!'\"'                                                                  %ignore, %pop;
+StringLiteral = '"' {StringCharacter}* '"'
+
+ExpressionBlock = '<' {ExpressionCharacter}* '>'
+
+
+! ===========================================================================
+! C.1.8 Literals 
+! ===========================================================================
+
+<String> ::= Identifier
+          |  StringLiteral
+
+<ExpressionBlock> ::= ExpressionBlock
+
+
+! ===========================================================================
+! C.2.4 Expressions 
+! ===========================================================================
+
+<Program> ::= <Definitions>
+
+<Definitions> ::= <Definitions> <Definition> 
+               |  <nlo>
+
+<Definition> ::= <NamedDefinition>
+              |  <UnnamedDefinition>
+              |  <NamedLink>
+              |  <UnnamedLink>
+              |  <Transition>
+              |  <ExpressionDefinition>              
+ 
+<NamedDefinition> ::= <String> <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+                   |  <String> <String> <nl>
+
+<UnnamedDefinition> ::= <String> <nlo> '{' <nlo> <Definitions> <nlo> '}' <nl>
+                     |  <String> <nl>
+                   
+<UnnamedLink> ::= <String> '->' <String> <nl>
+                   
+<NamedLink> ::= <String> '->' <String> ':' <String> <nl>
+             
+<ExpressionDefinition> ::= <String> <ExpressionBlock> <nlo> '{' <nlo> <Definitions> <nlo>  '}' <nl>
+                        |  <String> <ExpressionBlock> <nl>
+                        |  <ExpressionBlock> <nl>
+
+<Transition> ::= <String> ':' <String> <nl>

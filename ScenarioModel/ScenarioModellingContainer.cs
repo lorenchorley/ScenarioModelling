@@ -9,19 +9,17 @@ using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.StoryNodeSerialisers.Interfaces;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation.SystemObjectSerialisers.Interfaces;
+using ScenarioModelling.Mocks;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers.Interfaces;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;
 
 namespace ScenarioModelling;
 
 public class ScenarioModellingContainer : IDisposable
 {
     private readonly IHost _app;
-
-    public MetaState MetaState { get; private set; } = null!;
-    public Context Context { get; private set; } = null!;
 
     public ScenarioModellingContainer()
     {
@@ -38,8 +36,6 @@ public class ScenarioModellingContainer : IDisposable
         InitialiseServices(_app.Services);
 
         _app.Start();
-
-        SetExposedProperties(_app.Services);
     }
 
     private static void ExhaustivenessChecks()
@@ -58,20 +54,14 @@ public class ScenarioModellingContainer : IDisposable
         MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeDeserialiser>();
     }
 
-    private void SetExposedProperties(IServiceProvider services)
-    {
-        MetaState = GetService<MetaState>();
-        Context = GetService<Context>();
-    }
-
     private void ConfigureMainServices(IServiceCollection services)
     {
-
         CodeHooks.Extensions.ServiceExtensions.ConfigureServices(services);
         Serialisation.Extensions.ServiceExtensions.ConfigureServices(services);
         Execution.Extensions.ServiceExtensions.ConfigureServices(services);
         CoreObjects.Extensions.ServiceExtensions.ConfigureServices(services);
         Exhaustiveness.Extensions.ServiceExtensions.ConfigureServices(services);
+        Mocks.Extensions.ServiceExtensions.ConfigureServices(services);
     }
 
     protected virtual void ConfigureHost(ConfigurationManager configuration)
@@ -89,13 +79,13 @@ public class ScenarioModellingContainer : IDisposable
         // Overridable behaviour
     }
 
-    internal T GetService<T>() where T : notnull
-    {
-        return _app.Services.GetRequiredService<T>();
-    }
-
     public void Dispose()
     {
         _app.Dispose();
+    }
+
+    public ScenarioModellingContainerScope StartScope()
+    {
+        return new ScenarioModellingContainerScope(_app.Services.CreateScope());
     }
 }

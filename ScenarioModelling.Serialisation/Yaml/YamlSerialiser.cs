@@ -14,6 +14,7 @@ public class YamlSerialiser : IContextSerialiser
 {
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
+    private Dictionary<string, string> _configuration;
 
     public YamlSerialiser()
     {
@@ -33,6 +34,11 @@ public class YamlSerialiser : IContextSerialiser
                 .WithCaseInsensitivePropertyMatching()
                 .EnablePrivateConstructors()
                 .Build();
+    }
+
+    public void SetConfigurationOptions(Dictionary<string, string> configuration)
+    {
+        _configuration = configuration;
     }
 
     public Result<Context> DeserialiseContext(string text)

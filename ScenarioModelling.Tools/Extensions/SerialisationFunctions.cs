@@ -6,13 +6,8 @@ namespace ScenarioModelling.Tools.Extensions;
 
 public static class SerialisationFunctions
 {
-    public static string ProtoBufSerializeAndCompress<T>(T obj)
+    public static string CompressForWeb(MemoryStream serialisedStream)
     {
-        using var serialisedStream = new MemoryStream();
-
-        // Serialize with Protobuf
-        Serializer.Serialize(serialisedStream, obj);
-
         // Compress with Gzip
         MemoryStream compressedStream = CompressStream(serialisedStream);
 
@@ -20,10 +15,11 @@ public static class SerialisationFunctions
         byte[] compressedArray = compressedStream.ToArray();
         string base64 = Convert.ToBase64String(compressedArray);
         var urlEncoded = WebUtility.UrlEncode(base64);
+
         return urlEncoded;
     }
 
-    public static T ProtoBufDecompressAndDeserialize<T>(string urlEncoded)
+    public static MemoryStream DecompressFromWeb(string urlEncoded)
     {
         // URL Decode and Convert from Base64
         string base64 = WebUtility.UrlDecode(urlEncoded);
@@ -31,10 +27,9 @@ public static class SerialisationFunctions
         using var compressedStream = new MemoryStream(compressedArray);
 
         // Decompress
-        using Stream serialisedStream = DecompressStream(compressedStream);
+        MemoryStream serialisedStream = DecompressStream(compressedStream);
 
-        // Deserialize with Protobuf
-        return Serializer.Deserialize<T>(serialisedStream);
+        return serialisedStream;
     }
 
     private static MemoryStream CompressStream(MemoryStream inputStream)
@@ -74,6 +69,25 @@ public static class SerialisationFunctions
         return decompressedStream;
     }
 
+    #region ProtoBuf
+    public static string ProtoBufSerializeAndCompress<T>(T obj)
+    {
+        using var serialisedStream = new MemoryStream();
+
+        // Serialize with Protobuf
+        Serializer.Serialize(serialisedStream, obj);
+
+        return CompressForWeb(serialisedStream);
+    }
+
+    public static T ProtoBufDecompressAndDeserialize<T>(string urlEncoded)
+    {
+        using Stream serialisedStream = DecompressFromWeb(urlEncoded);
+
+        // Deserialize with Protobuf
+        return Serializer.Deserialize<T>(serialisedStream);
+    }
+
     public static string ProtoBufSerializeToBase64<T>(T obj)
     {
         using var ms = new MemoryStream();
@@ -90,5 +104,5 @@ public static class SerialisationFunctions
         using var ms = new MemoryStream(bytes);
         return Serializer.Deserialize<T>(ms);
     }
-
+    #endregion
 }

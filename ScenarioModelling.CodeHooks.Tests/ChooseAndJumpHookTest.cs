@@ -2,12 +2,9 @@
 using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.Expressions.Evaluation;
-using ScenarioModelling.CoreObjects.Interpolation;
 using ScenarioModelling.CoreObjects.StoryNodes.DataClasses;
 using ScenarioModelling.Execution;
-using ScenarioModelling.Execution.Dialog;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
 using System.Diagnostics;
@@ -132,14 +129,15 @@ public partial class ChooseAndJumpHookTest
     {
         // Arrange
         // =======
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         Context context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator hooks = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         Queue<string> choices = new();
         choices.Enqueue("Change name and repeat");
@@ -147,15 +145,16 @@ public partial class ChooseAndJumpHookTest
         choices.Enqueue("Change name and repeat");
         choices.Enqueue("Ciao");
 
-        ScenarioModellingContainer reserialisationContainer = new();
+        using ScenarioModellingContainer reserialisationContainer = new();
+        using var reserialisationScope = reserialisationContainer.StartScope();
 
         var reserialisedContext =
-            reserialisationContainer.Context
-                                    .UseSerialiser<ContextSerialiser>()
-                                    .LoadContext(_metaStoryText)
-                                    .Initialise()
-                                    .Serialise()
-                                    .Match(v => v, e => throw e);
+            reserialisationScope.Context
+                                .UseSerialiser<CustomContextSerialiser>()
+                                .LoadContext(_metaStoryText)
+                                .Initialise()
+                                .Serialise()
+                                .Match(v => v, e => throw e);
 
 
         // Act
@@ -196,15 +195,16 @@ public partial class ChooseAndJumpHookTest
     {
         // Arrange
         // =======
-        TestContainer container = new();
+        using TestContainer container = new();
+        using var scope = container.StartScope();
 
         Context context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator hooks = container.GetService<MetaStoryHookOrchestratorForConstruction>();
-        StoryTestRunner runner = container.GetService<StoryTestRunner>();
+        MetaStoryHookOrchestrator hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
         Queue<string> choices = new();
         choices.Enqueue("Change name and repeat");
@@ -212,15 +212,16 @@ public partial class ChooseAndJumpHookTest
         choices.Enqueue("Change name and repeat");
         choices.Enqueue("Ciao");
 
-        ScenarioModellingContainer reserialisationContainer = new();
+        using ScenarioModellingContainer reserialisationContainer = new();
+        using var reserialisationScope = container.StartScope();
 
         var reserialisedContext =
-            reserialisationContainer.Context
-                                    .UseSerialiser<ContextSerialiser>()
-                                    .LoadContext(_metaStoryText)
-                                    .Initialise()
-                                    .Serialise()
-                                    .Match(v => v, e => throw e);
+            reserialisationScope.Context
+                                .UseSerialiser<CustomContextSerialiser>()
+                                .LoadContext(_metaStoryText)
+                                .Initialise()
+                                .Serialise()
+                                .Match(v => v, e => throw e);
 
 
         // Act
@@ -244,8 +245,8 @@ public partial class ChooseAndJumpHookTest
         // ======
         generatedMetaStory.Should().NotBeNull();
 
-        string hookGeneratedEvents = hookGeneratedStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        string rerunEvents = rerunStory.Events.Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string hookGeneratedEvents = hookGeneratedStory.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string rerunEvents = rerunStory.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         DiffAssert.DiffIfNotEqual(hookGeneratedEvents, rerunEvents);
 

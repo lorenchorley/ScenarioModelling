@@ -84,7 +84,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
 
     private bool RegisterEventFromConditionResult(bool result)
     {
-        _hookFunctions.RegisterEventForHook(this, e => ((WhileLoopConditionCheckEvent)e).LoopBlockRun = result);
+        _hookFunctions.RegisterEventForHook(this, e => ((WhileConditionCheckEvent)e).LoopBlockRun = result);
         return result;
     }
 

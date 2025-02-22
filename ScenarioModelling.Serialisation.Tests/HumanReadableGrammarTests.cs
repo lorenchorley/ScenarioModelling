@@ -1,5 +1,5 @@
 using FluentAssertions;
-using ScenarioModelling.Serialisation.HumanReadable.Deserialisation.Interpreter;
+using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.Interpreter;
 using ScenarioModelling.TestDataAndTools.Serialisation;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -7,16 +7,16 @@ using System.Text.RegularExpressions;
 namespace ScenarioModelling.Serialisation.Tests;
 
 [TestClass]
-public class HumanReadableGrammarTests
+public class CustomSerialiserGrammarTests
 {
     [DataTestMethod]
     [TestCategory("Grammar")]
-    [HumanReadableGrammarTestDataProvider]
+    [CustomSerialiserGrammarTestDataProvider]
     public void GrammarTests_Valid(string name, string text, string expectedResultRegex)
     {
         // Arrange
         // =======
-        HumanReadableInterpreter interpreter = new();
+        CustomSerialiserInterpreter interpreter = new();
 
         // Act
         // ===
@@ -42,7 +42,7 @@ public class HumanReadableGrammarTests
     {
         // Arrange
         // =======
-        HumanReadableGrammarTestDataProviderAttribute grammarTestDataProvider = new();
+        CustomSerialiserGrammarTestDataProviderAttribute grammarTestDataProvider = new();
 
         // Act
         // ===

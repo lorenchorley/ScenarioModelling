@@ -44,7 +44,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     {
         // This is where it should be, that is when it's used ; once the condition is evoked and not when the hook declaration is made.
         _hookFunctions.FinaliseDefinition(this);
-        _hookFunctions.RegisterEventForHook(this, e => ((IfBlockEvent)e).IfBlockRun = result);
+        _hookFunctions.RegisterEventForHook(this, e => ((IfConditionCheckEvent)e).IfBlockRun = result);
 
         if (result)
         {

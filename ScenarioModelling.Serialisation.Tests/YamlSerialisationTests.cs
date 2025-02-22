@@ -2,8 +2,7 @@ using FluentAssertions;
 using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.Serialisation.HumanReadable.Reserialisation;
-using ScenarioModelling.Serialisation.ProtoBuf;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.Serialisation.Yaml;
 using ScenarioModelling.TestDataAndTools;
 using ScenarioModelling.TestDataAndTools.CodeHooks;
@@ -17,25 +16,28 @@ public class YamlSerialisationTests
 {
     private const string MetaStoryName = "MetaStory recorded by hooks";
 
+    [Ignore("I don't see an advantage to YAML over the custom serialisation")]
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("Yaml")]
     [ReserialisationDataProvider]
     public void Yaml_Context_DeserialiseReserialise(string testCaseName, string originalContextText, string expectedFinalContextText)
         => Yaml_Context_SerialiseDeserialise_Common(testCaseName, originalContextText, expectedFinalContextText);
 
+    [Ignore("I don't see an advantage to YAML over the custom serialisation")]
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("Yaml")]
     [ProgressiveCodeHookTestDataProvider]
     public void Yaml_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
     {
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         var context =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomContextSerialiser>()
+                 .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = container.GetService<MetaStoryHookOrchestratorForConstruction>();
+        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
@@ -63,14 +65,15 @@ public class YamlSerialisationTests
 
         // Act
         // ===
-        ScenarioModellingContainer container = new();
+        using ScenarioModellingContainer container = new();
+        using var scope = container.StartScope();
 
         Context originalContext =
-            container.Context
-                     .UseSerialiser<ContextSerialiser>()
-                     .UseSerialiser<YamlSerialiser>()
-                     .LoadContext<ContextSerialiser>(originalContextText)
-                     .Initialise();
+            scope.Context
+                 .UseSerialiser<CustomSerialiser.Reserialisation.CustomContextSerialiser>()
+                 .UseSerialiser<YamlSerialiser>()
+                 .LoadContext<CustomSerialiser.Reserialisation.CustomContextSerialiser>(originalContextText)
+                 .Initialise();
 
         originalContext.ValidationErrors.Count.Should().Be(0, because: originalContext.ValidationErrors.ToString());
 
@@ -84,13 +87,15 @@ public class YamlSerialisationTests
                 Debug.WriteLine("");
                 Debug.WriteLine(serialisedContextText);
 
-                ScenarioModellingContainer reloadingContainer = new();
+                using ScenarioModellingContainer reloadingContainer = new();
+                using var reloadingScope = reloadingContainer.StartScope();
+
 
                 Context reloadedContext =
-                    reloadingContainer.Context
-                                      .UseSerialiser<YamlSerialiser>()
-                                      .LoadContext(serialisedContextText)
-                                      .Initialise();
+                    reloadingScope.Context
+                                  .UseSerialiser<YamlSerialiser>()
+                                  .LoadContext(serialisedContextText)
+                                  .Initialise();
 
                 string reserialisedContext =
                     reloadedContext.Serialise<YamlSerialiser>()

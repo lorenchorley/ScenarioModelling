@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ScenarioModelling.Execution.Dialog;
+﻿using ScenarioModelling.Execution.Dialog;
 
 namespace ScenarioModelling.Execution.Extensions;
 

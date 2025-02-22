@@ -133,8 +133,10 @@ The DSL (Domain Specific Language) used is a simple custom language that can des
 
 In a system the following concepts are available to describe a system in which a story may happen:
 * Entities
+* Entity types
 * Aspects (on entities)
 * States (that apply to entities, aspects or relations)
+* State machines (that define the possible states and transitions between states)
 * Transitions between states
 * Relations (between entities, or between aspects or between entities and aspects)
 * Constraints (on anything)
@@ -146,6 +148,8 @@ The meta stories may have the following types of steps:
 * Choose
 * While
 * Jump
+* CallMetaStory
+* Metadata
 
 These are described in more detail below.
 
@@ -375,6 +379,14 @@ State : partial implementation
 * Visual studio add-on to show state machine and entities as execution progresses
 * Multiple choice steps could derive from having multiple state transitions possible
 
+## Integrated test cases
+
+State : Not implemented
+
+* Define scenarios in the system or the meta storyes
+* A scenario defines a set of initial states and a set of final states as an assertion
+* Serves to validate coherency and clarify requirements
+
 ## Implicit graph nodes
 
 State : Partial implementation
@@ -404,7 +416,7 @@ State : not implemented
 
 ## Meta stories within meta stories
 
-State : not implemented
+State : partially implemented
 
 * A meta story can incorporate another, so that parts of meta story can be built separately and incorporated afterwards
     * Useful for when the meta story is spread over several applications like micro services.

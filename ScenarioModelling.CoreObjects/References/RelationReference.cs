@@ -11,7 +11,6 @@ namespace ScenarioModelling.CoreObjects.References;
 [SystemObjectLike<IReference, Relation>]
 public record RelationReference : IReference<Relation>, IStatefulObjectReference
 {
-    private readonly MetaState _system;
 
     public string Name { get; set; } = "";
 
@@ -21,9 +20,12 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
     public CompositeValue? Left { get; set; }
     public CompositeValue? Right { get; set; }
 
+    [JsonIgnore]
+    public MetaState System { get; }
+
     public RelationReference(MetaState system)
     {
-        _system = system;
+        System = system;
     }
 
     public Option<Relation> ResolveReference()
@@ -33,7 +35,7 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
             throw new NotImplementedException();
         }
 
-        Relation? relation = _system.Relations
+        Relation? relation = System.Relations
                               .Find(x => IsEqvToRelation(x));
         return relation;
     }

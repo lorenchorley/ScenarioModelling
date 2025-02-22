@@ -47,7 +47,7 @@ public class InventoryTests
 
     [TestMethod]
     [TestCategory("Inventory tests")]
-    public async Task HumanReadableGrammarTestDataProvider_Inventory()
+    public async Task CustomSerialiserGrammarTestDataProvider_Inventory()
     {
         // Arrange
         // =======
@@ -55,7 +55,7 @@ public class InventoryTests
 
         // Act
         // ===
-        var result = new HumanReadableGrammarTestDataProviderAttribute().GetData(null);
+        var result = new CustomSerialiserGrammarTestDataProviderAttribute().GetData(null);
 
 
         // Assert
