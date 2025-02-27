@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
-using ScenarioModelling.CoreObjects.StoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 using ScenarioModelling.Exhaustiveness.Common;
 
 namespace ScenarioModelling.Exhaustiveness;

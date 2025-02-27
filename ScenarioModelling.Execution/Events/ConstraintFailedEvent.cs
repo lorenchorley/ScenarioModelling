@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Execution.Events.Interfaces;
 
 namespace ScenarioModelling.Execution.Events;

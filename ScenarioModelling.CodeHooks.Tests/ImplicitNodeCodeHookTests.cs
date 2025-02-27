@@ -29,15 +29,12 @@ public partial class ImplicitNodeCodeHookTests
 
         MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
-        var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
-        var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
-        var MetaStoryWithoutImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
+        var metaStateHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
+        var metaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
+        var metaStoryWithoutImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
 
-        // Build system
-        orchestrator.DefineMetaState(sysConf =>
-        {
-            systemHooksMethod(sysConf);
-        });
+        // Build meta state
+        orchestrator.DefineMetaState(metaStateHooksMethod);
 
 
         // Act
@@ -45,7 +42,7 @@ public partial class ImplicitNodeCodeHookTests
 
         // Build MetaStory with the implicit defintion first
         orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
-        MetaStoryWithoutImplicitNodeMethod(orchestrator);
+        metaStoryWithoutImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
         var firstSerialisedContext =
@@ -55,7 +52,7 @@ public partial class ImplicitNodeCodeHookTests
 
         // The build MetaStory without the implicit defintion to make sure that the implicit definition doesn't cause any problems when it's not defined at the right time in the second MetaStory
         orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
-        MetaStoryWithImplicitNodeMethod(orchestrator);
+        metaStoryWithImplicitNodeMethod(orchestrator);
         orchestrator.EndMetaStory();
 
         var secondSerialisedContext =
@@ -73,7 +70,7 @@ public partial class ImplicitNodeCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story"), TestCategory("Implicit Nodes")]
     [ImplicitNodeCodeHookTestDataProvider]
-    public void ImplicitNode_CodeHook_StoryExtractionTests(string MetaStoryWithImplicitNodeMethodName, string MetaStoryWithoutImplicitNodeMethodName, string systemMethodName)
+    public void ImplicitNode_CodeHook_StoryExtractionTests(string metaStoryWithImplicitNodeMethodName, string metaStoryWithoutImplicitNodeMethodName, string metaStateMethodName)
     {
         // Arrange
         // =======
@@ -88,12 +85,12 @@ public partial class ImplicitNodeCodeHookTests
         MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
         StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
-        var systemHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
-        var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithImplicitNodeMethodName);
-        var MetaStoryWithoutImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(MetaStoryWithoutImplicitNodeMethodName);
+        var metaStateHooksMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
+        var MetaStoryWithImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryWithImplicitNodeMethodName);
+        var MetaStoryWithoutImplicitNodeMethod = ImplicitNodeCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryWithoutImplicitNodeMethodName);
 
         // Build system
-        orchestrator.DefineMetaState(systemHooksMethod);
+        orchestrator.DefineMetaState(metaStateHooksMethod);
 
 
         // Act

@@ -1,36 +1,30 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
 using ScenarioModelling.Annotations.Attributes;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
 
 namespace ScenarioModelling.CoreObjects.References;
 
 // Transition reference cannot base themselves only on the name
 // They are unique only on the triplet (name, source, dest)
 // (related : TransitionEquivalanceComparer, )
-[SystemObjectLike<IReference, Transition>]
-public record TransitionReference : IReferences<Transition>, IEqualityComparer<TransitionReference>
+[MetaStateObjectLike<IReference, Transition>]
+public record TransitionReference : ReferencesBase<Transition>, IEqualityComparer<TransitionReference>
 {
-    public string Name { get; set; } = "";
     public string? SourceName { get; set; } = "";
     public string? DestinationName { get; set; } = "";
 
     [JsonIgnore]
-    public Type Type => typeof(Transition);
-
-    [JsonIgnore]
-    public MetaState System { get; }
+    public MetaState MetaState { get; }
 
     public TransitionReference(MetaState system)
     {
-        System = system;
+        MetaState = system;
     }
 
-    public IEnumerable<Transition> ResolveReferences()
-        => System.Transitions.Where(s => s.IsEqv(this)); // TODO Need to search with only the information that is available
-
-    public bool IsResolvable() => ResolveReferences().Any();
+    public override IEnumerable<Transition> ResolveReferences()
+        => MetaState.Transitions.Where(s => s.IsEqv(this)); // TODO Need to search with only the information that is available
 
     override public string ToString() => Name;
 

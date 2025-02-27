@@ -1,21 +1,16 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
 using ScenarioModelling.Annotations.Attributes;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
 
 namespace ScenarioModelling.CoreObjects.References;
 
-[SystemObjectLike<IReference, EntityType>]
-public record EntityTypeReference : IReference<EntityType>
+[MetaStateObjectLike<IReference, EntityType>]
+public record EntityTypeReference : ReferenceBase<EntityType>
 {
-    public string Name { get; set; } = "";
-
     [JsonIgnore]
-    public Type Type => typeof(EntityType);
-
-    [JsonIgnore]
-    public MetaState System { get; }
+    public MetaState MetaState { get; }
 
     private EntityTypeReference()
     {
@@ -24,13 +19,11 @@ public record EntityTypeReference : IReference<EntityType>
 
     public EntityTypeReference(MetaState system)
     {
-        System = system;
+        MetaState = system;
     }
 
-    public Option<EntityType> ResolveReference()
-        => System.EntityTypes.Find(x => x.IsEqv(this));
-
-    public bool IsResolvable() => ResolveReference().IsSome;
+    public override Option<EntityType> ResolveReference()
+        => MetaState.EntityTypes.Find(x => x.IsEqv(this));
 
     override public string ToString() => $"{Name}";
 

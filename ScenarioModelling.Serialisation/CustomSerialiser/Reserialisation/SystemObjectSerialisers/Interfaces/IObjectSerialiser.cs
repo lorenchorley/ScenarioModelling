@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using System.Text;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;

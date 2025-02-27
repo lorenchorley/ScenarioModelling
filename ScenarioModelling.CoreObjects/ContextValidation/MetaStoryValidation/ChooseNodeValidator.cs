@@ -1,8 +1,8 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
 using ScenarioModelling.CoreObjects.ContextValidation.Interfaces;
-using ScenarioModelling.CoreObjects.StoryNodes;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects.ContextValidation.MetaStoryValidation;

@@ -1,13 +1,14 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 
 namespace ScenarioModelling.CoreObjects.References.GeneralisedReferences;
 
 public class StatefulObjectReference : IStatefulObjectReference
 {
-    private readonly MetaState _system;
+    private readonly MetaState _metaState;
 
     public string Name { get; set; } = "";
 
@@ -18,14 +19,28 @@ public class StatefulObjectReference : IStatefulObjectReference
             None: () => throw new Exception($"Could not resolve stateful object {Name}")
             );
 
-    public StatefulObjectReference(MetaState system)
+    // [JsonDoNotIgnore]
+    public string TypeName => Type.Name;
+
+    public StatefulObjectReference(MetaState metaState)
     {
-        _system = system;
+        _metaState = metaState;
     }
 
     public Option<IStateful> ResolveReference()
-        => _system.AllStateful
-                  .Find(e => e.Name.IsEqv(Name)); // Must only search by name, because the Type property depends on resolving the reference in this type of reference
+        => _metaState.AllStateful
+                     .Find(e => IsStatefulObjectEqv(e, Name)); // Must only search by name, because the Type property depends on resolving the reference in this type of reference
+
+    private static bool IsStatefulObjectEqv(IStateful other, string name)
+    {
+        if (other is Aspect aspect)
+        {
+            string aspectIdentifier = $"{aspect.Entity.Name}.{aspect.Name}";
+            return aspectIdentifier.IsEqv(name);
+        }
+
+        return other.Name.IsEqv(name);
+    }
 
     public bool IsResolvable() => ResolveReference().IsSome;
 

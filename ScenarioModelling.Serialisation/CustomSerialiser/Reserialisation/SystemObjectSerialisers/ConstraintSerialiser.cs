@@ -1,6 +1,6 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;
@@ -8,7 +8,7 @@ using System.Text;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers;
 
-[SystemObjectLike<IObjectSerialiser, Constraint>]
+[MetaStateObjectLike<IObjectSerialiser, Constraint>]
 public class ConstraintSerialiser : IObjectSerialiser<Constraint>
 {
     public void WriteObject(StringBuilder sb, MetaState metaState, Constraint obj, string currentIndent)

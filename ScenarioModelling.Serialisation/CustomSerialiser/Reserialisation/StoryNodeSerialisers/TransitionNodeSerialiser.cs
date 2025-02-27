@@ -1,6 +1,7 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.StoryNodes;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers.Interfaces;
 using System.Text;
 
@@ -29,7 +30,14 @@ public class TransitionNodeSerialiser : INodeSerialiser<TransitionNode>
 
         node.SerialiseAnnotatedProperties(sb, subIndent);
 
-        sb.AppendLine($"{subIndent}{obj.Name} : {node.TransitionName}");
+        if (obj is Aspect aspect)
+        {
+            sb.AppendLine($"{subIndent}{aspect.Entity.Name}.{aspect.Name} : {node.TransitionName}");
+        }
+        else
+        {
+            sb.AppendLine($"{subIndent}{obj.Name} : {node.TransitionName}");
+        }
 
         sb.AppendLine($"{currentIndent}}}");
     }

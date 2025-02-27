@@ -1,12 +1,12 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers;
 
-[SystemObjectLike<IObjectSerialiser, EntityType>]
+[MetaStateObjectLike<IObjectSerialiser, EntityType>]
 public class EntityTypeSerialiser : IObjectSerialiser<EntityType>
 {
     public void WriteObject(StringBuilder sb, MetaState metaState, EntityType obj, string currentIndent)

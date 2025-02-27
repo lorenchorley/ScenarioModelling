@@ -2,7 +2,7 @@
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.StoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 using ScenarioModelling.Execution.Events.Interfaces;
 
 namespace ScenarioModelling.Execution.Events;

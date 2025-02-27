@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using ScenarioModelling.CoreObjects.ContextValidation;
-using ScenarioModelling.CoreObjects.ContextValidation.SystemValidation;
+using ScenarioModelling.CoreObjects.ContextValidation.MetaStateValidation;
 using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.Expressions.Traversal;
 using ScenarioModelling.CoreObjects.Interpolation;
@@ -29,7 +29,7 @@ public static class ServiceExtensions
         services.TryAddScoped<TransitionValidator>();
 
         services.TryAddScoped<MetaStoryValidator>();
-        services.TryAddScoped<ISystemVisitor, MetaStateValidator>();
+        services.TryAddScoped<IMetaStateVisitor, MetaStateValidator>();
         services.TryAddScoped<MetaStateValidator>();
 
         services.TryAddScoped<ContextValidator>();

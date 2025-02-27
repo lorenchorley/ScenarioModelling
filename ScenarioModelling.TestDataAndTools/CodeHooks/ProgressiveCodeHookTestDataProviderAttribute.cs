@@ -1,6 +1,8 @@
-﻿using ScenarioModelling.CodeHooks;
+﻿using Microsoft.Extensions.FileProviders.Physical;
+using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CodeHooks.Utils;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -35,6 +37,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             new(nameof(IfExecutesWithDialog_HookOutsideBlock)),
             new(nameof(IfDoesNotExecute_UsingHook)),
             new(nameof(IfExecutesWithDialog_UsingHook)),
+            new(nameof(IfExecutes_ExpressionUsingAspectState)),
             new(nameof(TwoNestedIfsThatExecute)),
             new(nameof(TwoConsecutiveIfsThatExecute)),
             new(nameof(WhileDoesNotExecute)),
@@ -47,7 +50,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         ];
 
     public IEnumerable<object[]> GetData(MethodInfo methodInfo)
-        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedSystemMethodName(t.MetaStoryMethodName), t.AutoDefineMetaStory]));
+        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedMetaStateMethodName(t.MetaStoryMethodName), t.AutoDefineMetaStory]));
 
     public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
 
@@ -68,10 +71,10 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         return attr?.Text ?? $"Text not set. To set this text, apply the attribute ExpectedResult to the hook method {metaStoryMethodName}.";
     }
 
-    private static string GetAssociatedSystemMethodName(string metaStoryMethodName)
+    private static string GetAssociatedMetaStateMethodName(string metaStateMethodName)
     {
-        var attr = GetAssociatedExpectedText<AssociatedSystemHookMethodAttribute>(metaStoryMethodName);
-        return attr?.MethodName ?? $"Method name not set. To set this name, apply the attribute AssociatedSystemHookMethod to the hook method {metaStoryMethodName}.";
+        var attr = GetAssociatedExpectedText<AssociatedMetaStateHookMethodAttribute>(metaStateMethodName);
+        return attr?.MethodName ?? $"Method name not set. To set this name, apply the attribute AssociatedMetaStateHookMethod to the hook method {metaStateMethodName}.";
     }
 
     private static T? GetAssociatedExpectedText<T>(string metaStoryMethodName) where T : Attribute
@@ -89,7 +92,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     """
     
     """)]
-    private static void EmptySystem(MetaStateHookDefinition sysConf)
+    private static void EmptyMetaState(MetaStateHookDefinition sysConf)
     {
     }
 
@@ -98,7 +101,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     Entity Actor {
     }
     """)]
-    private static void SystemOneActor(MetaStateHookDefinition sysConf)
+    private static void MetaStateOneActor(MetaStateHookDefinition sysConf)
     {
         sysConf.Entity("Actor");
 
@@ -117,7 +120,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       S1 -> S2 : T1
     }
     """)]
-    private static void SystemOneActorTwoStates(MetaStateHookDefinition sysConf)
+    private static void MetaStateOneActorTwoStates(MetaStateHookDefinition sysConf)
     {
         sysConf.Entity("Actor")
                .SetState("S1");
@@ -126,6 +129,46 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                .WithState("S1")
                .WithState("S2")
                .WithTransition("S1", "S2", "T1");
+    }
+    
+    [ExpectedResult(
+    """
+    Entity Actor {
+      State S1
+      Aspect Name {
+        State A1
+      }
+    }
+
+    StateMachine SM1 {
+      State S1
+      State S2
+      S1 -> S2 : T1
+    }
+
+    StateMachine SM2 {
+      State A1
+      State A2
+      A1 -> A2 : T2
+    }
+    """)]
+    private static void MetaStateOneActorWithAspectTwoStateMachines(MetaStateHookDefinition config)
+    {
+        config.Entity("Actor")
+              .SetState("S1")
+              .WithAspect("Name", aspect => 
+                  aspect.SetState("A1")
+              );
+
+        config.StateMachine("SM1")
+              .WithState("S1")
+              .WithState("S2")
+              .WithTransition("S1", "S2", "T1");
+
+        config.StateMachine("SM2")
+              .WithState("A1")
+              .WithState("A2")
+              .WithTransition("A1", "A2", "T2");
     }
 
     [ExpectedResult(
@@ -144,18 +187,18 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Description "State must never be S2"
     }
     """)]
-    private static void SystemOneActorTwoStatesWithConstraint(MetaStateHookDefinition sysConf)
+    private static void MetaStateOneActorTwoStatesWithConstraint(MetaStateHookDefinition config)
     {
-        sysConf.Entity("Actor")
-               .SetState("S1");
+        config.Entity("Actor")
+              .SetState("S1");
 
-        sysConf.StateMachine("SM1")
-               .WithState("S1")
-               .WithState("S2")
-               .WithTransition("S1", "S2", "T1");
+        config.StateMachine("SM1")
+              .WithState("S1")
+              .WithState("S2")
+              .WithTransition("S1", "S2", "T1");
 
-        sysConf.DefineConstraint("State must never be S2")
-               .SetExpression("Actor.State != S2");
+        config.DefineConstraint("State must never be S2")
+              .SetExpression("Actor.State != S2");
     }
 
     [ExpectedResult(
@@ -172,7 +215,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       S2 -> S3 : T1
     }
     """)]
-    private static void SystemOneActorThreeStatesSingleTransition(MetaStateHookDefinition sysConf)
+    private static void MetaStateOneActorThreeStatesSingleTransition(MetaStateHookDefinition sysConf)
     {
         sysConf.Entity("Actor")
                .SetState("S1");
@@ -192,7 +235,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     Metadata {
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    [AssociatedMetaStateHookMethod(nameof(EmptyMetaState))]
     private static void EmptyMetadata(MetaStoryHookOrchestrator hooks)
     {
         hooks.Metadata("")
@@ -205,7 +248,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         Value "Some value"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    [AssociatedMetaStateHookMethod(nameof(EmptyMetaState))]
     private static void MetadataWithValue(MetaStoryHookOrchestrator hooks)
     {
         hooks.Metadata("Some value")
@@ -217,7 +260,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     Metadata "A key" {
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    [AssociatedMetaStateHookMethod(nameof(EmptyMetaState))]
     private static void MetadataWithKey(MetaStoryHookOrchestrator hooks)
     {
         hooks.Metadata("")
@@ -231,7 +274,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         Value "Some value"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    [AssociatedMetaStateHookMethod(nameof(EmptyMetaState))]
     private static void MetadataWithKeyAndValue(MetaStoryHookOrchestrator hooks)
     {
         hooks.Metadata("Some value")
@@ -247,7 +290,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text Hello
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActor))]
     private static void OneDialog(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello")
@@ -260,7 +303,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "Hello with multiple words"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActor))]
     private static void OneDialogWithMultipleWords(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello with multiple words")
@@ -273,7 +316,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text Hello
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActor))]
     private static void OneDialogWithId(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello")
@@ -288,7 +331,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Character Actor
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActor))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActor))]
     private static void OneDialogWithCharacter(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Hello")
@@ -304,7 +347,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Actor : T1
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void TwoStatesOneTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.Transition("Actor", "T1")
@@ -317,7 +360,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Actor : T1
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void TwoStatesOneTransitionWithId(MetaStoryHookOrchestrator hooks)
     {
         hooks.Transition("Actor", "T1")
@@ -336,7 +379,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "Some text"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    [AssociatedMetaStateHookMethod(nameof(EmptyMetaState))]
     private static void OneDialogAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.Jump("D1")
@@ -359,7 +402,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "Some more text"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(EmptySystem))]
+    [AssociatedMetaStateHookMethod(nameof(EmptyMetaState))]
     private static void TwoDialogsAndOneJump(MetaStoryHookOrchestrator hooks)
     {
         hooks.Jump("D2")
@@ -387,7 +430,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "Some text"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStatesWithConstraint))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStatesWithConstraint))]
     private static void OneConstraintAlwaysValid(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Some text")
@@ -404,7 +447,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Actor : T1
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStatesWithConstraint))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStatesWithConstraint))]
     private static void OneConstraintFailsOnTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Some text")
@@ -428,7 +471,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block only"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfDoesNotExecute_DialogAfterOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -458,7 +501,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     If <Actor.State == S2> {
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfDoesNotExecute_DialogBeforeOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block only")
@@ -491,7 +534,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfDoesNotExecute_DialogBeforeAndAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block")
@@ -521,7 +564,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     If <Actor.State == S2> {
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfDoesNotExecute_NoDialogAround(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -551,7 +594,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       }
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfExecutesWithDialog_DialogBeforeOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block only")
@@ -583,7 +626,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block only"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfExecutesWithDialog_DialogAfterOnly(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -618,7 +661,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfExecutesWithDialog_DialogBeforeAndAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before if block")
@@ -650,7 +693,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       }
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfExecutesWithDialog_NoDialogAround(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -676,7 +719,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfDoesNotExecute_HookOutsideBlock(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -707,7 +750,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfExecutesWithDialog_HookOutsideBlock(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -735,7 +778,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfDoesNotExecute_UsingHook(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S2")
@@ -768,7 +811,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void IfExecutesWithDialog_UsingHook(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
@@ -782,6 +825,97 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             if (φ(condition))
             {
                 hooks.Dialog("Inside if block")
+                     .BuildAndRegister();
+            }
+        }
+
+        hooks.Dialog("After if block")
+             .BuildAndRegister();
+    }
+    
+    [ExpectedResult(
+    """
+    If <Actor.Name.State == A1> {
+      Dialog {
+        Text "Inside first if block"
+      }
+    }
+    Dialog {
+      Text "Between if blocks 1"
+    }
+    If <Actor.Name.State == A2> {
+    }
+    Dialog {
+      Text "Between if blocks 2"
+    }
+    Transition {
+      Actor.Name : T2
+    }
+    If <Actor.Name.State == A2> {
+      Dialog {
+        Text "Inside third if block"
+      }
+    }
+    Dialog {
+      Text "After if block"
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorWithAspectTwoStateMachines))]
+    private static void IfExecutes_ExpressionUsingAspectState(MetaStoryHookOrchestrator hooks)
+    {
+        string aspectState = "A1";
+
+        hooks.If(@"Actor.Name.State == A1")
+             .GetConditionHook(out BifurcatingHook φ)
+             .GetScopeHook(out ScopeDefiningHook ifBlockUsingHook)
+             .Build();
+
+        using (ifBlockUsingHook())
+        {
+            if (φ(aspectState.Equals("A1")))
+            {
+                hooks.Dialog("Inside first if block")
+                     .BuildAndRegister();
+            }
+        }
+
+        hooks.Dialog("Between if blocks 1")
+             .BuildAndRegister();
+
+        hooks.If(@"Actor.Name.State == A2")
+             .GetConditionHook(out BifurcatingHook ψ)
+             .GetScopeHook(out ifBlockUsingHook)
+             .Build();
+
+        using (ifBlockUsingHook())
+        {
+            if (ψ(aspectState.Equals("A2")))
+            {
+                hooks.Dialog("Inside second if block") // Never run so shouldn't appear in any of the results
+                     .BuildAndRegister();
+            }
+        }
+        
+        hooks.Dialog("Between if blocks 2")
+             .BuildAndRegister();
+
+
+        aspectState = "A2";
+
+        hooks.Transition("Actor.Name", "T2")
+             .BuildAndRegister();
+
+
+        hooks.If(@"Actor.Name.State == A2")
+             .GetConditionHook(out BifurcatingHook Θ)
+             .GetScopeHook(out ifBlockUsingHook)
+             .Build();
+
+        using (ifBlockUsingHook())
+        {
+            if (Θ(aspectState.Equals("A2")))
+            {
+                hooks.Dialog("Inside third if block")
                      .BuildAndRegister();
             }
         }
@@ -803,7 +937,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if blocks"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void TwoNestedIfsThatExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State != S2")
@@ -850,7 +984,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After if blocks"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void TwoConsecutiveIfsThatExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.If(@"Actor.State != S2")
@@ -911,7 +1045,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After while block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void WhileDoesNotExecute(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S1")
@@ -943,7 +1077,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After while block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesOnceWithTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S2")
@@ -974,7 +1108,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After while block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithTransition(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -1008,7 +1142,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After while block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithTransitionAndDialog(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -1047,7 +1181,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Text "After while block"
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithNestedIf(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -1094,7 +1228,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       }
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorThreeStatesSingleTransition))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStatesSingleTransition))]
     private static void WhileExecutesTwiceWithNestedIf_NoDialogAfter(MetaStoryHookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
@@ -1149,7 +1283,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       }
     }
     """)]
-    [AssociatedSystemHookMethod(nameof(SystemOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void CallMetaStory_OneLevel(MetaStoryHookOrchestrator hooks)
     {
         hooks.Dialog("Before call").BuildAndRegister();

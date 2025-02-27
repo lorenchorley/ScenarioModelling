@@ -2,7 +2,7 @@
 using LanguageExt.Common;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
@@ -184,7 +184,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
 
     public void InitialiseObjects()
     {
-        SystemObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.DoForEachObjectType(
             entity: () => _entityTransformer.BeforeIndividualInitialisation(),
             entityType: () => _entityTypeTransformer.BeforeIndividualInitialisation(),
             aspect: () => _aspectTransformer.BeforeIndividualValidation(),
@@ -195,7 +195,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
             constraint: () => _constraintTransformer.BeforeIndividualInitialisation()
         );
 
-        SystemObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.DoForEachObjectType(
             entity: () => _context.MetaState.Entities.ForEach(_entityTransformer.Initialise),
             entityType: () => _context.MetaState.EntityTypes.ForEach(_entityTypeTransformer.Initialise),
             aspect: () => _context.MetaState.Aspects.ForEach(_aspectTransformer.Validate),

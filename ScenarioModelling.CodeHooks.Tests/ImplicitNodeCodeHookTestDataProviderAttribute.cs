@@ -20,12 +20,12 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
     public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
 
     [DebuggerNonUserCode]
-    public static Action<T> GetAction<T>(string systemMethodName)
+    public static Action<T> GetAction<T>(string metaStateMethodName)
     {
         var methodRef =
             typeof(ImplicitNodeCodeHookTestDataProviderAttribute)
-                .GetMethod(systemMethodName, BindingFlags.NonPublic | BindingFlags.Static)
-                ?? throw new Exception($"Method {systemMethodName} not found in {nameof(ImplicitNodeCodeHookTestDataProviderAttribute)}");
+                .GetMethod(metaStateMethodName, BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new Exception($"Method {metaStateMethodName} not found in {nameof(ImplicitNodeCodeHookTestDataProviderAttribute)}");
 
         return (parameter) => methodRef.Invoke(typeof(ImplicitNodeCodeHookTestDataProviderAttribute), [parameter]);
     }

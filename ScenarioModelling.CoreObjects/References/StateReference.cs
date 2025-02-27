@@ -1,30 +1,23 @@
 ﻿using Newtonsoft.Json;
 using ScenarioModelling.Annotations.Attributes;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
 
 namespace ScenarioModelling.CoreObjects.References;
 
-[SystemObjectLike<IReference, State>]
-public record StateReference : IReference<State>
+[MetaStateObjectLike<IReference, State>]
+public record StateReference : ReferenceBase<State>
 {
-    public string Name { get; set; } = "";
-
     [JsonIgnore]
-    public Type Type => typeof(State);
-
-    [JsonIgnore]
-    public MetaState System { get; }
+    public MetaState MetaState { get; }
 
     public StateReference(MetaState system)
     {
-        System = system;
+        MetaState = system;
     }
 
-    public LanguageExt.Option<State> ResolveReference()
-        => System.States.Find(s => s.IsEqv(this));
-
-    public bool IsResolvable() => ResolveReference().IsSome;
+    public override LanguageExt.Option<State> ResolveReference()
+        => MetaState.States.Find(s => s.IsEqv(this));
 
     override public string ToString() => Name;
 

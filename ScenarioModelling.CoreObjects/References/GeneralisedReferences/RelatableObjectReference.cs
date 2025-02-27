@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 
 namespace ScenarioModelling.CoreObjects.References.GeneralisedReferences;
 
@@ -17,6 +17,9 @@ public class RelatableObjectReference : IRelatableObjectReference
             Some: x => x.Type,
             None: () => throw new Exception($"Could not resolve relatable object {Name}")
             );
+
+    // [JsonDoNotIgnore]
+    public string TypeName => Type.Name;
 
     public bool IsResolvable() => ResolveReference().IsSome;
 

@@ -6,11 +6,11 @@ using ScenarioModelling.CoreObjects.References.GeneralisedReferences;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
-using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
+using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 
-[SystemObjectLike<IDefinitionToObjectDeserialiser, Relation>]
+[MetaStateObjectLike<IDefinitionToObjectDeserialiser, Relation>]
 public class RelationDeserialiser(MetaState MetaState, Instanciator Instanciator) : DefinitionToObjectDeserialiser<Relation, RelationReference>
 {
     protected override Option<RelationReference> Transform(Definition def, TransformationType type)

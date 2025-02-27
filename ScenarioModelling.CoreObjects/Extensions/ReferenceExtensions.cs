@@ -1,6 +1,7 @@
 ﻿using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Properties;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
+using ScenarioModelling.CoreObjects.References;
 
 public static class ReferenceExtensions
 {

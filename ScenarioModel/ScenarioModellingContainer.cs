@@ -5,8 +5,8 @@ using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.ContextValidation.Interfaces;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Mocks;
@@ -14,6 +14,7 @@ using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextCo
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;
+using ScenarioModelling.CoreObjects.References;
 
 namespace ScenarioModelling;
 
@@ -40,11 +41,11 @@ public class ScenarioModellingContainer : IDisposable
 
     private static void ExhaustivenessChecks()
     {
-        SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<ISystemObject>();
-        SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IReference>();
-        SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectValidator>();
-        SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectSerialiser>();
-        SystemObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToObjectDeserialiser>();
+        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<ISystemObject>();
+        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IReference>();
+        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectValidator>();
+        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectSerialiser>();
+        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToObjectDeserialiser>();
 
         MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IStoryNode>();
         MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IMetaStoryEvent>();

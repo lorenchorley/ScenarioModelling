@@ -1,11 +1,11 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModelling.CodeHooks.HookDefinitions.SystemObjects;
+using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Properties;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Tools.Exceptions;
 
@@ -29,6 +29,7 @@ public class MetaStateHookDefinition
     {
         EntityHookDefinition nodeDef = new(Context.MetaState, _instanciator, name);
         EntityDefintions.Add(nodeDef);
+
         return nodeDef;
     }
 
@@ -56,9 +57,15 @@ public class MetaStateHookDefinition
                 Entity newlyDefinedEntity = entityDefintion.Entity;
                 CreateNewIfNotSet<EntityType, EntityTypeReference, EntityTypeProperty>(newlyDefinedEntity.EntityType, newlyDefinedEntity.Name);
                 // TODO Make sure there are no duplicates
+
+                if (entityDefintion.AspectHookDefinition != null)
+                {
+                    ValidateDefinition(entityDefintion.AspectHookDefinition);
+                }
+
             }
         }
-
+        
         foreach (var stateMachineDefintions in StateMachineDefintions)
         {
             if (!stateMachineDefintions.Validated)
@@ -69,7 +76,7 @@ public class MetaStateHookDefinition
 
                 //    if (existingCorrespondingStateMachine == null)
                 //    {
-                //        // No worries, we add it to complete the system
+                //        // No worries, we add it to complete the metaState
                 //        Context.System.StateMachines.Add(newlyDefinedStateMachine);
                 //    }
                 //    else

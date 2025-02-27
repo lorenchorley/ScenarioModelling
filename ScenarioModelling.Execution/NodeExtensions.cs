@@ -1,10 +1,11 @@
 ﻿using ScenarioModelling.CoreObjects.References;
-using ScenarioModelling.CoreObjects.StoryNodes;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Tools.GenericInterfaces;
+using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Execution;
 
@@ -82,10 +83,10 @@ public static class NodeExtensions
     {
         ArgumentNullExceptionStandard.ThrowIfNull(node.StatefulObject);
 
-        StateChangeEvent e = new StateChangeEvent()
+        StateChangeEvent e = new()
         {
             ProducerNode = node,
-            StatefulObject = node.StatefulObject,
+            StatefulObject = node.StatefulObject!,
             TransitionName = node.TransitionName
         };
 
@@ -94,9 +95,9 @@ public static class NodeExtensions
                 ?.ResolveReference()
                 .Match(
                       Some: obj => obj,
-                      None: () => throw new Exception("Stateful object not found")
+                      None: () => throw new ExecutionException("Stateful object not found")
                   )
-                ?? throw new Exception("StatefulObject was null");
+                ?? throw new InternalLogicException("StatefulObject was null");
 
         if (statefulObject.State == null)
         {

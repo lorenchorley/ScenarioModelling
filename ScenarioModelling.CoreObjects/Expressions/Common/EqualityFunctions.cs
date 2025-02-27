@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 
 namespace ScenarioModelling.CoreObjects.Expressions.Common;
 

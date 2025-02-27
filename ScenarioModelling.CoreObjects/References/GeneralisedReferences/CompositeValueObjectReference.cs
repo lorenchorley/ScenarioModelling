@@ -1,14 +1,21 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
 using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
 
 namespace ScenarioModelling.CoreObjects.References.GeneralisedReferences;
 
-public class CompositeValueObjectReference(MetaState System) : IReference<IIdentifiable>
+public record CompositeValueObjectReference : ReferenceBase<IIdentifiable>
 {
+    private readonly MetaState _metaState;
+
     public CompositeValue Identifier { get; set; } = null!;
+
+    public CompositeValueObjectReference(MetaState metaState)
+    {
+        _metaState = metaState;
+    }
 
     public string Name
     {
@@ -25,9 +32,7 @@ public class CompositeValueObjectReference(MetaState System) : IReference<IIdent
             None: () => throw new Exception($"{Identifier.ValueList.DotSeparatedList()} is not a valid relatable object reference")
         );
 
-    public bool IsResolvable() => ResolveReference().IsSome;
-
-    public Option<IIdentifiable> ResolveReference()
+    public override Option<IIdentifiable> ResolveReference()
     {
         if (Identifier.ValueList.Count == 0)
         {
@@ -48,7 +53,7 @@ public class CompositeValueObjectReference(MetaState System) : IReference<IIdent
     {
         var value = Identifier.ValueList[0];
 
-        var entity = System.Entities.FirstOrDefault(e => e.Name.IsEqv(value));
+        var entity = _metaState.Entities.FirstOrDefault(e => e.Name.IsEqv(value));
 
         if (entity == null)
         {

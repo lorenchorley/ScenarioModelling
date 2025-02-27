@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Evaluation;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;

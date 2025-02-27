@@ -26,7 +26,7 @@ NewLine = {CR}{LF}|{CR}
 ! ----------------------------------------------------------------- Sets
 
 {FirstIdentifierCharacter} = {Letter} + [_]
-{OtherIdentifierCharacter} = {AlphaNumeric} + [_éèàäëïöüùçâêîôûÇÄÅÉæÆÖÜøØƒáíóúñÑÁÂÀãÃðÐÊËÈiÍÎÏÌÓßÔÒõÕµþÞÚÛÙýÝ'']
+{OtherIdentifierCharacter} = {AlphaNumeric} + [_.éèàäëïöüùçâêîôûÇÄÅÉæÆÖÜøØƒáíóúñÑÁÂÀãÃðÐÊËÈiÍÎÏÌÓßÔÒõÕµþÞÚÛÙýÝ'']
 {StringCharacter}          = {All Printable} - ["] + {HT} + {CR} + {LF}
 {ExpressionCharacter}      = {All Printable} - [<>] + {HT} + {CR} + {LF}
 

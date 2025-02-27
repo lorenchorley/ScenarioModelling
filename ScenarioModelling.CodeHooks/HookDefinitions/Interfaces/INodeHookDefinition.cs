@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.Utils;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 

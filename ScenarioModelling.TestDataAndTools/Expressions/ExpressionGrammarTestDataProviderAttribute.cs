@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using System.Reflection;
 
 namespace ScenarioModelling.TestDataAndTools.Expressions;
@@ -22,7 +22,7 @@ public class ExpectedValues
 
 public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSource
 {
-    public readonly string SystemText = """
+    public readonly string MetaStateText = """
         Entity A
         {
             Aspect D {
@@ -424,7 +424,7 @@ public class ExpressionGrammarTestDataProviderAttribute : Attribute, ITestDataSo
 
     public IEnumerable<object[]> GetData(MethodInfo methodInfo)
     {
-        var finalData = TestData.Select(t => new object[] { t.Name, t.Expression, SystemText, JsonConvert.SerializeObject(new ExpectedValues(t.Expected, t.IsValid, t.ExpectedEvaluatedValue, t.ExpectedReturnType)) });
+        var finalData = TestData.Select(t => new object[] { t.Name, t.Expression, MetaStateText, JsonConvert.SerializeObject(new ExpectedValues(t.Expected, t.IsValid, t.ExpectedEvaluatedValue, t.ExpectedReturnType)) });
 
         var groupedByNameWithMultipleNames =
             finalData.GroupBy(t => GetDisplayName(methodInfo, t))

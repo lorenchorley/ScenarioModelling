@@ -1,14 +1,15 @@
 ﻿using LanguageExt;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
-using ScenarioModelling.CoreObjects.ContextValidation.SystemValidation;
+using ScenarioModelling.CoreObjects.ContextValidation.MetaStateValidation;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.CoreObjects.Visitors;
-using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
+using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
+using ScenarioModelling.CoreObjects.References;
 
 namespace ScenarioModelling.CoreObjects.ContextValidation;
 
-public class MetaStateValidator : ISystemVisitor
+public class MetaStateValidator : IMetaStateVisitor
 {
     private readonly AspectValidator _aspectValidator;
     private readonly ConstraintValidator _constraintValidator;

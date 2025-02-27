@@ -48,7 +48,7 @@ public static class ServiceExtensions
             whileNode: () => services.AddScoped<WhileNodeSerialiser>()
         );
 
-        SystemObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.DoForEachObjectType(
             entity: () => services.AddScoped<AspectSerialiser>(),
             entityType: () => services.AddScoped<ConstraintSerialiser>(),
             aspect: () => services.AddScoped<EntitySerialiser>(),
@@ -70,7 +70,7 @@ public static class ServiceExtensions
             whileNode: () => services.AddScoped<WhileNodeDeserialiser>()
         );
 
-        SystemObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.DoForEachObjectType(
             entity: () => services.AddScoped<AspectDeserialiser>(),
             entityType: () => services.AddScoped<ConstraintDeserialiser>(),
             aspect: () => services.AddScoped<EntityDeserialiser>(),

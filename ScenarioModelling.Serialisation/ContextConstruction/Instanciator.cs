@@ -1,11 +1,11 @@
 ﻿using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.GenericInterfaces;
-using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
+using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
 
 namespace ScenarioModelling.Serialisation.ContextConstruction;
 
@@ -58,7 +58,7 @@ public class Instanciator
     public TVal New<TVal>(string? name = null, Definition? definition = null)
         where TVal : IIdentifiable
     {
-        SystemObjectExhaustivity.AssertIsObjectType<TVal>();
+        MetaStateObjectExhaustivity.AssertIsObjectType<TVal>();
 
         object instance = typeof(TVal).Name switch // TODO Exhaustivity ?
         {
@@ -80,7 +80,7 @@ public class Instanciator
         where TVal : IIdentifiable
         where TRef : IReference<TVal>
     {
-        SystemObjectExhaustivity.AssertIsObjectType<TVal>();
+        MetaStateObjectExhaustivity.AssertIsObjectType<TVal>();
 
         object reference = typeof(TRef).Name switch // TODO Exhaustivity ?
         {

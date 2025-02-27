@@ -1,6 +1,6 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.StoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 using ScenarioModelling.Serialisation.Expressions;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers.Interfaces;
 using System.Text;

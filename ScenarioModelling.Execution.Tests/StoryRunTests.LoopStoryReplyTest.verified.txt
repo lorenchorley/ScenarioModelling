@@ -4,19 +4,19 @@
 * DialogEvent {"Text":"Amy's name was well chosen","Character":"Actor"}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Brock Lee\"","IfBlockRun":false}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Clara Nett\"","IfBlockRun":false}
-* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Amy Stake"},"FinalState":{"Name":"Brock Lee"},"TransitionName":"ChangeName"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"Amy Stake","TypeName":"State"},"FinalState":{"Name":"Brock Lee","TypeName":"State"},"TransitionName":"ChangeName"}
 * WhileConditionCheckEvent {"Expression":"Actor.State != \"Dee Zaster\"","LoopBlockRun":true}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Amy Stake\"","IfBlockRun":false}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Brock Lee\"","IfBlockRun":true}
 * DialogEvent {"Text":"Brock didn't like his vegies","Character":"Actor"}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Clara Nett\"","IfBlockRun":false}
-* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Brock Lee"},"FinalState":{"Name":"Clara Nett"},"TransitionName":"ChangeName"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"Brock Lee","TypeName":"State"},"FinalState":{"Name":"Clara Nett","TypeName":"State"},"TransitionName":"ChangeName"}
 * WhileConditionCheckEvent {"Expression":"Actor.State != \"Dee Zaster\"","LoopBlockRun":true}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Amy Stake\"","IfBlockRun":false}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Brock Lee\"","IfBlockRun":false}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Clara Nett\"","IfBlockRun":true}
 * DialogEvent {"Text":"Clara hated music","Character":"Actor"}
-* StateChangeEvent {"StatefulObject":{"Name":"Actor"},"InitialState":{"Name":"Clara Nett"},"FinalState":{"Name":"Dee Zaster"},"TransitionName":"ChangeName"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"Clara Nett","TypeName":"State"},"FinalState":{"Name":"Dee Zaster","TypeName":"State"},"TransitionName":"ChangeName"}
 * WhileConditionCheckEvent {"Expression":"Actor.State != \"Dee Zaster\"","LoopBlockRun":false}
 * IfConditionCheckEvent {"Expression":"Actor.State == \"Dee Zaster\"","IfBlockRun":true}
 * DialogEvent {"Text":"Well, that went well !","Character":"Actor"}

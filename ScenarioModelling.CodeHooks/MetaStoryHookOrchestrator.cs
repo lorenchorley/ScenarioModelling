@@ -3,7 +3,7 @@ using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.StoryNodes.DataClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.DataClasses;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Serialisation.ContextConstruction;

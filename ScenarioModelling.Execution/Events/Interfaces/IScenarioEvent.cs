@@ -1,4 +1,4 @@
-﻿using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
+﻿using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Execution.Events.Interfaces;
 

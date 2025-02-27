@@ -2,14 +2,14 @@
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 
-[SystemObjectLike<IDefinitionToObjectDeserialiser, StateMachine>]
+[MetaStateObjectLike<IDefinitionToObjectDeserialiser, StateMachine>]
 public class StateMachineDeserialiser(MetaState MetaState, Instanciator Instanciator, StateDeserialiser StateTransformer, TransitionDeserialiser TransitionTransformer) : DefinitionToObjectDeserialiser<StateMachine, StateMachineReference>
 {
     protected override Option<StateMachineReference> Transform(Definition def, TransformationType type)

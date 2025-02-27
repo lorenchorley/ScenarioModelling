@@ -2,9 +2,9 @@
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Properties;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 

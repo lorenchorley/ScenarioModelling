@@ -1,0 +1,45 @@
+﻿Entity Actor {
+  State S1
+  Aspect Name {
+    State A1
+  }
+}
+
+StateMachine SM1 {
+  State S1
+  State S2
+  S1 -> S2 : T1
+}
+
+StateMachine SM2 {
+  State A1
+  State A2
+  A1 -> A2 : T2
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  If <Actor.Name.State == A1> {
+    Dialog {
+      Text "Inside first if block"
+    }
+  }
+  Dialog {
+    Text "Between if blocks 1"
+  }
+  If <Actor.Name.State == A2> {
+  }
+  Dialog {
+    Text "Between if blocks 2"
+  }
+  Transition {
+    Actor.Name : T2
+  }
+  If <Actor.Name.State == A2> {
+    Dialog {
+      Text "Inside third if block"
+    }
+  }
+  Dialog {
+    Text "After if block"
+  }
+}

@@ -1,15 +1,15 @@
 ﻿using LanguageExt;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;
 using System.Text;
 
-using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
+using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers;
 
-[SystemObjectLike<IObjectSerialiser, Relation>]
+[MetaStateObjectLike<IObjectSerialiser, Relation>]
 public class RelationSerialiser : IObjectSerialiser<Relation>
 {
     public void WriteObject(StringBuilder sb, MetaState metaState, Relation obj, string currentIndent)

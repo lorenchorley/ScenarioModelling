@@ -1,4 +1,4 @@
-﻿using ScenarioModelling.CodeHooks.HookDefinitions.SystemObjects;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions;
 
@@ -6,9 +6,9 @@ public class MetaStateHookReconfigurationDefinition
 {
     private readonly MetaStateHookDefinition _metaStateHookDefinition;
 
-    public MetaStateHookReconfigurationDefinition(MetaStateHookDefinition systemHookDefinition)
+    public MetaStateHookReconfigurationDefinition(MetaStateHookDefinition metaStateHookDefinition)
     {
-        _metaStateHookDefinition = systemHookDefinition;
+        _metaStateHookDefinition = metaStateHookDefinition;
     }
 
     public EntityHookDefinition RedefineEntity(string name)
@@ -54,7 +54,7 @@ public class MetaStateHookReconfigurationDefinition
 
     //        //    if (existingCorrespondingStateMachine == null)
     //        //    {
-    //        //        // No worries, we add it to complete the system
+    //        //        // No worries, we add it to complete the metaState
     //        //        Context.System.StateMachines.Add(newlyDefinedStateMachine);
     //        //    }
     //        //    else

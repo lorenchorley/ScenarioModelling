@@ -2,8 +2,8 @@
 using ProtoBuf;
 using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
 using ScenarioModelling.CoreObjects.References;
-using ScenarioModelling.CoreObjects.SystemObjects;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.CoreObjects;

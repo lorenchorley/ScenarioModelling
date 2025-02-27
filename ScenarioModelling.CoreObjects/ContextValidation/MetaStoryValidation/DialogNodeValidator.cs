@@ -1,7 +1,7 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
 using ScenarioModelling.CoreObjects.ContextValidation.Interfaces;
-using ScenarioModelling.CoreObjects.StoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 
 namespace ScenarioModelling.CoreObjects.ContextValidation.MetaStoryValidation;
 

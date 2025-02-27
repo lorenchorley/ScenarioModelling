@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProtoBuf;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects;

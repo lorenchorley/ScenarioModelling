@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.CoreObjects.References;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Mocks.Utils;
 

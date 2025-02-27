@@ -1,28 +1,23 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 
 namespace ScenarioModelling.CoreObjects.References;
 
 //[ObjectLike<IReference, AspectType>]
-public record AspectTypeReference : IReference<AspectType>, IRelatableObjectReference, IStatefulObjectReference
+public record AspectTypeReference : ReferenceBase<AspectType>, IRelatableObjectReference, IStatefulObjectReference
 {
-    public string Name { get; set; } = "";
-
     [JsonIgnore]
-    public Type Type => typeof(AspectType);
-
-    [JsonIgnore]
-    public MetaState System { get; }
+    public MetaState MetaState { get; }
 
     public AspectTypeReference(MetaState system)
     {
-        System = system;
+        MetaState = system;
     }
 
-    public Option<AspectType> ResolveReference()
+    public override Option<AspectType> ResolveReference()
         => throw new NotImplementedException("AspectTypeReference.ResolveReference()");
 
     Option<IRelatable> IReference<IRelatable>.ResolveReference()
@@ -30,8 +25,6 @@ public record AspectTypeReference : IReference<AspectType>, IRelatableObjectRefe
 
     Option<IStateful> IReference<IStateful>.ResolveReference()
         => ResolveReference().Map(x => (IStateful)x);
-
-    public bool IsResolvable() => ResolveReference().IsSome;
 
     override public string ToString() => $"{Name}";
 

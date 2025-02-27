@@ -4,9 +4,9 @@ using ScenarioModelling.CoreObjects.ContextValidation;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using YamlDotNet.Serialization;
-using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
+using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
 
 namespace ScenarioModelling.CoreObjects;
 
@@ -85,42 +85,6 @@ public class Context
         return this;
     }
 
-    //public Context LoadSystem(MetaState system)
-    //{
-    //    return LoadSystem(system, out _);
-    //}
-
-    //public Context LoadSystem(MetaState newSystem, out MetaState system)
-    //{
-    //    MetaState = newSystem;
-    //    system = newSystem;
-
-    //    foreach (var MetaStory in MetaStories)
-    //    {
-    //        //MetaStory.MetaState = system;
-    //        if (MetaStory.MetaState == null)
-    //        {
-    //            MetaStory.MetaState = system;
-    //        }
-    //    }
-
-    //    return this;
-    //}
-
-    //public Context LoadMetaStory(MetaStory MetaStory)
-    //{
-    //    return LoadMetaStory(MetaStory, out _);
-    //}
-
-    //public Context LoadMetaStory(MetaStory newMetaStory, out MetaStory MetaStory)
-    //{
-    //    MetaStories.Add(newMetaStory);
-    //    newMetaStory.MetaState = MetaState;
-    //    MetaStory = newMetaStory;
-
-    //    return this;
-    //}
-
     public Context Initialise()
     {
         if (Serialisers.Count == 0)
@@ -152,14 +116,6 @@ public class Context
 
         return serialiser.SerialiseContext(this);
     }
-
-    //public Context SetResourceFolder(string v)
-    //{
-    //    // TODO
-
-    //    return this;
-    //}
-
 
     public void CreateObjectsFromUnresolvableReferences()
     {

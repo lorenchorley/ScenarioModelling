@@ -2,7 +2,7 @@
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.Expressions.Interpreter;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
@@ -11,7 +11,7 @@ using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 
-[SystemObjectLike<IDefinitionToObjectDeserialiser, Constraint>]
+[MetaStateObjectLike<IDefinitionToObjectDeserialiser, Constraint>]
 public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciator, ExpressionInterpreter Interpreter) : DefinitionToObjectDeserialiser<Constraint, ConstraintReference>
 {
     protected override Option<ConstraintReference> Transform(Definition def, TransformationType type)

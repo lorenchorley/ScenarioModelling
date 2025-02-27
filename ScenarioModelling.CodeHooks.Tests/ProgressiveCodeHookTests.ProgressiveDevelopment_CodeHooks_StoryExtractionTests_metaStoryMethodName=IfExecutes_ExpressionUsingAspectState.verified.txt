@@ -1,0 +1,9 @@
+﻿* IfConditionCheckEvent {"Expression":"Actor.Name.State == A1","IfBlockRun":true}
+* DialogEvent {"Text":"Inside first if block","Character":null}
+* DialogEvent {"Text":"Between if blocks 1","Character":null}
+* IfConditionCheckEvent {"Expression":"Actor.Name.State == A2","IfBlockRun":false}
+* DialogEvent {"Text":"Between if blocks 2","Character":null}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor.Name","TypeName":"Aspect"},"InitialState":{"Name":"A1","TypeName":"State"},"FinalState":{"Name":"A2","TypeName":"State"},"TransitionName":"T2"}
+* IfConditionCheckEvent {"Expression":"Actor.Name.State == A2","IfBlockRun":true}
+* DialogEvent {"Text":"Inside third if block","Character":null}
+* DialogEvent {"Text":"After if block","Character":null}

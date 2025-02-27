@@ -3,7 +3,7 @@ using ScenarioModelling.CoreObjects.Expressions.Common;
 using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
 using ScenarioModelling.CoreObjects.Expressions.Traversal;
 using ScenarioModelling.CoreObjects.References.GeneralisedReferences;
-using ScenarioModelling.CoreObjects.SystemObjects;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 
 namespace ScenarioModelling.CoreObjects.Expressions.Initialisation;
 

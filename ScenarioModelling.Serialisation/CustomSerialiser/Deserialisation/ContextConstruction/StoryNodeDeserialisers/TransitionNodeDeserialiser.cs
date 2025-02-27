@@ -1,12 +1,13 @@
 ﻿using LanguageExt;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.StoryNodes;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.Collections.Graph;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
 
@@ -60,7 +61,7 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
                 {
                     node.TransitionName = transitionDefinition.TransitionName.Value;
 
-                    IStateful? stateful = metaStory.MetaState.AllStateful.FirstOrDefault(e => e.Name.IsEqv(transitionDefinition.Type));
+                    IStateful? stateful = metaStory.MetaState.AllStateful.FirstOrDefault(e => StatefulObjectHasName(e, transitionDefinition.Type.Value));
 
                     if (stateful == null)
                     {
@@ -79,6 +80,19 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
         }
 
         return node;
+    }
+
+    private static bool StatefulObjectHasName(IStateful stateful, string name)
+    {
+        if (stateful is Aspect aspect)
+        {
+            string aspectName = $"{aspect.Entity.Name}.{aspect.Name}";
+            return aspectName.IsEqv(name);
+        }
+        else
+        {
+            return stateful.Name.IsEqv(name);
+        }
     }
 }
 

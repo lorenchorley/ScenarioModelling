@@ -25,7 +25,7 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
+    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string metaStateMethodName, bool autoDefineMetaStory)
     {
         // Arrange
         // =======
@@ -39,15 +39,15 @@ public partial class ProgressiveCodeHookTests
 
         MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
-        var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
+        var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
 
 
         // Act
         // ===
 
-        // Build system
-        orchestrator.DefineMetaState(systemHooksMethod);
+        // Build metaState
+        orchestrator.DefineMetaState(metaStateHooksMethod);
 
         // Build MetaStory
         orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
@@ -84,14 +84,11 @@ public partial class ProgressiveCodeHookTests
 
         MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
-        var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
+        var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
         var MetaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
 
-        // Build system
-        orchestrator.DefineMetaState(sysConf =>
-        {
-            systemHooksMethod(sysConf);
-        });
+        // Build metaState
+        orchestrator.DefineMetaState(metaStateHooksMethod);
 
         // Build MetaStory
         orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);

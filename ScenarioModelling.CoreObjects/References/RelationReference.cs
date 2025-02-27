@@ -3,39 +3,33 @@ using Newtonsoft.Json;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
-using Relation = ScenarioModelling.CoreObjects.SystemObjects.Relation;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
 
 namespace ScenarioModelling.CoreObjects.References;
 
-[SystemObjectLike<IReference, Relation>]
-public record RelationReference : IReference<Relation>, IStatefulObjectReference
+[MetaStateObjectLike<IReference, Relation>]
+public record RelationReference : ReferenceBase<Relation>, IStatefulObjectReference
 {
-
-    public string Name { get; set; } = "";
-
-    [JsonIgnore]
-    public Type Type => typeof(Relation);
-
     public CompositeValue? Left { get; set; }
     public CompositeValue? Right { get; set; }
 
     [JsonIgnore]
-    public MetaState System { get; }
+    public MetaState MetaState { get; }
 
     public RelationReference(MetaState system)
     {
-        System = system;
+        MetaState = system;
     }
 
-    public Option<Relation> ResolveReference()
+    public override Option<Relation> ResolveReference()
     {
         if (Left == null || Right == null)
         {
             throw new NotImplementedException();
         }
 
-        Relation? relation = System.Relations
+        Relation? relation = MetaState.Relations
                               .Find(x => IsEqvToRelation(x));
         return relation;
     }
@@ -69,10 +63,7 @@ public record RelationReference : IReference<Relation>, IStatefulObjectReference
     Option<IStateful> IReference<IStateful>.ResolveReference()
         => ResolveReference().Map(x => (IStateful)x);
 
-    public bool IsResolvable() => ResolveReference().IsSome;
-
     override public string ToString() => $"{Name}";
-
 
     public bool IsEqv(IStatefulObjectReference other)
     {

@@ -1,7 +1,7 @@
 ﻿using ScenarioModelling.CoreObjects.ContextValidation.Errors;
 using ScenarioModelling.CoreObjects.ContextValidation.MetaStoryValidation;
-using ScenarioModelling.CoreObjects.StoryNodes;
-using ScenarioModelling.CoreObjects.StoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.Tools.Collections.Graph;
 
@@ -59,7 +59,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return _callMetaStoryNodeValidator.Validate(_metaState, _metaStory, callMetaStoryNode);
     }
 
-    public object VisitChooseNode(ChooseNode chooseNode)
+    public object VisitChoose(ChooseNode chooseNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
@@ -67,7 +67,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return _chooseNodeValidator.Validate(_metaState, _metaStory, chooseNode);
     }
 
-    public object VisitDialogNode(DialogNode dialogNode)
+    public object VisitDialog(DialogNode dialogNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
@@ -75,7 +75,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return _dialogNodeValidator.Validate(_metaState, _metaStory, dialogNode);
     }
 
-    public object VisitIfNode(IfNode ifNode)
+    public object VisitIf(IfNode ifNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
@@ -87,7 +87,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return errors;
     }
 
-    public object VisitJumpNode(JumpNode jumpNode)
+    public object VisitJump(JumpNode jumpNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
@@ -95,12 +95,12 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return _jumpNodeValidator.Validate(_metaState, _metaStory, jumpNode);
     }
 
-    public object VisitMetadataNode(MetadataNode metadataNode)
+    public object VisitMetadata(MetadataNode metadataNode)
     {
         return _metadataNodeValidator.Validate(_metaState, _metaStory, metadataNode);
     }
 
-    public object VisitTransitionNode(TransitionNode transitionNode)
+    public object VisitTransition(TransitionNode transitionNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
@@ -108,7 +108,7 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return _transitionNodeValidator.Validate(_metaState, _metaStory, transitionNode);
     }
 
-    public object VisitWhileNode(WhileNode whileNode)
+    public object VisitWhile(WhileNode whileNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
         ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);

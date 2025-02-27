@@ -1,4 +1,4 @@
-﻿using ScenarioModelling.CoreObjects.SystemObjects.Interfaces;
+﻿using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 
 namespace ScenarioModelling.CoreObjects.References.Interfaces;
 

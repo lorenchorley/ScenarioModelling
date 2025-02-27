@@ -129,9 +129,9 @@ To the right is the meta story runner. Here you can interact with your meta stor
 
 # The DSL
 
-The DSL (Domain Specific Language) used is a simple custom language that can describe a logical system and and one or more meta stories.
+The DSL (Domain Specific Language) used is a simple custom language that can describe a logical system and one or more meta stories.
 
-In a system the following concepts are available to describe a system in which a story may happen:
+In a meta state the following concepts are available to describe a system in which a story may happen:
 * Entities
 * Entity types
 * Aspects (on entities)
