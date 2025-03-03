@@ -12,7 +12,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 {
     public static readonly string PrimaryMetaStoryName = "MetaStory recorded by hooks";
 
-    private record TestCase(string MetaStoryMethodName, bool AutoDefineMetaStory = true);
+    private record TestCase(string MetaStoryMethodName, bool TestDefinedFirstMetaStory = false);
 
     private List<TestCase> TestData = [
             new(nameof(OneDialog)),
@@ -46,11 +46,17 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             new(nameof(WhileExecutesTwiceWithTransitionAndDialog)),
             new(nameof(WhileExecutesTwiceWithNestedIf)),
             new(nameof(WhileExecutesTwiceWithNestedIf_NoDialogAfter)),
-            new(nameof(CallMetaStory_OneLevel), AutoDefineMetaStory: false),
+            new(nameof(CallMetaStory_OneLevel), TestDefinedFirstMetaStory: true),
+            new(nameof(CallMetaStory_OneLevel_TwoDifferentCalls), TestDefinedFirstMetaStory: true),
+            new(nameof(CallMetaStory_OneLevel_TwoCallsSameStory), TestDefinedFirstMetaStory: true),
+            new(nameof(CallMetaStory_TwoLevels), TestDefinedFirstMetaStory: true),
+            new(nameof(CallMetaStory_TwoLevelsCallSameTertiaryStory), TestDefinedFirstMetaStory: true),
+            new(nameof(CallMetaStory_ReiterateMainMetaStoryOnce), TestDefinedFirstMetaStory: true),
+            new(nameof(CallMetaStory_ReiterateOnceFromSecondaryStory), TestDefinedFirstMetaStory: true),
         ];
 
     public IEnumerable<object[]> GetData(MethodInfo methodInfo)
-        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedMetaStateMethodName(t.MetaStoryMethodName), t.AutoDefineMetaStory]));
+        => TestData.Select((Func<TestCase, object[]>)(t => [t.MetaStoryMethodName, GetAssociatedMetaStateMethodName(t.MetaStoryMethodName), t.TestDefinedFirstMetaStory]));
 
     public string GetDisplayName(MethodInfo methodInfo, object?[]? data) => data?[0]?.ToString() ?? "";
 
@@ -129,6 +135,33 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                .WithState("S1")
                .WithState("S2")
                .WithTransition("S1", "S2", "T1");
+    }
+    
+    [ExpectedResult(
+    """
+    Entity Actor {
+      State S1
+    }
+
+    StateMachine SM1 {
+      State S1
+      State S2
+      State S3
+      S1 -> S2 : T1
+      S2 -> S3 : T1
+    }
+    """)]
+    private static void MetaStateOneActorThreeStates(MetaStateHookDefinition sysConf)
+    {
+        sysConf.Entity("Actor")
+               .SetState("S1");
+
+        sysConf.StateMachine("SM1")
+               .WithState("S1")
+               .WithState("S2")
+               .WithState("S3")
+               .WithTransition("S1", "S2", "T1")
+               .WithTransition("S2", "S3", "T1");
     }
     
     [ExpectedResult(
@@ -1263,6 +1296,331 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
     #region CallMetaStory
 
+    
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      CallMetaStory {
+        MetaStoryName "First MetaStory"
+      }
+      Dialog {
+        Text "Between calls"
+      }
+      CallMetaStory {
+        MetaStoryName "Second MetaStory"
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+
+    MetaStory "First MetaStory" {
+      Transition {
+        Actor : T1
+      }
+      Dialog {
+        Text "Inside the first meta story"
+      }
+    }
+
+    MetaStory "Second MetaStory" {
+      Transition {
+        Actor : T1
+      }
+      Dialog {
+        Text "Inside the second meta story"
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
+    private static void CallMetaStory_OneLevel_TwoDifferentCalls(MetaStoryHookOrchestrator hooks)
+    {
+        void FirstMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("First MetaStory");
+
+            hooks.Transition("Actor", "T1").BuildAndRegister();
+
+            hooks.Dialog("Inside the first meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+        
+        void SecondMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("Second MetaStory");
+
+            hooks.Transition("Actor", "T1").BuildAndRegister();
+
+            hooks.Dialog("Inside the second meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Dialog("Before call").BuildAndRegister();
+
+        hooks.CallMetaStory("First MetaStory").BuildAndRegister();
+        FirstMetaStory(hooks);
+
+        hooks.Dialog("Between calls").BuildAndRegister();
+
+        hooks.CallMetaStory("Second MetaStory").BuildAndRegister();
+        SecondMetaStory(hooks);
+
+        hooks.Dialog("After call").BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+    
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      CallMetaStory {
+        MetaStoryName "Secondary MetaStory"
+      }
+      Dialog {
+        Text "Between calls"
+      }
+      CallMetaStory {
+        MetaStoryName "Secondary MetaStory"
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+
+    MetaStory "Secondary MetaStory" {
+      Dialog {
+        Text "Inside the secondary meta story"
+      }
+    }
+
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
+    private static void CallMetaStory_OneLevel_TwoCallsSameStory(MetaStoryHookOrchestrator hooks)
+    {
+        void SecondaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("Secondary MetaStory");
+
+            hooks.Dialog("Inside the secondary meta story").BuildAndRegister();
+
+            // TODO Change state
+            hooks.Transition("Actor", "T1");
+
+            hooks.EndMetaStory();
+        }
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Dialog("Before call").BuildAndRegister();
+
+        hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
+        SecondaryMetaStory(hooks);
+
+        hooks.Dialog("Between calls").BuildAndRegister();
+
+        hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
+        SecondaryMetaStory(hooks);
+
+        hooks.Dialog("After call").BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      CallMetaStory {
+        MetaStoryName "Secondary MetaStory"
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+    
+    MetaStory "Secondary MetaStory" {
+      Dialog {
+        Text "Before call inside the second meta story"
+      }
+      CallMetaStory {
+        MetaStoryName "Tertiary MetaStory"
+      }
+      Dialog {
+        Text "After call inside the second meta story"
+      }
+    }
+
+    MetaStory "Tertiary MetaStory" {
+      Transition {
+        Actor : T1
+      }
+      Dialog {
+        Text "Inside the third meta story"
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
+    private static void CallMetaStory_TwoLevels(MetaStoryHookOrchestrator hooks)
+    {
+        void SecondaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("Secondary MetaStory");
+
+            hooks.Dialog("Before call inside the second meta story").BuildAndRegister();
+
+            hooks.CallMetaStory("Tertiary MetaStory").BuildAndRegister();
+            TertiaryMetaStory(hooks);
+
+            hooks.Dialog("After call inside the second meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        void TertiaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("Tertiary MetaStory");
+
+            hooks.Transition("Actor", "T1").BuildAndRegister();
+
+            hooks.Dialog("Inside the third meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Dialog("Before call").BuildAndRegister();
+
+        hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
+        SecondaryMetaStory(hooks);
+
+        hooks.Dialog("After call").BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+    
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      CallMetaStory {
+        MetaStoryName "First Secondary MetaStory"
+      }
+      Dialog {
+        Text "Between calls"
+      }
+      CallMetaStory {
+        MetaStoryName "Second Secondary MetaStory"
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+    
+    MetaStory "First Secondary MetaStory" {
+      Dialog {
+        Text "Before call inside the first secondary meta story"
+      }
+      CallMetaStory {
+        MetaStoryName "Tertiary MetaStory"
+      }
+      Dialog {
+        Text "After call inside the first secondary meta story"
+      }
+    }
+    
+    MetaStory "Tertiary MetaStory" {
+      Dialog {
+        Text "Inside the tertiary meta story"
+      }
+    }
+    
+    MetaStory "Second Secondary MetaStory" {
+      Dialog {
+        Text "Before call inside the second secondary meta story"
+      }
+      CallMetaStory {
+        MetaStoryName "Tertiary MetaStory"
+      }
+      Dialog {
+        Text "After call inside the second secondary meta story"
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
+    private static void CallMetaStory_TwoLevelsCallSameTertiaryStory(MetaStoryHookOrchestrator hooks)
+    {
+        void FirstSecondaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("First Secondary MetaStory");
+
+            hooks.Dialog("Before call inside the first secondary meta story").BuildAndRegister();
+
+            hooks.CallMetaStory("Tertiary MetaStory").BuildAndRegister();
+            TertiaryMetaStory(hooks);
+
+            hooks.Dialog("After call inside the first secondary meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        void SecondSecondaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("Second Secondary MetaStory");
+
+            hooks.Dialog("Before call inside the second secondary meta story").BuildAndRegister();
+
+            hooks.CallMetaStory("Tertiary MetaStory").BuildAndRegister();
+            TertiaryMetaStory(hooks);
+
+            hooks.Dialog("After call inside the second secondary meta story").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        void TertiaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
+            hooks.StartMetaStory("Tertiary MetaStory");
+
+            hooks.Dialog("Inside the tertiary meta story").BuildAndRegister();
+
+            // TODO Change state
+            hooks.Transition("Actor", "T1");
+
+            hooks.EndMetaStory();
+        }
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Dialog("Before call").BuildAndRegister();
+
+        hooks.CallMetaStory("First Secondary MetaStory").BuildAndRegister();
+        FirstSecondaryMetaStory(hooks);
+
+        hooks.Dialog("Between calls").BuildAndRegister();
+
+        hooks.CallMetaStory("Second Secondary MetaStory").BuildAndRegister();
+        SecondSecondaryMetaStory(hooks);
+
+        hooks.Dialog("After call").BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+
     [ExpectedResult(
     """
     MetaStory "MetaStory recorded by hooks" {
@@ -1286,19 +1644,155 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
     private static void CallMetaStory_OneLevel(MetaStoryHookOrchestrator hooks)
     {
-        hooks.Dialog("Before call").BuildAndRegister();
-
-        hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
-
-        { // Scope to help understand the inner meta story
+        void SecondaryMetaStory(MetaStoryHookOrchestrator hooks)
+        {
             hooks.StartMetaStory("Secondary MetaStory");
 
             hooks.Dialog("Inside the inner meta story").BuildAndRegister();
 
+            // TODO Change state
+            hooks.Transition("Actor", "T1");
+
             hooks.EndMetaStory();
         }
 
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Dialog("Before call").BuildAndRegister();
+
+        hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
+        SecondaryMetaStory(hooks);
+
         hooks.Dialog("After call").BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      If <Actor.State == S1> {
+        Transition {
+          Actor : T1
+        }
+        CallMetaStory {
+          MetaStoryName "MetaStory recorded by hooks"
+        }
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
+    private static void CallMetaStory_ReiterateMainMetaStoryOnce(MetaStoryHookOrchestrator hooks)
+    {
+        void MainMetaStory(string state)
+        {
+            hooks.StartMetaStory("MetaStory recorded by hooks");
+
+            hooks.Dialog("Before call").BuildAndRegister();
+
+            hooks.If("Actor.State == S1")
+                 .GetConditionHook(out BifurcatingHook φ)
+                 .GetScopeHook(out ScopeDefiningHook ifBlockUsingHook)
+                 .Build();
+
+            using (ifBlockUsingHook())
+            {
+                if (φ(state.Equals("Reiterate meta story")))
+                {
+                    state = "Don't reiterate meta story";
+                    hooks.Transition("Actor", "T1").BuildAndRegister();
+
+                    hooks.CallMetaStory("MetaStory recorded by hooks").BuildAndRegister();
+                    MainMetaStory(state);
+                }
+            }
+
+            hooks.Dialog("After call").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        MainMetaStory("Reiterate meta story");
+    }
+
+    [ExpectedResult(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Before call"
+      }
+      CallMetaStory {
+        MetaStoryName "Secondary MetaStory"
+      }
+      Dialog {
+        Text "After call"
+      }
+    }
+
+    MetaStory "Secondary MetaStory" {
+      Dialog {
+        Text "Inside the inner meta story"
+      }
+      If <Actor.State == S1> {
+        Transition {
+          Actor : T1
+        }
+        CallMetaStory {
+          MetaStoryName "MetaStory recorded by hooks"
+        }
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
+    private static void CallMetaStory_ReiterateOnceFromSecondaryStory(MetaStoryHookOrchestrator hooks)
+    {
+        void MainMetaStory(string state)
+        {
+            hooks.StartMetaStory("MetaStory recorded by hooks");
+
+            hooks.Dialog("Before call").BuildAndRegister();
+
+            hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
+            SecondaryMetaStory(state);
+
+            hooks.Dialog("After call").BuildAndRegister();
+
+            hooks.EndMetaStory();
+        }
+
+        void SecondaryMetaStory(string state)
+        {
+            hooks.StartMetaStory("Secondary MetaStory");
+
+            hooks.Dialog("Inside the inner meta story").BuildAndRegister();
+
+            hooks.If("Actor.State == S1")
+                 .GetConditionHook(out BifurcatingHook φ)
+                 .GetScopeHook(out ScopeDefiningHook ifBlockUsingHook)
+                 .Build();
+
+            using (ifBlockUsingHook())
+            {
+                if (φ(state.Equals("Reiterate meta story")))
+                {
+                    state = "Don't reiterate meta story";
+                    hooks.Transition("Actor", "T1").BuildAndRegister();
+
+                    hooks.CallMetaStory("MetaStory recorded by hooks").BuildAndRegister();
+                    MainMetaStory(state);
+                }
+            }
+
+            hooks.EndMetaStory();
+        }
+
+        MainMetaStory("Reiterate meta story");
     }
 
     #endregion

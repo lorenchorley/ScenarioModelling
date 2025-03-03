@@ -11,6 +11,6 @@ public static class ServiceExtensions
         services.AddTransient<DialogExecutor>();
         services.AddTransient<IExecutor, ParallelConstructionExecutor>();
         services.AddTransient<ParallelConstructionExecutor>();
-        services.AddTransient<Story>();
+        services.AddScoped<Story>();
     }
 }

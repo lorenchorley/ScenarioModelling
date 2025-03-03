@@ -1,3 +1,0 @@
-﻿* DialogEvent {"Text":"Before call","Character":null}
-* MetaStoryCalledEvent {"Name":""}
-* DialogEvent {"Text":"Inside the inner meta story","Character":null}

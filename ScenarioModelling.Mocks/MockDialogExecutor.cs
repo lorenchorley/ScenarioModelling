@@ -7,7 +7,7 @@ public class MockDialogExecutor : DialogExecutor
 {
     private Action<Context> _beforeInitStory = context => { };
 
-    public MockDialogExecutor(Context context, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider) : base(context, metaStoryStack, serviceProvider)
+    public MockDialogExecutor(Context context/*, MetaStoryStack metaStoryStack*/, IServiceProvider serviceProvider) : base(context/*, metaStoryStack*/, serviceProvider)
     {
     }
 

@@ -1,0 +1,26 @@
+﻿Entity Actor {
+  State S1
+}
+
+StateMachine SM1 {
+  State S1
+  State S2
+  S1 -> S2 : T1
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  Dialog {
+    Text "Before call"
+  }
+  If <Actor.State == S1> {
+    Transition {
+      Actor : T1
+    }
+    CallMetaStory {
+      MetaStoryName "MetaStory recorded by hooks"
+    }
+  }
+  Dialog {
+    Text "After call"
+  }
+}

@@ -18,25 +18,29 @@ namespace ScenarioModelling.Execution;
 public class Story
 {
     public Context Context { get; }
-    public MetaStoryStack MetaStoryStack { get; }
+    //public MetaStoryStack MetaStoryStack { get; }
     public ExpressionEvalator Evaluator { get; }
 
-    public MetaStory MetaStory => MetaStoryStack.Peek();
+    //public MetaStory MetaStory => MetaStoryStack.Peek();
     public StoryEventSource Events { get; } = new();
     public Stack<GraphScope> GraphScopeStack { get; } = new();
     public GraphScope CurrentScope => GraphScopeStack.Peek();
 
-    public Story(Context context, MetaStoryStack metaStoryStack, ExpressionEvalator evaluator)
+    public Story(Context context/*, MetaStoryStack metaStoryStack*/, ExpressionEvalator evaluator)
     {
         Context = context;
-        MetaStoryStack = metaStoryStack;
+        //MetaStoryStack = metaStoryStack;
         Evaluator = evaluator;
     }
 
-    public void Init(MetaStory initialMetaStory, bool dontAddToStack = false)
+    public void Init(MetaStory initialMetaStory/*, bool dontAddToStack = false*/)
     {
-        if (!dontAddToStack)
-            MetaStoryStack.Push(initialMetaStory);
+        //if (!dontAddToStack)
+        //    MetaStoryStack.Push(initialMetaStory);
+
+        // Reset
+        Events.Events.Clear();
+        GraphScopeStack.Clear();
 
         GraphScopeStack.Push(new GraphScope(initialMetaStory.Graph));
     }
@@ -56,7 +60,7 @@ public class Story
         }
 
         if (GraphScopeStack.Count == 0)
-            return null; // We're finished
+            throw new Exception("should not be used, exception to mark the case");
 
         var currentEvent = Events.GetEnumerable().LastOrDefault(); // Null only on the first run through because no events have yet to be registered
         var currentScopeNode = CurrentScope.CurrentNode;
@@ -69,25 +73,35 @@ public class Story
             return CurrentScope.CurrentNode;
         }
 
+        if (currentScopeNode is null)
+        {
+            throw new Exception("should not be used, exception to mark the case");
+        }
+
+        currentScopeNode = currentScopeNode.ToOneOf().Match(
+            (CallMetaStoryNode node) => ManangeCallMetaStoryNode(currentEvent, node),
+            (ChooseNode node) => ManangeChoseNode(currentEvent, node),
+            (DialogNode node) => CurrentScope.MoveToNextInSequence(),
+            (IfNode node) => ManageIfNode(currentEvent, node),
+            (JumpNode node) => ManageJumpNode(currentEvent, node),
+            (MetadataNode node) => CurrentScope.MoveToNextInSequence(),
+            (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
+            (WhileNode node) => ManageWhileNode(currentEvent, node)
+        );
+
         bool finishedSubgraph = currentScopeNode is null;
         if (finishedSubgraph)
         {
             // If we can keep going up, we go up one level
             GraphScopeStack.Pop();
 
-            return NextNode();
-        }
+            if (GraphScopeStack.Count == 0)
+                return null; // Last graph has been popped, we're done
 
-        currentScopeNode = currentScopeNode.ToOneOf().Match(
-            (CallMetaStoryNode node) => ManangeCallMetaStoryNode(currentEvent, node),
-            (ChooseNode node) => ManangeChoseNode(currentEvent, node),
-            (DialogNode node) => CurrentScope.GetNextInSequence(),
-            (IfNode node) => ManageIfNode(currentEvent, node),
-            (JumpNode node) => ManageJumpNode(currentEvent, node),
-            (MetadataNode node) => CurrentScope.GetNextInSequence(),
-            (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
-            (WhileNode node) => ManageWhileNode(currentEvent, node)
-        );
+            Events.Add(new MetaStoryReturnedEvent());
+
+            return CurrentScope.MoveToNextInSequence();
+        }
 
         return currentScopeNode;
     }
@@ -123,7 +137,7 @@ public class Story
             currentEvent is not StateChangeEvent stateChangeEvent)
             throw new InternalLogicException($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
 
-        return CurrentScope.GetNextInSequence();
+        return CurrentScope.MoveToNextInSequence();
     }
 
     private IStoryNode? ManangeCallMetaStoryNode(IMetaStoryEvent? currentEvent, CallMetaStoryNode currentScopeNode)
@@ -137,7 +151,9 @@ public class Story
         if (calledMetaStory == null)
             throw new ExecutionException($"No meta story with the name {currentScopeNode.MetaStoryName} was found.");
 
+        var currentGraph = GraphScopeStack.Peek();
         GraphScopeStack.Push(new GraphScope(calledMetaStory.Graph));
+        //GraphScopeStack.Peek().Graph.PrimarySubGraph.ParentSubgraph = currentGraph;
 
         return CurrentScope.CurrentNode;
     }
@@ -180,9 +196,9 @@ public class Story
             throw new Exception($@"Node ""{jumpEvent.Target}"" not found in graph");
 
         // Set explicit next node
-        CurrentScope.SetExplicitNextNode(newCurrentScopeNode);
+        CurrentScope.SetExplicitNextNodeInSubGraph(newCurrentScopeNode);
 
-        return CurrentScope.GetNextInSequence();
+        return CurrentScope.MoveToNextInSequence();
     }
 
     private IStoryNode? ManageIfNode(IMetaStoryEvent? currentEvent, IStoryNode? currentScopeNode)
@@ -200,7 +216,7 @@ public class Story
         else
         {
             // Otherwise advance past the if node
-            return CurrentScope.GetNextInSequence();
+            return CurrentScope.MoveToNextInSequence();
         }
     }
 
@@ -219,7 +235,7 @@ public class Story
         else
         {
             // Otherwise advance past the while node
-            return CurrentScope.GetNextInSequence();
+            return CurrentScope.MoveToNextInSequence();
         }
     }
 

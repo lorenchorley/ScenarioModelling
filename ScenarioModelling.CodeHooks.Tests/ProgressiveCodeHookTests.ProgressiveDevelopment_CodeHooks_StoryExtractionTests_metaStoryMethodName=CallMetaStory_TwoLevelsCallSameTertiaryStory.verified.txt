@@ -1,0 +1,17 @@
+﻿* DialogEvent {"Text":"Before call","Character":null}
+* MetaStoryCalledEvent {"Name":"First Secondary MetaStory"}
+* DialogEvent {"Text":"Before call inside the first secondary meta story","Character":null}
+* MetaStoryCalledEvent {"Name":"Tertiary MetaStory"}
+* DialogEvent {"Text":"Inside the tertiary meta story","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"After call inside the first secondary meta story","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"Between calls","Character":null}
+* MetaStoryCalledEvent {"Name":"Second Secondary MetaStory"}
+* DialogEvent {"Text":"Before call inside the second secondary meta story","Character":null}
+* MetaStoryCalledEvent {"Name":"Tertiary MetaStory"}
+* DialogEvent {"Text":"Inside the tertiary meta story","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"After call inside the second secondary meta story","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"After call","Character":null}

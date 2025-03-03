@@ -25,7 +25,7 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string metaStateMethodName, bool autoDefineMetaStory)
+    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string metaStateMethodName, bool testDefinedFirstMetaStory)
     {
         // Arrange
         // =======
@@ -50,9 +50,13 @@ public partial class ProgressiveCodeHookTests
         orchestrator.DefineMetaState(metaStateHooksMethod);
 
         // Build MetaStory
-        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
+        if (!testDefinedFirstMetaStory)
+            orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
+
         metaStoryHooksMethod(orchestrator);
-        orchestrator.EndMetaStory();
+
+        if (!testDefinedFirstMetaStory)
+            orchestrator.EndMetaStory();
 
 
         // Assert
@@ -70,7 +74,7 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
+    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string metaStoryMethodName, string metaStateMethodName, bool testDefinedFirstMetaStory)
     {
         // Arrange
         // =======
@@ -84,16 +88,20 @@ public partial class ProgressiveCodeHookTests
 
         MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
-        var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
-        var MetaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
+        var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
+        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
 
         // Build metaState
         orchestrator.DefineMetaState(metaStateHooksMethod);
 
         // Build MetaStory
-        orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
-        MetaStoryHooksMethod(orchestrator);
-        orchestrator.EndMetaStory();
+        if (!testDefinedFirstMetaStory)
+            orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
+
+        metaStoryHooksMethod(orchestrator);
+        
+        if (!testDefinedFirstMetaStory)
+            orchestrator.EndMetaStory();
 
         StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 

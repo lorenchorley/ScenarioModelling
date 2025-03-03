@@ -14,56 +14,55 @@ namespace ScenarioModelling.Execution;
 
 public class GraphScope
 {
-    public IStoryNode? CurrentNode { get; set; }
-    public SemiLinearSubGraph<IStoryNode> CurrentSubGraph { get; set; }
+    public IStoryNode? CurrentNode { get; set; } // Null signifies the end of the graph
     public DirectedGraph<IStoryNode> Graph { get; }
+    public Stack<SemiLinearSubGraphScope<IStoryNode>> SubGraphScopeStack { get; private set; } = new();
+    public SemiLinearSubGraph<IStoryNode> CurrentSubGraph => CurrentSubGraphScope.Subgraph;
+    public SemiLinearSubGraphScope<IStoryNode> CurrentSubGraphScope => SubGraphScopeStack.Peek();
 
     public GraphScope(DirectedGraph<IStoryNode> graph)
     {
         Graph = graph;
-        CurrentSubGraph = graph.PrimarySubGraph;
-        graph.Reinitalise();
-        CurrentNode = graph.PrimarySubGraph.GetNextInSequenceOrNull();
+        SubGraphScopeStack.Push(Graph.PrimarySubGraph.GenerateScope(null));
+        CurrentNode = CurrentSubGraphScope.MoveToNextInSequence();
     }
 
-    public void SetExplicitNextNode(IStoryNode node)
+    public void SetExplicitNextNodeInSubGraph(IStoryNode node)
     {
-        CurrentSubGraph.SetExplicitNextNode(node);
+        CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(node);
     }
 
-    public IStoryNode? GetNextInSequence()
+    public IStoryNode? MoveToNextInSequence()
     {
-        CurrentNode = CurrentSubGraph.GetNextInSequenceOrNull();
+        CurrentNode = CurrentSubGraphScope.MoveToNextInSequence();
 
         if (CurrentNode is not null)
         {
             return CurrentNode;
         }
 
-        if (CurrentSubGraph.ParentSubgraph is null)
+        if (CurrentSubGraphScope.ParentScope is null)
         {
-            return null; // End of graph
+            // Above this we need to manage the case where there is another graph is the stack.
+            return null;
         }
 
-        // Go back up one subgraph and continue to the next node after the departure point
-        CurrentSubGraph = CurrentSubGraph.ParentSubgraph;
-        return GetNextInSequence(); // Explicit reentry point is handled by this method if set
+        RemoveSubgraphFromStack();
+
+        return MoveToNextInSequence(); // Explicit reentry point is handled by this method if set
     }
 
+    // TODO validate
     public void EnterSubGraph(SemiLinearSubGraph<IStoryNode> subGraph)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(CurrentNode);
 
-        subGraph.ParentSubgraph = CurrentSubGraph;
-
         if (CurrentNode is WhileNode)
-            CurrentSubGraph.SetExplicitNextNode(CurrentNode);
+            CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(CurrentNode);
 
-        // Reinitialise the subgraph so that we start at the beginning again if the subgraph has already been run
-        subGraph.Reinitalise();
+        AddSubgraphToStack(subGraph);
 
-        CurrentSubGraph = subGraph;
-        CurrentNode = subGraph.GetNextInSequenceOrNull();
+        CurrentNode = CurrentSubGraphScope.MoveToNextInSequence();
     }
 
     public void EnterSubGraphOnNode(SemiLinearSubGraph<IStoryNode> subGraph, IStoryNode node)
@@ -71,7 +70,17 @@ public class GraphScope
         if (!subGraph.NodeSequence.Contains(node))
             throw new Exception("Node not found in subgraph");
 
-        CurrentSubGraph = subGraph;
+        AddSubgraphToStack(subGraph);
         CurrentNode = node;
+    }
+
+    private void AddSubgraphToStack(SemiLinearSubGraph<IStoryNode> subGraph)
+    {
+        SubGraphScopeStack.Push(subGraph.GenerateScope(CurrentSubGraphScope));
+    }
+
+    private void RemoveSubgraphFromStack()
+    {
+        SubGraphScopeStack.Pop();
     }
 }

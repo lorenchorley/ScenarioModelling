@@ -1,5 +1,6 @@
 ﻿* DialogEvent {"Text":"Before call","Character":null}
 * MetaStoryCalledEvent {"Name":"Secondary MetaStory"}
 * DialogEvent {"Text":"Inside the inner meta story","Character":null}
+* IfConditionCheckEvent {"Expression":"Actor.State == A1","IfBlockRun":false}
 * MetaStoryReturnedEvent {}
 * DialogEvent {"Text":"After call","Character":null}

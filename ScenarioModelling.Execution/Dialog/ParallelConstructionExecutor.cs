@@ -7,10 +7,12 @@ namespace ScenarioModelling.Execution.Dialog;
 
 public class ParallelConstructionExecutor : DialogExecutor
 {
+    private readonly MetaStoryDefinitionStack _metaStoryDefinitionStack;
     private readonly EventGenerationDependencies _dependencies;
 
-    public ParallelConstructionExecutor(Context context, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider, EventGenerationDependencies dependencies) : base(context, metaStoryStack, serviceProvider)
+    public ParallelConstructionExecutor(Context context, MetaStoryDefinitionStack metaStoryDefinitionStack, IServiceProvider serviceProvider, EventGenerationDependencies dependencies) : base(context/*, metaStoryStack*/, serviceProvider)
     {
+        _metaStoryDefinitionStack = metaStoryDefinitionStack;
         _dependencies = dependencies;
     }
 
@@ -19,10 +21,6 @@ public class ParallelConstructionExecutor : DialogExecutor
         base.StartMetaStory(name);
 
         var node = _story!.NextNode();
-        if (node != null)
-        {
-            throw new Exception("Unexcepted initial node, should be null");
-        }
     }
 
     protected override void InitStory()
@@ -30,21 +28,16 @@ public class ParallelConstructionExecutor : DialogExecutor
         if (_metaStory == null || _story == null)
             throw new ExecutionException("MetaStory not started");
 
-        _story.Init(_metaStory, dontAddToStack: true);
+        _story.Init(_metaStory/*, dontAddToStack: true*/);
     }
 
     internal void AddNodeToStoryAndAdvance(IStoryNode newNode)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(_story);
 
-        //_story!.CurrentScope.CurrentSubGraph.NodeSequence.Add(newNode);
 
         RegisterEvent(newNode.GenerateEvent(_dependencies));
-        var nextNode = _story.CurrentScope.GetNextInSequence();
-        //if (nextNode != newNode)
-        //{
-        //    throw new InvalidOperationException($"The story being constructed in parallel to hook execution was not in phase. Expected next node to be {newNode}, but was {nextNode}");
-        //}
+        _story.CurrentScope.MoveToNextInSequence();
     }
 
     public IMetaStoryEvent GenerateEvent(IStoryNode node)

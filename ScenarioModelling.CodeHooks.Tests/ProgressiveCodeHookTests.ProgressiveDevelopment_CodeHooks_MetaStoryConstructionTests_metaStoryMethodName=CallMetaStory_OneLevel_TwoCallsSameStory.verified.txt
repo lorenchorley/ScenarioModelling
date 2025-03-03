@@ -1,0 +1,35 @@
+﻿Entity Actor {
+  State S1
+}
+
+StateMachine SM1 {
+  State S1
+  State S2
+  State S3
+  S1 -> S2 : T1
+  S2 -> S3 : T1
+}
+
+MetaStory "MetaStory recorded by hooks" {
+  Dialog {
+    Text "Before call"
+  }
+  CallMetaStory {
+    MetaStoryName "Secondary MetaStory"
+  }
+  Dialog {
+    Text "Between calls"
+  }
+  CallMetaStory {
+    MetaStoryName "Secondary MetaStory"
+  }
+  Dialog {
+    Text "After call"
+  }
+}
+
+MetaStory "Secondary MetaStory" {
+  Dialog {
+    Text "Inside the secondary meta story"
+  }
+}

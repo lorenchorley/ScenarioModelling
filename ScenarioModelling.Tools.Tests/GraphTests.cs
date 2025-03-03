@@ -69,11 +69,12 @@ public partial class GraphTests
 
         IEnumerable<Node> GenerateSequence()
         {
-            Node? node = graph.PrimarySubGraph.GetNextInSequenceOrNull();
+            var subgraphScope = graph.PrimarySubGraph.GenerateScope(null);
+            Node? node = subgraphScope.MoveToNextInSequence();
             while (node != null)
             {
                 yield return node;
-                node = graph.PrimarySubGraph.GetNextInSequenceOrNull();
+                node = subgraphScope.MoveToNextInSequence();
             }
         }
 
@@ -101,8 +102,9 @@ public partial class GraphTests
 
         IEnumerable<Node> GenerateSequence()
         {
-            SemiLinearSubGraph<Node> subgraph = graph.PrimarySubGraph;
-            Node? node = subgraph.GetNextInSequenceOrNull();
+            SemiLinearSubGraphScope<Node> subgraph = graph.PrimarySubGraph.GenerateScope(null);
+            Node? node = subgraph.MoveToNextInSequence();
+
             while (node != null)
             {
                 yield return node;
@@ -114,19 +116,19 @@ public partial class GraphTests
                     //subgraph.SetExplicitNextNode(node);
 
                     // Enter the subgraph
-                    newSubgraphNode.Subgraph.ParentSubgraph = subgraph;
-                    subgraph = newSubgraphNode.Subgraph;
+                    //newSubgraphNode.Subgraph.ParentSubgraph = subgraph;
+                    subgraph = newSubgraphNode.Subgraph.GenerateScope(subgraph);
                 }
 
                 // Get the next node in the current subgraph
-                node = subgraph.GetNextInSequenceOrNull();
+                node = subgraph.MoveToNextInSequence();
 
                 // If we have reached the end of the subgraph, we must return to the parent subgraph
                 // unless there is none, in which case the traversal is finished
-                if (node == null && subgraph.ParentSubgraph != null)
+                if (node == null && subgraph.ParentScope != null)
                 {
-                    subgraph = subgraph.ParentSubgraph;
-                    node = subgraph.GetNextInSequenceOrNull();
+                    subgraph = subgraph.ParentScope;
+                    node = subgraph.MoveToNextInSequence();
                 }
             }
         }

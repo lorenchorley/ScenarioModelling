@@ -20,7 +20,7 @@ public abstract class MetaStoryHookOrchestrator
     protected readonly ProgressiveHookBasedContextBuilder _contextBuilder;
     protected readonly Queue<INodeHookDefinition> _newlyCreatedHooks = new();
     protected readonly Instanciator _instanciator;
-    private readonly MetaStoryStack _metaStoryStack;
+    private readonly MetaStoryDefinitionStack _metaStoryStack;
     protected readonly IServiceProvider _serviceProvider;
 
     protected MetaStateHookDefinition? _metaStateHookDefinition;
@@ -30,7 +30,7 @@ public abstract class MetaStoryHookOrchestrator
 
     protected SubgraphScopedHookSynchroniser CurrentScope => _scopeStack.Peek();
 
-    protected MetaStoryHookOrchestrator(Context context, Instanciator instanciator, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider)
+    protected MetaStoryHookOrchestrator(Context context, Instanciator instanciator, MetaStoryDefinitionStack metaStoryStack, IServiceProvider serviceProvider)
     {
         Context = context;
         _instanciator = instanciator;

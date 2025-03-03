@@ -11,13 +11,13 @@ public class DialogExecutor : IExecutor
 
     protected MetaStory? _metaStory;
     protected Story? _story;
-    private readonly MetaStoryStack _metaStoryStack;
+    //private readonly MetaStoryStack _metaStoryStack;
     private readonly IServiceProvider _serviceProvider;
 
-    public DialogExecutor(Context context, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider)
+    public DialogExecutor(Context context/*, MetaStoryStack metaStoryStack*/, IServiceProvider serviceProvider)
     {
         Context = context;
-        _metaStoryStack = metaStoryStack;
+        //_metaStoryStack = metaStoryStack;
         _serviceProvider = serviceProvider;
     }
 
@@ -64,7 +64,8 @@ public class DialogExecutor : IExecutor
 
         var story = _story;
 
-        if (_metaStoryStack.Count == 0)
+        //if (_metaStoryStack.Count == 0)
+        if (story.GraphScopeStack.Count == 0)
         {
             _story = null;
             _metaStory = null;

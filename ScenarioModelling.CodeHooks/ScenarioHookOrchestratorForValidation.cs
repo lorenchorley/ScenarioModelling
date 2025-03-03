@@ -5,7 +5,7 @@ using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks;
 
-public class MetaStoryHookOrchestratorForValidation(Context context, Instanciator instanciator, MetaStoryStack metaStoryStack, IServiceProvider serviceProvider) : MetaStoryHookOrchestrator(context, instanciator, metaStoryStack, serviceProvider)
+public class MetaStoryHookOrchestratorForValidation(Context context, Instanciator instanciator, MetaStoryDefinitionStack metaStoryStack, IServiceProvider serviceProvider) : MetaStoryHookOrchestrator(context, instanciator, metaStoryStack, serviceProvider)
 {
     public override MetaStoryHookDefinition? StartMetaStory(string name)
     {

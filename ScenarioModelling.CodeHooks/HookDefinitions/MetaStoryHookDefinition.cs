@@ -9,9 +9,9 @@ public class MetaStoryHookDefinition
     public Context Context { get; }
 
     private MetaStory _associatedMetaStory;
-    private readonly MetaStoryStack _metaStoryStack;
+    private readonly MetaStoryDefinitionStack _metaStoryStack;
 
-    public MetaStoryHookDefinition(string name, Context context, MetaStoryStack metaStoryStack)
+    public MetaStoryHookDefinition(string name, Context context, MetaStoryDefinitionStack metaStoryStack)
     {
         Name = name;
         Context = context;

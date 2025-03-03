@@ -79,28 +79,56 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
         }
     }
 
-    /// <summary>
-    /// Reinitialise all subgraphs
-    /// </summary>
-    public void Reinitalise()
-    {
-        HashSet<SemiLinearSubGraph<T>> visited = new();
-        RecursivelyReinitialise(PrimarySubGraph, visited);
-    }
+    ///// <summary>
+    ///// Reinitialise all subgraphs
+    ///// </summary>
+    //public void Reinitalise()
+    //{
+    //    HashSet<SemiLinearSubGraph<T>> visited = new();
+    //    RecursivelyReinitialise(PrimarySubGraph, visited);
+    //}
 
-    private void RecursivelyReinitialise(SemiLinearSubGraph<T> subgraph, HashSet<SemiLinearSubGraph<T>> visited)
-    {
-        subgraph.Reinitalise();
-        visited.Add(subgraph);
+    //private void RecursivelyReinitialise(SemiLinearSubGraph<T> subgraph, HashSet<SemiLinearSubGraph<T>> visited)
+    //{
+    //    subgraph.Reinitalise();
+    //    visited.Add(subgraph);
 
-        foreach (var subsubgraph in subgraph.NodeSequence.SelectMany(node => node.TargetSubgraphs()))
-        {
-            if (visited.Contains(subsubgraph))
-            {
-                continue;
-            }
+    //    foreach (var subsubgraph in subgraph.NodeSequence.SelectMany(node => node.TargetSubgraphs()))
+    //    {
+    //        if (visited.Contains(subsubgraph))
+    //        {
+    //            continue;
+    //        }
 
-            RecursivelyReinitialise(subsubgraph, visited);
-        }
-    }
+    //        RecursivelyReinitialise(subsubgraph, visited);
+    //    }
+    //}
+
+    //public DirectedGraph<T> CopyGraph()
+    //{
+    //    var newGraph = new DirectedGraph<T>();
+
+    //    newGraph.PrimarySubGraph = RecursivelyCopy(PrimarySubGraph);
+
+    //    return newGraph;
+    //}
+
+    //private SemiLinearSubGraph<T> RecursivelyCopy(SemiLinearSubGraph<T> subgraph)
+    //{
+    //    SemiLinearSubGraph<T> copy = new();
+
+    //    foreach (T node in subgraph.NodeSequence)
+    //    {
+    //        copy.NodeSequence.Add(node);
+
+    //        var targetSubgraphs = node.TargetSubgraphs();
+
+    //        RecursivelyCopy(subsubgraph);
+    //    }
+
+    //    foreach (var subsubgraph in )
+    //    {
+            
+    //    }
+    //}
 }

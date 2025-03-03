@@ -24,14 +24,14 @@ public class CustomSerialiserSerialisationTests
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("CustomSerialiser")]
     [ProgressiveCodeHookTestDataProvider]
-    public void CustomSerialiser_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
+    public void CustomSerialiser_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool testDefinedFirstMetaStory)
     {
         using ScenarioModellingContainer container = new();
         using var scope = container.StartScope();
 
         var context =
             scope.Context
-                 .UseSerialiser<CustomSerialiser.Reserialisation.CustomContextSerialiser>()
+                 .UseSerialiser<CustomContextSerialiser>()
                  .Initialise();
 
         MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
@@ -43,9 +43,14 @@ public class CustomSerialiserSerialisationTests
         orchestrator.DefineMetaState(systemHooksMethod);
 
         // Build MetaStory
-        orchestrator.StartMetaStory(MetaStoryName);
+        if (!testDefinedFirstMetaStory)
+            orchestrator.StartMetaStory(MetaStoryName);
+
         metaStoryHooksMethod(orchestrator);
-        orchestrator.EndMetaStory();
+
+        if (!testDefinedFirstMetaStory)
+            orchestrator.EndMetaStory();
+
 
         var serialisedContext =
             context.ResetToInitialState()
@@ -55,7 +60,7 @@ public class CustomSerialiserSerialisationTests
 
         var expectedSystemText = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedText(systemMethodName);
         var expectedMetaStoryText = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedText(metaStoryMethodName);
-        string expectedText = BuildExpectedText(expectedSystemText, expectedMetaStoryText, autoDefineMetaStory);
+        string expectedText = BuildExpectedText(expectedSystemText, expectedMetaStoryText, testDefinedFirstMetaStory);
 
         CustomSerialiser_Context_DeserialiseReserialise_Common(metaStoryMethodName, serialisedContext, expectedText);
     }
@@ -126,16 +131,14 @@ public class CustomSerialiserSerialisationTests
         );
     }
 
-    private static string BuildExpectedText(string expectedSystemText, string expectedMetaStoryText, bool autoDefineMetaStory)
+    private static string BuildExpectedText(string expectedSystemText, string expectedMetaStoryText, bool testDefinedFirstMetaStory)
     {
-        if (autoDefineMetaStory)
+        if (testDefinedFirstMetaStory)
         {
             return $$"""
                 {{expectedSystemText.Trim()}}
 
-                MetaStory "{{MetaStoryName}}" {
-                {{expectedMetaStoryText.Trim().AddIndent("  ")}}
-                }
+                {{expectedMetaStoryText.Trim()}}
                 """;
         }
         else
@@ -143,7 +146,9 @@ public class CustomSerialiserSerialisationTests
             return $$"""
                 {{expectedSystemText.Trim()}}
 
-                {{expectedMetaStoryText.Trim()}}
+                MetaStory "{{MetaStoryName}}" {
+                {{expectedMetaStoryText.Trim().AddIndent("  ")}}
+                }
                 """;
         }
     }

@@ -48,7 +48,7 @@ public class IfNodeDeserialiser : IDefinitionToNodeDeserialiser
         node.Condition = result.ParsedObject;
         ConditionsToInitialise.Add(node);
 
-        node.SubGraph.ParentSubgraph = currentSubgraph;
+        //node.SubGraph.ParentSubgraph = currentSubgraph;
         node.SubGraph.NodeSequence.AddRange(expDef.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, node.SubGraph), "Unknown node types not taken into account : {0}").ToList());
 
         return node;

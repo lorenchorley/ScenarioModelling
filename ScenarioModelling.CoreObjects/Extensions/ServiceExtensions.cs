@@ -17,7 +17,7 @@ public static class ServiceExtensions
         //  Perhaps a metastory stack. The complete list can be accessed via the context, but the current one is the top of the stack and the sub stories are pushed under it
         services.AddScoped<Context>();
         services.AddScoped<MetaState>();
-        services.AddScoped<MetaStoryStack>(); // Singleton so that the flow of execution through several meta stories can be shared, but also implies that a single container can only run one story at a time !
+        services.AddScoped<MetaStoryDefinitionStack>(); // Singleton so that the flow of execution through several meta stories can be shared, but also implies that a single container can only run one story at a time !
 
         services.TryAddScoped<AspectValidator>();
         services.TryAddScoped<ConstraintValidator>();

@@ -27,7 +27,7 @@ public class ProtoBufSerialisationTests
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("ProtoBuf")]
     [ProgressiveCodeHookTestDataProvider]
-    public void ProtoBuf_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
+    public void ProtoBuf_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool testDefinedFirstMetaStory)
     {
         using ScenarioModellingContainer container = new();
         using var scope = container.StartScope();

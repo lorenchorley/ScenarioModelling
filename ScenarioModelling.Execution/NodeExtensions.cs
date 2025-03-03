@@ -25,7 +25,10 @@ public static class NodeExtensions
 
     public static MetaStoryCalledEvent GenerateEvent(this CallMetaStoryNode node, EventGenerationDependencies dependencies)
     {
-        return new MetaStoryCalledEvent() { ProducerNode = node };
+        return new MetaStoryCalledEvent() { 
+            Name = node.MetaStoryName,
+            ProducerNode = node 
+        };
     }
 
     public static ChoiceSelectedEvent GenerateEvent(this ChooseNode node, EventGenerationDependencies dependencies)

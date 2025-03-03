@@ -27,7 +27,7 @@ public class YamlSerialisationTests
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("Yaml")]
     [ProgressiveCodeHookTestDataProvider]
-    public void Yaml_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool autoDefineMetaStory)
+    public void Yaml_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool testDefinedFirstMetaStory)
     {
         using ScenarioModellingContainer container = new();
         using var scope = container.StartScope();

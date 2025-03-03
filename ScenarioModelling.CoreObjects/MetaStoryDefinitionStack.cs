@@ -1,6 +1,6 @@
 ﻿namespace ScenarioModelling.CoreObjects;
 
-public class MetaStoryStack
+public class MetaStoryDefinitionStack
 {
     public int Count => _stack.Count;
 

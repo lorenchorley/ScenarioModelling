@@ -1,0 +1,9 @@
+﻿* DialogEvent {"Text":"Before call","Character":null}
+* IfConditionCheckEvent {"Expression":"Actor.State == S1","IfBlockRun":true}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"S1","TypeName":"State"},"FinalState":{"Name":"S2","TypeName":"State"},"TransitionName":"T1"}
+* MetaStoryCalledEvent {"Name":"MetaStory recorded by hooks"}
+* DialogEvent {"Text":"Before call","Character":null}
+* IfConditionCheckEvent {"Expression":"Actor.State == S1","IfBlockRun":false}
+* DialogEvent {"Text":"After call","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"After call","Character":null}

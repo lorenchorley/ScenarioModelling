@@ -1,0 +1,10 @@
+﻿* DialogEvent {"Text":"Before call","Character":null}
+* MetaStoryCalledEvent {"Name":"Secondary MetaStory"}
+* DialogEvent {"Text":"Before call inside the second meta story","Character":null}
+* MetaStoryCalledEvent {"Name":"Tertiary MetaStory"}
+* StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"S1","TypeName":"State"},"FinalState":{"Name":"S2","TypeName":"State"},"TransitionName":"T1"}
+* DialogEvent {"Text":"Inside the third meta story","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"After call inside the second meta story","Character":null}
+* MetaStoryReturnedEvent {}
+* DialogEvent {"Text":"After call","Character":null}
