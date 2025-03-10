@@ -5,24 +5,26 @@
 StateMachine SM1 {
   State S1
   State S2
+  State S3
   S1 -> S2 : T1
+  S2 -> S3 : T1
 }
 
 MetaStory "MetaStory recorded by hooks" {
   Dialog {
-    Text "Before call"
+    Text "Before call : {Actor.State}"
   }
   CallMetaStory {
     MetaStoryName "First Secondary MetaStory"
   }
   Dialog {
-    Text "Between calls"
+    Text "Between calls : {Actor.State}"
   }
   CallMetaStory {
     MetaStoryName "Second Secondary MetaStory"
   }
   Dialog {
-    Text "After call"
+    Text "After call : {Actor.State}"
   }
 }
 
@@ -41,6 +43,9 @@ MetaStory "First Secondary MetaStory" {
 MetaStory "Tertiary MetaStory" {
   Dialog {
     Text "Inside the tertiary meta story"
+  }
+  Transition {
+    Actor : T1
   }
 }
 

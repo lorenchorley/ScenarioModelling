@@ -1,13 +1,13 @@
 ﻿namespace ScenarioModelling.Tools.Collections.Graph;
 
-public class SemiLinearSubGraphScope<T> where T : IDirectedGraphNode<T>
+public class SemiLinearSubGraphScope<T> : ISubGraphScope<T> where T : IDirectedGraphNode<T>
 {
     public SemiLinearSubGraph<T> Subgraph { get; private set; }
-    public SemiLinearSubGraphScope<T>? ParentScope { get; private set; } // Null signifies the highest level
+    public ISubGraphScope<T>? ParentScope { get; private set; } // Null signifies the highest level
     public int LastReturnedIndex { get; set; } = -1;
     public T? ExplicitNextNode { get; set; } = default;
 
-    public SemiLinearSubGraphScope(SemiLinearSubGraph<T> subgraph, SemiLinearSubGraphScope<T>? parentScope)
+    public SemiLinearSubGraphScope(SemiLinearSubGraph<T> subgraph, ISubGraphScope<T>? parentScope)
     {
         Subgraph = subgraph;
         ParentScope = parentScope;

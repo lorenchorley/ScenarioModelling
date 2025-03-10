@@ -1,10 +1,12 @@
-﻿using FluentAssertions.Common;
+﻿using FluentAssertions;
+using FluentAssertions.Common;
 using LanguageExt;
 using Microsoft.Extensions.DependencyInjection;
 using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Execution;
+using ScenarioModelling.Execution.Events;
 using ScenarioModelling.Exhaustiveness.Common;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
@@ -113,10 +115,16 @@ public partial class ProgressiveCodeHookTests
 
         // Assert
         // ======
-        string serialisedStory = story.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        
+        string serialisedStory = story.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         await Verify(serialisedStory)
             .UseParameters(metaStoryMethodName);
+        
+        int metaStoryCallCount = story.EventSourceLog.GetEnumerable().Count(e => e is MetaStoryCalledEvent);
+        int metaStoryReturnedCount = story.EventSourceLog.GetEnumerable().Count(e => e is MetaStoryReturnedEvent);
+
+        metaStoryCallCount.Should().Be(metaStoryReturnedCount, "MetaStoryCalledEvent and MetaStoryReturnedEvent should be of equal quantity in the event log");
 
     }
 

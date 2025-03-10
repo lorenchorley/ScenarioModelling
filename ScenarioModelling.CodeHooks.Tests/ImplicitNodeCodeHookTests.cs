@@ -113,8 +113,8 @@ public partial class ImplicitNodeCodeHookTests
 
         // Assert
         // ======
-        string firstSerialisedEvents = firstRun.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        string secondSerialisedEvents = secondRun.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string firstSerialisedEvents = firstRun.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string secondSerialisedEvents = secondRun.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         DiffAssert.DiffIfNotEqual(firstSerialisedEvents, secondSerialisedEvents);
     }

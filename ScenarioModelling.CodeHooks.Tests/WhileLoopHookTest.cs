@@ -275,8 +275,8 @@ public partial class WhileLoopHookTest
 
         // Assert
         // ======
-        string hookGeneratedEvents = hookGeneratedStory.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
-        string rerunEvents = rerunStory.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string hookGeneratedEvents = hookGeneratedStory.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string rerunEvents = rerunStory.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         DiffAssert.DiffIfNotEqual(hookGeneratedEvents, rerunEvents);
 

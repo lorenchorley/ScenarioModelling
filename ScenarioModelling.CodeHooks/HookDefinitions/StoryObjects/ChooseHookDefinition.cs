@@ -19,7 +19,7 @@ public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<Cho
     public bool Validated { get; private set; } = false;
     public ChooseNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
-    public DefinitionScopeSnapshot ScopeSnapshot { get; }
+    public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
     public ChooseHookDefinition(SubgraphScopedHookSynchroniser scope, IHookFunctions hookFunctions)
     {

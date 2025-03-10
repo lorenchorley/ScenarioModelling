@@ -7,16 +7,11 @@ namespace ScenarioModelling.Tools.Collections.Graph;
 public class DirectedGraph<T> where T : IDirectedGraphNode<T>
 {
     [ProtoMember(1)]
-    public SemiLinearSubGraph<T> PrimarySubGraph { get; private set; } = new();
+    public ISubGraph<T> PrimarySubGraph { get; private set; }
 
-    public void Add(T node)
+    public DirectedGraph(ISubGraph<T> primarySubGraph)
     {
-        PrimarySubGraph.NodeSequence.Add(node);
-    }
-
-    public void AddRange(IEnumerable<T> nodes)
-    {
-        PrimarySubGraph.NodeSequence.AddRange(nodes);
+        PrimarySubGraph = primarySubGraph;
     }
 
     public T? Find(Func<T, bool> predicate)
@@ -24,16 +19,16 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
         return FindOnSubgraph(PrimarySubGraph, predicate);
     }
 
-    private T? FindOnSubgraph(SemiLinearSubGraph<T> subgraph, Func<T, bool> predicate)
+    private T? FindOnSubgraph(ISubGraph<T> subgraph, Func<T, bool> predicate)
     {
-        T? result = subgraph.NodeSequence.FirstOrDefault(predicate);
+        T? result = subgraph.UnorderedEnumerable.FirstOrDefault(predicate);
 
         if (result != null)
         {
             return result;
         }
 
-        foreach (var node in subgraph.NodeSequence)
+        foreach (var node in subgraph.UnorderedEnumerable)
         {
             foreach (var targetSubgraph in node.TargetSubgraphs())
             {
@@ -53,7 +48,7 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
     {
         var brokenLinks = new List<(IDirectedGraphNode<T> node, string intended)>();
 
-        foreach (var node in PrimarySubGraph.NodeSequence)
+        foreach (var node in PrimarySubGraph.UnorderedEnumerable)
         {
             if (node is not ITransitionNode transitionNode)
             {
@@ -62,7 +57,7 @@ public class DirectedGraph<T> where T : IDirectedGraphNode<T>
 
             foreach (var targetNode in transitionNode.TargetNodeNames)
             {
-                if (!PrimarySubGraph.NodeSequence.Any(n => n.Name.IsEqv(targetNode)))
+                if (!PrimarySubGraph.UnorderedEnumerable.Any(n => n.Name.IsEqv(targetNode)))
                 {
                     brokenLinks.Add((node, targetNode));
                 }

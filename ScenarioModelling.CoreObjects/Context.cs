@@ -7,6 +7,8 @@ using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects;
 using YamlDotNet.Serialization;
 using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects;
 
@@ -194,9 +196,9 @@ public class Context
         return this;
     }
 
-    internal MetaStory NewMetaStory(string name)
+    internal MetaStory NewMetaStory(string name, ISubGraph<IStoryNode> primarySubGraph)
     {
-        MetaStory metaStory = new(MetaState) { Name = name };
+        MetaStory metaStory = new(MetaState, new(primarySubGraph)) { Name = name };
         MetaStories.Add(metaStory);
         return metaStory;
     }

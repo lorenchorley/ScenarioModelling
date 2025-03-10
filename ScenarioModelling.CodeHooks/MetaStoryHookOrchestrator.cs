@@ -3,10 +3,12 @@ using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.CoreObjects;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.DataClasses;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
 using ScenarioModelling.Serialisation.ContextConstruction;
+using ScenarioModelling.Tools.Collections.Graph;
 using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks;
@@ -67,7 +69,7 @@ public abstract class MetaStoryHookOrchestrator
             _hookFunctions = new ActiveHookFunctions(_scopeStack, _newlyCreatedHooks, _contextBuilderInputs, _contextBuilder, _parallelConstructionExecutor);
 
             _parallelConstructionExecutor.StartMetaStory(name);
-            _scopeStack.Push(new SubgraphScopedHookSynchroniser(currentMetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
+            _scopeStack.Push(new SubgraphScopedHookSynchroniser((SemiLinearSubGraph<IStoryNode>)currentMetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
             _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs); // TODO Needed ?
 
             return metaStoryDefintion;
@@ -89,15 +91,13 @@ public abstract class MetaStoryHookOrchestrator
             MetaStory currentMetaStory = _metaStoryStack.Peek(); // Must be after the creation of MetaStoryHookDefinition because it's that class that pushes the new meta story onto the stack
 
             if (_metaStoryStack.Count < 2)
-            {
                 throw new InternalLogicException("MetaStoryHookDefinition did not push a meta story onto the stack.");
-            }
 
             if (_parallelConstructionExecutor == null)
                 throw new InternalLogicException("ParallelConstructionExecutor was not instancied before starting a new meta story with existing meta stories on the stack");
 
             _parallelConstructionExecutor.StartMetaStory(name);
-            _scopeStack.Push(new SubgraphScopedHookSynchroniser(currentMetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
+            _scopeStack.Push(new SubgraphScopedHookSynchroniser((SemiLinearSubGraph<IStoryNode>)currentMetaStory.Graph.PrimarySubGraph, _hookFunctions.VerifyPreviousDefinition));
             _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs); // TODO Needed ?
 
             return metaStoryDefintion;

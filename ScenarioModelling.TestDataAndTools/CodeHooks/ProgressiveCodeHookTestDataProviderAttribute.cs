@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.FileProviders.Physical;
-using ScenarioModelling.CodeHooks;
+﻿using ScenarioModelling.CodeHooks;
 using ScenarioModelling.CodeHooks.HookDefinitions;
 using ScenarioModelling.CodeHooks.Utils;
-using ScenarioModelling.CoreObjects.MetaStateObjects;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -136,7 +134,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                .WithState("S2")
                .WithTransition("S1", "S2", "T1");
     }
-    
+
     [ExpectedResult(
     """
     Entity Actor {
@@ -163,7 +161,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                .WithTransition("S1", "S2", "T1")
                .WithTransition("S2", "S3", "T1");
     }
-    
+
     [ExpectedResult(
     """
     Entity Actor {
@@ -189,7 +187,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     {
         config.Entity("Actor")
               .SetState("S1")
-              .WithAspect("Name", aspect => 
+              .WithAspect("Name", aspect =>
                   aspect.SetState("A1")
               );
 
@@ -865,7 +863,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         hooks.Dialog("After if block")
              .BuildAndRegister();
     }
-    
+
     [ExpectedResult(
     """
     If <Actor.Name.State == A1> {
@@ -928,7 +926,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                      .BuildAndRegister();
             }
         }
-        
+
         hooks.Dialog("Between if blocks 2")
              .BuildAndRegister();
 
@@ -1296,24 +1294,24 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
     #region CallMetaStory
 
-    
+
     [ExpectedResult(
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "First MetaStory"
       }
       Dialog {
-        Text "Between calls"
+        Text "Between calls : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Second MetaStory"
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
 
@@ -1348,7 +1346,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
             hooks.EndMetaStory();
         }
-        
+
         void SecondMetaStory(MetaStoryHookOrchestrator hooks)
         {
             hooks.StartMetaStory("Second MetaStory");
@@ -1362,44 +1360,47 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        hooks.Dialog("Before call").BuildAndRegister();
+        hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("First MetaStory").BuildAndRegister();
         FirstMetaStory(hooks);
 
-        hooks.Dialog("Between calls").BuildAndRegister();
+        hooks.Dialog("Between calls : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("Second MetaStory").BuildAndRegister();
         SecondMetaStory(hooks);
 
-        hooks.Dialog("After call").BuildAndRegister();
+        hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
         hooks.EndMetaStory();
     }
-    
+
     [ExpectedResult(
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Secondary MetaStory"
       }
       Dialog {
-        Text "Between calls"
+        Text "Between calls : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Secondary MetaStory"
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
 
     MetaStory "Secondary MetaStory" {
       Dialog {
         Text "Inside the secondary meta story"
+      }
+      Transition {
+        Actor : T1
       }
     }
 
@@ -1414,24 +1415,24 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             hooks.Dialog("Inside the secondary meta story").BuildAndRegister();
 
             // TODO Change state
-            hooks.Transition("Actor", "T1");
+            hooks.Transition("Actor", "T1").BuildAndRegister();
 
             hooks.EndMetaStory();
         }
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        hooks.Dialog("Before call").BuildAndRegister();
+        hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
         SecondaryMetaStory(hooks);
 
-        hooks.Dialog("Between calls").BuildAndRegister();
+        hooks.Dialog("Between calls : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
         SecondaryMetaStory(hooks);
 
-        hooks.Dialog("After call").BuildAndRegister();
+        hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
         hooks.EndMetaStory();
     }
@@ -1440,13 +1441,13 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Secondary MetaStory"
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
     
@@ -1501,33 +1502,33 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        hooks.Dialog("Before call").BuildAndRegister();
+        hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
         SecondaryMetaStory(hooks);
 
-        hooks.Dialog("After call").BuildAndRegister();
+        hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
         hooks.EndMetaStory();
     }
-    
+
     [ExpectedResult(
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "First Secondary MetaStory"
       }
       Dialog {
-        Text "Between calls"
+        Text "Between calls : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Second Secondary MetaStory"
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
     
@@ -1547,6 +1548,9 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       Dialog {
         Text "Inside the tertiary meta story"
       }
+      Transition {
+        Actor : T1
+      }
     }
     
     MetaStory "Second Secondary MetaStory" {
@@ -1561,7 +1565,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
       }
     }
     """)]
-    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
     private static void CallMetaStory_TwoLevelsCallSameTertiaryStory(MetaStoryHookOrchestrator hooks)
     {
         void FirstSecondaryMetaStory(MetaStoryHookOrchestrator hooks)
@@ -1599,24 +1603,24 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             hooks.Dialog("Inside the tertiary meta story").BuildAndRegister();
 
             // TODO Change state
-            hooks.Transition("Actor", "T1");
+            hooks.Transition("Actor", "T1").BuildAndRegister();
 
             hooks.EndMetaStory();
         }
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        hooks.Dialog("Before call").BuildAndRegister();
+        hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("First Secondary MetaStory").BuildAndRegister();
         FirstSecondaryMetaStory(hooks);
 
-        hooks.Dialog("Between calls").BuildAndRegister();
+        hooks.Dialog("Between calls : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("Second Secondary MetaStory").BuildAndRegister();
         SecondSecondaryMetaStory(hooks);
 
-        hooks.Dialog("After call").BuildAndRegister();
+        hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
         hooks.EndMetaStory();
     }
@@ -1625,19 +1629,22 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Secondary MetaStory"
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
 
     MetaStory "Secondary MetaStory" {
       Dialog {
         Text "Inside the inner meta story"
+      }
+      Transition {
+        Actor : T1
       }
     }
     """)]
@@ -1651,19 +1658,19 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
             hooks.Dialog("Inside the inner meta story").BuildAndRegister();
 
             // TODO Change state
-            hooks.Transition("Actor", "T1");
+            hooks.Transition("Actor", "T1").BuildAndRegister();
 
             hooks.EndMetaStory();
         }
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
-        hooks.Dialog("Before call").BuildAndRegister();
+        hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
         hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
         SecondaryMetaStory(hooks);
 
-        hooks.Dialog("After call").BuildAndRegister();
+        hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
         hooks.EndMetaStory();
     }
@@ -1672,7 +1679,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       If <Actor.State == S1> {
         Transition {
@@ -1683,7 +1690,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         }
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
     """)]
@@ -1694,7 +1701,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         {
             hooks.StartMetaStory("MetaStory recorded by hooks");
 
-            hooks.Dialog("Before call").BuildAndRegister();
+            hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
             hooks.If("Actor.State == S1")
                  .GetConditionHook(out BifurcatingHook φ)
@@ -1713,7 +1720,7 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                 }
             }
 
-            hooks.Dialog("After call").BuildAndRegister();
+            hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
             hooks.EndMetaStory();
         }
@@ -1725,13 +1732,13 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
     """
     MetaStory "MetaStory recorded by hooks" {
       Dialog {
-        Text "Before call"
+        Text "Before call : {Actor.State}"
       }
       CallMetaStory {
         MetaStoryName "Secondary MetaStory"
       }
       Dialog {
-        Text "After call"
+        Text "After call : {Actor.State}"
       }
     }
 
@@ -1756,12 +1763,12 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
         {
             hooks.StartMetaStory("MetaStory recorded by hooks");
 
-            hooks.Dialog("Before call").BuildAndRegister();
+            hooks.Dialog("Before call : {Actor.State}").BuildAndRegister();
 
             hooks.CallMetaStory("Secondary MetaStory").BuildAndRegister();
             SecondaryMetaStory(state);
 
-            hooks.Dialog("After call").BuildAndRegister();
+            hooks.Dialog("After call : {Actor.State}").BuildAndRegister();
 
             hooks.EndMetaStory();
         }
@@ -1788,6 +1795,8 @@ public partial class ProgressiveCodeHookTestDataProviderAttribute : Attribute, I
                     MainMetaStory(state);
                 }
             }
+
+            // There's no dialog at the end on purpose, so that there is a jump of two up the graph stack which requires a loop in the method NextNode
 
             hooks.EndMetaStory();
         }

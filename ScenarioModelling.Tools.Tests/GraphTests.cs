@@ -1,3 +1,4 @@
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Tools.Collections.Graph;
 using System.Diagnostics;
 
@@ -37,24 +38,25 @@ public partial class GraphTests
 
     private static DirectedGraph<Node> SetupGraph()
     {
-        DirectedGraph<Node> graph = new();
-        graph.Add(new("1"));
-        graph.Add(new("2"));
-        graph.Add(new("3"));
+        var primarySubGraph = new SemiLinearSubGraph<Node>();
+        DirectedGraph<Node> graph = new(primarySubGraph);
+        primarySubGraph.AddToSequence(new("1"));
+        primarySubGraph.AddToSequence(new("2"));
+        primarySubGraph.AddToSequence(new("3"));
 
         SemiLinearSubGraph<Node> subgraph = new SemiLinearSubGraph<Node>();
-        subgraph.NodeSequence.Add(new("4.1"));
+        subgraph.AddToSequence(new("4.1"));
 
         SemiLinearSubGraph<Node> subsubgraph = new SemiLinearSubGraph<Node>();
-        subsubgraph.NodeSequence.Add(new("4.2.1"));
-        subsubgraph.NodeSequence.Add(new("4.2.2"));
-        subgraph.NodeSequence.Add(new NodeWithSubgraph("4.2", subsubgraph));
+        subsubgraph.AddToSequence(new("4.2.1"));
+        subsubgraph.AddToSequence(new("4.2.2"));
+        subgraph.AddToSequence(new NodeWithSubgraph("4.2", subsubgraph));
 
-        subgraph.NodeSequence.Add(new("4.3"));
-        graph.Add(new NodeWithSubgraph("4", subgraph));
+        subgraph.AddToSequence(new("4.3"));
+        primarySubGraph.AddToSequence(new NodeWithSubgraph("4", subgraph));
 
-        graph.Add(new("5"));
-        graph.Add(new("6"));
+        primarySubGraph.AddToSequence(new("5"));
+        primarySubGraph.AddToSequence(new("6"));
 
         return graph;
     }
@@ -69,7 +71,7 @@ public partial class GraphTests
 
         IEnumerable<Node> GenerateSequence()
         {
-            var subgraphScope = graph.PrimarySubGraph.GenerateScope(null);
+            var subgraphScope = (SemiLinearSubGraphScope<Node>)graph.PrimarySubGraph.GenerateScope(null);
             Node? node = subgraphScope.MoveToNextInSequence();
             while (node != null)
             {
@@ -102,7 +104,7 @@ public partial class GraphTests
 
         IEnumerable<Node> GenerateSequence()
         {
-            SemiLinearSubGraphScope<Node> subgraph = graph.PrimarySubGraph.GenerateScope(null);
+            var subgraph = (SemiLinearSubGraphScope<Node>)graph.PrimarySubGraph.GenerateScope(null);
             Node? node = subgraph.MoveToNextInSequence();
 
             while (node != null)
@@ -117,7 +119,7 @@ public partial class GraphTests
 
                     // Enter the subgraph
                     //newSubgraphNode.Subgraph.ParentSubgraph = subgraph;
-                    subgraph = newSubgraphNode.Subgraph.GenerateScope(subgraph);
+                    subgraph = (SemiLinearSubGraphScope<Node>)newSubgraphNode.Subgraph.GenerateScope(subgraph);
                 }
 
                 // Get the next node in the current subgraph
@@ -127,7 +129,7 @@ public partial class GraphTests
                 // unless there is none, in which case the traversal is finished
                 if (node == null && subgraph.ParentScope != null)
                 {
-                    subgraph = subgraph.ParentScope;
+                    subgraph = (SemiLinearSubGraphScope<Node>)subgraph.ParentScope;
                     node = subgraph.MoveToNextInSequence();
                 }
             }

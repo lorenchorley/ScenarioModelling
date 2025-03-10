@@ -13,8 +13,9 @@
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Product>Scenario Modelling</Product>
-		<Version>0.1.1-alpha</Version>
+		<Version>0.1.2-alpha</Version>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -37,10 +38,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\ScenarioModelling.Annotations\ScenarioModelling.Annotations.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.CodeHooks\ScenarioModelling.CodeHooks.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.CoreObjects\ScenarioModelling.CoreObjects.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.Execution\ScenarioModelling.Execution.csproj" />
+	  <ProjectReference Include="..\ScenarioModelling.Exhaustiveness\ScenarioModelling.Exhaustiveness.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.Mocks\ScenarioModelling.Mocks.csproj" />
+	  <ProjectReference Include="..\ScenarioModelling.Serialisation\ScenarioModelling.Serialisation.csproj" />
 	  <ProjectReference Include="..\ScenarioModelling.Tools\ScenarioModelling.Tools.csproj" />
 	</ItemGroup>
 

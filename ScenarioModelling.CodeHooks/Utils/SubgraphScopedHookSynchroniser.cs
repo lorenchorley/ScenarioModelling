@@ -13,21 +13,25 @@ public class SubgraphScopedHookSynchroniser
     private readonly Action _verifyPreviousDefinition;
 
     public List<INodeHookDefinition> NodeHookDefinitions { get; set; } = new();
-    public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = null!;
-    public int CurrentIndex { get; set; } = 0;
+    public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = null!; // This class is designed for semi linear subgraphs
+    //public int CurrentIndex { get; set; } = 0;
+    public SubGraphScopeSnapshot SubGraphTracker { get; set; } = new();
 
     public SubgraphScopedHookSynchroniser(SemiLinearSubGraph<IStoryNode> subGraph, Action verifyPreviousDefinition)
     {
         SubGraph = subGraph;
         _verifyPreviousDefinition = verifyPreviousDefinition;
+
+        SubGraphTracker.Index = 0;
+        SubGraphTracker.SubGraph = subGraph;
     }
 
-    internal DefinitionScopeSnapshot TakeSnapshot()
+    internal SubGraphScopeSnapshot TakeSnapshot()
     {
-        return new DefinitionScopeSnapshot()
+        return new SubGraphScopeSnapshot() // TODO Make this a function of the subgraph scope
         {
-            Scope = this,
-            Index = CurrentIndex
+            SubGraph = SubGraph,
+            Index = SubGraphTracker.Index
         };
     }
 
@@ -35,31 +39,34 @@ public class SubgraphScopedHookSynchroniser
     {
         IStoryNode newNode = newNodeDefinition.GetNode();
 
-        bool atEndOfSubgraph = SubGraph.NodeSequence.Count == newNodeDefinition.ScopeSnapshot.Index;
+        //bool atEndOfSubgraph = SubGraph.NodeSequence.Count == newNodeDefinition.ScopeSnapshot.Index;
+        bool atEndOfSubgraph = newNodeDefinition.ScopeSnapshot.IsAtEndOfSubGraph;
 
         // If the index points to just after the last position, then we must be missing the next mode. We add it
         if (atEndOfSubgraph)
         {
             NodeHookDefinitions.Add(newNodeDefinition);
-            SubGraph.NodeSequence.Add(newNode);
+            SubGraph.AddToSequence(newNode);
 
             add();
-            CurrentIndex++;
+            SubGraphTracker.Index++;
         }
         else // Otherwise we check that the current node corresponds to the new definition
         {
-            if (newNodeDefinition.ScopeSnapshot.Scope != this)
+            if (newNodeDefinition.ScopeSnapshot.SubGraph != SubGraph)
                 throw new InternalLogicException("Scope snapshot does not correspond to this scope, this indicates something wrong with the graph flow algorithm");
 
-            if (newNodeDefinition.ScopeSnapshot.Index > SubGraph.NodeSequence.Count)
+            //if (newNodeDefinition.ScopeSnapshot.Index > SubGraph.NodeSequence.Count)
+            if (newNodeDefinition.ScopeSnapshot.IsInInvalidState)
                 throw new InternalLogicException("Current index is too far beyond the end of the subgraph, this indicates something wrong with the graph flow algorithm");
 
-            var currentNode = SubGraph.NodeSequence[newNodeDefinition.ScopeSnapshot.Index];
+            //var currentNode = SubGraph.NodeSequence[newNodeDefinition.ScopeSnapshot.Index];
+            var currentNode = newNodeDefinition.ScopeSnapshot.GetIndexedNode();
             int indexAdvance = VerifyInPhaseWithGraph(currentNode, newNode);
 
             existing(currentNode);
 
-            CurrentIndex += indexAdvance; // TODO This should be managed by the verify method because in looking ahead we will need to skip nodes
+            SubGraphTracker.Index += indexAdvance; // TODO This should be managed by the verify method because in looking ahead we will need to skip nodes
         }
     }
 
@@ -76,10 +83,10 @@ public class SubgraphScopedHookSynchroniser
                 // Simple implementation for now : no look ahead outside the current subgraph
                 // TODO arbitrary look ahead, up and down all possible subgraphs from the current node
 
-                if (CurrentIndex + 1 >= SubGraph.NodeSequence.Count)
+                if (SubGraphTracker.Index + 1 >= SubGraph.NodeSequence.Count) // This requires a semi linear graph, but this class is designed for that
                     throw new NotImplementedException("Current index is too far beyond the end of the subgraph : To be implemented");
 
-                IStoryNode next = SubGraph.NodeSequence[CurrentIndex + 1];
+                IStoryNode next = SubGraph.NodeSequence[SubGraphTracker.Index + 1]; // This requires a semi linear graph, but this class is designed for that
                 return VerifyInPhaseWithGraph(next, newNode); // return ?
             }
 
@@ -93,6 +100,6 @@ public class SubgraphScopedHookSynchroniser
     {
         _verifyPreviousDefinition();
 
-        CurrentIndex = 0;
+        SubGraphTracker.Index = 0;
     }
 }

@@ -1,4 +1,4 @@
-﻿* DialogEvent {"Text":"Before call","Character":null}
+﻿* DialogEvent {"Text":"Before call : S1","Character":null}
 * MetaStoryCalledEvent {"Name":"Secondary MetaStory"}
 * DialogEvent {"Text":"Before call inside the second meta story","Character":null}
 * MetaStoryCalledEvent {"Name":"Tertiary MetaStory"}
@@ -7,4 +7,4 @@
 * MetaStoryReturnedEvent {}
 * DialogEvent {"Text":"After call inside the second meta story","Character":null}
 * MetaStoryReturnedEvent {}
-* DialogEvent {"Text":"After call","Character":null}
+* DialogEvent {"Text":"After call : S2","Character":null}

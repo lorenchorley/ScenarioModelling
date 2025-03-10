@@ -12,19 +12,19 @@ StateMachine SM1 {
 
 MetaStory "MetaStory recorded by hooks" {
   Dialog {
-    Text "Before call"
+    Text "Before call : {Actor.State}"
   }
   CallMetaStory {
     MetaStoryName "First MetaStory"
   }
   Dialog {
-    Text "Between calls"
+    Text "Between calls : {Actor.State}"
   }
   CallMetaStory {
     MetaStoryName "Second MetaStory"
   }
   Dialog {
-    Text "After call"
+    Text "After call : {Actor.State}"
   }
 }
 

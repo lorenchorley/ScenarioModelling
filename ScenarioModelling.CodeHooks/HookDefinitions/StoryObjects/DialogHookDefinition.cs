@@ -15,7 +15,7 @@ public class DialogHookDefinition : IInSituNodeHookDefinition
     public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
-    public DefinitionScopeSnapshot ScopeSnapshot { get; }
+    public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
     public DialogHookDefinition(SubgraphScopedHookSynchroniser scope, string text, IHookFunctions hookFunctions)
     {

@@ -27,10 +27,11 @@ public class MetaStory : IIdentifiable
     public MetaState MetaState { get; private set; }
 
     [ProtoMember(2)]
-    public DirectedGraph<IStoryNode> Graph { get; set; } = new();
+    public DirectedGraph<IStoryNode> Graph { get; private set; }
 
-    public MetaStory(MetaState metaState)
+    public MetaStory(MetaState metaState, DirectedGraph<IStoryNode> graph)
     {
         MetaState = metaState;
+        Graph = graph;
     }
 }

@@ -6,6 +6,8 @@ using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.GenericInterfaces;
 using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
+using ScenarioModelling.Tools.Collections.Graph;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.Serialisation.ContextConstruction;
 
@@ -40,9 +42,9 @@ public class Instanciator
             );
     }
 
-    public MetaStory NewMetaStory(Definition definition)
+    public MetaStory NewMetaStory(Definition definition, ISubGraph<IStoryNode> subGraph)
     {
-        MetaStory MetaStory = _context.NewMetaStory(""); // Must not have a name here so that the method Name can do it's job
+        MetaStory MetaStory = _context.NewMetaStory("", subGraph); // Must not have a name here so that the method Name can do it's job
 
         return Name<MetaStory, MetaStory>(MetaStory, def: definition);
     }

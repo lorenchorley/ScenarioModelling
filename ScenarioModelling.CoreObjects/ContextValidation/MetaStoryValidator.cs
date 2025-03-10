@@ -39,11 +39,11 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return validationErrors;
     }
 
-    private ValidationErrors VisitSubgraph(SemiLinearSubGraph<IStoryNode> subgraph)
+    private ValidationErrors VisitSubgraph(ISubGraph<IStoryNode> subgraph)
     {
         ValidationErrors validationErrors = new();
 
-        foreach (var node in subgraph.NodeSequence)
+        foreach (var node in subgraph.UnorderedEnumerable)
         {
             validationErrors.Incorporate((ValidationErrors)node.Accept(this));
         }

@@ -92,7 +92,7 @@ public partial class StoryRunTests
 
         // Assert
         // ======
-        string serialisedStory = story.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string serialisedStory = story.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
         await Verify(serialisedStory);
 
     }
@@ -169,7 +169,7 @@ public partial class StoryRunTests
 
         // Assert
         // ======
-        string serialisedStory = story.Events.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+        string serialisedStory = story.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
         await Verify(serialisedStory);
 
     }

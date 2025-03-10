@@ -26,7 +26,7 @@ public class DialogExecutor : IExecutor
         if (_metaStory == null || _story == null)
             throw new ExecutionException("MetaStory not started");
 
-        return _story.Events.GetEnumerable().LastOrDefault();
+        return _story.EventSourceLog.GetEnumerable().LastOrDefault();
     }
 
     public void ResetToInitialState()
@@ -97,7 +97,7 @@ public class DialogExecutor : IExecutor
 
     public bool IsLastEventOfType<T>(Func<T, bool> pred) where T : IMetaStoryEvent
     {
-        IMetaStoryEvent? MetaStoryEvent = _story?.Events.GetEnumerable().LastOrDefault();
+        IMetaStoryEvent? MetaStoryEvent = _story?.EventSourceLog.GetEnumerable().LastOrDefault();
 
         if (MetaStoryEvent == null)
         {

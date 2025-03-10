@@ -25,8 +25,9 @@ public class IfNodeSerialiser : INodeSerialiser<IfNode>
 
         node.SerialiseAnnotatedProperties(sb, subIndent);
 
-        foreach (var subNode in node.SubGraph.NodeSequence)
+        foreach (var subNode in node.SubGraph.UnorderedEnumerable)
         {
+            // TODO write the nodes in a way that reflects the type of the sub graph
             MetaStorySerialiser!.WriteMetaStoryNode(sb, MetaStory, subNode, subIndent);
         }
 

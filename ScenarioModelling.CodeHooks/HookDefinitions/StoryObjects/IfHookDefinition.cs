@@ -20,7 +20,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     public bool Validated { get; private set; } = false;
     public IfNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
-    public DefinitionScopeSnapshot ScopeSnapshot { get; }
+    public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
     public IfHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IHookFunctions hookFunctions)
     {

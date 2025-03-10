@@ -18,28 +18,22 @@ namespace ScenarioModelling.Execution;
 public class Story
 {
     public Context Context { get; }
-    //public MetaStoryStack MetaStoryStack { get; }
     public ExpressionEvalator Evaluator { get; }
 
-    //public MetaStory MetaStory => MetaStoryStack.Peek();
-    public StoryEventSource Events { get; } = new();
+    public StoryEventSource EventSourceLog { get; } = new();
     public Stack<GraphScope> GraphScopeStack { get; } = new();
     public GraphScope CurrentScope => GraphScopeStack.Peek();
 
-    public Story(Context context/*, MetaStoryStack metaStoryStack*/, ExpressionEvalator evaluator)
+    public Story(Context context, ExpressionEvalator evaluator)
     {
         Context = context;
-        //MetaStoryStack = metaStoryStack;
         Evaluator = evaluator;
     }
 
-    public void Init(MetaStory initialMetaStory/*, bool dontAddToStack = false*/)
+    public void Init(MetaStory initialMetaStory)
     {
-        //if (!dontAddToStack)
-        //    MetaStoryStack.Push(initialMetaStory);
-
         // Reset
-        Events.Events.Clear();
+        EventSourceLog.Events.Clear();
         GraphScopeStack.Clear();
 
         GraphScopeStack.Push(new GraphScope(initialMetaStory.Graph));
@@ -62,8 +56,8 @@ public class Story
         if (GraphScopeStack.Count == 0)
             throw new Exception("should not be used, exception to mark the case");
 
-        var currentEvent = Events.GetEnumerable().LastOrDefault(); // Null only on the first run through because no events have yet to be registered
-        var currentScopeNode = CurrentScope.CurrentNode;
+        var currentEvent = EventSourceLog.GetEnumerable().LastOrDefault(); // Null only on the first run through because no events have yet to be registered
+        //var currentScopeNode = CurrentScope.CurrentNode; // TODO Remove this local variable and use only CurrentScope.CurrentNode, it should be up to date
 
         bool isFirstNode = currentEvent is null;
         if (isFirstNode)
@@ -73,12 +67,13 @@ public class Story
             return CurrentScope.CurrentNode;
         }
 
-        if (currentScopeNode is null)
+        if (CurrentScope.CurrentNode is null)
         {
             throw new Exception("should not be used, exception to mark the case");
         }
 
-        currentScopeNode = currentScopeNode.ToOneOf().Match(
+        // TODO Remove the return value, CurrentScope.CurrentNode should be up to date
+        CurrentScope.CurrentNode.ToOneOf().Switch(
             (CallMetaStoryNode node) => ManangeCallMetaStoryNode(currentEvent, node),
             (ChooseNode node) => ManangeChoseNode(currentEvent, node),
             (DialogNode node) => CurrentScope.MoveToNextInSequence(),
@@ -89,21 +84,23 @@ public class Story
             (WhileNode node) => ManageWhileNode(currentEvent, node)
         );
 
-        bool finishedSubgraph = currentScopeNode is null;
-        if (finishedSubgraph)
+        // If the current scoped node is null => the current subgraph is complete, and we must move to the next subgraph up the stack
+        while (CurrentScope.CurrentNode is null)
         {
             // If we can keep going up, we go up one level
             GraphScopeStack.Pop();
 
             if (GraphScopeStack.Count == 0)
-                return null; // Last graph has been popped, we're done
+                return null; // Last graph has been popped, we're done.
 
-            Events.Add(new MetaStoryReturnedEvent());
+            // We should have as many as we do MetaStoryCalledEvents
+            EventSourceLog.Add(new MetaStoryReturnedEvent());
 
-            return CurrentScope.MoveToNextInSequence();
+            // TODO Can return null so we need to repeat the if block to check agian if finishedSubgraph is true
+            CurrentScope.MoveToNextInSequence();
         }
 
-        return currentScopeNode;
+        return CurrentScope.CurrentNode;
     }
 
     private Option<ConstraintFailedEvent> CheckConstraint(Constraint constraint)
@@ -130,17 +127,17 @@ public class Story
         return new ConstraintFailedEvent() { ProducerNode = constraint, Expression = constraint.OriginalConditionText };
     }
 
-    private IStoryNode? ManangeTransitionNode(IMetaStoryEvent? currentEvent, TransitionNode currentScopeNode)
+    private void ManangeTransitionNode(IMetaStoryEvent? currentEvent, TransitionNode currentScopeNode)
     {
         // The last event must be a state change event
         if (currentEvent is null ||
             currentEvent is not StateChangeEvent stateChangeEvent)
             throw new InternalLogicException($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
 
-        return CurrentScope.MoveToNextInSequence();
+        CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
     }
 
-    private IStoryNode? ManangeCallMetaStoryNode(IMetaStoryEvent? currentEvent, CallMetaStoryNode currentScopeNode)
+    private void ManangeCallMetaStoryNode(IMetaStoryEvent? currentEvent, CallMetaStoryNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -152,13 +149,12 @@ public class Story
             throw new ExecutionException($"No meta story with the name {currentScopeNode.MetaStoryName} was found.");
 
         var currentGraph = GraphScopeStack.Peek();
-        GraphScopeStack.Push(new GraphScope(calledMetaStory.Graph));
-        //GraphScopeStack.Peek().Graph.PrimarySubGraph.ParentSubgraph = currentGraph;
 
-        return CurrentScope.CurrentNode;
+        // Pushing a new graphscope onto the stack will change the current node automatically
+        GraphScopeStack.Push(new GraphScope(calledMetaStory.Graph));
     }
 
-    private IStoryNode? ManangeChoseNode(IMetaStoryEvent? currentEvent, ChooseNode currentScopeNode)
+    private void ManangeChoseNode(IMetaStoryEvent? currentEvent, ChooseNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -175,11 +171,9 @@ public class Story
             throw new Exception($@"ChooseNode attempted to jump to node ""{choiceEvent.Choice}"" but it was not present in the graph");
 
         CurrentScope.CurrentNode = newCurrentScopeNode;
-
-        return newCurrentScopeNode;
     }
 
-    private IStoryNode? ManageJumpNode(IMetaStoryEvent? currentEvent, JumpNode currentScopeNode)
+    private void ManageJumpNode(IMetaStoryEvent? currentEvent, JumpNode currentScopeNode)
     {
         // The last event must be a jump event
         if (currentEvent is null ||
@@ -198,10 +192,10 @@ public class Story
         // Set explicit next node
         CurrentScope.SetExplicitNextNodeInSubGraph(newCurrentScopeNode);
 
-        return CurrentScope.MoveToNextInSequence();
+        CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
     }
 
-    private IStoryNode? ManageIfNode(IMetaStoryEvent? currentEvent, IStoryNode? currentScopeNode)
+    private void ManageIfNode(IMetaStoryEvent? currentEvent, IStoryNode? currentScopeNode)
     {
         // The last event must be an if event
         if (currentEvent is null ||
@@ -210,17 +204,16 @@ public class Story
 
         if (ifEvent.IfBlockRun)
         {
-            CurrentScope.EnterSubGraph(ifEvent.ProducerNode.SubGraph);
-            return CurrentScope.CurrentNode; // Automatically the first node in the subgraph
+            CurrentScope.EnterSubGraph(ifEvent.ProducerNode.SubGraph); // This will change CurrentScope.CurrentNode
         }
         else
         {
             // Otherwise advance past the if node
-            return CurrentScope.MoveToNextInSequence();
+            CurrentScope.MoveToNextInSequence();  // This will change CurrentScope.CurrentNode
         }
     }
 
-    private IStoryNode? ManageWhileNode(IMetaStoryEvent? currentEvent, WhileNode currentScopeNode)
+    private void ManageWhileNode(IMetaStoryEvent? currentEvent, WhileNode currentScopeNode)
     {
         // The last event must be an while event
         if (currentEvent is null ||
@@ -229,18 +222,17 @@ public class Story
 
         if (whileEvent.LoopBlockRun)
         {
-            CurrentScope.EnterSubGraph(whileEvent.ProducerNode.SubGraph);
-            return CurrentScope.CurrentNode; // Automatically the first node in the subgraph
+            CurrentScope.EnterSubGraph(whileEvent.ProducerNode.SubGraph); // This will change CurrentScope.CurrentNode
         }
         else
         {
             // Otherwise advance past the while node
-            return CurrentScope.MoveToNextInSequence();
+            CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
         }
     }
 
     public void RegisterEvent(IMetaStoryEvent @event)
     {
-        Events.Add(@event);
+        EventSourceLog.Add(@event);
     }
 }

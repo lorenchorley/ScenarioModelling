@@ -1,4 +1,6 @@
 ﻿using ScenarioModelling.CoreObjects;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.Tools.Collections.Graph;
 using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions;
@@ -20,7 +22,7 @@ public class MetaStoryHookDefinition
 
         // If no existing meta is found, then we have to assume it's the first run through and create it
         if (MetaStory == null)
-            MetaStory = context.NewMetaStory(name);
+            MetaStory = context.NewMetaStory(name, new SemiLinearSubGraph<IStoryNode>());
 
         _associatedMetaStory = MetaStory;
 

@@ -1,11 +1,11 @@
-﻿* DialogEvent {"Text":"Before call","Character":null}
+﻿* DialogEvent {"Text":"Before call : S1","Character":null}
 * MetaStoryCalledEvent {"Name":"First MetaStory"}
 * StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"S1","TypeName":"State"},"FinalState":{"Name":"S2","TypeName":"State"},"TransitionName":"T1"}
 * DialogEvent {"Text":"Inside the first meta story","Character":null}
 * MetaStoryReturnedEvent {}
-* DialogEvent {"Text":"Between calls","Character":null}
+* DialogEvent {"Text":"Between calls : S2","Character":null}
 * MetaStoryCalledEvent {"Name":"Second MetaStory"}
 * StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"S2","TypeName":"State"},"FinalState":{"Name":"S3","TypeName":"State"},"TransitionName":"T1"}
 * DialogEvent {"Text":"Inside the second meta story","Character":null}
 * MetaStoryReturnedEvent {}
-* DialogEvent {"Text":"After call","Character":null}
+* DialogEvent {"Text":"After call : S3","Character":null}

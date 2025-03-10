@@ -19,8 +19,8 @@ public class CallMetaStoryNodeValidator : INodeValidator<CallMetaStoryNode>
         return validationErrors;
     }
 
-    private bool IsNodeName(SemiLinearSubGraph<IStoryNode> graph, string name)
-    {
-        return graph.NodeSequence.Any(s => s.Name.IsEqv(name));
-    }
+    //private bool IsNodeName(SemiLinearSubGraph<IStoryNode> graph, string name)
+    //{
+    //    return graph.NodeSequence.Any(s => s.Name.IsEqv(name));
+    //}
 }

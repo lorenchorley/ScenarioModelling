@@ -37,8 +37,9 @@ public class MetaStorySerialiser
     {
         sb.AppendLine($"{currentIndent}MetaStory {MetaStory.Name.AddQuotes()} {{");
 
-        foreach (var node in MetaStory.Graph.PrimarySubGraph.NodeSequence)
+        foreach (var node in MetaStory.Graph.PrimarySubGraph.UnorderedEnumerable)
         {
+            // TODO write the nodes in a way that reflects the type of the sub graph
             WriteMetaStoryNode(sb, MetaStory, node, currentIndent + CustomContextSerialiser.IndentSegment);
         }
 

@@ -33,12 +33,13 @@ public class MetaStoryTransformer(MetaState system, Instanciator Instanciator) :
         if (type == TransformationType.Property)
             throw new InternalLogicException("MetaStories should not be properties");
 
-        MetaStory value = Instanciator.NewMetaStory(definition: def);
+        SemiLinearSubGraph<IStoryNode> primarySubGraph = new SemiLinearSubGraph<IStoryNode>();
+        MetaStory value = Instanciator.NewMetaStory(definition: def, primarySubGraph);
 
         def.HasBeenTransformed = true;
 
         var tryTransform = TryTransformDefinitionToNode(value);
-        value.Graph.PrimarySubGraph.NodeSequence.AddRange(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, value.Graph.PrimarySubGraph), "Unknown node types not taken into account : {0}"));
+        primarySubGraph.AddRangeToSequence(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, primarySubGraph), "Unknown node types not taken into account : {0}"));
 
         return value;
     }

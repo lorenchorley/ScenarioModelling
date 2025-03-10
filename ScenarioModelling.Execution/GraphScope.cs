@@ -23,7 +23,7 @@ public class GraphScope
     public GraphScope(DirectedGraph<IStoryNode> graph)
     {
         Graph = graph;
-        SubGraphScopeStack.Push(Graph.PrimarySubGraph.GenerateScope(null));
+        SubGraphScopeStack.Push((SemiLinearSubGraphScope<IStoryNode>)Graph.PrimarySubGraph.GenerateScope(null));
         CurrentNode = CurrentSubGraphScope.MoveToNextInSequence();
     }
 
@@ -32,24 +32,19 @@ public class GraphScope
         CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(node);
     }
 
-    public IStoryNode? MoveToNextInSequence()
+    public void MoveToNextInSequence()
     {
         CurrentNode = CurrentSubGraphScope.MoveToNextInSequence();
 
         if (CurrentNode is not null)
-        {
-            return CurrentNode;
-        }
+            return; // If the current node is already set, we stop here so it can be used
 
         if (CurrentSubGraphScope.ParentScope is null)
-        {
-            // Above this we need to manage the case where there is another graph is the stack.
-            return null;
-        }
+            return; // CurrentNode is null in this case. After this we'll use the value null to manage the case where there is another graph is the stack.
 
+        // If parentScope is set, we need to move up the subgraph stack and navigate to the next node in that parent graph
         RemoveSubgraphFromStack();
-
-        return MoveToNextInSequence(); // Explicit reentry point is handled by this method if set
+        MoveToNextInSequence(); // Explicit reentry point is handled by this method if set
     }
 
     // TODO validate
@@ -67,7 +62,7 @@ public class GraphScope
 
     public void EnterSubGraphOnNode(SemiLinearSubGraph<IStoryNode> subGraph, IStoryNode node)
     {
-        if (!subGraph.NodeSequence.Contains(node))
+        if (!subGraph.Contains(node))
             throw new Exception("Node not found in subgraph");
 
         AddSubgraphToStack(subGraph);
@@ -76,7 +71,7 @@ public class GraphScope
 
     private void AddSubgraphToStack(SemiLinearSubGraph<IStoryNode> subGraph)
     {
-        SubGraphScopeStack.Push(subGraph.GenerateScope(CurrentSubGraphScope));
+        SubGraphScopeStack.Push((SemiLinearSubGraphScope<IStoryNode>)subGraph.GenerateScope(CurrentSubGraphScope));
     }
 
     private void RemoveSubgraphFromStack()

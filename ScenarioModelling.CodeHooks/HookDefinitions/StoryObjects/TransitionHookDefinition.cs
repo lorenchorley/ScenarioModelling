@@ -17,7 +17,7 @@ public class TransitionHookDefinition : IInSituNodeHookDefinition
     public bool Validated { get; private set; } = false;
     public TransitionNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
-    public DefinitionScopeSnapshot ScopeSnapshot { get; }
+    public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
     public TransitionHookDefinition(SubgraphScopedHookSynchroniser scope, MetaState System, string StatefulObjectName, string Transition, IHookFunctions hookFunctions)
     {

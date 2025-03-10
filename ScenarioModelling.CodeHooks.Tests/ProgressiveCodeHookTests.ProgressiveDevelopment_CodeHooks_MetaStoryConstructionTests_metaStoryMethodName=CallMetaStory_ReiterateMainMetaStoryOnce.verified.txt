@@ -10,7 +10,7 @@ StateMachine SM1 {
 
 MetaStory "MetaStory recorded by hooks" {
   Dialog {
-    Text "Before call"
+    Text "Before call : {Actor.State}"
   }
   If <Actor.State == S1> {
     Transition {
@@ -21,6 +21,6 @@ MetaStory "MetaStory recorded by hooks" {
     }
   }
   Dialog {
-    Text "After call"
+    Text "After call : {Actor.State}"
   }
 }

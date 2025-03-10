@@ -23,7 +23,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     public bool Validated { get; private set; } = false;
     public WhileNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
-    public DefinitionScopeSnapshot ScopeSnapshot { get; }
+    public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
     public WhileHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IHookFunctions hookFunctions)
     {

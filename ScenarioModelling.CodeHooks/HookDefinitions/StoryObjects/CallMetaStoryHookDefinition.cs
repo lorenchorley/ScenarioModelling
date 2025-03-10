@@ -19,7 +19,7 @@ public class CallMetaStoryHookDefinition : IInSituNodeHookDefinition
     public bool Validated { get; private set; } = false;
     public CallMetaStoryNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
-    public DefinitionScopeSnapshot ScopeSnapshot { get; }
+    public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
     public CallMetaStoryHookDefinition(SubgraphScopedHookSynchroniser scope, IHookFunctions hookFunctions)
     {
