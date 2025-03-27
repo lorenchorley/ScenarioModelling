@@ -1,6 +1,4 @@
-﻿using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
-
-namespace ScenarioModelling.CodeHooks.HookDefinitions;
+﻿namespace ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 
 public class MetaStateHookReconfigurationDefinition
 {

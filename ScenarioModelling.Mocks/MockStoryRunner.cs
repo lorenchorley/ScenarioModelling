@@ -1,3 +1,4 @@
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Events;
@@ -24,7 +25,7 @@ public class MockStoryRunner
         Executor.StartMetaStory(metaStoryName);
 
         // Generate first node
-        IStoryNode? node = null;
+        IStoryNode? node;
 
         while ((node = Executor.NextNode()) != null)
         {
@@ -39,11 +40,12 @@ public class MockStoryRunner
         return Executor.EndMetaStory();
     }
 
-    private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode? node, IMetaStoryEvent e)
+    private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode node, IMetaStoryEvent e)
     {
         node.ToOneOf().Switch(
-            callMetaStory => { },
-            chooseNode =>
+            (AssertNode assertNode) => { },
+            (CallMetaStoryNode callMetaStoryNode) => { },
+            (ChooseNode chooseNode) =>
             {
                 if (choicesByNodeName != null)
                 {
@@ -62,12 +64,13 @@ public class MockStoryRunner
                                     .First();
                 }
             },
-            dialogNode => { },
-            ifNode => { },
-            jumpNode => { },
-            metadataNode => { },
-            transitionNode => { },
-            whileNode => { }
+            (DialogNode dialogNode) => { },
+            (IfNode ifNode) => { },
+            (JumpNode jumpNode) => { },
+            (LoopNode loopNode) => { },
+            (MetadataNode metadataNode) => { },
+            (TransitionNode transitionNode) => { },
+            (WhileNode whileNode) => { }
         );
     }
 

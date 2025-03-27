@@ -15,7 +15,7 @@ public record IfNode : StoryNode, IStoryNodeWithExpression, IFlowNode
 {
     [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
-    public Expression Condition { get; set; } = null!;
+    public Expression AssertionExpression { get; set; } = null!;
 
     [ProtoMember(2)]
     [StoryNodeLikeProperty(serialise: false)]
@@ -35,7 +35,7 @@ public record IfNode : StoryNode, IStoryNodeWithExpression, IFlowNode
     }
 
     [DebuggerNonUserCode]
-    public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
+    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitIf(this);

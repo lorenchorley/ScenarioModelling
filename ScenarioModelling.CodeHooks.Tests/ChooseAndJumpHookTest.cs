@@ -55,7 +55,7 @@ public partial class ChooseAndJumpHookTest
         }
         """;
 
-    void ProducerMethod(MetaStoryHookOrchestrator hooks, Queue<string> choices)
+    void ProducerMethod(HookOrchestrator hooks, Queue<string> choices)
     {
         hooks.DefineMetaState(configuration =>
         {
@@ -124,8 +124,8 @@ public partial class ChooseAndJumpHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
-    public void ChooseAndIf_MetaStoryConstructionTest()
+    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction"), TestCategory("Elaborated Scenarios")]
+    public void ElaboratedScenario_ChooseAndIf_MetaStoryConstructionTest()
     {
         // Arrange
         // =======
@@ -137,7 +137,7 @@ public partial class ChooseAndJumpHookTest
                  .UseSerialiser<CustomContextSerialiser>()
                  .Initialise();
 
-        MetaStoryHookOrchestrator hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        HookOrchestrator hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         Queue<string> choices = new();
         choices.Enqueue("Change name and repeat");
@@ -189,9 +189,9 @@ public partial class ChooseAndJumpHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
+    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story"), TestCategory("Elaborated Scenarios")]
     [Ignore("This tests loops infinitely because the scenario is not correctly constructed")]
-    public async Task ChooseAndIf_StoryExtractionTest()
+    public async Task ElaboratedScenario_ChooseAndIf_StoryExtractionTest()
     {
         // Arrange
         // =======
@@ -203,7 +203,7 @@ public partial class ChooseAndJumpHookTest
                  .UseSerialiser<CustomContextSerialiser>()
                  .Initialise();
 
-        MetaStoryHookOrchestrator hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        HookOrchestrator hooks = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
         StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
         Queue<string> choices = new();

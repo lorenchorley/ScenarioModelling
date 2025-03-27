@@ -9,12 +9,13 @@ using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextCo
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
+using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers;
 using System.Diagnostics;
 using System.Text;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction;
 
-public class ContextBuilderInputs : IContextBuilderInputs
+public class ContextBuilderInputs
 {
     public List<Definition> TopLevelOfDefinitionTree { get; } = new();
 }
@@ -38,6 +39,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     private readonly EntityTypeDeserialiser _entityTypeTransformer;
     private readonly EntityDeserialiser _entityTransformer;
 
+    private readonly AssertNodeDeserialiser _assertNodeDeserialiser;
     private readonly ChooseNodeDeserialiser _chooseNodeDeserialiser;
     private readonly DialogNodeDeserialiser _dialogNodeDeserialiser;
     private readonly JumpNodeDeserialiser _jumpNodeDeserialiser;
@@ -63,10 +65,12 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         EntityTypeDeserialiser entityTypeTransformer,
         EntityDeserialiser entityTransformer,
         MetaStoryTransformer metaStoryTransformer,
+        AssertNodeDeserialiser assertNodeDeserialiser,
         CallMetaStoryNodeDeserialiser callMetaStoryNodeDeserialiser,
         ChooseNodeDeserialiser chooseNodeDeserialiser,
         DialogNodeDeserialiser dialogNodeDeserialiser,
         JumpNodeDeserialiser jumpNodeDeserialiser,
+        LoopNodeDeserialiser loopNodeDeserialiser,
         MetadataNodeDeserialiser metadataNodeDeserialiser,
         TransitionNodeDeserialiser transitionNodeDeserialiser,
         IfNodeDeserialiser ifNodeDeserialiser,
@@ -76,11 +80,13 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         //MetaStoryNodeExhaustivity.AssertInterfaceExhaustivelyImplemented<IDefinitionToNodeDeserialiser>();
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
+            assert: () => RegisterNodeProfile(assertNodeDeserialiser),
             callMetaStory: () => RegisterNodeProfile(callMetaStoryNodeDeserialiser),
             chooseNode: () => RegisterNodeProfile(chooseNodeDeserialiser),
             dialogNode: () => RegisterNodeProfile(dialogNodeDeserialiser),
             ifNode: () => RegisterNodeProfile(ifNodeDeserialiser),
             jumpNode: () => RegisterNodeProfile(jumpNodeDeserialiser),
+            loopNode: () => RegisterNodeProfile(loopNodeDeserialiser),
             metadataNode: () => RegisterNodeProfile(metadataNodeDeserialiser),
             transitionNode: () => RegisterNodeProfile(transitionNodeDeserialiser),
             whileNode: () => RegisterNodeProfile(whileNodeDeserialiser)
@@ -105,6 +111,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         _whileNodeDeserialiser = whileNodeDeserialiser;
 
         _metaStoryTransformer = metaStoryTransformer;
+        _assertNodeDeserialiser = assertNodeDeserialiser;
         _metaStoryTransformer.NodeProfilesByName = _nodeProfilesByName;
         _metaStoryTransformer.NodeProfilesByPredicate = _nodeProfilesByPredicate;
     }
@@ -211,13 +218,14 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
         // Initialise expressions
         var nodes =
             Enumerable.Empty<IStoryNodeWithExpression>()
+                      .Concat(_assertNodeDeserialiser.ConditionsToInitialise) // TODO Generalise
                       .Concat(_ifNodeDeserialiser.ConditionsToInitialise)
                       .Concat(_whileNodeDeserialiser.ConditionsToInitialise);
 
         foreach (var node in nodes)
         {
             ExpressionInitialiser visitor = new(_context.MetaState);
-            node.Condition.Accept(visitor);
+            node.AssertionExpression.Accept(visitor);
 
             if (visitor.Errors.Any())
             {
@@ -225,6 +233,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
             }
         }
 
+        _assertNodeDeserialiser.ConditionsToInitialise.Clear(); // TODO Generalise
         _ifNodeDeserialiser.ConditionsToInitialise.Clear();
         _whileNodeDeserialiser.ConditionsToInitialise.Clear();
 

@@ -45,7 +45,7 @@ public class IfNodeDeserialiser : IDefinitionToNodeDeserialiser
             throw new InternalLogicException($@"Unable to parse expression ""{expDef.Block.ExpressionText.Value}"" on if node{node.LineInformation} : return value not set");
 
         node.OriginalConditionText = expDef.Block.ExpressionText.Value;
-        node.Condition = result.ParsedObject;
+        node.AssertionExpression = result.ParsedObject;
         ConditionsToInitialise.Add(node);
 
         //node.SubGraph.ParentSubgraph = currentSubgraph;

@@ -13,17 +13,27 @@ public static class NodeExtensions
 {
     public static IMetaStoryEvent GenerateEvent(this IStoryNode node, EventGenerationDependencies dependencies)
         => node.ToOneOf().Match<IMetaStoryEvent>(
-                callMetaStory => callMetaStory.GenerateEvent(dependencies),
-                chooseNode => chooseNode.GenerateEvent(dependencies),
-                dialogNode => dialogNode.GenerateEvent(dependencies),
-                ifNode => ifNode.GenerateEvent(dependencies),
-                jumpNode => jumpNode.GenerateEvent(dependencies),
-                metadataNode => metadataNode.GenerateEvent(dependencies),
-                transitionNode => transitionNode.GenerateEvent(dependencies),
-                whileNode => whileNode.GenerateEvent(dependencies)
+                assert => assert.InternalGenerateEvent(dependencies),
+                callMetaStory => callMetaStory.InternalGenerateEvent(dependencies),
+                chooseNode => chooseNode.InternalGenerateEvent(dependencies),
+                dialogNode => dialogNode.InternalGenerateEvent(dependencies),
+                ifNode => ifNode.InternalGenerateEvent(dependencies),
+                jumpNode => jumpNode.InternalGenerateEvent(dependencies),
+                loopNode => loopNode.InternalGenerateEvent(dependencies),
+                metadataNode => metadataNode.InternalGenerateEvent(dependencies),
+                transitionNode => transitionNode.InternalGenerateEvent(dependencies),
+                whileNode => whileNode.InternalGenerateEvent(dependencies)
             );
 
-    public static MetaStoryCalledEvent GenerateEvent(this CallMetaStoryNode node, EventGenerationDependencies dependencies)
+    public static AssertionEvent InternalGenerateEvent(this AssertNode node, EventGenerationDependencies dependencies)
+    {
+        return new AssertionEvent() { 
+            Expression = node.OriginalExpressionText,
+            ProducerNode = node 
+        };
+    }
+    
+    public static MetaStoryCalledEvent InternalGenerateEvent(this CallMetaStoryNode node, EventGenerationDependencies dependencies)
     {
         return new MetaStoryCalledEvent() { 
             Name = node.MetaStoryName,
@@ -31,12 +41,12 @@ public static class NodeExtensions
         };
     }
 
-    public static ChoiceSelectedEvent GenerateEvent(this ChooseNode node, EventGenerationDependencies dependencies)
+    public static ChoiceSelectedEvent InternalGenerateEvent(this ChooseNode node, EventGenerationDependencies dependencies)
     {
         return new ChoiceSelectedEvent() { ProducerNode = node };
     }
 
-    public static DialogEvent GenerateEvent(this DialogNode node, EventGenerationDependencies dependencies)
+    public static DialogEvent InternalGenerateEvent(this DialogNode node, EventGenerationDependencies dependencies)
     {
         DialogEvent e = new DialogEvent()
         {
@@ -51,15 +61,15 @@ public static class NodeExtensions
         return e;
     }
 
-    public static IfConditionCheckEvent GenerateEvent(this IfNode node, EventGenerationDependencies dependencies)
+    public static IfConditionCheckEvent InternalGenerateEvent(this IfNode node, EventGenerationDependencies dependencies)
     {
         IfConditionCheckEvent e = new IfConditionCheckEvent() { ProducerNode = node };
 
-        var result = node.Condition.Accept(dependencies.Evaluator);
+        var result = node.AssertionExpression.Accept(dependencies.Evaluator);
 
         if (result is not bool shouldExecuteBlock)
         {
-            throw new Exception($"If condition {node.Condition} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
+            throw new Exception($"If condition {node.AssertionExpression} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
         }
 
         e.Expression = node.OriginalConditionText;
@@ -68,7 +78,7 @@ public static class NodeExtensions
         return e;
     }
 
-    public static JumpEvent GenerateEvent(this JumpNode node, EventGenerationDependencies dependencies)
+    public static JumpEvent InternalGenerateEvent(this JumpNode node, EventGenerationDependencies dependencies)
     {
         return new JumpEvent()
         {
@@ -77,12 +87,22 @@ public static class NodeExtensions
         };
     }
 
-    public static MetadataEvent GenerateEvent(this MetadataNode node, EventGenerationDependencies dependencies)
+    public static LoopEvent InternalGenerateEvent(this LoopNode node, EventGenerationDependencies dependencies)
+    {
+        LoopEvent e = new()
+        {
+            ProducerNode = node,
+        };
+
+        return e;
+    }
+
+    public static MetadataEvent InternalGenerateEvent(this MetadataNode node, EventGenerationDependencies dependencies)
     {
         throw new NotImplementedException();
     }
 
-    public static StateChangeEvent GenerateEvent(this TransitionNode node, EventGenerationDependencies dependencies)
+    public static StateChangeEvent InternalGenerateEvent(this TransitionNode node, EventGenerationDependencies dependencies)
     {
         ArgumentNullExceptionStandard.ThrowIfNull(node.StatefulObject);
 
@@ -125,18 +145,18 @@ public static class NodeExtensions
         return e;
     }
 
-    public static WhileConditionCheckEvent GenerateEvent(this WhileNode node, EventGenerationDependencies dependencies)
+    public static WhileConditionCheckEvent InternalGenerateEvent(this WhileNode node, EventGenerationDependencies dependencies)
     {
         WhileConditionCheckEvent e = new()
         {
             ProducerNode = node,
         };
 
-        var result = node.Condition.Accept(dependencies.Evaluator);
+        var result = node.AssertionExpression.Accept(dependencies.Evaluator);
 
         if (result is not bool shouldExecuteBlock)
         {
-            throw new Exception($"While loop condition {node.Condition} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
+            throw new Exception($"While loop condition {node.AssertionExpression} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
         }
 
         e.Expression = node.OriginalConditionText;

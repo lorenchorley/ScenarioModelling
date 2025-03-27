@@ -8,31 +8,37 @@ public static class MetaStoryNodeExhaustivity
 {
     public static Type[] AllNodeTypes =>
     [
+        typeof(AssertNode),
         typeof(CallMetaStoryNode),
         typeof(ChooseNode),
         typeof(DialogNode),
         typeof(IfNode),
         typeof(JumpNode),
+        typeof(LoopNode),
         typeof(MetadataNode),
         typeof(TransitionNode),
         typeof(WhileNode)
     ];
 
     public static void DoForEachNodeType(
+        Action assert,
         Action callMetaStory,
         Action chooseNode,
         Action dialogNode,
         Action ifNode,
         Action jumpNode,
+        Action loopNode,
         Action metadataNode,
         Action transitionNode,
         Action whileNode)
     {
+        assert();
         callMetaStory();
         chooseNode();
         dialogNode();
         ifNode();
         jumpNode();
+        loopNode();
         metadataNode();
         transitionNode();
         whileNode();

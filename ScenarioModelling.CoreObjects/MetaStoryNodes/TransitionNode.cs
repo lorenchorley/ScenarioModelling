@@ -28,7 +28,7 @@ public record TransitionNode : StoryNode
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
     [DebuggerNonUserCode]
-    public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
+    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitTransition(this);

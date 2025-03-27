@@ -24,7 +24,7 @@ public partial class WhileLoopHookTest
         StateMachine Name {
           State "Amy Stake"
           State "Brock Lee"
-          State "Clara Nett"
+          State "Clara Nett"Gene
           State "Dee Zaster"
           "Amy Stake" -> "Brock Lee" : ChangeName
           "Brock Lee" -> "Clara Nett" : ChangeName
@@ -76,7 +76,7 @@ public partial class WhileLoopHookTest
         DeeZaster
     }
 
-    void ProducerMethod(MetaStoryHookOrchestrator hooks)
+    void ProducerMethod(HookOrchestrator hooks)
     {
         hooks.DefineMetaState(configuration =>
         {
@@ -178,8 +178,8 @@ public partial class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
-    public void WhileLoop_MetaStoryConstructionTest()
+    [TestCategory("Code Hooks"), TestCategory("MetaStory Construction"), TestCategory("Elaborated Scenarios")]
+    public void ElaboratedScenario_WhileLoop_MetaStoryConstructionTest()
     {
         // Arrange
         // =======
@@ -238,8 +238,8 @@ public partial class WhileLoopHookTest
     }
 
     [TestMethod]
-    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
-    public async Task WhileLoop_StoryExtractionTest()
+    [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story"), TestCategory("Elaborated Scenarios")]
+    public async Task ElaboratedScenario_WhileLoop_StoryExtractionTest()
     {
         // Arrange
         // =======

@@ -38,11 +38,13 @@ public static class ServiceExtensions
         services.AddScoped<ExpressionSerialiser>();
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
+            assert: () => services.AddScoped<AssertNodeSerialiser>(),
             callMetaStory: () => services.AddScoped<CallMetaStoryNodeSerialiser>(),
             chooseNode: () => services.AddScoped<ChooseNodeSerialiser>(),
             dialogNode: () => services.AddScoped<DialogNodeSerialiser>(),
             ifNode: () => services.AddScoped<IfNodeSerialiser>(),
             jumpNode: () => services.AddScoped<JumpNodeSerialiser>(),
+            loopNode: () => services.AddScoped<LoopNodeSerialiser>(),
             metadataNode: () => services.AddScoped<MetadataNodeSerialiser>(),
             transitionNode: () => services.AddScoped<TransitionNodeSerialiser>(),
             whileNode: () => services.AddScoped<WhileNodeSerialiser>()
@@ -60,11 +62,13 @@ public static class ServiceExtensions
         );
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
+            assert: () => services.AddScoped<AssertNodeDeserialiser>(),
             callMetaStory: () => services.AddScoped<CallMetaStoryNodeDeserialiser>(),
             chooseNode: () => services.AddScoped<ChooseNodeDeserialiser>(),
             dialogNode: () => services.AddScoped<DialogNodeDeserialiser>(),
             ifNode: () => services.AddScoped<IfNodeDeserialiser>(),
             jumpNode: () => services.AddScoped<JumpNodeDeserialiser>(),
+            loopNode: () => services.AddScoped<LoopNodeDeserialiser>(),
             metadataNode: () => services.AddScoped<MetadataNodeDeserialiser>(),
             transitionNode: () => services.AddScoped<TransitionNodeDeserialiser>(),
             whileNode: () => services.AddScoped<WhileNodeDeserialiser>()

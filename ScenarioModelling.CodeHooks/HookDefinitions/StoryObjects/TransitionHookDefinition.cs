@@ -12,14 +12,14 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, TransitionNode>]
 public class TransitionHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public TransitionNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public TransitionHookDefinition(SubgraphScopedHookSynchroniser scope, MetaState System, string StatefulObjectName, string Transition, IHookFunctions hookFunctions)
+    public TransitionHookDefinition(SubgraphScopedHookSynchroniser scope, MetaState System, string StatefulObjectName, string Transition, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;

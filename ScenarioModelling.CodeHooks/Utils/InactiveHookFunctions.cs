@@ -6,7 +6,7 @@ using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks.Utils;
 
-public class InactiveHookFunctions : IHookFunctions
+public class InactiveHookFunctions : IMetaStoryHookFunctions
 {
     private readonly Queue<INodeHookDefinition> _newlyCreatedHooks;
 

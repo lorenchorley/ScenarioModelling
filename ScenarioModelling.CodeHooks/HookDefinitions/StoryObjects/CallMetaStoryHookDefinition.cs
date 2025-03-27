@@ -11,7 +11,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, CallMetaStoryNode>]
 public class CallMetaStoryHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
@@ -21,7 +21,7 @@ public class CallMetaStoryHookDefinition : IInSituNodeHookDefinition
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public CallMetaStoryHookDefinition(SubgraphScopedHookSynchroniser scope, IHookFunctions hookFunctions)
+    public CallMetaStoryHookDefinition(SubgraphScopedHookSynchroniser scope, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;

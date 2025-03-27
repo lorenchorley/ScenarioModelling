@@ -10,14 +10,14 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, JumpNode>]
 public class JumpHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public JumpNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public JumpHookDefinition(SubgraphScopedHookSynchroniser scope, string target, IHookFunctions hookFunctions)
+    public JumpHookDefinition(SubgraphScopedHookSynchroniser scope, string target, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;

@@ -17,7 +17,7 @@ public class IfNodeSerialiser : INodeSerialiser<IfNode>
         ArgumentNullExceptionStandard.ThrowIfNull(MetaStorySerialiser);
 
         ExpressionSerialiser visitor = new(MetaStory.MetaState);
-        var result = (string)node.Condition.Accept(visitor);
+        var result = (string)node.AssertionExpression.Accept(visitor);
 
         string subIndent = currentIndent + CustomContextSerialiser.IndentSegment;
 

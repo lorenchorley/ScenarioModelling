@@ -9,27 +9,42 @@ namespace ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 
 public class MetaStorySerialiser
 {
+    private readonly AssertNodeSerialiser _assertNodeSerialiser;
     private readonly CallMetaStoryNodeSerialiser _callMetaStoryNodeSerialiser;
     private readonly ChooseNodeSerialiser _chooseNodeSerialiser;
     private readonly DialogNodeSerialiser _dialogNodeSerialiser;
     private readonly IfNodeSerialiser _ifNodeSerialiser;
     private readonly JumpNodeSerialiser _jumpNodeSerialiser;
+    private readonly LoopNodeSerialiser _loopNodeSerialiser;
     private readonly MetadataNodeSerialiser _metadataNodeSerialiser;
     private readonly TransitionNodeSerialiser _transitionNodeSerialiser;
     private readonly WhileNodeSerialiser _whileNodeSerialiser;
 
-    public MetaStorySerialiser(CallMetaStoryNodeSerialiser callMetaStoryNodeSerialiser, ChooseNodeSerialiser chooseNodeSerialiser, DialogNodeSerialiser dialogNodeSerialiser, IfNodeSerialiser ifNodeSerialiser, JumpNodeSerialiser jumpNodeSerialiser, MetadataNodeSerialiser metadataNodeSerialiser, TransitionNodeSerialiser transitionNodeSerialiser, WhileNodeSerialiser whileNodeSerialiser)
+    public MetaStorySerialiser(
+        AssertNodeSerialiser assertNodeSerialiser, 
+        CallMetaStoryNodeSerialiser callMetaStoryNodeSerialiser, 
+        ChooseNodeSerialiser chooseNodeSerialiser, 
+        DialogNodeSerialiser dialogNodeSerialiser, 
+        IfNodeSerialiser ifNodeSerialiser, 
+        JumpNodeSerialiser jumpNodeSerialiser, 
+        LoopNodeSerialiser loopNodeSerialiser, 
+        MetadataNodeSerialiser metadataNodeSerialiser, 
+        TransitionNodeSerialiser transitionNodeSerialiser, 
+        WhileNodeSerialiser whileNodeSerialiser)
     {
+        _assertNodeSerialiser = assertNodeSerialiser;
         _callMetaStoryNodeSerialiser = callMetaStoryNodeSerialiser;
         _chooseNodeSerialiser = chooseNodeSerialiser;
         _dialogNodeSerialiser = dialogNodeSerialiser;
         _ifNodeSerialiser = ifNodeSerialiser;
         _jumpNodeSerialiser = jumpNodeSerialiser;
+        _loopNodeSerialiser = loopNodeSerialiser;
         _metadataNodeSerialiser = metadataNodeSerialiser;
         _transitionNodeSerialiser = transitionNodeSerialiser;
         _whileNodeSerialiser = whileNodeSerialiser;
 
         _ifNodeSerialiser.MetaStorySerialiser = this;
+        _loopNodeSerialiser.MetaStorySerialiser = this;
         _whileNodeSerialiser.MetaStorySerialiser = this;
     }
 
@@ -60,11 +75,13 @@ public class MetaStorySerialiser
         }
 
         node.ToOneOf().Switch(
+            (AssertNode assertNode) => _assertNodeSerialiser.WriteNode(sb, metaStory, assertNode, currentIndent),
             (CallMetaStoryNode callMetaStoryNode) => _callMetaStoryNodeSerialiser.WriteNode(sb, metaStory, callMetaStoryNode, currentIndent),
             (ChooseNode chooseNode) => _chooseNodeSerialiser.WriteNode(sb, metaStory, chooseNode, currentIndent),
             (DialogNode dialogNode) => _dialogNodeSerialiser.WriteNode(sb, metaStory, dialogNode, currentIndent),
             (IfNode ifNode) => _ifNodeSerialiser.WriteNode(sb, metaStory, ifNode, currentIndent),
             (JumpNode jumpNode) => _jumpNodeSerialiser.WriteNode(sb, metaStory, jumpNode, currentIndent),
+            (LoopNode loopNode) => _loopNodeSerialiser.WriteNode(sb, metaStory, loopNode, currentIndent),
             (MetadataNode metadata) => _metadataNodeSerialiser.WriteNode(sb, metaStory, metadata, currentIndent),
             (TransitionNode transitionNode) => _transitionNodeSerialiser.WriteNode(sb, metaStory, transitionNode, currentIndent),
             (WhileNode whileNode) => _whileNodeSerialiser.WriteNode(sb, metaStory, whileNode, currentIndent)

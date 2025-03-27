@@ -9,11 +9,11 @@ namespace ScenarioModelling.CodeHooks.Utils;
 public class ActiveHookFunctions : InactiveHookFunctions
 {
     private readonly Stack<SubgraphScopedHookSynchroniser> _scopeStack;
-    private readonly HookContextBuilderInputs _contextBuilderInputs;
-    private readonly ProgressiveHookBasedContextBuilder _contextBuilder;
+    private readonly Queue<IStoryNode> _contextBuilderInputs;
+    private readonly HookContextBuilder _contextBuilder;
     private readonly ParallelConstructionExecutor? _parallelConstructionExecutor;
 
-    public ActiveHookFunctions(Stack<SubgraphScopedHookSynchroniser> scopeStack, Queue<INodeHookDefinition> newlyCreatedHooks, HookContextBuilderInputs contextBuilderInputs, ProgressiveHookBasedContextBuilder contextBuilder, ParallelConstructionExecutor? parallelConstructionExecutor)
+    public ActiveHookFunctions(Stack<SubgraphScopedHookSynchroniser> scopeStack, Queue<INodeHookDefinition> newlyCreatedHooks, Queue<IStoryNode> contextBuilderInputs, HookContextBuilder contextBuilder, ParallelConstructionExecutor? parallelConstructionExecutor)
         : base(newlyCreatedHooks)
     {
         _scopeStack = scopeStack;
@@ -50,7 +50,7 @@ public class ActiveHookFunctions : InactiveHookFunctions
             {
                 IStoryNode newNode = hookDefinition.GetNode();
 
-                _contextBuilderInputs.NewNodes.Enqueue(newNode); // TODO Remove the inputs class, it's too much
+                _contextBuilderInputs.Enqueue(newNode); // TODO Remove the inputs class, it's too much
                 _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
 
                 ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);

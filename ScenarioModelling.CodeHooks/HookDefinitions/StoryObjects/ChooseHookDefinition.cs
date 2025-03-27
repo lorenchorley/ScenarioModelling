@@ -11,7 +11,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, ChooseNode>]
 public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<ChooseHookDefinition, ArbitraryBranchingHook>
 {
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<string> RecordedChooseEvents { get; } = new();
@@ -21,7 +21,7 @@ public class ChooseHookDefinition : IConditionRegistrationNodeHookDefinition<Cho
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public ChooseHookDefinition(SubgraphScopedHookSynchroniser scope, IHookFunctions hookFunctions)
+    public ChooseHookDefinition(SubgraphScopedHookSynchroniser scope, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;

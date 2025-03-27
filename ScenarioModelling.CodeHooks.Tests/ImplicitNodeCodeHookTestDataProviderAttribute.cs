@@ -1,4 +1,4 @@
-﻿using ScenarioModelling.CodeHooks.HookDefinitions;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 using ScenarioModelling.CodeHooks.Utils;
 using System.Diagnostics;
 using System.Reflection;
@@ -61,7 +61,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
     #endregion
 
     #region Jump
-    private static void OneDialogAndOneJump_FullMetaStory(MetaStoryHookOrchestrator hooks)
+    private static void OneDialogAndOneJump_FullMetaStory(HookOrchestrator hooks)
     {
         hooks.Jump("D1")
              .SetAsImplicit()
@@ -72,7 +72,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
              .BuildAndRegister();
     }
 
-    private static void OneDialogAndOneJump_ImplicitMetaStory(MetaStoryHookOrchestrator hooks)
+    private static void OneDialogAndOneJump_ImplicitMetaStory(HookOrchestrator hooks)
     {
         //hooks.DeclareJump("D1")
         //     .SetAsImplicit();
@@ -82,7 +82,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
              .BuildAndRegister();
     }
 
-    private static void TwoDialogsAndOneJump_FullMetaStory(MetaStoryHookOrchestrator hooks)
+    private static void TwoDialogsAndOneJump_FullMetaStory(HookOrchestrator hooks)
     {
         hooks.Jump("D2")
              .SetAsImplicit()
@@ -97,7 +97,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
              .BuildAndRegister();
     }
 
-    private static void TwoDialogsAndOneJump_ImplicitMetaStory(MetaStoryHookOrchestrator hooks)
+    private static void TwoDialogsAndOneJump_ImplicitMetaStory(HookOrchestrator hooks)
     {
         //hooks.DeclareJump("D2")
         //     .SetAsImplicit();
@@ -112,7 +112,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
     #endregion
 
     #region If
-    private static void IfExecutesWithDialog_HookOutsideBlock_FullMetaStory(MetaStoryHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_HookOutsideBlock_FullMetaStory(HookOrchestrator hooks)
     {
         hooks.If(@"Actor.State == S1")
              .SetAsImplicit()
@@ -132,7 +132,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
              .BuildAndRegister();
     }
 
-    private static void IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode(MetaStoryHookOrchestrator hooks)
+    private static void IfExecutesWithDialog_HookOutsideBlock_ImplicitIfNode(HookOrchestrator hooks)
     {
         //hooks.DeclareIfBranch(@"Actor.State == S1")
         //     .SetAsImplicit()
@@ -153,7 +153,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
     #endregion
 
     #region While
-    private static void WhileExecutesTwiceWithTransition_FullMetaStory(MetaStoryHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithTransition_FullMetaStory(HookOrchestrator hooks)
     {
         hooks.While(@"Actor.State != S3")
              .SetAsImplicit()
@@ -173,7 +173,7 @@ public class ImplicitNodeCodeHookTestDataProviderAttribute : Attribute, ITestDat
              .BuildAndRegister();
     }
 
-    private static void WhileExecutesTwiceWithTransition_ImplicitWhileNode(MetaStoryHookOrchestrator hooks)
+    private static void WhileExecutesTwiceWithTransition_ImplicitWhileNode(HookOrchestrator hooks)
     {
         //hooks.DeclareWhileBranch(@"Actor.State != S3")
         //     .SetAsImplicit()

@@ -1,4 +1,4 @@
-﻿namespace ScenarioModelling.TestDataAndTools.CodeHooks;
+﻿namespace ScenarioModelling.TestDataAndTools.Attributes;
 
 public class AssociatedMetaStateHookMethodAttribute : Attribute
 {

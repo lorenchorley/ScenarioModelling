@@ -1,0 +1,5 @@
+﻿MetaStory "MetaStory recorded by hooks" {
+  Dialog {
+    Text "Nothing going on here"
+  }
+}

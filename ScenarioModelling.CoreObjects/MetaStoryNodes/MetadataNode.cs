@@ -32,7 +32,7 @@ public record MetadataNode : StoryNode
     public override IEnumerable<SemiLinearSubGraph<IStoryNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
-    public override OneOfIScenaroNode ToOneOf() => new OneOfIScenaroNode(this);
+    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
 
     public override bool IsFullyEqv(IStoryNode other)
     {

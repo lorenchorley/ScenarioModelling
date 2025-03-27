@@ -1,5 +1,4 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
@@ -9,7 +8,7 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Tools.Exceptions;
 
-namespace ScenarioModelling.CodeHooks.HookDefinitions;
+namespace ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 
 public class MetaStateHookDefinition
 {

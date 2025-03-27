@@ -12,7 +12,7 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, IfNode>]
 public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookDefinition, BifurcatingHook>
 {
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedIfEvents { get; } = new();
@@ -22,7 +22,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public IfHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IHookFunctions hookFunctions)
+    public IfHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;
@@ -37,7 +37,7 @@ public class IfHookDefinition : IConditionRegistrationNodeHookDefinition<IfHookD
 
         Node = new IfNode();
         Node.OriginalConditionText = expression;
-        Node.Condition = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
+        Node.AssertionExpression = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
     }
 
     private bool IfConditionHook(bool result)

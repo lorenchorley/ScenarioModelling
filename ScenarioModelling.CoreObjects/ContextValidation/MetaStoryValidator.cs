@@ -9,11 +9,13 @@ namespace ScenarioModelling.CoreObjects.ContextValidation;
 
 public class MetaStoryValidator : IMetaStoryVisitor
 {
+    private readonly AssertNodeValidator _assertNodeValidator = new();
     private readonly CallMetaStoryNodeValidator _callMetaStoryNodeValidator = new();
     private readonly ChooseNodeValidator _chooseNodeValidator = new();
     private readonly DialogNodeValidator _dialogNodeValidator = new();
     private readonly IfNodeValidator _ifNodeValidator = new();
     private readonly JumpNodeValidator _jumpNodeValidator = new();
+    private readonly LoopNodeValidator _loopNodeValidator = new();
     private readonly MetadataNodeValidator _metadataNodeValidator = new();
     private readonly TransitionNodeValidator _transitionNodeValidator = new();
     private readonly WhileNodeValidator _whileNodeValidator = new();
@@ -95,6 +97,18 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return _jumpNodeValidator.Validate(_metaState, _metaStory, jumpNode);
     }
 
+    public object VisitLoopNode(LoopNode LoopNode)
+    {
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaState);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaStory);
+
+        var errors = _loopNodeValidator.Validate(_metaState, _metaStory, LoopNode);
+
+        errors.Incorporate(VisitSubgraph(LoopNode.SubGraph));
+
+        return errors;
+    }
+
     public object VisitMetadata(MetadataNode metadataNode)
     {
         return _metadataNodeValidator.Validate(_metaState, _metaStory, metadataNode);
@@ -120,4 +134,8 @@ public class MetaStoryValidator : IMetaStoryVisitor
         return errors;
     }
 
+    public object VisitAssert(AssertNode assertNode)
+    {
+        throw new NotImplementedException();
+    }
 }

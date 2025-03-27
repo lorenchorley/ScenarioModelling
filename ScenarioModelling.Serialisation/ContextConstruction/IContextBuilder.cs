@@ -3,7 +3,7 @@ using ScenarioModelling.CoreObjects;
 
 namespace ScenarioModelling.Serialisation.ContextConstruction;
 
-public interface IContextBuilder<TInputs> where TInputs : IContextBuilderInputs
+public interface IContextBuilder<TInputs>
 {
     Result<Context> RefreshContextWithInputs(TInputs inputs);
     void Transform(TInputs inputs);

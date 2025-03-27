@@ -1,10 +1,11 @@
-﻿using ScenarioModelling.CoreObjects.References;
+﻿using ScenarioModelling.Annotations.Attributes;
+using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 
-public interface ISystemObject : IIdentifiable
+public interface ISystemObject : ICategoryClass, IIdentifiable
 {
     object Accept(IMetaStateVisitor visitor);
     //string? LineInformation { get; }

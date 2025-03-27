@@ -1,3 +1,4 @@
+using ScenarioModelling.CoreObjects.MetaStoryNodes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Dialog;
@@ -7,22 +8,23 @@ using System.Data;
 
 namespace ScenarioModelling.TestDataAndTools;
 
-public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null)
+public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null, int loopRunCount = 0)
 {
+
     public Story Run(string metaStoryName)
     {
         // Initialize the MetaStory
         executor.StartMetaStory(metaStoryName);
 
         // Generate first node
-        IStoryNode? node = null;
+        IStoryNode? node;
 
         while ((node = executor.NextNode()) != null)
         {
             IMetaStoryEvent e = node.GenerateEvent(dependencies);
 
             // Custom test context behaviour
-            DoCustomRunBehaviour(choicesByNodeName, node, e);
+            DoCustomRunBehaviour(node, e);
 
             executor.RegisterEvent(e);
         }
@@ -30,11 +32,12 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
         return executor.EndMetaStory();
     }
 
-    private static void DoCustomRunBehaviour(Dictionary<string, Queue<string>>? choicesByNodeName, IStoryNode? node, IMetaStoryEvent e)
+    private void DoCustomRunBehaviour(IStoryNode node, IMetaStoryEvent e)
     {
         node.ToOneOf().Switch(
-            callMetaStory => { },
-            chooseNode =>
+            (AssertNode assertNode) => { },
+            (CallMetaStoryNode callMetaStoryNode) => { },
+            (ChooseNode chooseNode) =>
             {
                 if (choicesByNodeName != null)
                 {
@@ -48,17 +51,21 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
                     ChoiceSelectedEvent choiceEvent = (ChoiceSelectedEvent)e;
                     choiceEvent.Choice =
                         chooseNode.Choices
-                                    .Where(n => n.Text.IsEqv(selection))
-                                    .Select(s => s.NodeName)
-                                    .First();
+                                  .Where(n => n.Text.IsEqv(selection))
+                                  .Select(s => s.NodeName)
+                                  .First();
                 }
             },
-            dialogNode => { },
-            ifNode => { },
-            jumpNode => { },
-            metadataNode => { },
-            transitionNode => { },
-            whileNode => { }
+            (DialogNode dialogNode) => { },
+            (IfNode ifNode) => { },
+            (JumpNode jumpNode) => { },
+            (LoopNode loopNode) => 
+            {
+                // TODO Use loopRunCount
+            },
+            (MetadataNode metadataNode) => { },
+            (TransitionNode transitionNode) => { },
+            (WhileNode whileNode) => { }
         );
     }
 }

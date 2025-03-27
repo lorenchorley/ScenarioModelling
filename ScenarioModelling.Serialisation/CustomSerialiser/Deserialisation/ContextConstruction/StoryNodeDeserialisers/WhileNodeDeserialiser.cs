@@ -26,7 +26,7 @@ public class WhileNodeDeserialiser : IDefinitionToNodeDeserialiser
     {
         if (def is not ExpressionDefinition expDef)
         {
-            throw new Exception("If node must be expression definition");
+            throw new Exception("While node must be expression definition");
         }
 
         WhileNode node = new();
@@ -49,7 +49,7 @@ public class WhileNodeDeserialiser : IDefinitionToNodeDeserialiser
         }
 
         node.OriginalConditionText = expDef.Block.ExpressionText.Value;
-        node.Condition = result.ParsedObject;
+        node.AssertionExpression = result.ParsedObject;
         ConditionsToInitialise.Add(node);
 
         //node.SubGraph.ParentSubgraph = currentSubgraph;

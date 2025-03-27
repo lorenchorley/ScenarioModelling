@@ -5,7 +5,7 @@ using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CodeHooks.Utils;
 
-public interface IHookFunctions
+public interface IMetaStoryHookFunctions
 {
     void VerifyPreviousDefinition();
     SubgraphScopedHookSynchroniser EnterSubgraph(SemiLinearSubGraph<IStoryNode> subgraph);

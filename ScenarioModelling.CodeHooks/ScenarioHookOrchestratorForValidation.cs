@@ -1,11 +1,11 @@
-﻿using ScenarioModelling.CodeHooks.HookDefinitions;
+﻿using ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.CodeHooks;
 
-public class MetaStoryHookOrchestratorForValidation(Context context, Instanciator instanciator, MetaStoryDefinitionStack metaStoryStack, IServiceProvider serviceProvider) : MetaStoryHookOrchestrator(context, instanciator, metaStoryStack, serviceProvider)
+public class MetaStoryHookOrchestratorForValidation(Context context, Instanciator instanciator, MetaStoryDefinitionStack metaStoryStack, IServiceProvider serviceProvider) : HookOrchestrator(context, instanciator, metaStoryStack, serviceProvider)
 {
     public override MetaStoryHookDefinition? StartMetaStory(string name)
     {

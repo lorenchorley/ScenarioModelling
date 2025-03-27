@@ -74,13 +74,15 @@ public class Story
 
         // TODO Remove the return value, CurrentScope.CurrentNode should be up to date
         CurrentScope.CurrentNode.ToOneOf().Switch(
-            (CallMetaStoryNode node) => ManangeCallMetaStoryNode(currentEvent, node),
-            (ChooseNode node) => ManangeChoseNode(currentEvent, node),
+            (AssertNode node) => ManageAssertNode(currentEvent, node),
+            (CallMetaStoryNode node) => ManageCallMetaStoryNode(currentEvent, node),
+            (ChooseNode node) => ManageChoseNode(currentEvent, node),
             (DialogNode node) => CurrentScope.MoveToNextInSequence(),
             (IfNode node) => ManageIfNode(currentEvent, node),
             (JumpNode node) => ManageJumpNode(currentEvent, node),
+            (LoopNode node) => ManageLoopNode(currentEvent, node),
             (MetadataNode node) => CurrentScope.MoveToNextInSequence(),
-            (TransitionNode node) => ManangeTransitionNode(currentEvent, node),
+            (TransitionNode node) => ManageTransitionNode(currentEvent, node),
             (WhileNode node) => ManageWhileNode(currentEvent, node)
         );
 
@@ -116,28 +118,48 @@ public class Story
 
         if (!constraintSatisfied)
         {
+            // TODO implement
+            //if (_throwOnConditionOrAssertionFailure) 
+            //{ 
+            //    throw new ConditionFailureException(currentScopeNode.OriginalConditionText, currentScopeNode.Name);
+            //}
+
             return GenerateConstraintFailedEvent(constraint).ToSome();
         }
 
         return null;
     }
 
-    public ConstraintFailedEvent GenerateConstraintFailedEvent(Constraint constraint)
-    {
-        return new ConstraintFailedEvent() { ProducerNode = constraint, Expression = constraint.OriginalConditionText };
-    }
+    private ConstraintFailedEvent GenerateConstraintFailedEvent(Constraint constraint)
+        => new ConstraintFailedEvent() { ProducerNode = constraint, Expression = constraint.OriginalConditionText };
 
-    private void ManangeTransitionNode(IMetaStoryEvent? currentEvent, TransitionNode currentScopeNode)
+    private void ManageAssertNode(IMetaStoryEvent? currentEvent, AssertNode currentScopeNode)
     {
-        // The last event must be a state change event
+        // The last event must be a while event
         if (currentEvent is null ||
-            currentEvent is not StateChangeEvent stateChangeEvent)
-            throw new InternalLogicException($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
+            currentEvent is not AssertionEvent assertEvent)
+            throw new InternalLogicException($"No {nameof(AssertionEvent)} was registered after mananging a {nameof(AssertNode)}");
+
+        var result = currentScopeNode.AssertionExpression.Accept(Evaluator);
+
+        if (result is not bool assertionSucceeded)
+        {
+            throw new Exception($"Assertion expression {currentScopeNode.OriginalExpressionText} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
+        }
+
+        assertEvent.Expression = currentScopeNode.OriginalExpressionText;
+        assertEvent.AssertionSucceeded = assertionSucceeded;
+
+        // TODO implement
+        //if (!assertEvent.AssertionSucceeded && _throwOnConditionOrAssertionFailure) 
+        //{
+        //    throw new AssertionFailureException(currentScopeNode.OriginalExpressionText, currentScopeNode.Name);
+        //}
 
         CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
     }
 
-    private void ManangeCallMetaStoryNode(IMetaStoryEvent? currentEvent, CallMetaStoryNode currentScopeNode)
+    private void ManageCallMetaStoryNode(IMetaStoryEvent? currentEvent, CallMetaStoryNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -154,7 +176,7 @@ public class Story
         GraphScopeStack.Push(new GraphScope(calledMetaStory.Graph));
     }
 
-    private void ManangeChoseNode(IMetaStoryEvent? currentEvent, ChooseNode currentScopeNode)
+    private void ManageChoseNode(IMetaStoryEvent? currentEvent, ChooseNode currentScopeNode)
     {
         // The last event must be a choice event
         if (currentEvent is null ||
@@ -195,6 +217,24 @@ public class Story
         CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
     }
 
+    private void ManageLoopNode(IMetaStoryEvent? currentEvent, LoopNode currentScopeNode)
+    {
+        // The last event must be a loop event
+        if (currentEvent is null ||
+            currentEvent is not LoopEvent loopEvent)
+            throw new InternalLogicException($"No {nameof(LoopEvent)} was registered after mananging a {nameof(LoopNode)}");
+
+        if (loopEvent.LoopRun)
+        {
+            CurrentScope.EnterSubGraph(loopEvent.ProducerNode.SubGraph); // This will change CurrentScope.CurrentNode
+        }
+        else
+        {
+            // Otherwise advance past the while node
+            CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
+        }
+    }
+
     private void ManageIfNode(IMetaStoryEvent? currentEvent, IStoryNode? currentScopeNode)
     {
         // The last event must be an if event
@@ -213,12 +253,22 @@ public class Story
         }
     }
 
+    private void ManageTransitionNode(IMetaStoryEvent? currentEvent, TransitionNode currentScopeNode)
+    {
+        // The last event must be a state change event
+        if (currentEvent is null ||
+            currentEvent is not StateChangeEvent stateChangeEvent)
+            throw new InternalLogicException($"No {nameof(stateChangeEvent)} was registered after mananging a {nameof(StateChangeEvent)}");
+
+        CurrentScope.MoveToNextInSequence(); // This will change CurrentScope.CurrentNode
+    }
+
     private void ManageWhileNode(IMetaStoryEvent? currentEvent, WhileNode currentScopeNode)
     {
-        // The last event must be an while event
+        // The last event must be a while event
         if (currentEvent is null ||
             currentEvent is not WhileConditionCheckEvent whileEvent)
-            throw new InternalLogicException($"No {nameof(WhileConditionCheckEvent)} was registered after mananging a {nameof(IfNode)}");
+            throw new InternalLogicException($"No {nameof(WhileConditionCheckEvent)} was registered after mananging a {nameof(WhileNode)}");
 
         if (whileEvent.LoopBlockRun)
         {

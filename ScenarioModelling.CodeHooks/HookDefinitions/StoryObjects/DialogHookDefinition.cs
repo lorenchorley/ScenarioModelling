@@ -10,14 +10,14 @@ namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 [StoryNodeLike<INodeHookDefinition, DialogNode>]
 public class DialogHookDefinition : IInSituNodeHookDefinition
 {
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     public bool Validated { get; private set; } = false;
     public DialogNode Node { get; private set; }
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public DialogHookDefinition(SubgraphScopedHookSynchroniser scope, string text, IHookFunctions hookFunctions)
+    public DialogHookDefinition(SubgraphScopedHookSynchroniser scope, string text, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
 

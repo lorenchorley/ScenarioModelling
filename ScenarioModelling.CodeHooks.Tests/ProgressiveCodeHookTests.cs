@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
 using LanguageExt;
-using Microsoft.Extensions.DependencyInjection;
 using ScenarioModelling.CodeHooks;
-using ScenarioModelling.CodeHooks.HookDefinitions;
+using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Execution;
 using ScenarioModelling.Execution.Events;
@@ -27,22 +25,24 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory Construction")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string metaStateMethodName, bool testDefinedFirstMetaStory)
+    public async Task ProgressiveDevelopment_CodeHooks_MetaStoryConstructionTests(string metaStoryMethodName, string metaStateMethodName, bool testDefinedFirstMetaStory, int loopCount)
     {
         // Arrange
         // =======
         using TestContainer container = new();
         using var scope = container.StartScope();
-        
+
         var context =
             scope.GetService<Context>()
                  .UseSerialiser<CustomContextSerialiser>()
                  .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        HookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        orchestrator.ThrowOnConstraintOrAssertionFailure();
 
         var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
-        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
+        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<HookOrchestrator>(metaStoryMethodName);
+        var expectedSerialisedContext = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedContextText(metaStateMethodName, metaStoryMethodName, testDefinedFirstMetaStory);
 
 
         // Act
@@ -69,6 +69,8 @@ public partial class ProgressiveCodeHookTests
                    .Match(v => v, e => throw e)
                    .Trim();
 
+        Assert.AreEqual(expectedSerialisedContext.Trim(), serialisedContext);
+
         await Verify(serialisedContext)
             .UseParameters(metaStoryMethodName);
     }
@@ -76,7 +78,7 @@ public partial class ProgressiveCodeHookTests
     [DataTestMethod]
     [TestCategory("Code Hooks"), TestCategory("MetaStory -> Story")]
     [ProgressiveCodeHookTestDataProvider]
-    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string metaStoryMethodName, string metaStateMethodName, bool testDefinedFirstMetaStory)
+    public async Task ProgressiveDevelopment_CodeHooks_StoryExtractionTests(string metaStoryMethodName, string metaStateMethodName, bool testDefinedFirstMetaStory, int loopCount)
     {
         // Arrange
         // =======
@@ -88,10 +90,10 @@ public partial class ProgressiveCodeHookTests
                  .UseSerialiser<CustomContextSerialiser>()
                  .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        HookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
-        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
+        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<HookOrchestrator>(metaStoryMethodName);
 
         // Build metaState
         orchestrator.DefineMetaState(metaStateHooksMethod);
@@ -101,9 +103,10 @@ public partial class ProgressiveCodeHookTests
             orchestrator.StartMetaStory(ProgressiveCodeHookTestDataProviderAttribute.PrimaryMetaStoryName);
 
         metaStoryHooksMethod(orchestrator);
-        
+
+        Story? hookGeneratedStory = null;
         if (!testDefinedFirstMetaStory)
-            orchestrator.EndMetaStory();
+            (_, hookGeneratedStory) = orchestrator.EndMetaStory();
 
         StoryTestRunner runner = scope.GetService<StoryTestRunner>();
 
@@ -115,16 +118,22 @@ public partial class ProgressiveCodeHookTests
 
         // Assert
         // ======
-        
+
+        // Check the rerun story
         string serialisedStory = story.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
 
         await Verify(serialisedStory)
             .UseParameters(metaStoryMethodName);
-        
+
         int metaStoryCallCount = story.EventSourceLog.GetEnumerable().Count(e => e is MetaStoryCalledEvent);
         int metaStoryReturnedCount = story.EventSourceLog.GetEnumerable().Count(e => e is MetaStoryReturnedEvent);
 
         metaStoryCallCount.Should().Be(metaStoryReturnedCount, "MetaStoryCalledEvent and MetaStoryReturnedEvent should be of equal quantity in the event log");
+
+        // Check the story generated in parallel while the hooks where generating the metastory
+        string serialisedParallelStory = story.EventSourceLog.GetEnumerable().Select(e => e?.ToString() ?? "").BulletPointList().Trim();
+
+        DiffAssert.DiffIfNotEqual(serialisedParallelStory, serialisedStory);
 
     }
 

@@ -1,11 +1,12 @@
 ﻿using ProtoBuf;
+using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 [ProtoContract]
-public interface IStoryNode : IDirectedGraphNode<IStoryNode>, IIdentifiable
+public interface IStoryNode : ICategoryClass, IDirectedGraphNode<IStoryNode>, IIdentifiable
 {
     /// <summary>
     /// The line number in the source file where the node is defined, if the node came from a serialised source file
@@ -26,7 +27,7 @@ public interface IStoryNode : IDirectedGraphNode<IStoryNode>, IIdentifiable
     /// Allows for automatically producing a OneOf object from the node
     /// </summary>
     /// <returns></returns>
-    OneOfIScenaroNode ToOneOf();
+    OneOfScenaroNode ToOneOf();
 
     /// <summary>
     /// Allows for the visitor pattern to be used on the node

@@ -17,7 +17,7 @@ public class WhileNodeSerialiser : INodeSerialiser<WhileNode>
         ArgumentNullExceptionStandard.ThrowIfNull(MetaStorySerialiser);
 
         ExpressionSerialiser visitor = new(MetaStory.MetaState);
-        var result = (string)node.Condition.Accept(visitor);
+        var result = (string)node.AssertionExpression.Accept(visitor);
 
         sb.AppendLine($"{currentIndent}While <{result}> {{");
 

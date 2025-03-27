@@ -15,7 +15,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
 {
     private int _whileLoopCount = 0;
     private SubgraphScopedHookSynchroniser? _whileLoopScope;
-    private readonly IHookFunctions _hookFunctions;
+    private readonly IMetaStoryHookFunctions _hookFunctions;
 
     [StoryNodeLikeProperty]
     public List<bool> RecordedWhileLoopEvents { get; } = new();
@@ -25,7 +25,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
     public SubgraphScopedHookSynchroniser Scope { get; }
     public SubGraphScopeSnapshot ScopeSnapshot { get; }
 
-    public WhileHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IHookFunctions hookFunctions)
+    public WhileHookDefinition(SubgraphScopedHookSynchroniser scope, string expression, IMetaStoryHookFunctions hookFunctions)
     {
         _hookFunctions = hookFunctions;
         Scope = scope;
@@ -40,7 +40,7 @@ public class WhileHookDefinition : IConditionRegistrationNodeHookDefinition<Whil
 
         Node = new WhileNode();
         Node.OriginalConditionText = expression;
-        Node.Condition = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
+        Node.AssertionExpression = result.ParsedObject ?? throw new InternalLogicException($@"The expression ""{expression}"" resulted in a null value after being parsed");
     }
 
     private bool WhileHook(bool result)

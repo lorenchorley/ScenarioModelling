@@ -20,7 +20,7 @@ public abstract record StoryNode : IStoryNode
         get => Line.HasValue ? $" (Near line {Line.Value})" : "";
     }
 
-    public abstract OneOfIScenaroNode ToOneOf();
+    public abstract OneOfScenaroNode ToOneOf();
     public abstract object Accept(IMetaStoryVisitor visitor);
     public abstract bool IsFullyEqv(IStoryNode other);
 }

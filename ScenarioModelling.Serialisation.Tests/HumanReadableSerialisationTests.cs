@@ -1,6 +1,6 @@
 using FluentAssertions;
 using ScenarioModelling.CodeHooks;
-using ScenarioModelling.CodeHooks.HookDefinitions;
+using ScenarioModelling.CodeHooks.HookDefinitions.MetaStateObjects;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.TestDataAndTools;
@@ -24,7 +24,7 @@ public class CustomSerialiserSerialisationTests
     [TestMethod]
     [TestCategory("Serialisation"), TestCategory("CustomSerialiser")]
     [ProgressiveCodeHookTestDataProvider]
-    public void CustomSerialiser_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool testDefinedFirstMetaStory)
+    public void CustomSerialiser_Context_DeserialiseReserialise_FromHookTestData(string metaStoryMethodName, string systemMethodName, bool testDefinedFirstMetaStory, int loopCount)
     {
         using ScenarioModellingContainer container = new();
         using var scope = container.StartScope();
@@ -34,10 +34,10 @@ public class CustomSerialiserSerialisationTests
                  .UseSerialiser<CustomContextSerialiser>()
                  .Initialise();
 
-        MetaStoryHookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
+        HookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
 
         var systemHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(systemMethodName);
-        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStoryHookOrchestrator>(metaStoryMethodName);
+        var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<HookOrchestrator>(metaStoryMethodName);
 
         // Build system
         orchestrator.DefineMetaState(systemHooksMethod);
