@@ -147,6 +147,7 @@ public class Story
             throw new Exception($"Assertion expression {currentScopeNode.OriginalExpressionText} did not evaluate to a boolean, this is a failure of the expression validation mecanism to not correctly determine the return type.");
         }
 
+        assertEvent.AssertionName = currentScopeNode.Name;
         assertEvent.Expression = currentScopeNode.OriginalExpressionText;
         assertEvent.AssertionSucceeded = assertionSucceeded;
 
@@ -226,6 +227,10 @@ public class Story
 
         if (loopEvent.LoopRun)
         {
+            // So that the execution flow comes back to this node and re-executes it on return rather than continuing to the next node
+            // This is so that the condition can be re-evaluated each time the loop finishes
+            CurrentScope.CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(currentScopeNode);
+
             CurrentScope.EnterSubGraph(loopEvent.ProducerNode.SubGraph); // This will change CurrentScope.CurrentNode
         }
         else
@@ -272,6 +277,10 @@ public class Story
 
         if (whileEvent.LoopBlockRun)
         {
+            // So that the execution flow comes back to this node and re-executes it on return rather than continuing to the next node
+            // This is so that the condition can be re-evaluated each time the loop finishes
+            CurrentScope.CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(currentScopeNode);
+
             CurrentScope.EnterSubGraph(whileEvent.ProducerNode.SubGraph); // This will change CurrentScope.CurrentNode
         }
         else

@@ -1,0 +1,24 @@
+﻿@page "/designer"
+@rendermode InteractiveAuto
+
+<PageTitle>Designer</PageTitle>
+
+<h1>Designer</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <textarea class="form-control" style="width: 100%; height: 100vh;"></textarea>
+        </div>
+        <div class="col-md-6">
+            <canvas id="designerCanvas" style="width: 100%; height: 100vh; border: 1px solid #000;"></canvas>
+        </div>
+    </div>
+</div>
+
+@code {
+    // [Inject]
+    // private IJSRuntime JSRuntime { get; set; }
+
+
+}

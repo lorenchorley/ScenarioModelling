@@ -244,6 +244,9 @@ public class CodeHookTestData
 
     [ExpectedSerialisedForm(
     """
+    Transition {
+      Actor : T1
+    }
     Assert <Actor.State == S1>
     """)]
     [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
@@ -258,6 +261,9 @@ public class CodeHookTestData
 
     [ExpectedSerialisedForm(
     """
+    Transition {
+      Actor : T1
+    }
     Assert "Actor is in first state" <Actor.State == S1>
     """)]
     [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]

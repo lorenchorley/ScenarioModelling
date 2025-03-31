@@ -67,14 +67,14 @@ public class TestCaseTestData
     public static void MetaStateOneActorThreeStates(MetaStateHookDefinition config)
     {
         config.Entity("Actor")
-               .SetState("S1");
+              .SetState("S1");
 
         config.StateMachine("SM1")
-               .WithState("S1")
-               .WithState("S2")
-               .WithState("S3")
-               .WithTransition("S1", "S2", "T1")
-               .WithTransition("S2", "S3", "T1");
+              .WithState("S1")
+              .WithState("S2")
+              .WithState("S3")
+              .WithTransition("S1", "S2", "T1")
+              .WithTransition("S2", "S3", "T1");
     }
 
     [ExpectedSerialisedForm(

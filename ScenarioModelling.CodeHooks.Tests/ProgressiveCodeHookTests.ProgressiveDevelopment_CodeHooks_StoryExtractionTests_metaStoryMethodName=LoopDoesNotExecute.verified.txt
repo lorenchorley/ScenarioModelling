@@ -1,1 +1,2 @@
-﻿
+﻿* LoopEvent {"LoopRun":false}
+* DialogEvent {"Text":"After loop block","Character":null}

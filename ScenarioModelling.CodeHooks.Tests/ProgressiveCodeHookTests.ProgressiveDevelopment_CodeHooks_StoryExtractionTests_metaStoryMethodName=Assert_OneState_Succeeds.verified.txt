@@ -1,1 +1,1 @@
-﻿* AssertionEvent {"Expression":"Actor.State == S1","AssertionSucceeded":true}
+﻿* AssertionEvent {"AssertionName":"","Expression":"Actor.State == S1","AssertionSucceeded":true}

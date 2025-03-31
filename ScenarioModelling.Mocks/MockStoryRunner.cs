@@ -10,13 +10,13 @@ public class MockStoryRunner
 {
     public MockDialogExecutor Executor { get; }
     public EventGenerationDependencies Dependencies { get; }
-    public Dictionary<string, Queue<string>>? ChoicesByNodeName { get; }
+    public Dictionary<string, Queue<string>> ChoicesByNodeName { get; } = new();
+    // TODO Loops ?
 
-    public MockStoryRunner(MockDialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null)
+    public MockStoryRunner(MockDialogExecutor executor, EventGenerationDependencies dependencies)
     {
         Executor = executor;
         Dependencies = dependencies;
-        ChoicesByNodeName = choicesByNodeName;
     }
 
     public Story Run(string metaStoryName)

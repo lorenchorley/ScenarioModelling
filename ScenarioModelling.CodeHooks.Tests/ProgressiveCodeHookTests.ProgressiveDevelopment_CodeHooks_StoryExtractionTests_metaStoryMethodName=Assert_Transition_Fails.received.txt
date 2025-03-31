@@ -1,2 +1,0 @@
-﻿* StateChangeEvent {"StatefulObject":{"Name":"Actor","TypeName":"Entity"},"InitialState":{"Name":"S1","TypeName":"State"},"FinalState":{"Name":"S2","TypeName":"State"},"TransitionName":"T1"}
-* AssertionEvent {"Expression":"Actor.State == S1","AssertionSucceeded":false}

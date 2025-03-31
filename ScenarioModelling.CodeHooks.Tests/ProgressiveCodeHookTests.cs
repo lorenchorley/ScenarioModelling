@@ -39,6 +39,7 @@ public partial class ProgressiveCodeHookTests
 
         HookOrchestrator orchestrator = scope.GetService<MetaStoryHookOrchestratorForConstruction>();
         orchestrator.ThrowOnConstraintOrAssertionFailure();
+        orchestrator.RunStoryInParallelToHooks();
 
         var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<HookOrchestrator>(metaStoryMethodName);
@@ -69,10 +70,7 @@ public partial class ProgressiveCodeHookTests
                    .Match(v => v, e => throw e)
                    .Trim();
 
-        Assert.AreEqual(expectedSerialisedContext.Trim(), serialisedContext);
-
-        await Verify(serialisedContext)
-            .UseParameters(metaStoryMethodName);
+        DiffAssert.DiffIfNotEqual(expectedSerialisedContext, serialisedContext);
     }
 
     [DataTestMethod]
@@ -109,7 +107,7 @@ public partial class ProgressiveCodeHookTests
             (_, hookGeneratedStory) = orchestrator.EndMetaStory();
 
         StoryTestRunner runner = scope.GetService<StoryTestRunner>();
-
+        runner.LoopCount = loopCount;
 
         // Act
         // ===

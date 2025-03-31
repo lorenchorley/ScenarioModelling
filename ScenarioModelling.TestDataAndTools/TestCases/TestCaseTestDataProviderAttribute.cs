@@ -39,6 +39,27 @@ public class TestCaseTestDataProviderAttribute : Attribute, ITestDataSource
         return (parameter) => methodRef.Invoke(typeof(TestCaseTestData), [parameter]);
     }
 
+    public static string GetExpectedContextText(string metaStateMethodName, string metaStoryMethodName, bool testDefinedFirstMetaStory)
+    {
+        var metaState = GetExpectedText(metaStateMethodName);
+
+        string metaStoryText = GetExpectedText(metaStoryMethodName);
+
+        metaStoryText = testDefinedFirstMetaStory ?
+            metaStoryText
+            : $$"""
+            MetaStory "{{PrimaryMetaStoryName}}" {
+            {{metaStoryText.AddIndent("  ")}}
+            }
+            """;
+
+        return $"""
+            {metaState}
+
+            {metaStoryText}
+            """.Trim();
+    }
+
     public static string GetExpectedText(string metaStoryMethodName)
     {
         var attr = GetAssociatedExpectedText<ExpectedSerialisedFormAttribute>(metaStoryMethodName);

@@ -96,7 +96,7 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
             {metaState}
 
             {metaStoryText}
-            """;
+            """.Trim();
     }
 
     private static string GetAssociatedMetaStateMethodName(string metaStateMethodName)

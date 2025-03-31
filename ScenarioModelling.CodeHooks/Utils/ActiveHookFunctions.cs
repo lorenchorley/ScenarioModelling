@@ -53,7 +53,7 @@ public class ActiveHookFunctions : InactiveHookFunctions
                 _contextBuilderInputs.Enqueue(newNode); // TODO Remove the inputs class, it's too much
                 _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
 
-                ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
+                //ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
                 //_parallelConstructionExecutor!.AddNodeToStoryAndAdvance(newNode); // TODO This generates an extra event sometimes after RegisterEventForHook has already created one. It's not clear which should win out and when
             },
             existing: hookDefinition.ReplaceNodeWithExisting
@@ -62,13 +62,14 @@ public class ActiveHookFunctions : InactiveHookFunctions
 
     public override void RegisterEventForHook(INodeHookDefinition hookDefinition, Action<IMetaStoryEvent> configure)
     {
-        ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
-
         var node = hookDefinition.GetNode();
-        var @event = _parallelConstructionExecutor!.GenerateEvent(node);
-        configure(@event);
 
-        _parallelConstructionExecutor!.RegisterEvent(@event); // TODO This generates an extra event sometimes after FinaliseDefintion has already created one. It's not clear which should win out and when
+        IMetaStoryEvent? @event = _parallelConstructionExecutor?.GenerateEvent(node);
+        if (@event != null)
+        {
+            configure(@event);
+            _parallelConstructionExecutor?.RegisterEvent(@event); // TODO This generates an extra event sometimes after FinaliseDefintion has already created one. It's not clear which should win out and when
+        }
     }
 
 }

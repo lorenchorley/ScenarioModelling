@@ -1,6 +1,8 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
 using ScenarioModelling.CoreObjects;
+using ScenarioModelling.CoreObjects.References;
+using ScenarioModelling.CoreObjects.References.GeneralisedReferences;
 using ScenarioModelling.CoreObjects.TestCaseNodes;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.TestCaseObjects;
@@ -46,7 +48,8 @@ public class TestCaseHookDefinition : ITestCaseHookDefinition
         // TODO Verify that all the stateful objects and states exist in the meta state
         foreach (var statefulObjectName in InitialStates.Keys.Concat(ExpectedStates.Keys))
         {
-            if (!Node.Context.MetaState.AllStateful.Any(s => s.Name.IsEqv(statefulObjectName)))
+            bool foundStatefulObject = new StateReference(Node.Context.MetaState) { Name = statefulObjectName }.IsResolvable();
+            if (!foundStatefulObject)
                 throw new Exception($"Stateful object {statefulObjectName} does not exist in the meta state");
         }
         

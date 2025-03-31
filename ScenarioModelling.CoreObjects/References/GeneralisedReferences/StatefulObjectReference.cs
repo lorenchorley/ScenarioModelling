@@ -33,6 +33,8 @@ public class StatefulObjectReference : IStatefulObjectReference
 
     private static bool IsStatefulObjectEqv(IStateful other, string name)
     {
+        // TODO if has .State on the end, remove it and compare as normal ?
+
         if (other is Aspect aspect)
         {
             string aspectIdentifier = $"{aspect.Entity.Name}.{aspect.Name}";
@@ -43,7 +45,6 @@ public class StatefulObjectReference : IStatefulObjectReference
     }
 
     public bool IsResolvable() => ResolveReference().IsSome;
-
 
     public bool IsEqv(IStatefulObjectReference other)
     {

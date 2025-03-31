@@ -8,8 +8,10 @@ using System.Data;
 
 namespace ScenarioModelling.TestDataAndTools;
 
-public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies, Dictionary<string, Queue<string>>? choicesByNodeName = null, int loopRunCount = 0)
+public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencies dependencies)
 {
+    public int LoopCount { get; internal set; }
+    public Dictionary<string, Queue<string>>? ChoicesByNodeName { get; internal set; }
 
     public Story Run(string metaStoryName)
     {
@@ -39,11 +41,11 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
             (CallMetaStoryNode callMetaStoryNode) => { },
             (ChooseNode chooseNode) =>
             {
-                if (choicesByNodeName != null)
+                if (ChoicesByNodeName != null)
                 {
-                    if (!choicesByNodeName.TryGetValue(chooseNode.Name, out Queue<string>? choicesForNode) || choicesForNode == null)
+                    if (!ChoicesByNodeName.TryGetValue(chooseNode.Name, out Queue<string>? choicesForNode) || choicesForNode == null)
                     {
-                        throw new ArgumentException($"No choices queue provided for node {chooseNode.Name}, only for {choicesByNodeName.Keys.CommaSeparatedList()}");
+                        throw new ArgumentException($"No choices queue provided for node {chooseNode.Name}, only for {ChoicesByNodeName.Keys.CommaSeparatedList()}");
                     }
 
                     string selection = choicesForNode.Dequeue();
@@ -61,7 +63,8 @@ public class StoryTestRunner(DialogExecutor executor, EventGenerationDependencie
             (JumpNode jumpNode) => { },
             (LoopNode loopNode) => 
             {
-                // TODO Use loopRunCount
+                LoopEvent choiceEvent = (LoopEvent)e;
+                choiceEvent.LoopRun = LoopCount-- > 0;
             },
             (MetadataNode metadataNode) => { },
             (TransitionNode transitionNode) => { },

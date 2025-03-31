@@ -8,6 +8,7 @@ namespace ScenarioModelling.Execution.Events;
 [StoryNodeLike<IMetaStoryEvent, AssertNode>]
 public record AssertionEvent : IMetaStoryEvent<AssertNode>
 {
+    public string AssertionName { get; set; } = ""; // Progressive series of evaluations to improve readability
     public string Expression { get; set; } = ""; // Progressive series of evaluations to improve readability
     public bool AssertionSucceeded { get; set; }
 

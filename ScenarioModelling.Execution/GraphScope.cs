@@ -52,8 +52,8 @@ public class GraphScope
     {
         ArgumentNullExceptionStandard.ThrowIfNull(CurrentNode);
 
-        if (CurrentNode is WhileNode)
-            CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(CurrentNode);
+        //if (CurrentNode is WhileNode)
+        //    CurrentSubGraphScope.SetExplicitNextNodeInSubGraph(CurrentNode);
 
         AddSubgraphToStack(subGraph);
 

@@ -16,6 +16,7 @@ public class AssertNodeSerialiser : INodeSerialiser<AssertNode>
         var result = (string)node.AssertionExpression.Accept(visitor);
 
         var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
-        sb.AppendLine($"{currentIndent}Assert {name} <{result}>");
+
+        sb.AppendLine($"{currentIndent}Assert {name}<{result}>");
     }
 }
