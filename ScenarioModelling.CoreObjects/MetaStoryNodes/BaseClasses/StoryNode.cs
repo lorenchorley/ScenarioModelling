@@ -22,5 +22,6 @@ public abstract record StoryNode : IStoryNode
 
     public abstract OneOfScenaroNode ToOneOf();
     public abstract object Accept(IMetaStoryVisitor visitor);
+    public abstract Task<object> Accept(IMetaStoryAsyncVisitor visitor);
     public abstract bool IsFullyEqv(IStoryNode other);
 }

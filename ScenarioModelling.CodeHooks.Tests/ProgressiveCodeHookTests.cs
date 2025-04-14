@@ -43,7 +43,7 @@ public partial class ProgressiveCodeHookTests
 
         var metaStateHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<MetaStateHookDefinition>(metaStateMethodName);
         var metaStoryHooksMethod = ProgressiveCodeHookTestDataProviderAttribute.GetAction<HookOrchestrator>(metaStoryMethodName);
-        var expectedSerialisedContext = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedContextText(metaStateMethodName, metaStoryMethodName, testDefinedFirstMetaStory);
+        var expectedSerialisedContext = ProgressiveCodeHookTestDataProviderAttribute.GetExpectedCustomContextText(metaStateMethodName, metaStoryMethodName, testDefinedFirstMetaStory);
 
 
         // Act

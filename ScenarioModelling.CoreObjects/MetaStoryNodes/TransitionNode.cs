@@ -33,6 +33,9 @@ public record TransitionNode : StoryNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitTransition(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitTransition(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not TransitionNode otherNode)

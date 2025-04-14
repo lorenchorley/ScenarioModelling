@@ -29,6 +29,9 @@ public record CallMetaStoryNode : StoryNode, IFlowNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitCallMetaStory(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitCallMetaStory(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not CallMetaStoryNode otherNode)

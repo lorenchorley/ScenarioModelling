@@ -1,24 +1,161 @@
 ﻿@page "/designer"
 @rendermode InteractiveAuto
+@using Excubo.Blazor.Canvas
+@using ScenarioModelling
+@using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation
+@using System.Diagnostics
+@using System.Text
+@using WebDesigner.Blazor.Client.Rendering
+@using WebDesigner.Blazor.Client.Services
 
 <PageTitle>Designer</PageTitle>
 
-<h1>Designer</h1>
+@* https://github.com/excubo-ag/Blazor.Canvas/blob/main/TestProject_Components/Pages/Context2D/WhiteboardExample.razor *@
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6">
-            <textarea class="form-control" style="width: 100%; height: 100vh;"></textarea>
-        </div>
-        <div class="col-md-6">
-            <canvas id="designerCanvas" style="width: 100%; height: 100vh; border: 1px solid #000;"></canvas>
-        </div>
+<div id="container">
+    <div id="left" style="width: 50%;">
+        <textarea id="topText" @oninput="OnTextChanged" style="flex: 1;">@TestData.StartingText</textarea>
+        <div id="horizontal-separator"></div>
+        <textarea id="bottomText" @bind="OutputText" style="flex: 1;"></textarea>
+    </div>
+
+    <div id="vertical-separator"></div>
+
+    <div id="canvas-container">
+        <div id="mainCanvasPositioner"></div>
+        <canvas @ref="_canvas" id="mainCanvas" width="@ViewportWidth" height="@ViewportHeight"></canvas>
     </div>
 </div>
 
 @code {
-    // [Inject]
-    // private IJSRuntime JSRuntime { get; set; }
 
+    [Inject]
+    public IJSRuntime js { get; set; } = default!;
 
+    public string OutputText { get; set; } = "";
+    public int ViewportWidth { get; set; }
+    public int ViewportHeight { get; set; }
+
+    private string _synchronisedCodeText = "";
+    private string _exploitedCode = "";
+    private System.Timers.Timer? _debounceTimer;
+    private readonly object _lock = new();
+    private ElementReference _canvas;
+    private ElementReference _canvasparent;
+
+    [JSInvokable]
+    public void OnResize(double width, double height)
+    {
+        if (ViewportWidth == width && ViewportHeight == height) return;
+        ViewportWidth = (int)width;
+        ViewportHeight = (int)height;
+        StateHasChanged();
+    }
+
+    private void OnTextChanged(ChangeEventArgs a)
+    {
+        lock (_lock)
+        {
+            _synchronisedCodeText = a.Value?.ToString() ?? "";
+
+            // Debounce reset
+            _debounceTimer?.Stop();
+            _debounceTimer?.Start();
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        _debounceTimer = new System.Timers.Timer(300); // debounce delay
+        _debounceTimer.AutoReset = false;
+        _debounceTimer.Elapsed += async (sender, e) =>
+        {
+            _debounceTimer.Stop();
+            _exploitedCode = _synchronisedCodeText;
+
+            await UpdateCanvasFromText(_exploitedCode);
+        };
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task UpdateCanvasFromText(string newCode)
+    {
+        StringBuilder sb = new();
+
+        try
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            var canvasContext = await js.GetContext2DAsync(_canvas);
+
+            ScenarioModellingContainer container = new();
+            var scope = container.StartScope();
+
+            async void DisposeAll(object? sender, EventArgs args)
+            {
+                await canvasContext.DisposeAsync();
+                container.Dispose();
+                scope.Dispose();
+            }
+
+            var context =
+                scope.Context
+                     .UseSerialiser<CustomContextSerialiser>();
+
+            try
+            {
+                context.LoadContext(newCode.SetWindowsLineEndings()).Initialise();
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine(ex.Message);
+
+                return;
+            }
+
+            if (context.ValidationErrors.Count != 0)
+            {
+                sb.AppendLine( context.ValidationErrors.CommaSeparatedList());
+
+                return;
+            }
+
+            var metaStory = context.MetaStories.FirstOrDefault();
+
+            if (metaStory != null)
+            {
+                Renderer renderer = new(new Vector2(ViewportWidth, ViewportHeight));
+                renderer.OnDispose += DisposeAll;
+
+                Stopwatch swRender = Stopwatch.StartNew();
+
+                var message = await renderer.Render(metaStory, canvasContext);
+
+                swRender.Stop();
+
+                sb.AppendLine(message);
+                sb.AppendLine($"Rendered in {swRender.ElapsedMilliseconds}ms");
+            }
+
+            sw.Stop();
+            sb.AppendLine($"Finished in {sw.ElapsedMilliseconds}ms");
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                OutputText = sb.ToString();
+                StateHasChanged();
+            });
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await js.InvokeVoidAsync("window.registerViewportChangeCallback", DotNetObjectReference.Create(this));
+    }
 }

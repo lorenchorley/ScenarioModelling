@@ -32,6 +32,9 @@ public record AssertNode : StoryNode, IStoryNodeWithExpression
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitAssert(this);
+    
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitAssert(this);
 
     public override bool IsFullyEqv(IStoryNode other)
     {

@@ -29,6 +29,9 @@ public record JumpNode : StoryNode, IFlowNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitJump(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitJump(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not JumpNode otherNode)

@@ -31,6 +31,9 @@ public record LoopNode : StoryNode, IFlowNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitLoopNode(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitLoopNode(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not LoopNode otherNode)

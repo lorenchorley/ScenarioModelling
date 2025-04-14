@@ -1324,7 +1324,40 @@ public class CodeHookTestData
 
     #region CallMetaStory
 
+    [ExpectedSerialisedForm(
+    """
+    metastory:
+      name: "MetaStory recorded by hooks"
+      nodes:
+      - dialog
+        text: "Before call : {Actor.State}"
+      - call.metastory
+        metastory.name: "First MetaStory"
+      - dialog
+        text: "Between calls : {Actor.State}"
+      - call.metastory
+        metastory.name: "Second MetaStory"
+      - dialog
+        text: "After call : {Actor.State}"
 
+    metastory:
+      name: "First MetaStory"
+      nodes:
+      - transition
+        name: T1
+        object: Actor
+      - dialog
+        text: "Inside the first meta story"
+
+    metastory:
+      name: "Second MetaStory"
+      nodes:
+      - transition
+        name: T1
+        object: Actor
+      - dialog
+        text: "Inside the second meta story"
+    """, SerialisationType.Yaml)]
     [ExpectedSerialisedForm(
     """
     MetaStory "MetaStory recorded by hooks" {

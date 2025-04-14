@@ -35,6 +35,13 @@ public interface IStoryNode : ICategoryClass, IDirectedGraphNode<IStoryNode>, II
     /// <param name="visitor"></param>
     /// <returns></returns>
     object Accept(IMetaStoryVisitor visitor);
+    
+    /// <summary>
+    /// Allows for the visitor pattern to be used on the node
+    /// </summary>
+    /// <param name="visitor"></param>
+    /// <returns></returns>
+    Task<object> Accept(IMetaStoryAsyncVisitor visitor);
 
     /// <summary>
     /// Checks only name and type

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,10 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.68" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.14" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ScenarioModelling.CoreObjects\ScenarioModelling.CoreObjects.csproj" />
     <ProjectReference Include="..\..\ScenarioModel\ScenarioModelling.csproj" />
   </ItemGroup>
 

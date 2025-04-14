@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebDesigner.Blazor.Client\WebDesigner.Blazor.Client.csproj" />
+    <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.68" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.14" />
   </ItemGroup>
 

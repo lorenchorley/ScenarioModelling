@@ -33,6 +33,9 @@ public record ChooseNode : StoryNode, IFlowNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitChoose(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitChoose(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not ChooseNode otherNode)

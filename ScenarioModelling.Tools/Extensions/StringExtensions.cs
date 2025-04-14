@@ -65,4 +65,8 @@
         return string.Join("\n", str.Split('\n').Select(s => indent + s));
     }
 
+    public static string SetWindowsLineEndings(this string str)
+    {
+        return str.Replace("\r", "").Replace("\n", "\r\n");
+    }
 }

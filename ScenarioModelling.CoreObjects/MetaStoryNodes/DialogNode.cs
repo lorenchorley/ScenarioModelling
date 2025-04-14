@@ -32,6 +32,9 @@ public record DialogNode : StoryNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitDialog(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitDialog(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not DialogNode otherNode)

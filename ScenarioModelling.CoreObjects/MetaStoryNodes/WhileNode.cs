@@ -40,6 +40,9 @@ public record WhileNode : StoryNode, IStoryNodeWithExpression, IFlowNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitWhile(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitWhile(this);
+
     public override bool IsFullyEqv(IStoryNode other)
     {
         if (other is not WhileNode otherNode)

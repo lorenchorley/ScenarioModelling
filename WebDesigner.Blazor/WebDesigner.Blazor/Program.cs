@@ -1,5 +1,6 @@
-using WebDesigner.Blazor.Client.Pages;
+using WebDesigner.Blazor.Client.Extensions;
 using WebDesigner.Blazor.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseAddress"]) });
+//builder.Services.AddJSInterop();
 
 var app = builder.Build();
 
@@ -28,9 +32,9 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(WebDesigner.Blazor.Client._Imports).Assembly);
+   .AddInteractiveServerRenderMode()
+   .AddInteractiveWebAssemblyRenderMode()
+   .AddAdditionalAssemblies(typeof(WebDesigner.Blazor.Client._Imports).Assembly);
 
 // Redirect root URL to the designer page
 app.MapGet("/", context =>

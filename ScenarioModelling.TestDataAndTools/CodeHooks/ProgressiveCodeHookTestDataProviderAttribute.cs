@@ -1,5 +1,6 @@
 ﻿using ScenarioModelling.TestDataAndTools.Attributes;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace ScenarioModelling.TestDataAndTools.CodeHooks;
@@ -72,13 +73,13 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         return (parameter) => methodRef.Invoke(typeof(CodeHookTestData), [parameter]);
     }
 
-    public static string GetExpectedText(string metaStoryMethodName)
+    public static string GetExpectedText(string metaStoryMethodName, SerialisationType serialisationType = SerialisationType.CustomSerialiser)
     {
-        var attr = GetAssociatedExpectedText<ExpectedSerialisedFormAttribute>(metaStoryMethodName);
+        var attr = GetAssociatedExpectedText<ExpectedSerialisedFormAttribute>(metaStoryMethodName, attr => attr.SerialisationType == serialisationType);
         return attr?.Text ?? $"Text not set. To set this text, apply the attribute ExpectedSerialisedForm to the hook method {metaStoryMethodName}.";
     }
 
-    public static string GetExpectedContextText(string metaStateMethodName, string metaStoryMethodName, bool testDefinedFirstMetaStory)
+    public static string GetExpectedCustomContextText(string metaStateMethodName, string metaStoryMethodName, bool testDefinedFirstMetaStory)
     {
         var metaState = GetExpectedText(metaStateMethodName);
 
@@ -105,14 +106,17 @@ public class ProgressiveCodeHookTestDataProviderAttribute : Attribute, ITestData
         return attr?.MethodName ?? $"Method name not set. To set this name, apply the attribute AssociatedMetaStateHookMethod to the hook method {metaStateMethodName}.";
     }
 
-    private static T? GetAssociatedExpectedText<T>(string metaStoryMethodName) where T : Attribute
+    private static T? GetAssociatedExpectedText<T>(string metaStoryMethodName, Func<T, bool>? pred = null) where T : Attribute
     {
         var methodRef =
             typeof(CodeHookTestData)
                 .GetMethod(metaStoryMethodName, BindingFlags.Public | BindingFlags.Static)
                 ?? throw new Exception($"Method {metaStoryMethodName} not found in {nameof(CodeHookTestData)}");
 
-        return methodRef.GetCustomAttribute<T>();
+        if (pred == null)
+            return methodRef.GetCustomAttributes<T>().SingleOrDefault();
+        else
+            return methodRef.GetCustomAttributes<T>().Where(pred).SingleOrDefault();
     }
 
 }

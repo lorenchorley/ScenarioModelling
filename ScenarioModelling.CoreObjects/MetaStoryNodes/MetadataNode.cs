@@ -29,6 +29,9 @@ public record MetadataNode : StoryNode
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitMetadata(this);
 
+    public override async Task<object> Accept(IMetaStoryAsyncVisitor visitor)
+        => await visitor.VisitMetadata(this);
+
     public override IEnumerable<SemiLinearSubGraph<IStoryNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
