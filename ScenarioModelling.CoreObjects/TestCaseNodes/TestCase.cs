@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.CoreObjects.TestCaseNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.TestCaseNodes;
@@ -9,7 +8,6 @@ namespace ScenarioModelling.CoreObjects.TestCaseNodes;
 /// </summary>
 public class TestCase : ITestCaseNode, IIdentifiable
 {
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
     [JsonIgnore]

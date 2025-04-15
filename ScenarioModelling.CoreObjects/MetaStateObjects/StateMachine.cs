@@ -1,21 +1,20 @@
 ﻿using LanguageExt;
 using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
-[ProtoContract]
-[MetaStateObjectLike<ISystemObject, StateMachine>]
-public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSerialisability
+[MetaStateObjectLike<IMetaStateObject, StateMachine>]
+public record StateMachine : IMetaStateObject<StateMachineReference>, IOptionalSerialisability
 {
     private MetaState _system = null!;
 
@@ -23,13 +22,10 @@ public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSeri
     [YamlIgnore]
     public Type Type => typeof(StateMachine);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
     public StateListProperty States { get; set; }
 
-    [ProtoMember(3)]
     public TransitionListProperty Transitions { get; set; }
 
     public bool ExistanceOriginallyInferred { get; set; } = false;
@@ -60,7 +56,7 @@ public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSeri
         _system = system;
 
         // Add this to the system
-        system.StateMachines.Add(this);
+        //system.StateMachines.Add(this);
 
         States = new(system);
         Transitions = new(system);
@@ -70,6 +66,9 @@ public record StateMachine : ISystemObject<StateMachineReference>, IOptionalSeri
     {
         _system = system;
     }
+
+    public OneOfMetaStateObject ToOneOf()
+        => new OneOfMetaStateObject(this);
 
     public StateMachineReference GenerateReference()
         => new StateMachineReference(_system) { Name = Name };

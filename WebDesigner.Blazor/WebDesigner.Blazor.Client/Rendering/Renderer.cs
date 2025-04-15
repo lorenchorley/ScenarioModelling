@@ -7,30 +7,48 @@ public class Renderer(Vector2 size)
 {
     public event EventHandler? OnDispose;
 
-    public async Task<string> Render(MetaStory metaStory, Context2D canvasContext)
+    public async Task<string> Render(MetaStory metaStory, Context2D canvas, Func<string, Task> debugLog)
     {
         try
         {
-            List<Task> uiTasks = new();
+            RenderingQueue renderingQueue = new(debugLog); // TODO replace with a channel ?
 
-            await canvasContext.ClearRectAsync(0, 0, size.X, size.Y);
-            //await canvasContext.FillRectAsync(size.X / 4, size.Y / 4, size.X / 2, size.Y / 2);
+            renderingQueue.Enqueue("Layout", async () =>
+            {
+                await canvas.FillStyleAsync("white");
+                await canvas.ClearRectAsync(0, 0, size.X, size.Y);
 
-            SemiLinearSubGraphRenderer _metaStoryGraphRenderer = new(uiTasks, canvasContext, 0, 0);
+                // Top left
+                await canvas.FillStyleAsync("#FFFFFF");
+                await canvas.FillRectAsync(0, 0, size.X / 2, 2 * size.Y / 3);
+
+                // Bottom
+                await canvas.FillStyleAsync("#00FF0020");
+                await canvas.FillRectAsync(0, 2 * size.Y / 3, size.X, size.Y / 3);
+
+                // Top right
+                await canvas.FillStyleAsync("#0000FF20");
+                await canvas.FillRectAsync(size.X / 2, 0, size.X / 2, 2 * size.Y / 3);
+
+            });
+
+            SemiLinearSubGraphRenderer _metaStoryGraphRenderer = new(renderingQueue, canvas, 0, 0);
 
             foreach (var item in metaStory.Graph.PrimarySubGraph.UnorderedEnumerable)
             {
                 await item.Accept(_metaStoryGraphRenderer);
             }
 
-            var lastDot = await _metaStoryGraphRenderer.DrawNextDot(); // Different design
+            var lastDot = await _metaStoryGraphRenderer.DrawNextDot("Last dot", "black"); // Different design
             await _metaStoryGraphRenderer.DoToDos(lastDot);
 
-            var _ = Task.Run(async () =>
-            {
-                await Task.WhenAll(uiTasks);
-                OnDispose?.Invoke(this, EventArgs.Empty);
-            });
+            await renderingQueue.FinishAndContinueWith(() => OnDispose?.Invoke(this, EventArgs.Empty));
+
+            //var _ = Task.Run(async () =>
+            //{
+            //    await Task.WhenAll(uiTasks);
+            //    OnDispose?.Invoke(this, EventArgs.Empty);
+            //});
 
             return await Task.FromResult($"");
         }

@@ -27,9 +27,16 @@ public class EntityDeserialiser(MetaState MetaState, Instanciator Instanciator, 
         var (stateReferences, remaining2) = remaining1.PartitionByChoose(StateTransformer.TransformAsProperty);
 
 
+        def.HasBeenTransformed = true;
+
         Entity value = Instanciator.New<Entity>(definition: def);
 
-        def.HasBeenTransformed = true;
+        if (MetaState.Entities.Any(e => e.Name == value.Name))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
 
         EntityTypeReference typeReference =
             unnamed.Definitions
@@ -51,6 +58,7 @@ public class EntityDeserialiser(MetaState MetaState, Instanciator Instanciator, 
             throw new Exception($"More than one state was set on entity {value.Name ?? "<unnamed>"} of type {typeReference?.Name ?? "<unnnamed>"} : {stateReferences.Select(s => s.Name).CommaSeparatedList()}");
         }
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

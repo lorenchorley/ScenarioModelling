@@ -21,18 +21,18 @@ public class RelationDeserialiser(MetaState MetaState, Instanciator Instanciator
         if (type == TransformationType.Object)
         {
             // Root level relation
-
+            // TODO
         }
         else
         {
             // Relation applied to object
-
+            // TODO
         }
 
 
-        Relation value = Instanciator.New<Relation>(definition: def);
-
         def.HasBeenTransformed = true;
+
+        Relation value = Instanciator.New<Relation>(definition: def);
 
         value.LeftEntity = new RelatableObjectReference(MetaState)
         {
@@ -44,8 +44,16 @@ public class RelationDeserialiser(MetaState MetaState, Instanciator Instanciator
             Name = unnamed.Destination.Value
         };
 
+        if (MetaState.Relations.Any(e => e.IsEqv(value) && value.LeftEntity!.IsEqv(e.LeftEntity) && value.RightEntity!.IsEqv(e.RightEntity)))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
+
         // TODO State and InitialState
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

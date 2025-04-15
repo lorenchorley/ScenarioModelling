@@ -17,10 +17,10 @@ public class PlantUMLSequenceDiagramExporter : IContextSerialiser
         throw new NotImplementedException();
     }
 
-    public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
-    {
-        throw new NotImplementedException();
-    }
+    //public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     public Result<string> SerialiseContext(Context context)
     {

@@ -1,16 +1,15 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
-[ProtoContract]
-[MetaStateObjectLike<ISystemObject, State>]
-public record State : ISystemObject<StateReference>
+[MetaStateObjectLike<IMetaStateObject, State>]
+public record State : IMetaStateObject<StateReference>
 {
     private MetaState _system = null!;
 
@@ -18,7 +17,6 @@ public record State : ISystemObject<StateReference>
     [YamlIgnore]
     public Type Type => typeof(State);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
     private StateMachine? _stateMachine;
@@ -59,13 +57,16 @@ public record State : ISystemObject<StateReference>
         _system = system;
 
         // Add this to the system
-        _system.States.Add(this);
+        //_system.States.Add(this);
     }
 
     public void InitialiseAfterDeserialisation(MetaState system)
     {
         _system = system;
     }
+
+    public OneOfMetaStateObject ToOneOf()
+        => new OneOfMetaStateObject(this);
 
     public void DoTransition(string transitionName, IStateful statefulObject)
     {

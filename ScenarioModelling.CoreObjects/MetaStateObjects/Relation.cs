@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.GeneralisedReferences;
@@ -8,12 +7,12 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
-[ProtoContract]
-[MetaStateObjectLike<ISystemObject, Relation>]
-public record Relation : ISystemObject<RelationReference>, IStateful // TODO Rename to something more specific that doesn't collide with System.Linq.Expression
+[MetaStateObjectLike<IMetaStateObject, Relation>]
+public record Relation : IMetaStateObject<RelationReference>, IStateful // TODO Rename to something more specific that doesn't collide with System.Linq.Expression
 {
     private MetaState _system = null!;
 
@@ -21,19 +20,14 @@ public record Relation : ISystemObject<RelationReference>, IStateful // TODO Ren
     [YamlIgnore]
     public Type Type => typeof(Relation);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
     public RelatableObjectReference? LeftEntity { get; set; }
 
-    [ProtoMember(3)]
     public RelatableObjectReference? RightEntity { get; set; }
 
-    [ProtoMember(4)]
     public StateProperty InitialState { get; private set; }
 
-    [ProtoMember(5)]
     public StateProperty State { get; }
 
     private Relation()
@@ -46,7 +40,7 @@ public record Relation : ISystemObject<RelationReference>, IStateful // TODO Ren
         _system = system;
 
         // Add this to the system
-        system.Relations.Add(this);
+        //system.Relations.Add(this);
 
         InitialState = new StateProperty(system);
         State = new(system);
@@ -56,6 +50,9 @@ public record Relation : ISystemObject<RelationReference>, IStateful // TODO Ren
     {
         _system = system;
     }
+
+    public OneOfMetaStateObject ToOneOf()
+        => new OneOfMetaStateObject(this);
 
     public RelationReference GenerateReference()
         => new RelationReference(_system) { Name = Name };

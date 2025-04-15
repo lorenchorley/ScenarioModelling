@@ -7,7 +7,7 @@ public static class ContextExtensions
     {
         context.MetaStories.AddRange(other.MetaStories); // TODO Merge existing meta stories with the same name, or throw on inconsistency
 
-        MetaStateObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.ForEachObjectType(
             entity: () => context.MetaState.Entities.AddRange(other.MetaState.Entities),
             entityType: () => context.MetaState.EntityTypes.AddRange(other.MetaState.EntityTypes),
             aspect: () => context.MetaState.Aspects.AddRange(other.MetaState.Aspects),

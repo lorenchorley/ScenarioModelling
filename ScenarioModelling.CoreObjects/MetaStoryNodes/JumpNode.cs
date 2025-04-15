@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
@@ -8,11 +7,9 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, JumpNode>]
 public record JumpNode : StoryNode, IFlowNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty]
     public string Target { get; set; } = "";
 
@@ -24,7 +21,7 @@ public record JumpNode : StoryNode, IFlowNode
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
     [DebuggerNonUserCode]
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitJump(this);

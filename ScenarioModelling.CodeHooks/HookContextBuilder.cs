@@ -1,6 +1,6 @@
 ﻿using LanguageExt.Common;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Serialisation.ContextConstruction;
 
 namespace ScenarioModelling.CodeHooks;

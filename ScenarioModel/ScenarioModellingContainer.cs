@@ -1,20 +1,19 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.ContextValidation.Interfaces;
-using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
+using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Exhaustiveness;
-using ScenarioModelling.Mocks;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers.Interfaces;
-using ScenarioModelling.CoreObjects.References;
+using System.Reflection;
 
 namespace ScenarioModelling;
 
@@ -29,6 +28,7 @@ public class ScenarioModellingContainer : IDisposable
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
 
         ConfigureHost(builder.Configuration);
+        ConfigureLogging(builder.Logging);
         ConfigureServices(builder.Services);
         ConfigureMainServices(builder.Services);
 
@@ -41,7 +41,7 @@ public class ScenarioModellingContainer : IDisposable
 
     private static void ExhaustivenessChecks()
     {
-        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<ISystemObject>();
+        MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IMetaStateObject>();
         MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IReference>();
         MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectValidator>();
         MetaStateObjectExhaustivity.AssertInterfaceExhaustivelyImplemented<IObjectSerialiser>();
@@ -70,6 +70,16 @@ public class ScenarioModellingContainer : IDisposable
         // Overridable behaviour
     }
 
+    protected virtual void ConfigureLogging(ILoggingBuilder logging)
+    {
+        // Overridable behaviour
+
+        // This explicitly excludes the use of the EventLog provider which is windows specific, AddEventLog must not be re-added to this list
+        logging.ClearProviders();
+        logging.AddConsole();
+        logging.AddDebug();
+    }
+    
     protected virtual void ConfigureServices(IServiceCollection services)
     {
         // Overridable behaviour

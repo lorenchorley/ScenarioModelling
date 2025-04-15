@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using ScenarioModelling;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
-using ScenarioModelling.Serialisation.ProtoBuf;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

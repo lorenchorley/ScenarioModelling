@@ -1,6 +1,6 @@
 ﻿using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.MetaStoryNodes;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers;
 using ScenarioModelling.Tools.Collections.Graph;
 using System.Text;

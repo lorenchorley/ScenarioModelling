@@ -38,7 +38,14 @@ public class StateDeserialiser(MetaState MetaState, Instanciator Instanciator) :
 
         State value = Instanciator.New<State>(definition: def);
 
+        if (MetaState.Relations.Any(e => e.IsEqv(value)))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

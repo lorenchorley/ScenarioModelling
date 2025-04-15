@@ -2,12 +2,12 @@
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.MetaStoryNodes;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.Collections.Graph;
 using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
 

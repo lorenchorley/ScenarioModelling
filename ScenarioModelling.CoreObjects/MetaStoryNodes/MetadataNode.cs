@@ -1,24 +1,20 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, MetadataNode>]
 public record MetadataNode : StoryNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty]
     public string Key { get; set; } = "";
 
-    [ProtoMember(2)]
     [StoryNodeLikeProperty]
     public string MetadataType { get; set; } = "";
 
-    [ProtoMember(3)]
     [StoryNodeLikeProperty]
     public string Value { get; set; } = "";
 
@@ -35,7 +31,7 @@ public record MetadataNode : StoryNode
     public override IEnumerable<SemiLinearSubGraph<IStoryNode>> TargetSubgraphs()
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override bool IsFullyEqv(IStoryNode other)
     {

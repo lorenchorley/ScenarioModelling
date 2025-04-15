@@ -1,22 +1,19 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.Tools.Collections.Graph;
 using System.Diagnostics;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, TransitionNode>]
 public record TransitionNode : StoryNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public IStatefulObjectReference? StatefulObject { get; set; }
 
-    [ProtoMember(2)]
     [StoryNodeLikeProperty(serialise: false)]
     public string TransitionName { get; set; } = "";
 
@@ -28,7 +25,7 @@ public record TransitionNode : StoryNode
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
     [DebuggerNonUserCode]
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitTransition(this);

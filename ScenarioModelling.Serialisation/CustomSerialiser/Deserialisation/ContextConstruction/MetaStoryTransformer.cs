@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers.Intefaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
@@ -10,7 +10,7 @@ using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction;
 
-public class MetaStoryTransformer(MetaState system, Instanciator Instanciator) : DefinitionToObjectDeserialiser<MetaStory, MetaStory>
+public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator) : DefinitionToObjectDeserialiser<MetaStory, MetaStory>
 {
     public Dictionary<string, IDefinitionToNodeDeserialiser> NodeProfilesByName { get; set; }
     public Dictionary<Func<Definition, bool>, IDefinitionToNodeDeserialiser> NodeProfilesByPredicate { get; set; }
@@ -30,13 +30,13 @@ public class MetaStoryTransformer(MetaState system, Instanciator Instanciator) :
         if (!named.Type.Value.IsEqv("MetaStory"))
             return null;
 
+        def.HasBeenTransformed = true;
+
         if (type == TransformationType.Property)
             throw new InternalLogicException("MetaStories should not be properties");
 
         SemiLinearSubGraph<IStoryNode> primarySubGraph = new SemiLinearSubGraph<IStoryNode>();
         MetaStory value = Instanciator.NewMetaStory(definition: def, primarySubGraph);
-
-        def.HasBeenTransformed = true;
 
         var tryTransform = TryTransformDefinitionToNode(value);
         primarySubGraph.AddRangeToSequence(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, primarySubGraph), "Unknown node types not taken into account : {0}"));

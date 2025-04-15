@@ -1,11 +1,11 @@
-﻿using ProtoBuf;
+﻿//using ProtoBuf;
 
 namespace ScenarioModelling.Tools.Collections.Graph;
 
-[ProtoContract]
+//[ProtoContract]
 public class SemiLinearSubGraph<T> : ISubGraph<T> where T : IDirectedGraphNode<T>
 {
-    [ProtoMember(1)]
+    //[ProtoMember(1)]
     public List<T> NodeSequence { get; private set; } = [];
 
     public IEnumerable<T> UnorderedEnumerable => NodeSequence;

@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
@@ -9,19 +8,15 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, WhileNode>]
 public record WhileNode : StoryNode, IStoryNodeWithExpression, IFlowNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public Expression AssertionExpression { get; set; } = null!;
 
-    [ProtoMember(2)]
     [StoryNodeLikeProperty(serialise: false)]
     public string OriginalConditionText { get; set; } = "";
 
-    [ProtoMember(3)]
     [StoryNodeLikeProperty(serialise: false)]
     public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = new();
 
@@ -35,7 +30,7 @@ public record WhileNode : StoryNode, IStoryNodeWithExpression, IFlowNode
     }
 
     [DebuggerNonUserCode]
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitWhile(this);

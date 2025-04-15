@@ -23,9 +23,17 @@ public class AspectDeserialiser(MetaState MetaState, Instanciator Instanciator, 
         if (type == TransformationType.Property)
             throw new Exception("Aspect should not be properties of other objects");
 
-        Aspect value = Instanciator.New<Aspect>(definition: def);
 
         def.HasBeenTransformed = true;
+
+        Aspect value = Instanciator.New<Aspect>(definition: def);
+
+        if (MetaState.Aspects.Any(e => e.Name == value.Name))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
 
         value.Entity.SetReference(entity);
         value.Relations.TryAddReferenceRange(named.Definitions.Choose(RelationTransformer.TransformAsProperty));
@@ -35,6 +43,7 @@ public class AspectDeserialiser(MetaState MetaState, Instanciator Instanciator, 
         value.State.SetReference(reference);
         value.InitialState.SetReference(reference);
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

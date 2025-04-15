@@ -24,7 +24,7 @@ public partial class WhileLoopHookTest
         StateMachine Name {
             State "Amy Stake"
             State "Brock Lee"
-            State "Clara Nett"Gene
+            State "Clara Nett"
             State "Dee Zaster"
             "Amy Stake" -> "Brock Lee" : ChangeName
             "Brock Lee" -> "Clara Nett" : ChangeName

@@ -31,11 +31,20 @@ public class StateMachineDeserialiser(MetaState MetaState, Instanciator Instanci
         if (type == TransformationType.Property)
             return Instanciator.NewReference<StateMachine, StateMachineReference>(definition: def);
 
+
         StateMachine value = Instanciator.New<StateMachine>(definition: def);
+
+        if (MetaState.StateMachines.Any(e => e.Name == value.Name))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
 
         value.States.TryAddReferenceRange(unnamed.Definitions.Choose(StateTransformer.TransformAsProperty));
         value.Transitions.TryAddReferenceRange(unnamed.Definitions.Choose(TransitionTransformer.TransformAsProperty));
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

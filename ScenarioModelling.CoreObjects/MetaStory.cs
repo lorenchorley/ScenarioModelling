@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects;
@@ -15,10 +14,8 @@ namespace ScenarioModelling.CoreObjects;
 /// <summary>
 /// A MetaStory is all the possibilities of a story, yet to be played out.
 /// </summary>
-[ProtoContract]
 public class MetaStory : IIdentifiable
 {
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
     [JsonIgnore]
@@ -26,7 +23,6 @@ public class MetaStory : IIdentifiable
 
     public MetaState MetaState { get; private set; }
 
-    [ProtoMember(2)]
     public DirectedGraph<IStoryNode> Graph { get; private set; }
 
     public MetaStory(MetaState metaState, DirectedGraph<IStoryNode> graph)

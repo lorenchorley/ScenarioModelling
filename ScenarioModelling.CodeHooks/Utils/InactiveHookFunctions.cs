@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.CodeHooks.HookDefinitions.Interfaces;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Execution.Events.Interfaces;
 using ScenarioModelling.Tools.Collections.Graph;
 using ScenarioModelling.Tools.Exceptions;

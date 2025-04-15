@@ -1,12 +1,9 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Tools.Collections.Graph.Validation;
+﻿using ScenarioModelling.Tools.Collections.Graph.Validation;
 
 namespace ScenarioModelling.Tools.Collections.Graph;
 
-[ProtoContract]
 public class DirectedGraph<T> where T : IDirectedGraphNode<T>
 {
-    [ProtoMember(1)]
     public ISubGraph<T> PrimarySubGraph { get; private set; }
 
     public DirectedGraph(ISubGraph<T> primarySubGraph)

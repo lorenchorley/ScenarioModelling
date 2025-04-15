@@ -1,5 +1,5 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Exhaustiveness;
 using System.Text;
 

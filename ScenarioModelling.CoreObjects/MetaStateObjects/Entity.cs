@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
@@ -7,12 +6,12 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
-[ProtoContract]
-[MetaStateObjectLike<ISystemObject, Entity>]
-public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
+[MetaStateObjectLike<IMetaStateObject, Entity>]
+public record Entity : IMetaStateObject<EntityReference>, IStateful, IRelatable
 {
     private MetaState _system = null!;
 
@@ -20,25 +19,18 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
     [YamlIgnore]
     public Type Type => typeof(Entity);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
     public string CharacterStyle { get; set; } = "";
 
-    [ProtoMember(3)]
     public EntityTypeProperty EntityType { get; private set; }
 
-    [ProtoMember(4)]
     public RelationListProperty Relations { get; private set; }
 
-    [ProtoMember(5)]
     public AspectListProperty Aspects { get; private set; }
 
-    [ProtoMember(6)]
     public StateProperty InitialState { get; private set; }
 
-    [ProtoMember(7)]
     public StateProperty State { get; private set; }
 
     private Entity()
@@ -51,7 +43,7 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
         _system = system;
 
         // Add this to the system
-        system.Entities.Add(this);
+        //system.Entities.Add(this);
 
         InitialState = new StateProperty(system);
         State = new StateProperty(system);
@@ -65,13 +57,16 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
         _system = system;
     }
 
+    public OneOfMetaStateObject ToOneOf()
+        => new OneOfMetaStateObject(this);
+
     public EntityReference GenerateReference()
         => new EntityReference(_system) { Name = Name };
 
     public IStatefulObjectReference GenerateStatefulReference()
         => GenerateReference();
 
-    IRelatableObjectReference ISystemObject<IRelatableObjectReference>.GenerateReference()
+    IRelatableObjectReference IMetaStateObject<IRelatableObjectReference>.GenerateReference()
         => GenerateReference();
 
     IRelatableObjectReference IReferencable<IRelatableObjectReference>.GenerateReference()
@@ -119,4 +114,5 @@ public record Entity : ISystemObject<EntityReference>, IStateful, IRelatable
 
     public object Accept(IMetaStateVisitor visitor)
         => visitor.VisitEntity(this);
+
 }

@@ -1,21 +1,18 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.Tools.Collections.Graph;
 using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, DialogNode>]
 public record DialogNode : StoryNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialisedName: "Text")]
     public string TextTemplate { get; set; } = "";
 
-    [ProtoMember(2)]
     [StoryNodeLikeProperty(doNotSerialiseIfNullOrEmpty: true)]
     public string? Character { get; set; } = null;
 
@@ -27,7 +24,7 @@ public record DialogNode : StoryNode
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
     [DebuggerNonUserCode]
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitDialog(this);

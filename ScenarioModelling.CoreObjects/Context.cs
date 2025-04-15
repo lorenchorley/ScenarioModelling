@@ -1,5 +1,4 @@
 ﻿using LanguageExt.Common;
-using ProtoBuf;
 using ScenarioModelling.CoreObjects.ContextValidation;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
 using ScenarioModelling.CoreObjects.References;
@@ -7,20 +6,17 @@ using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects;
 using YamlDotNet.Serialization;
 using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Tools.Collections.Graph;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 namespace ScenarioModelling.CoreObjects;
 
-[ProtoContract]
 public class Context
 {
     private readonly IServiceProvider _serviceProvider;
 
-    [ProtoMember(1)]
     public List<MetaStory> MetaStories { get; private set; } = new();
 
-    [ProtoMember(2)]
     public MetaState MetaState { get; private set; }
 
     [YamlIgnore]
@@ -80,7 +76,7 @@ public class Context
             throw new Exception("Serialiser not found : " + serialiserType.Name);
         }
 
-        var result = serialiser.DeserialiseExtraContextIntoExisting(serialisedContext, this);
+        var result = serialiser.DeserialiseContext(serialisedContext);
 
         result.IfFail(e => ValidationErrors.Add(new ContextLoadError(e.Message)));
 
@@ -132,39 +128,67 @@ public class Context
                       .Concat(MetaState.AllRelationReferences)
                       .Concat(MetaState.AllConstraintReferences);
 
-        foreach (var reference in allIdentifiable)
+        foreach (var reference in allIdentifiable.Where(r => !r.IsResolvable()))
         {
-            if (reference.IsResolvable())
-                continue;
-
             switch (reference) // TODO Exhaustivity ?
             {
-                case EntityReference r:
-                    new Entity(MetaState) { Name = r.Name };
-                    break;
-                case EntityTypeReference r:
-                    new EntityType(MetaState) { Name = r.Name, ExistanceOriginallyInferred = true };
-                    break;
                 case AspectReference r:
-                    new Aspect(MetaState) { Name = r.Name };
-                    break;
-                //case AspectTypeReference r:
-                //    new AspectType(_context.System) { Name = r.Name, ExistanceOriginallyInferred = true };
-                //    break;
-                case StateReference r:
-                    new State(MetaState) { Name = r.Name };
-                    break;
-                case StateMachineReference r:
-                    new StateMachine(MetaState) { Name = r.Name, ExistanceOriginallyInferred = true };
-                    break;
-                case TransitionReference r:
-                    new Transition(MetaState) { Name = r.Name };
-                    break;
-                case RelationReference r:
-                    new Relation(MetaState) { Name = r.Name };
+                    MetaState.Aspects.Add(new Aspect(MetaState) 
+                    { 
+                        Name = r.Name 
+                    });
+
                     break;
                 case ConstraintReference r:
-                    new Constraint(MetaState) { Name = r.Name };
+                    MetaState.Constraints.Add(new Constraint(MetaState) 
+                    { 
+                        Name = r.Name 
+                    });
+
+                    break;
+                case EntityReference r:
+                    MetaState.Entities.Add(new Entity(MetaState) 
+                    { 
+                        Name = r.Name 
+                    });
+
+                    break;
+                case EntityTypeReference r:
+                    MetaState.EntityTypes.Add(new EntityType(MetaState) 
+                    { 
+                        Name = r.Name, 
+                        ExistanceOriginallyInferred = true 
+                    });
+
+                    break;
+                case RelationReference r:
+                    MetaState.Relations.Add(new Relation(MetaState) 
+                    { 
+                        Name = r.Name 
+                    });
+
+                    break;
+                case StateReference r:
+                    MetaState.States.Add(new State(MetaState) 
+                    { 
+                        Name = r.Name 
+                    });
+
+                    break;
+                case StateMachineReference r:
+                    MetaState.StateMachines.Add(new StateMachine(MetaState) 
+                    { 
+                        Name = r.Name, 
+                        ExistanceOriginallyInferred = true 
+                    });
+
+                    break;
+                case TransitionReference r:
+                    MetaState.Transitions.Add(new Transition(MetaState) 
+                    { 
+                        Name = r.Name 
+                    });
+
                     break;
                 default:
                     throw new NotImplementedException($"Reference type {reference.GetType().Name} not implemented.");

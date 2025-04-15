@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 using ScenarioModelling.Tools.Collections.Graph;
 

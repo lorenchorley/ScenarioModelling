@@ -10,7 +10,6 @@ using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextCo
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.StoryNodeSerialisers;
 using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation.SystemObjectSerialisers;
-using ScenarioModelling.Serialisation.ProtoBuf;
 using ScenarioModelling.Serialisation.Yaml;
 
 namespace ScenarioModelling.Serialisation.Extensions;
@@ -23,13 +22,9 @@ public static class ServiceExtensions
         services.AddScoped<CustomContextSerialiser>();
         services.AddScoped<IContextSerialiser, YamlSerialiser>();
         services.AddScoped<YamlSerialiser>();
-        services.AddScoped<IContextSerialiser, ProtoBufSerialiser>();
-        services.AddScoped<ProtoBufSerialiser>();
-        services.AddScoped<IContextSerialiser, ProtoBufSerialiser_Uncompressed>();
-        services.AddScoped<ProtoBufSerialiser_Uncompressed>();
 
         services.AddScoped<Instanciator>();
-        services.AddScoped<CustomContextDeserialiser>();
+        services.AddTransient<CustomContextDeserialiser>();
         services.AddScoped<MetaStorySerialiser>();
         services.AddScoped<MetaStoryTransformer>();
         services.AddScoped<MetaStateSerialiser>();
@@ -50,7 +45,7 @@ public static class ServiceExtensions
             whileNode: () => services.AddScoped<WhileNodeSerialiser>()
         );
 
-        MetaStateObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.ForEachObjectType(
             entity: () => services.AddScoped<AspectSerialiser>(),
             entityType: () => services.AddScoped<ConstraintSerialiser>(),
             aspect: () => services.AddScoped<EntitySerialiser>(),
@@ -74,7 +69,7 @@ public static class ServiceExtensions
             whileNode: () => services.AddScoped<WhileNodeDeserialiser>()
         );
 
-        MetaStateObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.ForEachObjectType(
             entity: () => services.AddScoped<AspectDeserialiser>(),
             entityType: () => services.AddScoped<ConstraintDeserialiser>(),
             aspect: () => services.AddScoped<EntityDeserialiser>(),

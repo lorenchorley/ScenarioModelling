@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
 //[ObjectLike<ISystemObject, AspectType>]
-public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialisability
+public record AspectType : IMetaStateObject<AspectTypeReference>, IOptionalSerialisability
 {
     private MetaState _system = null!;
 
@@ -17,10 +17,8 @@ public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialis
     [YamlIgnore]
     public Type Type => typeof(AspectType);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
     public StateMachineProperty StateMachine { get; private set; }
 
     public bool ExistanceOriginallyInferred { get; set; } = false;
@@ -58,4 +56,8 @@ public record AspectType : ISystemObject<AspectTypeReference>, IOptionalSerialis
     public object Accept(IMetaStateVisitor visitor)
         => visitor.VisitAspectType(this);
 
+    public OneOfMetaStateObject ToOneOf()
+    {
+        throw new NotImplementedException();
+    }
 }

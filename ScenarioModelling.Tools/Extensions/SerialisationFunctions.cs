@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Net;
 
 namespace ScenarioModelling.Tools.Extensions;
@@ -69,40 +68,40 @@ public static class SerialisationFunctions
         return decompressedStream;
     }
 
-    #region ProtoBuf
-    public static string ProtoBufSerializeAndCompress<T>(T obj)
-    {
-        using var serialisedStream = new MemoryStream();
+    //#region ProtoBuf
+    //public static string ProtoBufSerializeAndCompress<T>(T obj)
+    //{
+    //    using var serialisedStream = new MemoryStream();
 
-        // Serialize with Protobuf
-        Serializer.Serialize(serialisedStream, obj);
+    //    // Serialize with Protobuf
+    //    Serializer.Serialize(serialisedStream, obj);
 
-        return CompressForWeb(serialisedStream);
-    }
+    //    return CompressForWeb(serialisedStream);
+    //}
 
-    public static T ProtoBufDecompressAndDeserialize<T>(string urlEncoded)
-    {
-        using Stream serialisedStream = DecompressFromWeb(urlEncoded);
+    //public static T ProtoBufDecompressAndDeserialize<T>(string urlEncoded)
+    //{
+    //    using Stream serialisedStream = DecompressFromWeb(urlEncoded);
 
-        // Deserialize with Protobuf
-        return Serializer.Deserialize<T>(serialisedStream);
-    }
+    //    // Deserialize with Protobuf
+    //    return Serializer.Deserialize<T>(serialisedStream);
+    //}
 
-    public static string ProtoBufSerializeToBase64<T>(T obj)
-    {
-        using var ms = new MemoryStream();
-        Serializer.Serialize(ms, obj);
-        byte[] bytes = ms.ToArray();
-        string base64 = Convert.ToBase64String(bytes);
-        return WebUtility.UrlEncode(base64);
-    }
+    //public static string ProtoBufSerializeToBase64<T>(T obj)
+    //{
+    //    using var ms = new MemoryStream();
+    //    Serializer.Serialize(ms, obj);
+    //    byte[] bytes = ms.ToArray();
+    //    string base64 = Convert.ToBase64String(bytes);
+    //    return WebUtility.UrlEncode(base64);
+    //}
 
-    public static T ProtoBufDeserializeFromBase64<T>(string encodedData)
-    {
-        string base64 = WebUtility.UrlDecode(encodedData);
-        byte[] bytes = Convert.FromBase64String(base64);
-        using var ms = new MemoryStream(bytes);
-        return Serializer.Deserialize<T>(ms);
-    }
-    #endregion
+    //public static T ProtoBufDeserializeFromBase64<T>(string encodedData)
+    //{
+    //    string base64 = WebUtility.UrlDecode(encodedData);
+    //    byte[] bytes = Convert.FromBase64String(base64);
+    //    using var ms = new MemoryStream(bytes);
+    //    return Serializer.Deserialize<T>(ms);
+    //}
+    //#endregion
 }

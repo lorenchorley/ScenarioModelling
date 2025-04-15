@@ -24,7 +24,11 @@ public record TransitionReference : ReferencesBase<Transition>, IEqualityCompare
     }
 
     public override IEnumerable<Transition> ResolveReferences()
-        => MetaState.Transitions.Where(s => s.IsEqv(this)); // TODO Need to search with only the information that is available
+        => MetaState.Transitions.Where(s => 
+                s.IsEqv(this) &&
+                s.SourceState.Name.IsEqvCountingNulls(SourceName) &&
+                s.DestinationState.Name.IsEqvCountingNulls(DestinationName)
+            );
 
     override public string ToString() => Name;
 

@@ -25,9 +25,17 @@ public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciat
         if (type == TransformationType.Property)
             throw new Exception("Constraint should not be properties of other objects");
 
-        Constraint value = Instanciator.New<Constraint>(definition: def);
 
         def.HasBeenTransformed = true;
+
+        Constraint value = Instanciator.New<Constraint>(definition: def);
+
+        if (MetaState.Constraints.Any(e => e.Name == value.Name))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
 
         var result = Interpreter.Parse(expDef.Block.ExpressionText.Value);
 
@@ -61,6 +69,7 @@ public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciat
             }
         }
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

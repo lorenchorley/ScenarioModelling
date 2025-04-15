@@ -47,12 +47,12 @@ public class YamlSerialiser : IContextSerialiser
         return _deserializer.Deserialize<Context>(text);
     }
 
-    public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
-    {
-        var newContext = DeserialiseContext(text);
+    //public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
+    //{
+    //    var newContext = DeserialiseContext(text);
 
-        return newContext.Match(Succ: c => context.Incorporate(c), Fail: e => new Result<Context>(e));
-    }
+    //    return newContext.Match(Succ: c => context.Incorporate(c), Fail: e => new Result<Context>(e));
+    //}
 
     public Result<string> SerialiseContext(Context context)
     {
@@ -64,7 +64,7 @@ public class YamlSerialiser : IContextSerialiser
 
 public class YamlPropertyConverter<TProp, TVal, TRef> : IYamlTypeConverter
     where TProp : OptionalReferencableProperty<TVal, TRef>
-    where TVal : class, ISystemObject<TRef>
+    where TVal : class, IMetaStateObject<TRef>
     where TRef : class, IReference<TVal>
 {
     public bool Accepts(Type type)

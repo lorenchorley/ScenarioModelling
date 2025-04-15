@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.DataClasses;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
@@ -12,11 +11,9 @@ namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 // TODO A subgraph for each choice rather than relying on jump nodes
 // Could act more like a switch
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, ChooseNode>]
 public record ChooseNode : StoryNode, IFlowNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public ChoiceList Choices { get; set; } = new();
 
@@ -28,7 +25,7 @@ public record ChooseNode : StoryNode, IFlowNode
         => Enumerable.Empty<SemiLinearSubGraph<IStoryNode>>();
 
     [DebuggerNonUserCode]
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitChoose(this);

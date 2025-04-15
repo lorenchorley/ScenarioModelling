@@ -10,7 +10,7 @@ using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.Intermedi
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers;
 
 [MetaStateObjectLike<IDefinitionToObjectDeserialiser, EntityType>]
-public class EntityTypeDeserialiser(MetaState metaState, Instanciator Instanciator, StateMachineDeserialiser StateMachineTransformer) : DefinitionToObjectDeserialiser<EntityType, EntityTypeReference>
+public class EntityTypeDeserialiser(MetaState MetaState, Instanciator Instanciator, StateMachineDeserialiser StateMachineTransformer) : DefinitionToObjectDeserialiser<EntityType, EntityTypeReference>
 {
     protected override Option<EntityTypeReference> Transform(Definition def, TransformationType type)
     {
@@ -27,11 +27,21 @@ public class EntityTypeDeserialiser(MetaState metaState, Instanciator Instanciat
         if (type == TransformationType.Property)
             return Instanciator.NewReference<EntityType, EntityTypeReference>(definition: def);
 
+
         // Need to know if we're on a definition that is a property of an object, or a definition that is an object itself
         EntityType value = Instanciator.New<EntityType>(definition: def);
 
+        if (MetaState.EntityTypes.Any(e => e.Name == value.Name))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            MetaState.EntityTypes.Remove(value);
+            return value.GenerateReference();
+        }
+
         value.StateMachine.SetReference(unnamed.Definitions.Choose(StateMachineTransformer.TransformAsProperty).FirstOrDefault());
 
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 

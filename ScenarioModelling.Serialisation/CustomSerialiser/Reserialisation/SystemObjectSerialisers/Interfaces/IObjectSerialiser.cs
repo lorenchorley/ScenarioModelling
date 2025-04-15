@@ -9,7 +9,7 @@ public interface IObjectSerialiser
 
 }
 
-public interface IObjectSerialiser<TObject> : IObjectSerialiser where TObject : ISystemObject
+public interface IObjectSerialiser<TObject> : IObjectSerialiser where TObject : IMetaStateObject
 {
     void WriteObject(StringBuilder sb, MetaState metaState, TObject obj, string currentIndent);
 }

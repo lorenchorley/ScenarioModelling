@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
@@ -7,12 +6,12 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
-[ProtoContract]
-[MetaStateObjectLike<ISystemObject, Aspect>]
-public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
+[MetaStateObjectLike<IMetaStateObject, Aspect>]
+public record Aspect : IMetaStateObject<AspectReference>, IStateful, IRelatable
 {
     private MetaState _metaState = null!;
 
@@ -20,22 +19,16 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
     [YamlIgnore]
     public Type Type => typeof(Aspect);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
     public AspectType? AspectType { get; set; }
 
-    [ProtoMember(3)]
     public EntityProperty Entity { get; private set; }
 
-    [ProtoMember(4)]
     public RelationListProperty Relations { get; private set; }
 
-    [ProtoMember(5)]
     public StateProperty InitialState { get; private set; }
 
-    [ProtoMember(6)]
     public StateProperty State { get; private set; }
 
     private Aspect()
@@ -48,7 +41,7 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
         _metaState = metaState;
 
         // Add this to the system
-        metaState.Aspects.Add(this);
+        //metaState.Aspects.Add(this);
 
         Entity = new EntityProperty(metaState);
         InitialState = new StateProperty(metaState);
@@ -61,13 +54,16 @@ public record Aspect : ISystemObject<AspectReference>, IStateful, IRelatable
         _metaState = system;
     }
 
+    public OneOfMetaStateObject ToOneOf()
+        => new OneOfMetaStateObject(this);
+
     public AspectReference GenerateReference()
         => new AspectReference(_metaState) { Name = Name };
 
     public IStatefulObjectReference GenerateStatefulReference()
         => new AspectReference(_metaState) { Name = Name };
 
-    IRelatableObjectReference ISystemObject<IRelatableObjectReference>.GenerateReference()
+    IRelatableObjectReference IMetaStateObject<IRelatableObjectReference>.GenerateReference()
         => GenerateReference();
 
     IRelatableObjectReference IReferencable<IRelatableObjectReference>.GenerateReference()

@@ -14,16 +14,20 @@
 
 <div id="container">
     <div id="left" style="width: 50%;">
-        <textarea id="topText" @oninput="OnTextChanged" style="flex: 1;">@TestData.StartingText</textarea>
-        <div id="horizontal-separator"></div>
-        <textarea id="bottomText" @bind="OutputText" style="flex: 1;"></textarea>
+        <textarea id="topText" @oninput="OnTextChanged">@TestData.StartingText</textarea>
+        <div class="horizontal-separator"></div>
+        <textarea id="bottomText" @bind="OutputText"></textarea>
     </div>
 
-    <div id="vertical-separator"></div>
+    <div class="vertical-separator"></div>
 
     <div id="canvas-container">
         <div id="mainCanvasPositioner"></div>
         <canvas @ref="_canvas" id="mainCanvas" width="@ViewportWidth" height="@ViewportHeight"></canvas>
+        <div class="horizontal-separator"></div>
+        <div id="toolbar">
+            <button>Run</button>
+        </div>
     </div>
 </div>
 
@@ -37,7 +41,6 @@
     public int ViewportHeight { get; set; }
 
     private string _synchronisedCodeText = "";
-    private string _exploitedCode = "";
     private System.Timers.Timer? _debounceTimer;
     private readonly object _lock = new();
     private ElementReference _canvas;
@@ -50,14 +53,20 @@
         ViewportWidth = (int)width;
         ViewportHeight = (int)height;
         StateHasChanged();
+        RefreshCanvasRendering();
     }
 
-    private void OnTextChanged(ChangeEventArgs a)
+    private void OnTextChanged(ChangeEventArgs args)
+    {
+        _synchronisedCodeText = args.Value?.ToString() ?? "";
+
+        RefreshCanvasRendering();
+    }
+
+    private void RefreshCanvasRendering()
     {
         lock (_lock)
         {
-            _synchronisedCodeText = a.Value?.ToString() ?? "";
-
             // Debounce reset
             _debounceTimer?.Stop();
             _debounceTimer?.Start();
@@ -71,9 +80,8 @@
         _debounceTimer.Elapsed += async (sender, e) =>
         {
             _debounceTimer.Stop();
-            _exploitedCode = _synchronisedCodeText;
 
-            await UpdateCanvasFromText(_exploitedCode);
+            await UpdateCanvasFromText(_synchronisedCodeText);
         };
 
         return base.OnInitializedAsync();
@@ -116,7 +124,7 @@
 
             if (context.ValidationErrors.Count != 0)
             {
-                sb.AppendLine( context.ValidationErrors.CommaSeparatedList());
+                sb.AppendLine(context.ValidationErrors.CommaSeparatedList());
 
                 return;
             }
@@ -130,11 +138,13 @@
 
                 Stopwatch swRender = Stopwatch.StartNew();
 
-                var message = await renderer.Render(metaStory, canvasContext);
+                var message = await renderer.Render(metaStory, canvasContext, async (message) => await js.InvokeVoidAsync("console.log", [message]));
 
                 swRender.Stop();
 
-                sb.AppendLine(message);
+                if (!string.IsNullOrEmpty(message))
+                    sb.AppendLine(message);
+
                 sb.AppendLine($"Rendered in {swRender.ElapsedMilliseconds}ms");
             }
 
@@ -157,5 +167,6 @@
             return;
 
         await js.InvokeVoidAsync("window.registerViewportChangeCallback", DotNetObjectReference.Create(this));
+        await UpdateCanvasFromText(TestData.StartingText);
     }
 }

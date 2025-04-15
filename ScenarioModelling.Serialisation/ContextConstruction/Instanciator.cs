@@ -7,7 +7,8 @@ using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.Intermedi
 using ScenarioModelling.Tools.GenericInterfaces;
 using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
 using ScenarioModelling.Tools.Collections.Graph;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 namespace ScenarioModelling.Serialisation.ContextConstruction;
 
@@ -62,20 +63,34 @@ public class Instanciator
     {
         MetaStateObjectExhaustivity.AssertIsObjectType<TVal>();
 
-        object instance = typeof(TVal).Name switch // TODO Exhaustivity ?
+        IMetaStateObject instance = typeof(TVal).Name switch
         {
+            nameof(Aspect) => new Aspect(_context.MetaState),
+            nameof(Constraint) => new Constraint(_context.MetaState),
             nameof(Entity) => new Entity(_context.MetaState),
             nameof(EntityType) => new EntityType(_context.MetaState),
-            nameof(Aspect) => new Aspect(_context.MetaState),
+            nameof(Relation) => new Relation(_context.MetaState),
             nameof(State) => new State(_context.MetaState),
             nameof(StateMachine) => new StateMachine(_context.MetaState),
             nameof(Transition) => new Transition(_context.MetaState),
-            nameof(Relation) => new Relation(_context.MetaState),
-            nameof(Constraint) => new Constraint(_context.MetaState),
             _ => throw new NotImplementedException($"Object type {typeof(TVal).Name} not implemented.")
         };
 
         return Name<TVal, TVal>((TVal)instance, name, definition);
+    }
+
+    public void AssociateWithMetaState(IMetaStateObject instance)
+    {
+        instance.ToOneOf().Switch(
+            _context.MetaState.Aspects.Add,
+            _context.MetaState.Constraints.Add,
+            _context.MetaState.Entities.Add,
+            _context.MetaState.EntityTypes.Add,
+            _context.MetaState.Relations.Add,
+            _context.MetaState.States.Add,
+            _context.MetaState.StateMachines.Add,
+            _context.MetaState.Transitions.Add
+        );
     }
 
     public TRef NewReference<TVal, TRef>(string? name = null, Definition? definition = null)

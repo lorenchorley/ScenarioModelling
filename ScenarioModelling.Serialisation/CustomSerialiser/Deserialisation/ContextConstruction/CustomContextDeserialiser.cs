@@ -2,7 +2,7 @@
 using LanguageExt.Common;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.Expressions.Initialisation;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.Exhaustiveness;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.StoryNodeDeserialisers;
@@ -146,12 +146,12 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     {
         _remainingLast.Clear();
 
-        var (entities, remaining1) = inputs.TopLevelOfDefinitionTree.PartitionByChoose(_entityTransformer.TransformAsObject);
-        var (entityTypes, remaining2) = remaining1.PartitionByChoose(_entityTypeTransformer.TransformAsObject);
-        var (stateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
-        var (constraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
-        var (relations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
-        var (metaStories, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
+        var (newEntities, remaining1) = inputs.TopLevelOfDefinitionTree.PartitionByChoose(_entityTransformer.TransformAsObject);
+        var (newEntityTypes, remaining2) = remaining1.PartitionByChoose(_entityTypeTransformer.TransformAsObject);
+        var (newStateMachines, remaining3) = remaining2.PartitionByChoose(_stateMachineTransformer.TransformAsObject);
+        var (newConstraints, remaining4) = remaining3.PartitionByChoose(_constraintTransformer.TransformAsObject);
+        var (newRelations, remaining5) = remaining4.PartitionByChoose(_relationTransformer.TransformAsObject);
+        var (newMetaStories, remainingLast) = remaining5.PartitionByChoose(_metaStoryTransformer.TransformAsObject);
 
         _remainingLast.AddRange(remainingLast);
     }
@@ -191,7 +191,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
 
     public void InitialiseObjects()
     {
-        MetaStateObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.ForEachObjectType(
             entity: () => _entityTransformer.BeforeIndividualInitialisation(),
             entityType: () => _entityTypeTransformer.BeforeIndividualInitialisation(),
             aspect: () => _aspectTransformer.BeforeIndividualValidation(),
@@ -202,7 +202,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
             constraint: () => _constraintTransformer.BeforeIndividualInitialisation()
         );
 
-        MetaStateObjectExhaustivity.DoForEachObjectType(
+        MetaStateObjectExhaustivity.ForEachObjectType(
             entity: () => _context.MetaState.Entities.ForEach(_entityTransformer.Initialise),
             entityType: () => _context.MetaState.EntityTypes.ForEach(_entityTypeTransformer.Initialise),
             aspect: () => _context.MetaState.Aspects.ForEach(_aspectTransformer.Validate),

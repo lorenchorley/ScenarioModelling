@@ -12,16 +12,16 @@ public class CustomContextSerialiser : IContextSerialiser
     public static Encoding CompressionEncoding = Encoding.UTF8;
     internal const string IndentSegment = "  ";
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly MetaStorySerialiser _metaStorySerialiser;
     private readonly MetaStateSerialiser _systemSerialiser;
-    private readonly CustomContextDeserialiser _contextBuilder;
     private Dictionary<string, string> _configuration = new();
 
     private bool UseCompression => _configuration.TryGetValue("Compress", out string useCompression) && useCompression.IsEqv("true");
 
-    public CustomContextSerialiser(CustomContextDeserialiser contextBuilder, MetaStorySerialiser metaStorySerialiser, MetaStateSerialiser systemSerialiser)
+    public CustomContextSerialiser(IServiceProvider serviceProvider, MetaStorySerialiser metaStorySerialiser, MetaStateSerialiser systemSerialiser)
     {
-        _contextBuilder = contextBuilder;
+        _serviceProvider = serviceProvider;
         _metaStorySerialiser = metaStorySerialiser;
         _systemSerialiser = systemSerialiser;
     }
@@ -31,12 +31,12 @@ public class CustomContextSerialiser : IContextSerialiser
         _configuration = configuration;
     }
 
-    public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
-    {
-        var newContext = DeserialiseContext(text);
+    //public Result<Context> DeserialiseExtraContextIntoExisting(string text, Context context)
+    //{
+    //    var newContext = DeserialiseContext(text);
 
-        return newContext.Match(Succ: c => c, Fail: e => new Result<Context>(e));
-    }
+    //    return newContext.Match(Succ: c => c, Fail: e => new Result<Context>(e));
+    //}
 
     public Result<Context> DeserialiseContext(string text)
     {
@@ -53,7 +53,9 @@ public class CustomContextSerialiser : IContextSerialiser
         ContextBuilderInputs inputs = new();
         inputs.TopLevelOfDefinitionTree.AddRange(result.ParsedObject!);
 
-        return _contextBuilder.RefreshContextWithInputs(inputs);
+        CustomContextDeserialiser deserialiser = _serviceProvider.GetRequiredService<CustomContextDeserialiser>();
+
+        return deserialiser.RefreshContextWithInputs(inputs);
     }
 
     public Result<string> SerialiseContext(Context context)

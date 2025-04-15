@@ -1,8 +1,8 @@
 ﻿using LanguageExt;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects;
-using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.Serialisation.ContextConstruction;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction.SystemObjectDeserialisers.Interfaces;
 using ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
@@ -25,16 +25,24 @@ public class TransitionDeserialiser(MetaState MetaState, Instanciator Instanciat
         //if (!unnamed.Type.Value.IsEqv("Transition"))
         //    return null;
 
+        def.HasBeenTransformed = true;
+
         if (type != TransformationType.Property)
             throw new Exception("A transition must always be the propert of another object");
 
         Transition value = Instanciator.New<Transition>(definition: def);
 
-        def.HasBeenTransformed = true;
-
         value.SourceState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Source.Value));
         value.DestinationState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Destination.Value));
 
+        if (MetaState.Transitions.Any(e => e.IsEqv(value) && value.SourceState.Name.IsEqv(e.SourceState.Name) && value.DestinationState.Name.IsEqv(e.DestinationState.Name)))
+        {
+            // If an object of the same type with the same name already exists,
+            // we remove this one and but return the object as if it we've transformed so that it doesn't get signaled as not transformed
+            return value.GenerateReference();
+        }
+
+        Instanciator.AssociateWithMetaState(value);
         return value.GenerateReference();
     }
 
@@ -45,8 +53,8 @@ public class TransitionDeserialiser(MetaState MetaState, Instanciator Instanciat
         {
             StateMachine? sm =
                 MetaState.StateMachines
-                      .Where(sm => sm.Transitions.Any(t => t.IsEqv(transition)))
-                      .FirstOrDefault();
+                      .Where(sm => NewMethod(sm, transition))
+                      .Single();
 
             if (sm == null)
                 throw new Exception($"Transition does not have an associated state machine : {transition}");
@@ -64,6 +72,25 @@ public class TransitionDeserialiser(MetaState MetaState, Instanciator Instanciat
             sm.States.TryAddReference(sourceReference);
             sm.States.TryAddReference(destinationReference);
         }
+    }
+
+    private static bool NewMethod(StateMachine sm, Transition transition)
+    {
+        return sm.Transitions.Any(e => NewMethod1(transition, e));
+    }
+
+    private static bool NewMethod1(Transition transition, Transition e)
+    {
+        if (!e.IsEqv(transition))
+            return false;
+
+        if (!transition.SourceState.Name.IsEqv(e.SourceState.Name))
+            return false;
+
+        if (!transition.DestinationState.Name.IsEqv(e.DestinationState.Name))
+            return false;
+
+        return true;
     }
 
     public override void Initialise(Transition obj)

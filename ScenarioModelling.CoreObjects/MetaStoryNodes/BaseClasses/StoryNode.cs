@@ -1,4 +1,5 @@
 ﻿using ScenarioModelling.Annotations.Attributes;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.Tools.Collections.Graph;
 
@@ -20,7 +21,7 @@ public abstract record StoryNode : IStoryNode
         get => Line.HasValue ? $" (Near line {Line.Value})" : "";
     }
 
-    public abstract OneOfScenaroNode ToOneOf();
+    public abstract OneOfMetaStoryNode ToOneOf();
     public abstract object Accept(IMetaStoryVisitor visitor);
     public abstract Task<object> Accept(IMetaStoryAsyncVisitor visitor);
     public abstract bool IsFullyEqv(IStoryNode other);

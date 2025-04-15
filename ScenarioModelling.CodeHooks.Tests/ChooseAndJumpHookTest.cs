@@ -213,7 +213,7 @@ public partial class ChooseAndJumpHookTest
         choices.Enqueue("Ciao");
 
         using ScenarioModellingContainer reserialisationContainer = new();
-        using var reserialisationScope = container.StartScope();
+        using var reserialisationScope = reserialisationContainer.StartScope();
 
         var reserialisedContext =
             reserialisationScope.Context

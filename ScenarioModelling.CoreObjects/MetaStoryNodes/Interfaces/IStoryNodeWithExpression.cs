@@ -1,6 +1,6 @@
 ﻿using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
 
-namespace ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+namespace ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 public interface IStoryNodeWithExpression : IStoryNode
 {

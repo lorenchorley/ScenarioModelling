@@ -1,12 +1,12 @@
 ﻿document.addEventListener('DOMContentLoaded', function (e1) {
-    const vSep = document.getElementById('vertical-separator');
+    const vSep = document.querySelector('.vertical-separator');
     const left = document.getElementById('left');
     const topText = document.getElementById('topText');
     const bottomText = document.getElementById('bottomText');
-    const hSep = document.getElementById('horizontal-separator');
+    const hSep = document.querySelector('.horizontal-separator');
 
-    let topRatio = 0.5; // NEW: Ratio to preserve relative height
-    console.log('Registering mousedown to ' + vSep.id);
+    let topRatio = 0.5; // Ratio to preserve relative height
+    console.log('Registering mousedown to ' + vSep);
 
     vSep.addEventListener('mousedown', function (e2) {
         console.log('vSep mousedown triggered');

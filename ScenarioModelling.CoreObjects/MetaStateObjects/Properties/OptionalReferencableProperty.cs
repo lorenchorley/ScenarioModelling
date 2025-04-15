@@ -7,7 +7,7 @@ using ScenarioModelling.CoreObjects.References;
 namespace ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 
 public abstract class OptionalReferencableProperty<TVal, TRef>
-    where TVal : class, ISystemObject<TRef>
+    where TVal : class, IMetaStateObject<TRef>
     where TRef : class, IReference<TVal>
 {
     protected OneOf<TVal, TRef>? _valueOrReference = null;

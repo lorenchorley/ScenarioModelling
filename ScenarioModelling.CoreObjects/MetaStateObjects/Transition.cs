@@ -1,17 +1,16 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf;
 using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
-[ProtoContract]
-[MetaStateObjectLike<ISystemObject, Transition>]
-public record Transition : ISystemObject<TransitionReference>, IEqualityComparer<Transition>
+[MetaStateObjectLike<IMetaStateObject, Transition>]
+public record Transition : IMetaStateObject<TransitionReference>, IEqualityComparer<Transition>
 {
     private MetaState _system = null!;
 
@@ -19,13 +18,10 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
     [YamlIgnore]
     public Type Type => typeof(Transition);
 
-    [ProtoMember(1)]
     public string Name { get; set; } = "";
 
-    [ProtoMember(2)]
     public StateProperty SourceState { get; private set; }
 
-    [ProtoMember(3)]
     public StateProperty DestinationState { get; private set; }
 
     private Transition()
@@ -38,7 +34,7 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
         _system = system;
 
         // Add this to the system
-        _system.Transitions.Add(this);
+        //_system.Transitions.Add(this);
 
         SourceState = new(system);
         DestinationState = new(system);
@@ -48,6 +44,9 @@ public record Transition : ISystemObject<TransitionReference>, IEqualityComparer
     {
         _system = system;
     }
+
+    public OneOfMetaStateObject ToOneOf()
+        => new OneOfMetaStateObject(this);
 
     public TransitionReference GenerateReference()
         => new TransitionReference(_system)

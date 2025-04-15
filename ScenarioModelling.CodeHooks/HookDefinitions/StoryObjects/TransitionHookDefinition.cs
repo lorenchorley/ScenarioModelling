@@ -4,8 +4,8 @@ using ScenarioModelling.CodeHooks.Utils;
 using ScenarioModelling.CoreObjects;
 using ScenarioModelling.CoreObjects.References.GeneralisedReferences;
 using ScenarioModelling.CoreObjects.MetaStoryNodes;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.Tools.Exceptions;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 namespace ScenarioModelling.CodeHooks.HookDefinitions.StoryObjects;
 

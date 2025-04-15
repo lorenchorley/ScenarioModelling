@@ -98,7 +98,7 @@ public class MetaStateHookDefinition
     }
 
     private void CreateNewIfNotSet<TObjType, TObjTypeRef, TProp>(TProp objType, string name)
-        where TObjType : class, ISystemObject<TObjTypeRef>
+        where TObjType : class, IMetaStateObject<TObjTypeRef>
         where TObjTypeRef : class, IReference<TObjType>
         where TProp : OptionalReferencableProperty<TObjType, TObjTypeRef>
     {

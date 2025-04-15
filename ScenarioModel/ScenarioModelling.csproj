@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<langversion>latest</langversion>
@@ -13,13 +13,15 @@
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<Product>Scenario Modelling</Product>
-		<Version>0.1.2-alpha</Version>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<Version>0.1.11</Version>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageOutputPath>../nuget</PackageOutputPath>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Include="..\README.md">
+		<None Include="ScenarioModelling.nuspec" Pack="true" PackagePath="" />
+		<None Include="..\README.md">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
@@ -28,13 +30,12 @@
 	<ItemGroup>
 	  <PackageReference Include="GoldEngine" Version="1.0.0" />
 	  <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.4" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="OneOf" Version="3.0.271" />
 	  <PackageReference Include="OneOf.Extended" Version="3.0.271" />
-	  <PackageReference Include="protobuf-net" Version="3.2.46" />
 	  <PackageReference Include="YamlDotNet" Version="16.3.0" />
 	</ItemGroup>
 

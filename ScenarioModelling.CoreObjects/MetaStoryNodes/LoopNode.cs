@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using ScenarioModelling.Annotations.Attributes;
+﻿using ScenarioModelling.Annotations.Attributes;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
@@ -8,11 +7,9 @@ using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes;
 
-[ProtoContract]
 [StoryNodeLike<IStoryNode, LoopNode>]
 public record LoopNode : StoryNode, IFlowNode
 {
-    [ProtoMember(1)]
     [StoryNodeLikeProperty(serialise: false)]
     public SemiLinearSubGraph<IStoryNode> SubGraph { get; set; } = new();
 
@@ -26,7 +23,7 @@ public record LoopNode : StoryNode, IFlowNode
     }
 
     [DebuggerNonUserCode]
-    public override OneOfScenaroNode ToOneOf() => new OneOfScenaroNode(this);
+    public override OneOfMetaStoryNode ToOneOf() => new(this);
 
     public override object Accept(IMetaStoryVisitor visitor)
         => visitor.VisitLoopNode(this);

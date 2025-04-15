@@ -25,7 +25,7 @@ public static class MetaStateObjectExhaustivity
             throw new ArgumentException($"Type {typeof(T).Name} is not a valid object type.");
     }
 
-    public static void DoForEachObjectType(
+    public static void ForEachObjectType(
         Action entity,
         Action entityType,
         Action aspect,
@@ -46,7 +46,7 @@ public static class MetaStateObjectExhaustivity
         transition();
         constraint();
     }
-
+    
     private static readonly PropertyExhaustivityFunctions<MetaStateObjectLikePropertyAttribute> _propertyExhaustivityFunctions = new();
     private static readonly TypeExhaustivityFunctions _typeExhaustivityFunctions = new(AllObjectTypes, typeof(MetaStateObjectLikeAttribute<,>), "object");
 
