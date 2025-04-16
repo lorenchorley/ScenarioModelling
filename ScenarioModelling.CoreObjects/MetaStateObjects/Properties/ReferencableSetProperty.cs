@@ -1,16 +1,35 @@
-﻿using Newtonsoft.Json;
+﻿using LanguageExt;
+using Newtonsoft.Json;
 using OneOf;
-using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 
+[DebuggerDisplay("[{DebugInfo}]")]
 public abstract class ReferencableSetProperty<TValue, TReference> : IEnumerable<TValue>
     where TValue : class, IIdentifiable
     where TReference : class, IReference
 {
-    private HashSet<OneOf<TValue, TReference>> _set;
+    private System.Collections.Generic.HashSet<OneOf<TValue, TReference>> _set;
     protected readonly MetaState _system;
+
+    public string DebugInfo
+    {
+        get
+        {
+            if (_set.Count == 0)
+                return "Empty";
+
+            return 
+                _set.Select(s => 
+                        s.Match(
+                            (TValue state) => $"{state.GetType().Name} : {state.Name}",
+                            (TReference reference) => $"{reference.TypeName} reference : {reference.Name}"
+                        ))
+                    .CommaSeparatedList();
+        }
+    }
 
     protected ReferencableSetProperty(MetaState System, IEqualityComparer<OneOf<TValue, TReference>>? customEqualityComparer = null)
     {

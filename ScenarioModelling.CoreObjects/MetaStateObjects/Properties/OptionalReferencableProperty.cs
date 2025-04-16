@@ -2,28 +2,43 @@
 using OneOf;
 using ScenarioModelling.CoreObjects.References.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
-using ScenarioModelling.CoreObjects.References;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 
-public abstract class OptionalReferencableProperty<TVal, TRef>
-    where TVal : class, IMetaStateObject<TRef>
-    where TRef : class, IReference<TVal>
+[DebuggerDisplay("{DebugInfo}")]
+public abstract class OptionalReferencableProperty<TValue, TReference>
+    where TValue : class, IMetaStateObject<TReference>
+    where TReference : class, IReference<TValue>
 {
-    protected OneOf<TVal, TRef>? _valueOrReference = null;
-    private readonly MetaState _system;
+    protected OneOf<TValue, TReference>? _valueOrReference = null;
+    private readonly MetaState _metaState;
 
     public abstract string? Name { get; }
 
-    public OptionalReferencableProperty(MetaState system)
+    public string DebugInfo
     {
-        _system = system;
+        get
+        {
+            if (!_valueOrReference.HasValue)
+                return "null";
+
+            return _valueOrReference.Value.Match(
+                (TValue state) => $"{state.GetType().Name} : {state.Name}",
+                (TReference reference) => $"{reference.TypeName} reference : {reference.Name}"
+            );
+        }
+    }
+
+    public OptionalReferencableProperty(MetaState metaState)
+    {
+        _metaState = metaState;
     }
 
     [JsonIgnore]
     public bool IsSet => _valueOrReference != null;
 
-    public void SetValue(TVal? value)
+    public void SetValue(TValue? value)
     {
         if (value == null)
         {
@@ -35,7 +50,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
         }
     }
 
-    public void SetReference(TRef? reference)
+    public void SetReference(TReference? reference)
     {
         if (reference == null)
         {
@@ -47,7 +62,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
         }
     }
 
-    public TRef? GetOrGenerateReference()
+    public TReference? GetOrGenerateReference()
     {
         if (_valueOrReference == null)
             return null;
@@ -59,7 +74,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
     }
 
     [JsonIgnore]
-    public TVal? ValueOnly
+    public TValue? ValueOnly
     {
         get => _valueOrReference?.Match(
                 value => value,
@@ -68,7 +83,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
     }
 
     [JsonIgnore]
-    public TRef? ReferenceOnly
+    public TReference? ReferenceOnly
     {
         get => _valueOrReference?.Match(
                 state => default,
@@ -76,7 +91,7 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
             );
     }
 
-    public TResult Match<TResult>(Func<TVal, TResult> value, Func<TRef, TResult> reference, Func<TResult> isNull)
+    public TResult Match<TResult>(Func<TValue, TResult> value, Func<TReference, TResult> reference, Func<TResult> isNull)
     {
         if (_valueOrReference == null)
             return isNull();
@@ -85,14 +100,14 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
     }
 
     [JsonIgnore]
-    public TVal? ResolvedValue
+    public TValue? ResolvedValue
     {
         get
         {
             if (_valueOrReference == null)
                 return null;
 
-            return ((OneOf<TVal, TRef>)_valueOrReference).Match(
+            return ((OneOf<TValue, TReference>)_valueOrReference).Match(
                 state => state,
                 reference => reference.ResolveReference().Match(
                     state =>
@@ -100,13 +115,13 @@ public abstract class OptionalReferencableProperty<TVal, TRef>
                         _valueOrReference = state; // Cache the resolved value
                         return state;
                     },
-                    () => throw new Exception($"{typeof(TVal).Name} reference '{reference}' could not be resolved.")
+                    () => throw new Exception($"{typeof(TValue).Name} reference '{reference}' could not be resolved.")
                 )
             );
         }
     }
 
-    public bool IsEqv(OptionalReferencableProperty<TVal, TRef> other) // TODO Move to extension method
+    public bool IsEqv(OptionalReferencableProperty<TValue, TReference> other) // TODO Move to extension method
     {
         if ((_valueOrReference == null && other._valueOrReference != null) ||
             (_valueOrReference != null && other._valueOrReference == null))

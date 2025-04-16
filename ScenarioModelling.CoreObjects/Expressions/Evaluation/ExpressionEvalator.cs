@@ -116,7 +116,7 @@ public class ExpressionEvalator : IExpressionVisitor
         {
             if (value.ValueList.Count > 1)
             {
-                throw new Exception("Relatable object not found in system");
+                throw new Exception($"Relatable object not found in meta state : {value.ValueList.DotSeparatedList()}");
             }
 
             string stringValue = value.ValueList[0];
