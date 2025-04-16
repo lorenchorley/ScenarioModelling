@@ -7,9 +7,11 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
+[DebuggerDisplay(@"Entity : {Name} (Type : {EntityType?.Name ?? ""-""}, State : {State.Name ?? ""-""}, Relations : {Relations?.Count}, Aspects : {Aspects?.Count})")]
 [MetaStateObjectLike<IMetaStateObject, Entity>]
 public record Entity : IMetaStateObject<EntityReference>, IStateful, IRelatable
 {

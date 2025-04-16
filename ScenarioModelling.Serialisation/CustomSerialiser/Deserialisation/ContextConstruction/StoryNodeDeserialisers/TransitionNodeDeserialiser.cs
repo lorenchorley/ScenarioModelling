@@ -23,7 +23,7 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
         return def is TransitionDefinition;
     };
 
-    public IStoryNode Transform(Definition def, MetaStory metaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> transformDefinition)
+    public IStoryNode Transform(Definition def, MetaStory metaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, IStoryNode? existingCorrespondingNode, TryTransformDefinitionToNodeDelegate transformDefinition)
     {
         TransitionNode node = new();
         node.Line = def.Line;
@@ -52,6 +52,12 @@ public class TransitionNodeDeserialiser : IDefinitionToNodeDeserialiser
             node.TransitionName = transition.TransitionName.Value;
             throw new NotImplementedException();
         }
+
+        if (existingCorrespondingNode != null && existingCorrespondingNode is not TransitionNode)
+        {
+            throw new Exception(@$"While trying to transform the definition ""{def}"" into a node of type {nameof(TransitionNode)}, the type did not match with an existing node of type {existingCorrespondingNode.GetType().Name} in the subgraph");
+        }
+
 
         if (defs != null)
         {

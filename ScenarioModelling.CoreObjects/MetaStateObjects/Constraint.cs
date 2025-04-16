@@ -6,9 +6,11 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
+[DebuggerDisplay(@"Constraint : {Name} <{OriginalConditionText}>")]
 [MetaStateObjectLike<IMetaStateObject, Constraint>]
 public record Constraint : IMetaStateObject<ConstraintReference>
 {

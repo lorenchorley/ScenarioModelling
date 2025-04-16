@@ -41,12 +41,12 @@ public class StateMachineHookDefinition : IObjectHookDefinition
 
         // Keep the tracked object up to date
         var transition = _instanciator.New<Transition>(transitionName);
-        StateMachine.Transitions.TryAddReference(transition.GenerateReference());
-
         StateReference source = new StateReference(_metaState) { Name = statefulInitial };
         StateReference destination = new StateReference(_metaState) { Name = statefulFinal };
         transition.SourceState.SetReference(source);
         transition.DestinationState.SetReference(destination);
+
+        StateMachine.Transitions.TryAddReference(transition.GenerateReference());
         StateMachine.States.TryAddReference(source);
         StateMachine.States.TryAddReference(destination);
 

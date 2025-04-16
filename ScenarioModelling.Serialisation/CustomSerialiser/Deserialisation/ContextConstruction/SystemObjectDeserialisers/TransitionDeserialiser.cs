@@ -30,7 +30,7 @@ public class TransitionDeserialiser(MetaState MetaState, Instanciator Instanciat
         if (type != TransformationType.Property)
             throw new Exception("A transition must always be the propert of another object");
 
-        Transition value = Instanciator.New<Transition>(definition: def);
+        Transition value = Instanciator.NewUnregistered<Transition>(definition: def);
 
         value.SourceState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Source.Value));
         value.DestinationState.SetReference(Instanciator.NewReference<State, StateReference>(name: unnamed.Destination.Value));
@@ -42,7 +42,7 @@ public class TransitionDeserialiser(MetaState MetaState, Instanciator Instanciat
             return value.GenerateReference();
         }
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

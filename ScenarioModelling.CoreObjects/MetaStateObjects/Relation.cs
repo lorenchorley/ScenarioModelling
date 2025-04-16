@@ -8,9 +8,11 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
+[DebuggerDisplay(@"Relation : {Name} : {LeftEntity?.Name ?? ""-""} -> {RightEntity?.Name ?? ""-""}")]
 [MetaStateObjectLike<IMetaStateObject, Relation>]
 public record Relation : IMetaStateObject<RelationReference>, IStateful // TODO Rename to something more specific that doesn't collide with System.Linq.Expression
 {

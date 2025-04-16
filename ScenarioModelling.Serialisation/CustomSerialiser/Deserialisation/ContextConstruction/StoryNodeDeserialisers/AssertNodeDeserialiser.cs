@@ -22,12 +22,18 @@ public class AssertNodeDeserialiser : IDefinitionToNodeDeserialiser
 
     public List<IStoryNodeWithExpression> ConditionsToInitialise = new();
 
-    public IStoryNode Transform(Definition def, MetaStory metaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> transformDefinition)
+    public IStoryNode Transform(Definition def, MetaStory metaStory, SemiLinearSubGraph<IStoryNode> currentSubgraph, IStoryNode? existingCorrespondingNode, TryTransformDefinitionToNodeDelegate transformDefinition)
     {
         if (def is not ExpressionDefinition expDef)
         {
             throw new Exception("Assert node must be expression definition");
         }
+
+        if (existingCorrespondingNode != null && existingCorrespondingNode is not AssertNode)
+        {
+            throw new Exception(@$"While trying to transform the definition ""{def}"" into a node of type {nameof(AssertNode)}, the type did not match with an existing node of type {existingCorrespondingNode.GetType().Name} in the subgraph");
+        }
+
 
         def.HasBeenTransformed = true;
 

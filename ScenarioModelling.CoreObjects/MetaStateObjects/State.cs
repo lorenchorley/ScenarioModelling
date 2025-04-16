@@ -5,9 +5,11 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
+[DebuggerDisplay(@"State : {Name} (StateMachine : {StateMachineName})")]
 [MetaStateObjectLike<IMetaStateObject, State>]
 public record State : IMetaStateObject<StateReference>
 {

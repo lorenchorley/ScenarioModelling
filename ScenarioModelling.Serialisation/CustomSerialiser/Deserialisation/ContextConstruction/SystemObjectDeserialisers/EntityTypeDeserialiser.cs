@@ -29,7 +29,7 @@ public class EntityTypeDeserialiser(MetaState MetaState, Instanciator Instanciat
 
 
         // Need to know if we're on a definition that is a property of an object, or a definition that is an object itself
-        EntityType value = Instanciator.New<EntityType>(definition: def);
+        EntityType value = Instanciator.NewUnregistered<EntityType>(definition: def);
 
         if (MetaState.EntityTypes.Any(e => e.Name == value.Name))
         {
@@ -41,7 +41,7 @@ public class EntityTypeDeserialiser(MetaState MetaState, Instanciator Instanciat
 
         value.StateMachine.SetReference(unnamed.Definitions.Choose(StateMachineTransformer.TransformAsProperty).FirstOrDefault());
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

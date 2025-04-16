@@ -1,6 +1,6 @@
 ﻿namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 
-public record ExpressionDefinition : ParentalDefinition
+public record ExpressionDefinition : ParentDefinition
 {
     public StringValue Name { get; set; } = null!;
     public ExpressionBlock Block { get; set; } = null!;

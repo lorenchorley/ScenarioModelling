@@ -181,7 +181,7 @@ public class CustomContextDeserialiser : IContextBuilder<ContextBuilderInputs>
     {
         foreach (Definition definition in definitions)
         {
-            if (definition is ParentalDefinition parentalDefinition)
+            if (definition is ParentDefinition parentalDefinition)
                 CheckForUntransformedDefinitions(parentalDefinition.Definitions, untransformedDefinitionPaths, $"{path} -> {definition.ToEssentialString()}");
 
             if (!definition.HasBeenTransformed)

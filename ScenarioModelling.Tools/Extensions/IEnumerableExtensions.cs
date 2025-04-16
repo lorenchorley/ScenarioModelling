@@ -3,6 +3,30 @@ using System.Diagnostics;
 
 public static class IEnumerableExtensions
 {
+    public static IEnumerable<(R, S)> CombinePairwise<R, S>(this IEnumerable<R> first, IEnumerable<S> second)
+    {
+        var firstEnumerator = first.GetEnumerator();
+        var secondEnumerator = second.GetEnumerator();
+
+        bool MoveNext()
+        {
+            bool v = firstEnumerator.MoveNext();
+            bool u = secondEnumerator.MoveNext();
+
+            if (v != u)
+            {
+                throw new Exception("Sequence lengths do not match");
+            }
+
+            return v;
+        }
+
+        while (MoveNext())
+        {
+            yield return (firstEnumerator.Current, secondEnumerator.Current);
+        }
+    }
+
     [DebuggerNonUserCode]
     public static IEnumerable<R> ChooseAndAssertAllSelected<T, R>(this IEnumerable<T> list, Func<T, Option<R>> selector, string messageTemplate)
     {

@@ -29,10 +29,6 @@ public class ContextMergingTests
             }
             While <Actor.State != "Dee Zaster"> {
                 If <Actor.State == "Amy Stake"> {
-                    Dialog {
-                        Text "The actor Mrs Stake makes a bad pun to do with their name"
-                        Character Actor
-                    }
                 }
                 If <Actor.State == "Brock Lee"> {
                     Dialog {
@@ -41,6 +37,10 @@ public class ContextMergingTests
                     }
                 }
                 If <Actor.State == "Clara Nett"> {
+                    Dialog {
+                        Text "The actor Mrs Nett makes a bad pun to do with their name"
+                        Character Actor
+                    }
                 }
                 Transition {
                     Actor : ChangeName
@@ -78,14 +78,14 @@ public class ContextMergingTests
             }
             While <Actor.State != "Dee Zaster"> {
                 If <Actor.State == "Amy Stake"> {
+                    Dialog {
+                        Text "The actor Mrs Stake makes a bad pun to do with their name"
+                        Character Actor
+                    }
                 }
                 If <Actor.State == "Brock Lee"> {
                 }
                 If <Actor.State == "Clara Nett"> {
-                    Dialog {
-                        Text "The actor Mrs Nett makes a bad pun to do with their name"
-                        Character Actor
-                    }
                 }
                 Transition {
                     Actor : ChangeName

@@ -10,7 +10,9 @@ using ScenarioModelling.Tools.Exceptions;
 
 namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.ContextConstruction;
 
-public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator) : DefinitionToObjectDeserialiser<MetaStory, MetaStory>
+public delegate Option<IStoryNode> TryTransformDefinitionToNodeDelegate(Definition def, SemiLinearSubGraph<IStoryNode> currentSubgraph, IStoryNode? existingCorrespondingNode);
+
+public class MetaStoryTransformer(MetaState MetaState, Instanciator Instanciator) : DefinitionToObjectDeserialiser<MetaStory, MetaStory>
 {
     public Dictionary<string, IDefinitionToNodeDeserialiser> NodeProfilesByName { get; set; }
     public Dictionary<Func<Definition, bool>, IDefinitionToNodeDeserialiser> NodeProfilesByPredicate { get; set; }
@@ -21,7 +23,7 @@ public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator
         {
             if (def is not UnnamedDefinition unnamed)
             {
-                // Report error
+                // TODO Report error
             }
 
             return null;
@@ -35,17 +37,17 @@ public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator
         if (type == TransformationType.Property)
             throw new InternalLogicException("MetaStories should not be properties");
 
-        SemiLinearSubGraph<IStoryNode> primarySubGraph = new SemiLinearSubGraph<IStoryNode>();
-        MetaStory value = Instanciator.NewMetaStory(definition: def, primarySubGraph);
+        MetaStory value = Instanciator.GetOrNewMetaStory<SemiLinearSubGraph<IStoryNode>>(definition: named);
+        SemiLinearSubGraph<IStoryNode> primarySubGraph = (SemiLinearSubGraph<IStoryNode>)value.Graph.PrimarySubGraph;
 
         var tryTransform = TryTransformDefinitionToNode(value);
-        primarySubGraph.AddRangeToSequence(named.Definitions.ChooseAndAssertAllSelected(d => tryTransform(d, primarySubGraph), "Unknown node types not taken into account : {0}"));
+        primarySubGraph.TransformAndMergeDefinitionsIntoSubgraph(named, tryTransform);
 
         return value;
     }
 
-    private Func<Definition, SemiLinearSubGraph<IStoryNode>, Option<IStoryNode>> TryTransformDefinitionToNode(MetaStory metaStory)
-        => (def, currentSubgraph) =>
+    private TryTransformDefinitionToNodeDelegate TryTransformDefinitionToNode(MetaStory metaStory)
+        => (def, currentSubgraph, existingCorrespondingNode) =>
         {
             var tryTransform = TryTransformDefinitionToNode(metaStory);
 
@@ -53,7 +55,7 @@ public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator
             {
                 if (profilePred.Key(def))
                 {
-                    var node = profilePred.Value.Transform(def, metaStory, currentSubgraph, tryTransform);
+                    var node = profilePred.Value.Transform(def, metaStory, currentSubgraph, existingCorrespondingNode, tryTransform);
 
                     if (def is NamedDefinition named)
                         node.Name = named.Name.Value;
@@ -66,7 +68,7 @@ public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator
             {
                 if (NodeProfilesByName.TryGetValue(expDef.Name.Value.ToUpperInvariant(), out IDefinitionToNodeDeserialiser? profile) && profile != null)
                 {
-                    var node = profile.Transform(def, metaStory, currentSubgraph, tryTransform);
+                    var node = profile.Transform(def, metaStory, currentSubgraph, existingCorrespondingNode, tryTransform);
 
                     if (def is NamedDefinition named)
                         node.Name = named.Name.Value;
@@ -79,7 +81,7 @@ public class MetaStoryTransformer(MetaState metaState, Instanciator Instanciator
             {
                 if (NodeProfilesByName.TryGetValue(unnamed.Type.Value.ToUpperInvariant(), out IDefinitionToNodeDeserialiser? profile) && profile != null)
                 {
-                    var node = profile.Transform(def, metaStory, currentSubgraph, tryTransform);
+                    var node = profile.Transform(def, metaStory, currentSubgraph, existingCorrespondingNode, tryTransform);
 
                     if (def is NamedDefinition named)
                         node.Name = named.Name.Value;

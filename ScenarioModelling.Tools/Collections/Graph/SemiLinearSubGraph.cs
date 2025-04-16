@@ -10,6 +10,11 @@ public class SemiLinearSubGraph<T> : ISubGraph<T> where T : IDirectedGraphNode<T
 
     public IEnumerable<T> UnorderedEnumerable => NodeSequence;
 
+    public SemiLinearSubGraph()
+    {
+        
+    }
+
     public bool Contains(T node)
     {
         return NodeSequence.Contains(node);

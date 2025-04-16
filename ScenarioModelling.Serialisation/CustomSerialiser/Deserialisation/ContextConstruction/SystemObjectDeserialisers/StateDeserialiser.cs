@@ -36,7 +36,7 @@ public class StateDeserialiser(MetaState MetaState, Instanciator Instanciator) :
         if (type == TransformationType.Property)
             return Instanciator.NewReference<State, StateReference>(definition: def);
 
-        State value = Instanciator.New<State>(definition: def);
+        State value = Instanciator.NewUnregistered<State>(definition: def);
 
         if (MetaState.Relations.Any(e => e.IsEqv(value)))
         {
@@ -45,7 +45,7 @@ public class StateDeserialiser(MetaState MetaState, Instanciator Instanciator) :
             return value.GenerateReference();
         }
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

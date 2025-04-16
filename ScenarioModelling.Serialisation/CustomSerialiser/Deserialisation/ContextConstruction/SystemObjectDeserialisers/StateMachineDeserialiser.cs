@@ -32,7 +32,7 @@ public class StateMachineDeserialiser(MetaState MetaState, Instanciator Instanci
             return Instanciator.NewReference<StateMachine, StateMachineReference>(definition: def);
 
 
-        StateMachine value = Instanciator.New<StateMachine>(definition: def);
+        StateMachine value = Instanciator.NewUnregistered<StateMachine>(definition: def);
 
         if (MetaState.StateMachines.Any(e => e.Name == value.Name))
         {
@@ -44,7 +44,7 @@ public class StateMachineDeserialiser(MetaState MetaState, Instanciator Instanci
         value.States.TryAddReferenceRange(unnamed.Definitions.Choose(StateTransformer.TransformAsProperty));
         value.Transitions.TryAddReferenceRange(unnamed.Definitions.Choose(TransitionTransformer.TransformAsProperty));
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

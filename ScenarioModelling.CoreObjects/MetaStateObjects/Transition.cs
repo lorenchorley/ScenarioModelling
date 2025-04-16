@@ -6,9 +6,11 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
+[DebuggerDisplay(@"Transition : {Name} : {SourceState.Name ?? ""-""} -> {DestinationState.Name ?? ""-""}")]
 [MetaStateObjectLike<IMetaStateObject, Transition>]
 public record Transition : IMetaStateObject<TransitionReference>, IEqualityComparer<Transition>
 {

@@ -26,7 +26,7 @@ public class AspectDeserialiser(MetaState MetaState, Instanciator Instanciator, 
 
         def.HasBeenTransformed = true;
 
-        Aspect value = Instanciator.New<Aspect>(definition: def);
+        Aspect value = Instanciator.NewUnregistered<Aspect>(definition: def);
 
         if (MetaState.Aspects.Any(e => e.Name == value.Name))
         {
@@ -43,7 +43,7 @@ public class AspectDeserialiser(MetaState MetaState, Instanciator Instanciator, 
         value.State.SetReference(reference);
         value.InitialState.SetReference(reference);
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

@@ -1,6 +1,6 @@
 ﻿namespace ScenarioModelling.Serialisation.CustomSerialiser.Deserialisation.IntermediateSemanticTree;
 
-public record UnnamedDefinition : ParentalDefinition
+public record UnnamedDefinition : ParentDefinition
 {
     public StringValue Type { get; set; } = null!;
 

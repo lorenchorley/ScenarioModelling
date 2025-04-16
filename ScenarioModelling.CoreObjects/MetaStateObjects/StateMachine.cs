@@ -7,12 +7,14 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
 /// <summary>
 /// Defines the state machine for a state, allows for reuse and analysis 
 /// </summary>
+[DebuggerDisplay(@"StateMachine : {Name} (States : {States.Count}, Transitions : {Transitions.Count})")]
 [MetaStateObjectLike<IMetaStateObject, StateMachine>]
 public record StateMachine : IMetaStateObject<StateMachineReference>, IOptionalSerialisability
 {

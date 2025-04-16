@@ -5,12 +5,14 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
 /// <summary>
 /// Types exist only to allow grouping and reuse of entities (that would then have the same state type and aspects)
 /// </summary>
+[DebuggerDisplay(@"EntityType : {Name}")]
 [MetaStateObjectLike<IMetaStateObject, EntityType>]
 public record EntityType : IMetaStateObject<EntityTypeReference>, IOptionalSerialisability
 {

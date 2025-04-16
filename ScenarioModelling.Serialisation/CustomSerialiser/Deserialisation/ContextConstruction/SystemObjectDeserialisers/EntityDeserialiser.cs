@@ -29,7 +29,7 @@ public class EntityDeserialiser(MetaState MetaState, Instanciator Instanciator, 
 
         def.HasBeenTransformed = true;
 
-        Entity value = Instanciator.New<Entity>(definition: def);
+        Entity value = Instanciator.NewUnregistered<Entity>(definition: def);
 
         if (MetaState.Entities.Any(e => e.Name == value.Name))
         {
@@ -58,7 +58,7 @@ public class EntityDeserialiser(MetaState MetaState, Instanciator Instanciator, 
             throw new Exception($"More than one state was set on entity {value.Name ?? "<unnamed>"} of type {typeReference?.Name ?? "<unnnamed>"} : {stateReferences.Select(s => s.Name).CommaSeparatedList()}");
         }
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

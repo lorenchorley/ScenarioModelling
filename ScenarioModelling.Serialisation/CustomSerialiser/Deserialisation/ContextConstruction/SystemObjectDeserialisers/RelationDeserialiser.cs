@@ -32,7 +32,7 @@ public class RelationDeserialiser(MetaState MetaState, Instanciator Instanciator
 
         def.HasBeenTransformed = true;
 
-        Relation value = Instanciator.New<Relation>(definition: def);
+        Relation value = Instanciator.NewUnregistered<Relation>(definition: def);
 
         value.LeftEntity = new RelatableObjectReference(MetaState)
         {
@@ -53,7 +53,7 @@ public class RelationDeserialiser(MetaState MetaState, Instanciator Instanciator
 
         // TODO State and InitialState
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 

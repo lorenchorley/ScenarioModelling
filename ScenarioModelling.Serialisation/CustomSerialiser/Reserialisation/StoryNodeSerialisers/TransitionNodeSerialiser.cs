@@ -21,7 +21,7 @@ public class TransitionNodeSerialiser : INodeSerialiser<TransitionNode>
 
         var obj = stateful.Match(
             Some: s => s,
-            None: () => throw new Exception($"Stateful object not found: {node.StatefulObject}"));
+            None: () => throw new Exception($"Stateful object not found: {node.StatefulObject.Name}"));
 
         var name = string.IsNullOrEmpty(node.Name) ? "" : node.Name.AddQuotes() + " ";
         sb.AppendLine($"{currentIndent}Transition {name}{{");

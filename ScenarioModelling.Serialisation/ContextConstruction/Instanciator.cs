@@ -30,7 +30,7 @@ public class Instanciator
     /// <param name="name"></param>
     /// <returns></returns>
     public TVal GetOrNew<TVal, TRef>(string? name = null, Definition? definition = null)
-        where TVal : IIdentifiable
+        where TVal : IMetaStateObject
         where TRef : IReference<TVal>
     {
         name = name ?? TryGetNameFromDefinition(definition);
@@ -43,11 +43,31 @@ public class Instanciator
             );
     }
 
-    public MetaStory NewMetaStory(Definition definition, ISubGraph<IStoryNode> subGraph)
+    public MetaStory GetOrNewMetaStory<TSubGraph>(NamedDefinition definition) where TSubGraph : ISubGraph<IStoryNode>, new()
     {
-        MetaStory MetaStory = _context.NewMetaStory("", subGraph); // Must not have a name here so that the method Name can do it's job
+        MetaStory existingMetaStory = _context.MetaStories.SingleOrDefault(m => m.Name == definition.Name.Value);
 
-        return Name<MetaStory, MetaStory>(MetaStory, def: definition);
+        if (existingMetaStory == null)
+        {
+            TSubGraph subGraph = new();
+            MetaStory newMetaStory = _context.NewMetaStory("", subGraph); // Must not have a name here so that the method Name can do it's job
+
+            var namedMetaStory = Name<MetaStory, MetaStory>(newMetaStory, def: definition);
+
+            return namedMetaStory;
+        }
+        else
+        {
+            return existingMetaStory;
+        }
+    }
+
+    public TVal New<TVal>(string? name = null, Definition? definition = null)
+        where TVal : IMetaStateObject
+    {
+        TVal instance = NewUnregistered<TVal>(name, definition);
+        RegisterWithMetaState(instance);
+        return instance;
     }
 
     /// <summary>
@@ -58,8 +78,8 @@ public class Instanciator
     /// <param name="definition"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public TVal New<TVal>(string? name = null, Definition? definition = null)
-        where TVal : IIdentifiable
+    public TVal NewUnregistered<TVal>(string? name = null, Definition? definition = null)
+        where TVal : IMetaStateObject
     {
         MetaStateObjectExhaustivity.AssertIsObjectType<TVal>();
 
@@ -79,7 +99,7 @@ public class Instanciator
         return Name<TVal, TVal>((TVal)instance, name, definition);
     }
 
-    public void AssociateWithMetaState(IMetaStateObject instance)
+    public void RegisterWithMetaState(IMetaStateObject instance)
     {
         instance.ToOneOf().Switch(
             _context.MetaState.Aspects.Add,

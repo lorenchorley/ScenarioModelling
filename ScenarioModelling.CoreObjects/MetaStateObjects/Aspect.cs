@@ -7,9 +7,11 @@ using ScenarioModelling.CoreObjects.MetaStateObjects.Properties;
 using ScenarioModelling.CoreObjects.Visitors;
 using YamlDotNet.Serialization;
 using ScenarioModelling.CoreObjects.MetaStoryNodes.BaseClasses;
+using System.Diagnostics;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects;
 
+[DebuggerDisplay(@"Aspect : {Name}")]
 [MetaStateObjectLike<IMetaStateObject, Aspect>]
 public record Aspect : IMetaStateObject<AspectReference>, IStateful, IRelatable
 {

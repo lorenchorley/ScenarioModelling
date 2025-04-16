@@ -28,7 +28,7 @@ public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciat
 
         def.HasBeenTransformed = true;
 
-        Constraint value = Instanciator.New<Constraint>(definition: def);
+        Constraint value = Instanciator.NewUnregistered<Constraint>(definition: def);
 
         if (MetaState.Constraints.Any(e => e.Name == value.Name))
         {
@@ -69,7 +69,7 @@ public class ConstraintDeserialiser(MetaState MetaState, Instanciator Instanciat
             }
         }
 
-        Instanciator.AssociateWithMetaState(value);
+        Instanciator.RegisterWithMetaState(value);
         return value.GenerateReference();
     }
 
