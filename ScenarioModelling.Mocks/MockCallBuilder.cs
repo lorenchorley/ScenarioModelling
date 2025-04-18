@@ -18,7 +18,7 @@ public class MockCallBuilder
         _serviceProvider = serviceProvider;
     }
 
-    internal MockCallBuilder SetValue<TBusinessValue>(string businessType, TBusinessValue businessValue) where TBusinessValue : notnull
+    public MockCallBuilder SetValue<TBusinessValue>(string businessType, TBusinessValue businessValue) where TBusinessValue : notnull
     {
         string statefulObjectName = BusinessObjectToStateMap.GetStatefulObjectName(businessType);
         string stateName = BusinessObjectToStateMap.GetStateName(businessType, businessValue);
@@ -26,14 +26,14 @@ public class MockCallBuilder
         return SetState(statefulObjectName, stateName);
     }
 
-    internal MockCallBuilder SetState(string statefulObjectName, string stateName)
+    public MockCallBuilder SetState(string statefulObjectName, string stateName)
     {
         _stateNamesByStatefulObjectName.Add(statefulObjectName, stateName);
 
         return this;
     }
 
-    internal MockCallResult Call()
+    public MockCallResult Call()
     {
         // Do the simulation
         MockStoryRunner runner = _serviceProvider.GetRequiredService<MockStoryRunner>();

@@ -2,7 +2,7 @@ This project is still in its experimental stage.
 
 # TL;DR
 
-This tool provides a way to build a strong verifiable link between functional requirements and final implmentation.
+This tool provides a way to build a strong verifiable link between functional requirements and implmentation. At the same time it provides a way to distinguish between code that responds to functional requirements and purely technical code that may vary without significant external consequences.
 
 It does so through the use of an intermediate artifact, which has the name Meta Story that follows from the agile term User Story.
 

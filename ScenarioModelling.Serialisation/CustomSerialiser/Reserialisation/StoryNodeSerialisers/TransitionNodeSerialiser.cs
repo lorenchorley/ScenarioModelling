@@ -32,11 +32,11 @@ public class TransitionNodeSerialiser : INodeSerialiser<TransitionNode>
 
         if (obj is Aspect aspect)
         {
-            sb.AppendLine($"{subIndent}{aspect.Entity.Name}.{aspect.Name} : {node.TransitionName}");
+            sb.AppendLine($"{subIndent}{aspect.Entity.Name}.{aspect.Name} : {node.TransitionName.AddQuotes()}");
         }
         else
         {
-            sb.AppendLine($"{subIndent}{obj.Name} : {node.TransitionName}");
+            sb.AppendLine($"{subIndent}{obj.Name} : {node.TransitionName.AddQuotes()}");
         }
 
         sb.AppendLine($"{currentIndent}}}");

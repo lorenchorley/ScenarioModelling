@@ -61,7 +61,7 @@ public class MetaStoryMockBuilder
         return this;
     }
 
-    internal MetaStoryMockBuilder AddBusinessTypeToStatefulObjectRelation(string businessTypeName, string statefulObjectName)
+    public MetaStoryMockBuilder AddBusinessTypeToStatefulObjectRelation(string businessTypeName, string statefulObjectName)
     {
         if (_isBuilt)
             throw new MetaStoryMockException("Cannot modify a finalised MetaStoryMock");

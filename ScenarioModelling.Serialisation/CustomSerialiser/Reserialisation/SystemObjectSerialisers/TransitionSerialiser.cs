@@ -15,10 +15,10 @@ public class TransitionSerialiser : IObjectSerialiser<Transition>
         string destination = obj.DestinationState.ResolvedValue?.Name?.AddQuotes() ?? "";
         if (string.IsNullOrEmpty(obj.Name))
         {
-            sb.AppendLine($@"{currentIndent}{source} -> {destination}");
+            sb.AppendLine($@"{currentIndent}{source.AddQuotes()} -> {destination.AddQuotes()}");
         }
         else
-            sb.AppendLine($@"{currentIndent}{source} -> {destination} : {obj.Name.AddQuotes()}");
+            sb.AppendLine($@"{currentIndent}{source.AddQuotes()} -> {destination.AddQuotes()} : {obj.Name.AddQuotes()}");
     }
 }
 
