@@ -1,6 +1,5 @@
 ﻿@page "/designer"
 @rendermode InteractiveAuto
-@using Excubo.Blazor.Canvas
 @using ScenarioModelling
 @using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation
 @using System.Diagnostics
@@ -11,45 +10,152 @@
 <PageTitle>Designer</PageTitle>
 
 @* https://github.com/excubo-ag/Blazor.Canvas/blob/main/TestProject_Components/Pages/Context2D/WhiteboardExample.razor *@
+@* https://codesandbox.io/p/sandbox/sad-butterfly-1fwo4?file=%2Findex.html *@
 
-<div id="container">
-    <div id="left" style="width: 50%;">
-        <textarea id="topText" @oninput="OnTextChanged">@TestData.StartingText</textarea>
-        <div class="horizontal-separator"></div>
-        <textarea id="bottomText" @bind="OutputText"></textarea>
-    </div>
+@* story timeline : https://codepen.io/cjl750/pen/mXbMyo     *@
+@* State machine visualisation : https://codesandbox.io/p/sandbox/state-machine-visualizer-forked-ffj0q *@
 
-    <div class="vertical-separator"></div>
+<flex class="h" style="flex: 1; width: 100vw !important; height:100vh !important;">
+    <flex class="v" style="flex: 3">
+        <flex-item style="flex: 5;background-color: indianred;">
+            <textarea id="code-text" @oninput="OnTextChanged">@TestData.StartingText</textarea>
+        </flex-item>
+        <flex-resizer></flex-resizer>
+        <flex-item style="flex: 1; background-color: darkorange;">
+            <textarea id="output-text">@OutputText</textarea>
+        </flex-item>
+    </flex>
+    <flex-resizer></flex-resizer>
+    <flex class="v" style="flex: 5;">
+        <flex-item id="story-and-graph-header" class="panel" style="height:3em; background-color: aquamarine;">Header</flex-item>
+        <static-separator />
+        <flex class="h" style="flex: 7">
+            <flex id="graph" class="panel v" style="flex: 1; background-color: cornflowerblue;">
 
-    <div id="canvas-container">
-        <div id="mainCanvasPositioner"></div>
-        <canvas @ref="_canvas" id="mainCanvas" width="@ViewportWidth" height="@ViewportHeight"></canvas>
-        <div class="horizontal-separator"></div>
-@*         <div id="toolbar">
-            <button>Run</button>
-        </div> *@
-    </div>
-</div>
+                @foreach (var element in VisualGraphElements)
+                {
+                    <flex class="graph-node @(element.Type)" @onclick="OnClickGraphNode">
+                        <flex-item style="width:@(element.indent)em;"></flex-item>
+                        <flex-item class="shape"></flex-item>
+                        <flex-item style="flex: 1">@(element.text)</flex-item>
+                    </flex>
+                }
+
+            </flex>
+            <flex-resizer></flex-resizer>
+            <flex-item class="panel" style="flex: 1; background-color: orange;">States</flex-item>
+        </flex>
+        <flex-resizer></flex-resizer>
+        <flex-item id="story" class="panel" style="flex: 3; background-color: pink;">
+
+            <div class="flex-parent">
+                <div class="input-flex-container">
+
+                    @{
+                        bool isFirst = true;
+                        foreach (var element in VisualStoryElements)
+                        {
+                            <div class="input @(isFirst ? "active" : "")">
+                                <span data-legend="@(element.GraphNode)" data-caption="@(element.ShortText)"></span>
+                            </div>
+                            isFirst = false;
+                        }
+                    }
+
+                    @* <div class="input">
+                        <span data-year="1910" data-info="headset"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1920" data-info="jungle gym"></span>
+                    </div>
+                    <div class="input active">
+                        <span data-year="1930" data-info="chocolate chip cookie"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1940" data-info="Jeep"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1950" data-info="leaf blower"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1960" data-info="magnetic stripe card"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1970" data-info="wireless LAN"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1980" data-info="flash memory"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="1990" data-info="World Wide Web"></span>
+                    </div>
+                    <div class="input">
+                        <span data-year="2000" data-info="Google AdWords"></span>
+                    </div> *@
+                </div>
+                <div class="description-flex-container">
+
+                    @{
+                        isFirst = true;
+                        foreach (var element in VisualStoryElements)
+                        {
+                            <p class="@(isFirst ? "active" : "")">@(element.LongText)</p>
+                            isFirst = false;
+                        }
+                    }
+
+                    @* <p>And future Call of Duty players would thank them.</p>
+                    <p>Because every kid should get to be Tarzan for a day.</p>
+                    <p class="active">And the world rejoiced.</p>
+                    <p>Because building roads is inconvenient.</p>
+                    <p>Ain’t nobody got time to rake.</p>
+                    <p>Because paper currency is for noobs.</p>
+                    <p>Nobody likes cords. Nobody.</p>
+                    <p>Brighter than glow memory.</p>
+                    <p>To capitalize on an as-yet nascent market for cat photos.</p>
+                    <p>Because organic search rankings take work.</p> *@
+                </div>
+            </div>
+
+        </flex-item>
+        <static-separator />
+        <flex class="h btn-line" style="height:3em; background-color: white;">
+            <flex-item class="btn" style="flex: 1; background-color: orange;">Back (F9)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: lightseagreen;color:white;">Next (F10)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: springgreen;color:black;">Enter (F11)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: orangered;color:white;">Restart (Shift-F5)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: cornflowerblue;color:white;">Fastforward (F5)</flex-item>
+        </flex>
+    </flex>
+</flex>
+
 
 @code {
 
     [Inject]
-    public IJSRuntime js { get; set; } = default!;
+    public IJSRuntime JS { get; set; } = default!;
 
-    public string OutputText { get; set; } = "";
+    public StringBuilder OutputText { get; set; } = new();
+    public List<VisualGraphElement> VisualGraphElements { get; set; } = new();
+    public List<VisualStoryElement> VisualStoryElements { get; set; } = new()
+    {
+        new VisualStoryElement("1", "Hello", "Dialog: Hello"),
+        new VisualStoryElement("2", "T1", "Transition T1 on Object1"),
+        new VisualStoryElement("3", "", "Transition T1 on Object1"),
+    };
+
     public int ViewportWidth { get; set; }
     public int ViewportHeight { get; set; }
 
     private string _synchronisedCodeText = "";
     private System.Timers.Timer? _debounceTimer;
-    private readonly object _lock = new();
-    private ElementReference _canvas;
-    private ElementReference _canvasparent;
 
     [JSInvokable]
     public void OnResize(double width, double height)
     {
-        if (ViewportWidth == width && ViewportHeight == height) return;
+        if (ViewportWidth == width && ViewportHeight == height) 
+            return;
+
         ViewportWidth = (int)width;
         ViewportHeight = (int)height;
         StateHasChanged();
@@ -65,12 +171,9 @@
 
     private void RefreshCanvasRendering()
     {
-        lock (_lock)
-        {
-            // Debounce reset
-            _debounceTimer?.Stop();
-            _debounceTimer?.Start();
-        }
+        // Debounce reset
+        _debounceTimer?.Stop();
+        _debounceTimer?.Start();
     }
 
     protected override Task OnInitializedAsync()
@@ -87,22 +190,27 @@
         return base.OnInitializedAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await UpdateCanvasFromText(TestData.StartingText);
+    }
+
     private async Task UpdateCanvasFromText(string newCode)
     {
-        StringBuilder sb = new();
-
+        Stopwatch sw = Stopwatch.StartNew();
         try
         {
-            Stopwatch sw = Stopwatch.StartNew();
-
-            var canvasContext = await js.GetContext2DAsync(_canvas);
+            OutputText.Clear();
+            VisualGraphElements.Clear();
 
             ScenarioModellingContainer container = new();
             var scope = container.StartScope();
 
-            async void DisposeAll(object? sender, EventArgs args)
+            void DisposeAll(object? sender, EventArgs args)
             {
-                await canvasContext.DisposeAsync();
                 container.Dispose();
                 scope.Dispose();
             }
@@ -117,14 +225,14 @@
             }
             catch (Exception ex)
             {
-                sb.AppendLine(ex.Message);
+                await RenderLog(ex.Message);
 
                 return;
             }
 
             if (context.ValidationErrors.Count != 0)
             {
-                sb.AppendLine(context.ValidationErrors.CommaSeparatedList());
+                await RenderLog(context.ValidationErrors.CommaSeparatedList());
 
                 return;
             }
@@ -133,40 +241,39 @@
 
             if (metaStory != null)
             {
-                Renderer renderer = new(new Vector2(ViewportWidth, ViewportHeight));
+                Renderer renderer = new();
                 renderer.OnDispose += DisposeAll;
 
                 Stopwatch swRender = Stopwatch.StartNew();
 
-                var message = await renderer.Render(metaStory, canvasContext, async (message) => await js.InvokeVoidAsync("console.log", [message]));
+                var message = await renderer.Render(metaStory, VisualGraphElements, RenderLog);
 
                 swRender.Stop();
 
                 if (!string.IsNullOrEmpty(message))
-                    sb.AppendLine(message);
+                    await RenderLog(message);
 
-                sb.AppendLine($"Rendered in {swRender.ElapsedMilliseconds}ms");
+                await RenderLog($"Rendered in {swRender.ElapsedMilliseconds}ms");
             }
-
-            sw.Stop();
-            sb.AppendLine($"Finished in {sw.ElapsedMilliseconds}ms");
         }
         finally
         {
-            await InvokeAsync(() =>
-            {
-                OutputText = sb.ToString();
-                StateHasChanged();
-            });
+            sw.Stop();
+            await RenderLog($"Finished in {sw.ElapsedMilliseconds}ms");
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task RenderLog(string message)
     {
-        if (!firstRender)
-            return;
-
-        await js.InvokeVoidAsync("window.registerViewportChangeCallback", DotNetObjectReference.Create(this));
-        await UpdateCanvasFromText(TestData.StartingText);
+        OutputText.AppendLine(message);
+        var _ =Task.Run(async () => await JS.InvokeVoidAsync("console.log", [message]));
     }
+
+    private async Task OnClickGraphNode(MouseEventArgs args)
+    {
+        // TODO get a reference to the clicked element
+    }
+
 }

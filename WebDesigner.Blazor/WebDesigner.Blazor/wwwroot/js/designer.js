@@ -1,79 +1,115 @@
-﻿document.addEventListener('DOMContentLoaded', function (e1) {
-    const vSep = document.querySelector('.vertical-separator');
-    const left = document.getElementById('left');
-    const topText = document.getElementById('topText');
-    const bottomText = document.getElementById('bottomText');
-    const hSep = document.querySelector('.horizontal-separator');
+﻿function manageResize(md, sizeProp, posProp) {
+	var r = md.target;
 
-    let topRatio = 0.5; // Ratio to preserve relative height
-    console.log('Registering mousedown to ' + vSep);
+	var prev = r.previousElementSibling;
+	var next = r.nextElementSibling;
+	if (!prev || !next) {
+		return;
+	}
 
-    vSep.addEventListener('mousedown', function (e2) {
-        console.log('vSep mousedown triggered');
+	md.preventDefault();
 
-        document.body.style.cursor = 'col-resize';
-        const startX = e.clientX;
-        const startWidth = left.offsetWidth;
+	var prevSize = prev[sizeProp];
+	var nextSize = next[sizeProp];
+	var sumSize = prevSize + nextSize;
+	var prevGrow = Number(prev.style.flexGrow);
+	var nextGrow = Number(next.style.flexGrow);
+	var sumGrow = prevGrow + nextGrow;
+	var lastPos = md[posProp];
 
-        function doDrag(e) {
-            left.style.width = (startWidth + e.clientX - startX) + 'px';
-        }
+	function onMouseMove(mm) {
+		var pos = mm[posProp];
+		var d = pos - lastPos;
+		prevSize += d;
+		nextSize -= d;
+		if (prevSize < 0) {
+			nextSize += prevSize;
+			pos -= prevSize;
+			prevSize = 0;
+		}
+		if (nextSize < 0) {
+			prevSize += nextSize;
+			pos += nextSize;
+			nextSize = 0;
+		}
 
-        function stopDrag() {
-            document.removeEventListener('mousemove', doDrag);
-            document.removeEventListener('mouseup', stopDrag);
-            document.body.style.cursor = 'default';
-        }
+		var prevGrowNew = sumGrow * (prevSize / sumSize);
+		var nextGrowNew = sumGrow * (nextSize / sumSize);
 
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', stopDrag);
-    });
+		prev.style.flexGrow = prevGrowNew;
+		next.style.flexGrow = nextGrowNew;
 
-    console.log('Registering mousedown to ' + hSep.id);
+		lastPos = pos;
+	}
 
-    hSep.addEventListener('mousedown', function (e3) {
-        console.log('hSep mousedown triggered');
+	function onMouseUp(mu) {
+		// Change cursor to signal a state's change: stop resizing.
+		const html = document.querySelector('html');
+		html.style.cursor = 'default';
 
-        document.body.style.cursor = 'row-resize';
-        const startY = e.clientY;
-        const startTopHeight = topText.offsetHeight;
-        const containerHeight = left.offsetHeight;
+		if (posProp === 'pageX') {
+			r.style.cursor = 'ew-resize';
+		} else {
+			r.style.cursor = 'ns-resize';
+		}
 
-        function doDrag(e) {
-            let newTopHeight = startTopHeight + (e.clientY - startY);
-            let newBottomHeight = containerHeight - newTopHeight - hSep.offsetHeight;
+		window.removeEventListener("mousemove", onMouseMove);
+		window.removeEventListener("mouseup", onMouseUp);
+	}
 
-            if (newTopHeight > 50 && newBottomHeight > 50) {
-                topText.style.flex = 'none';
-                bottomText.style.flex = 'none';
-                topText.style.height = newTopHeight + 'px';
-                bottomText.style.height = newBottomHeight + 'px';
-                topRatio = newTopHeight / (newTopHeight + newBottomHeight); // UPDATED: Save ratio
-            }
-        }
+	window.addEventListener("mousemove", onMouseMove);
+	window.addEventListener("mouseup", onMouseUp);
+}
 
-        function stopDrag() {
-            document.removeEventListener('mousemove', doDrag);
-            document.removeEventListener('mouseup', stopDrag);
-            document.body.style.cursor = 'default';
-        }
+function setupResizerEvents() {
+	document.body.addEventListener("mousedown", function (md) {
 
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', stopDrag);
-    });
+		// Used to avoid cursor's flickering
+		const html = document.querySelector('html');
 
-    // UPDATED: Adjust heights on resize
-    window.addEventListener('resize', function () {
-        const containerHeight = left.offsetHeight;
-        const sepHeight = hSep.offsetHeight;
-        const usableHeight = containerHeight - sepHeight;
+		var target = md.target;
+		if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") {
+			return;
+		}
+		var parent = target.parentNode;
+		var h = parent.classList.contains("h");
+		var v = parent.classList.contains("v");
+		if (h && v) {
+			return;
+		} else if (h) {
+			// Change cursor to signal a state's change: begin resizing on H.
+			target.style.cursor = 'col-resize';
+			html.style.cursor = 'col-resize'; // avoid cursor's flickering
 
-        const newTopHeight = usableHeight * topRatio;
-        const newBottomHeight = usableHeight - newTopHeight;
+			// use offsetWidth versus scrollWidth to avoid splitter's jump on resize when content overflow.
+			manageResize(md, "offsetWidth", "pageX");
 
-        topText.style.flex = 'none';
-        bottomText.style.flex = 'none';
-        topText.style.height = newTopHeight + 'px';
-        bottomText.style.height = newBottomHeight + 'px';
-    });
-});
+		} else if (v) {
+			// Change cursor to signal a state's change: begin resizing on V.
+			target.style.cursor = 'row-resize';
+			html.style.cursor = 'row-resize'; // avoid cursor's flickering
+
+			manageResize(md, "offsetHeight", "pageY");
+		}
+	});
+}
+
+setupResizerEvents();
+
+
+
+
+
+// Story timeline
+function SetStoryTimelineSelection() {
+	var inputs = $('.input');
+	var paras = $('.description-flex-container').find('p');
+	inputs.click(function () {
+		var t = $(this),
+			ind = t.index(),
+			matchedPara = paras.eq(ind);
+
+		t.add(matchedPara).addClass('active');
+		inputs.not(t).add(paras.not(matchedPara)).removeClass('active');
+	});
+};

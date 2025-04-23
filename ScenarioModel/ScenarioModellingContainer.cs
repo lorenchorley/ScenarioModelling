@@ -76,7 +76,7 @@ public class ScenarioModellingContainer : IDisposable
 
         // This explicitly excludes the use of the EventLog provider which is windows specific, AddEventLog must not be re-added to this list
         logging.ClearProviders();
-        logging.AddConsole();
+        //logging.AddConsole(); // This is not compatible with a wasm runtime because it directly manipulates threads
         logging.AddDebug();
     }
     

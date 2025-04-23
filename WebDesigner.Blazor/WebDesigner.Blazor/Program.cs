@@ -1,4 +1,3 @@
-using WebDesigner.Blazor.Client.Extensions;
 using WebDesigner.Blazor.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
