@@ -6,7 +6,7 @@ public class Renderer
 {
     public event EventHandler? OnDispose;
 
-    public async Task<string> Render(MetaStory metaStory, List<VisualGraphElement> visualGraphElements, Func<string, Task> debugLog)
+    public async Task Render(MetaStory metaStory, List<VisualGraphElement> visualGraphElements, LogDelegate debugLog)
     {
         try
         {
@@ -18,12 +18,10 @@ public class Renderer
             }
 
             OnDispose?.Invoke(this, EventArgs.Empty);
-
-            return await Task.FromResult($"");
         }
         catch (Exception ex)
         {
-            return await Task.FromResult($"Error: {ex.Message}");
+            await debugLog($"Error: {ex.Message}", OutputItemType.Error);
         }
     }
 }

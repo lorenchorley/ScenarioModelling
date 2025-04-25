@@ -21,9 +21,15 @@
             <textarea id="code-text" @oninput="OnTextChanged">@TestData.StartingText</textarea>
         </flex-item>
         <flex-resizer></flex-resizer>
-        <flex-item style="flex: 1; background-color: darkorange;">
-            <textarea id="output-text">@OutputText</textarea>
-        </flex-item>
+        <flex style="flex: 1; background-color: darkorange;">
+            @* Need to make this scroll *@
+            <flex id="output-text" class="v" style="flex: 1; background-color: darkorange;"> 
+                @foreach (var line in OutputText)
+                {
+                    <flex-item class="output-line @(line.Type.ToString().ToLowerInvariant())">@line.Text</flex-item>
+                }
+            </flex>
+        </flex>
     </flex>
     <flex-resizer></flex-resizer>
     <flex class="v" style="flex: 5;">
@@ -43,7 +49,9 @@
 
             </flex>
             <flex-resizer></flex-resizer>
-            <flex-item class="panel" style="flex: 1; background-color: orange;">States</flex-item>
+            <flex-item class="panel" style="flex: 1; background-color: orange;">
+                <div id="cy" />
+            </flex-item>
         </flex>
         <flex-resizer></flex-resizer>
         <flex-item id="story" class="panel" style="flex: 3; background-color: pink;">
@@ -120,11 +128,11 @@
         </flex-item>
         <static-separator />
         <flex class="h btn-line" style="height:3em; background-color: white;">
-            <flex-item class="btn" style="flex: 1; background-color: orange;">Back (F9)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: lightseagreen;color:white;">Next (F10)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: springgreen;color:black;">Enter (F11)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: orangered;color:white;">Restart (Shift-F5)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: cornflowerblue;color:white;">Fastforward (F5)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: orange;" @onclick="OnClickBackButton">Back (F9)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: lightseagreen;color:white;" @onclick="OnClickNextButton">Next (F10)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: springgreen;color:black;" @onclick="OnClickEnterButton">Enter (F11)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: orangered;color:white;" @onclick="OnClickRestartButton">Restart (Shift-F5)</flex-item>
+            <flex-item class="btn" style="flex: 1; background-color: cornflowerblue;color:white;" @onclick="OnClickFastForwardButton">Fastforward (F5)</flex-item>
         </flex>
     </flex>
 </flex>
@@ -135,7 +143,7 @@
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
-    public StringBuilder OutputText { get; set; } = new();
+    public List<OutputItem> OutputText { get; set; } = new();
     public List<VisualGraphElement> VisualGraphElements { get; set; } = new();
     public List<VisualStoryElement> VisualStoryElements { get; set; } = new()
     {
@@ -144,23 +152,23 @@
         new VisualStoryElement("3", "", "Transition T1 on Object1"),
     };
 
-    public int ViewportWidth { get; set; }
-    public int ViewportHeight { get; set; }
+    // public int ViewportWidth { get; set; }
+    // public int ViewportHeight { get; set; }
 
     private string _synchronisedCodeText = "";
     private System.Timers.Timer? _debounceTimer;
 
-    [JSInvokable]
-    public void OnResize(double width, double height)
-    {
-        if (ViewportWidth == width && ViewportHeight == height) 
-            return;
+    // [JSInvokable]
+    // public void OnResize(double width, double height)
+    // {
+    //     if (ViewportWidth == width && ViewportHeight == height) 
+    //         return;
 
-        ViewportWidth = (int)width;
-        ViewportHeight = (int)height;
-        StateHasChanged();
-        RefreshCanvasRendering();
-    }
+    //     ViewportWidth = (int)width;
+    //     ViewportHeight = (int)height;
+    //     StateHasChanged();
+    //     RefreshCanvasRendering();
+    // }
 
     private void OnTextChanged(ChangeEventArgs args)
     {
@@ -195,6 +203,7 @@
         if (!firstRender)
             return;
 
+        await JS.InvokeVoidAsync("window.initJSInterop", DotNetObjectReference.Create(this));
         await UpdateCanvasFromText(TestData.StartingText);
     }
 
@@ -225,14 +234,14 @@
             }
             catch (Exception ex)
             {
-                await RenderLog(ex.Message);
+                await RenderLog(ex.Message, OutputItemType.Error);
 
                 return;
             }
 
             if (context.ValidationErrors.Count != 0)
             {
-                await RenderLog(context.ValidationErrors.CommaSeparatedList());
+                await RenderLog(context.ValidationErrors.CommaSeparatedList(), OutputItemType.Error);
 
                 return;
             }
@@ -244,31 +253,30 @@
                 Renderer renderer = new();
                 renderer.OnDispose += DisposeAll;
 
+                await RenderLog($"Preparation time : {sw.ElapsedMilliseconds}ms");
+
                 Stopwatch swRender = Stopwatch.StartNew();
 
-                var message = await renderer.Render(metaStory, VisualGraphElements, RenderLog);
+                await renderer.Render(metaStory, VisualGraphElements, RenderLog);
 
                 swRender.Stop();
 
-                if (!string.IsNullOrEmpty(message))
-                    await RenderLog(message);
-
-                await RenderLog($"Rendered in {swRender.ElapsedMilliseconds}ms");
+                await RenderLog($"Render time : {swRender.ElapsedMilliseconds}ms");
             }
         }
         finally
         {
             sw.Stop();
-            await RenderLog($"Finished in {sw.ElapsedMilliseconds}ms");
+            await RenderLog($"Total time: {sw.ElapsedMilliseconds}ms");
 
             await InvokeAsync(StateHasChanged);
         }
     }
 
-    private async Task RenderLog(string message)
+    private async Task RenderLog(string message, OutputItemType type = OutputItemType.Info)
     {
-        OutputText.AppendLine(message);
-        var _ =Task.Run(async () => await JS.InvokeVoidAsync("console.log", [message]));
+        OutputText.Add(new(message, type));
+        var _ = Task.Run(async () => await JS.InvokeVoidAsync("console.log", [message]));
     }
 
     private async Task OnClickGraphNode(MouseEventArgs args)
@@ -276,4 +284,34 @@
         // TODO get a reference to the clicked element
     }
 
+
+    [JSInvokable]
+    public async Task OnClickBackButton()
+    {
+
+    }
+
+    [JSInvokable]
+    public async Task OnClickNextButton()
+    {
+
+    }
+
+    [JSInvokable]
+    public async Task OnClickEnterButton()
+    {
+
+    }
+
+    [JSInvokable]
+    public async Task OnClickRestartButton()
+    {
+
+    }
+
+    [JSInvokable]
+    public async Task OnClickFastForwardButton()
+    {
+        
+    }
 }
