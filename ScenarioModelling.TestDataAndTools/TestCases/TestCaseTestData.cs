@@ -206,7 +206,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -214,7 +213,6 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        
       }
       ExpectedStates {
         Actor.State S2
@@ -242,7 +240,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -253,7 +250,6 @@ public class TestCaseTestData
         Actor.State S2
       }
       ExpectedStates {
-        
       }
     }
     """)]
@@ -276,7 +272,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -311,7 +306,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -346,7 +340,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -381,7 +374,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -416,7 +408,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }
@@ -451,7 +442,6 @@ public class TestCaseTestData
       Dialog {
         Text "Changing the state"
       }
-      
       Transition {
         Actor : T1
       }

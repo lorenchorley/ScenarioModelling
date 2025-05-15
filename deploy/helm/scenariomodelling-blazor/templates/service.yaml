@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  {{- if .Values.app.useNamespace }}
+  namespace: {{ .Values.app.namespace }}
+  {{- end }}
+  labels:
+    app: {{ .Values.app.name }}
+spec:
+  selector:
+    app: {{ .Values.app.name }}
+  type: NodePort # ClusterIP, LoadBalancer
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.exposedPort }} # Port exposed by the service (external)
+    targetPort: {{ .Values.pod.containerPort }} # The port inside the pod/container, the port the "Service" forwards traffic to inside the pod
+    nodePort: {{ .Values.app.externalPort }} # Optional: external NodePort (range: 30000-32767), only necessary when the type is NodePort

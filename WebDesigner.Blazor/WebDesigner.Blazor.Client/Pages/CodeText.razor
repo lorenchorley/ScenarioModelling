@@ -1,0 +1,7 @@
+﻿<textarea id="code-text" @oninput="OnChanged">@TestData.StartingText</textarea>
+
+@code {
+
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnChanged { get; set; }
+}

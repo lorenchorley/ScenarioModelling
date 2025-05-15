@@ -76,7 +76,7 @@ flex-item:has(> textarea) {
     color: white;
     background-color: darkorange;
     resize: none;
-
+    overflow-y: auto;
 }
 
 
@@ -122,7 +122,7 @@ flex-item:has(> textarea) {
 .graph-node.active:hover {
     background-color: #00ffc14f;
 }
-#graph {
+#meta-story-graph {
     padding: 10px;
 }
 

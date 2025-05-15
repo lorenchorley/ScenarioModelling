@@ -3,7 +3,7 @@ using ScenarioModelling.CoreObjects.Visitors;
 
 namespace WebDesigner.Blazor.Client.Rendering;
 
-public class SemiLinearSubGraphRenderer(List<VisualGraphElement> visualGraphElements, LogDelegate debugLog, int indent) : IMetaStoryAsyncVisitor
+public class SemiLinearSubGraphRenderer(List<VisualMetaStoryGraphElement> visualGraphElements, LogDelegate debugLog, int indent) : IMetaStoryAsyncVisitor
 {
     public async Task DrawNextDot(string type, string text)
     {

@@ -1,0 +1,22 @@
+﻿@using ScenarioModelling
+@using ScenarioModelling.Serialisation.CustomSerialiser.Reserialisation
+@using System.Diagnostics
+@using System.Text
+@using WebDesigner.Blazor.Client.Rendering
+@using WebDesigner.Blazor.Client.Services
+
+<div id="output-text" style="background-color: darkorange;">
+
+    @foreach (var line in TextLines)
+    {
+        <div class="output-line @(line.Type.ToString().ToLowerInvariant())">@line.Text</div>
+    }
+
+</div>
+
+@code {
+
+    [Parameter]
+    public List<OutputItem> TextLines { get; set; } = new();
+
+}

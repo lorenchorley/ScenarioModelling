@@ -1,0 +1,27 @@
+# Compilation results
+**/bin/
+**/obj/
+
+# Test projects
+*.Tests/
+
+# Tools
+.vs/
+.git/
+.github/
+
+# Nuget cache
+nuget/
+
+# Unit test results
+TestResults/
+
+# Unused projects
+WebDesigner/
+WebDesignerAPI/
+
+# Powershell scripts
+*.ps1
+
+# Temporary images
+*.temp.tar

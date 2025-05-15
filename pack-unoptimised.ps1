@@ -1,1 +1,0 @@
-dotnet pack -c Debug --output .\nuget --include-symbols --include-source .\ScenarioModel\ScenarioModelling.csproj -p:NuspecFile=.\FunctionalModelling-unoptimised.nuspec

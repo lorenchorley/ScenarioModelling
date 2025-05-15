@@ -1,0 +1,1 @@
+helm template helm/scenariomodelling-blazor -f helm/scenariomodelling-blazor/values.local.yaml --set app.useNamespace=false > deployment-blazor.g.yaml

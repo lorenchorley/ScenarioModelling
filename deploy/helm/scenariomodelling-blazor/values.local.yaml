@@ -1,0 +1,19 @@
+app:
+  name: scenariomodelling
+  useNamespace: false
+  namespace: scenariomodelling
+  externalPort: 30080 # Optional: external NodePort (range: 30000-32767), only necessary when the type is NodePort
+
+service:
+  name: service-scenariomodelling
+  exposedPort: 80 # Port exposed by the service (external)
+
+pod:
+  replicaCount: 1
+  containerPort: 8080 # The port inside the pod/container, the port the "Service" forwards traffic to inside the pod
+  image:
+    name: scenariomodelling
+    repository: lchorley
+    pullPolicy: IfNotPresent
+  env:
+    environment: Local-Development

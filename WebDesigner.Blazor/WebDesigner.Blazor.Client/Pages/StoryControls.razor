@@ -1,0 +1,25 @@
+﻿<flex class="h btn-line" style="height:3em; background-color: white;">
+    <flex-item class="btn" style="flex: 1; background-color: orange;" @onclick="OnClickBackButton">Back (F9)</flex-item>
+    <flex-item class="btn" style="flex: 1; background-color: lightseagreen;color:white;" @onclick="OnClickNextButton">Next (F10)</flex-item>
+    <flex-item class="btn" style="flex: 1; background-color: springgreen;color:black;" @onclick="OnClickEnterButton">Enter (F11)</flex-item>
+    <flex-item class="btn" style="flex: 1; background-color: orangered;color:white;" @onclick="OnClickRestartButton">Restart (Shift-F5)</flex-item>
+    <flex-item class="btn" style="flex: 1; background-color: cornflowerblue;color:white;" @onclick="OnClickFastForwardButton">Fastforward (F5)</flex-item>
+</flex>
+
+@code {
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickBackButton { get; set; }
+    
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickNextButton { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickEnterButton { get; set; }
+    
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickRestartButton { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickFastForwardButton { get; set; }
+}

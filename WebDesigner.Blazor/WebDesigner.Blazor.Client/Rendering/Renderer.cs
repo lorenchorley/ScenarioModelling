@@ -6,7 +6,7 @@ public class Renderer
 {
     public event EventHandler? OnDispose;
 
-    public async Task Render(MetaStory metaStory, List<VisualGraphElement> visualGraphElements, LogDelegate debugLog)
+    public async Task Render(MetaStory metaStory, List<VisualMetaStoryGraphElement> visualGraphElements, LogDelegate debugLog)
     {
         try
         {

@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_VERSION=
+WORKDIR /src
+
+COPY . .
+
+RUN echo "Listing structure of /src" && find . -type d
+
+WORKDIR /src/WebDesigner.Blazor/WebDesigner.Blazor
+
+RUN dotnet publish "WebDesigner.Blazor.csproj" -c Release -o /app/publish /p:Version="${BUILD_VERSION}"
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
+WORKDIR /app
+COPY --from=build /app/publish .
+#USER nonroot
+ENTRYPOINT ["dotnet", "WebDesigner.Blazor.dll"]

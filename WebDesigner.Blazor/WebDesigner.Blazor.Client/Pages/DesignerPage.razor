@@ -18,122 +18,46 @@
 <flex class="h" style="flex: 1; width: 100vw !important; height:100vh !important;">
     <flex class="v" style="flex: 3">
         <flex-item style="flex: 5;background-color: indianred;">
-            <textarea id="code-text" @oninput="OnTextChanged">@TestData.StartingText</textarea>
+            
+            <CodeText OnChanged="@OnTextChanged" />
+
         </flex-item>
         <flex-resizer></flex-resizer>
         <flex style="flex: 1; background-color: darkorange;">
-            @* Need to make this scroll *@
-            <flex id="output-text" class="v" style="flex: 1; background-color: darkorange;"> 
-                @foreach (var line in OutputText)
-                {
-                    <flex-item class="output-line @(line.Type.ToString().ToLowerInvariant())">@line.Text</flex-item>
-                }
-            </flex>
+
+            <OutputText TextLines="@OutputText" />
+
         </flex>
     </flex>
     <flex-resizer></flex-resizer>
     <flex class="v" style="flex: 5;">
-        <flex-item id="story-and-graph-header" class="panel" style="height:3em; background-color: aquamarine;">Header</flex-item>
+        
+        <Header/>
+        
         <static-separator />
+
         <flex class="h" style="flex: 7">
-            <flex id="graph" class="panel v" style="flex: 1; background-color: cornflowerblue;">
+            
+            <MetaStoryGraph VisualGraphElements="@VisualGraphElements" OnClickGraphNode="@OnClickGraphNode" />
 
-                @foreach (var element in VisualGraphElements)
-                {
-                    <flex class="graph-node @(element.Type)" @onclick="OnClickGraphNode">
-                        <flex-item style="width:@(element.indent)em;"></flex-item>
-                        <flex-item class="shape"></flex-item>
-                        <flex-item style="flex: 1">@(element.text)</flex-item>
-                    </flex>
-                }
-
-            </flex>
             <flex-resizer></flex-resizer>
-            <flex-item class="panel" style="flex: 1; background-color: orange;">
-                <div id="cy" />
-            </flex-item>
+
+            <StateGraph />
+
         </flex>
+
         <flex-resizer></flex-resizer>
-        <flex-item id="story" class="panel" style="flex: 3; background-color: pink;">
 
-            <div class="flex-parent">
-                <div class="input-flex-container">
+        <StoryTimeline VisualStoryElements="@VisualStoryElements" />
 
-                    @{
-                        bool isFirst = true;
-                        foreach (var element in VisualStoryElements)
-                        {
-                            <div class="input @(isFirst ? "active" : "")">
-                                <span data-legend="@(element.GraphNode)" data-caption="@(element.ShortText)"></span>
-                            </div>
-                            isFirst = false;
-                        }
-                    }
-
-                    @* <div class="input">
-                        <span data-year="1910" data-info="headset"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1920" data-info="jungle gym"></span>
-                    </div>
-                    <div class="input active">
-                        <span data-year="1930" data-info="chocolate chip cookie"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1940" data-info="Jeep"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1950" data-info="leaf blower"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1960" data-info="magnetic stripe card"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1970" data-info="wireless LAN"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1980" data-info="flash memory"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="1990" data-info="World Wide Web"></span>
-                    </div>
-                    <div class="input">
-                        <span data-year="2000" data-info="Google AdWords"></span>
-                    </div> *@
-                </div>
-                <div class="description-flex-container">
-
-                    @{
-                        isFirst = true;
-                        foreach (var element in VisualStoryElements)
-                        {
-                            <p class="@(isFirst ? "active" : "")">@(element.LongText)</p>
-                            isFirst = false;
-                        }
-                    }
-
-                    @* <p>And future Call of Duty players would thank them.</p>
-                    <p>Because every kid should get to be Tarzan for a day.</p>
-                    <p class="active">And the world rejoiced.</p>
-                    <p>Because building roads is inconvenient.</p>
-                    <p>Ain’t nobody got time to rake.</p>
-                    <p>Because paper currency is for noobs.</p>
-                    <p>Nobody likes cords. Nobody.</p>
-                    <p>Brighter than glow memory.</p>
-                    <p>To capitalize on an as-yet nascent market for cat photos.</p>
-                    <p>Because organic search rankings take work.</p> *@
-                </div>
-            </div>
-
-        </flex-item>
         <static-separator />
-        <flex class="h btn-line" style="height:3em; background-color: white;">
-            <flex-item class="btn" style="flex: 1; background-color: orange;" @onclick="OnClickBackButton">Back (F9)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: lightseagreen;color:white;" @onclick="OnClickNextButton">Next (F10)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: springgreen;color:black;" @onclick="OnClickEnterButton">Enter (F11)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: orangered;color:white;" @onclick="OnClickRestartButton">Restart (Shift-F5)</flex-item>
-            <flex-item class="btn" style="flex: 1; background-color: cornflowerblue;color:white;" @onclick="OnClickFastForwardButton">Fastforward (F5)</flex-item>
-        </flex>
+
+        <StoryControls OnClickBackButton="@OnClickBackButton"
+                       OnClickNextButton="@OnClickNextButton"
+                       OnClickEnterButton="@OnClickEnterButton"
+                       OnClickRestartButton="@OnClickRestartButton"
+                       OnClickFastForwardButton="@OnClickFastForwardButton" />
+    
     </flex>
 </flex>
 
@@ -144,12 +68,13 @@
     public IJSRuntime JS { get; set; } = default!;
 
     public List<OutputItem> OutputText { get; set; } = new();
-    public List<VisualGraphElement> VisualGraphElements { get; set; } = new();
-    public List<VisualStoryElement> VisualStoryElements { get; set; } = new()
+
+    public List<VisualMetaStoryGraphElement> VisualGraphElements { get; set; } = new();
+    public List<VisualStoryTimeLineElement> VisualStoryElements { get; set; } = new()
     {
-        new VisualStoryElement("1", "Hello", "Dialog: Hello"),
-        new VisualStoryElement("2", "T1", "Transition T1 on Object1"),
-        new VisualStoryElement("3", "", "Transition T1 on Object1"),
+        new VisualStoryTimeLineElement("1", "Hello", "Dialog: Hello"),
+        new VisualStoryTimeLineElement("2", "T1", "Transition T1 on Object1"),
+        new VisualStoryTimeLineElement("3", "", "Transition T1 on Object1"),
     };
 
     // public int ViewportWidth { get; set; }
@@ -161,7 +86,7 @@
     // [JSInvokable]
     // public void OnResize(double width, double height)
     // {
-    //     if (ViewportWidth == width && ViewportHeight == height) 
+    //     if (ViewportWidth == width && ViewportHeight == height)
     //         return;
 
     //     ViewportWidth = (int)width;
@@ -210,6 +135,7 @@
     private async Task UpdateCanvasFromText(string newCode)
     {
         Stopwatch sw = Stopwatch.StartNew();
+
         try
         {
             OutputText.Clear();
@@ -218,11 +144,11 @@
             ScenarioModellingContainer container = new();
             var scope = container.StartScope();
 
-            void DisposeAll(object? sender, EventArgs args)
+            var disposeAll = (EventHandler)((object? sender, EventArgs args) =>
             {
                 container.Dispose();
                 scope.Dispose();
-            }
+            });
 
             var context =
                 scope.Context
@@ -251,7 +177,7 @@
             if (metaStory != null)
             {
                 Renderer renderer = new();
-                renderer.OnDispose += DisposeAll;
+                renderer.OnDispose += disposeAll;
 
                 await RenderLog($"Preparation time : {sw.ElapsedMilliseconds}ms");
 
@@ -262,6 +188,10 @@
                 swRender.Stop();
 
                 await RenderLog($"Render time : {swRender.ElapsedMilliseconds}ms");
+            }
+            else
+            {
+                disposeAll(null, EventArgs.Empty);
             }
         }
         finally
@@ -312,6 +242,6 @@
     [JSInvokable]
     public async Task OnClickFastForwardButton()
     {
-        
+
     }
 }

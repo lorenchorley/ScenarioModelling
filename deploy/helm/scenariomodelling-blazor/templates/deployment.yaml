@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  {{- if .Values.app.useNamespace }}
+  namespace: {{ .Values.app.namespace }}
+  {{- end }}
+  labels:
+    app: {{ .Values.app.name }}  
+spec:
+  replicas: {{ .Values.pod.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+    spec:
+      containers:
+      - name: {{ .Values.app.name }}
+        image: "{{ tpl .Values.pod.image.repository $ }}/{{ .Values.pod.image.name }}:{{ .Values.pod.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.pod.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.pod.containerPort }} # The port your app listens on inside the container
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: {{ tpl .Values.pod.env.environment $ | quote }}
+          name: ASPNETCORE_URLS
+          value: "http://0.0.0.0:{{ .Values.pod.containerPort }}" # Necessary so that the app listens on all interfaces and so is accessible from outside the container, test using : kubectl exec <podname> -- netstat -tuln | grep 8080

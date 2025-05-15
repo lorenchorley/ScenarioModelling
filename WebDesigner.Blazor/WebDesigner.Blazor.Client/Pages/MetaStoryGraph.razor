@@ -1,0 +1,22 @@
+﻿@using WebDesigner.Blazor.Client.Rendering
+
+<flex id="meta-story-graph" class="panel v" style="flex: 1; background-color: cornflowerblue;">
+
+    @foreach (var element in VisualGraphElements)
+    {
+        <flex class="graph-node @(element.Type)" @onclick="OnClickGraphNode">
+            <flex-item style="width:@(element.indent)em;"></flex-item>
+            <flex-item class="shape"></flex-item>
+            <flex-item style="flex: 1">@(element.text)</flex-item>
+        </flex>
+    }
+
+</flex>
+
+@code {
+    [Parameter]
+    public List<VisualMetaStoryGraphElement> VisualGraphElements { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickGraphNode { get; set; }
+}

@@ -136,3 +136,9 @@ _NCrunch*
 bin/
 obj/
 nuget/
+
+# Temporary images
+**/*.temp.tar
+
+# Generated yaml files
+**/*.g.yaml
