@@ -13,7 +13,7 @@ public class ActiveHookFunctions : InactiveHookFunctions
     private readonly HookContextBuilder _contextBuilder;
     private readonly ParallelConstructionExecutor? _parallelConstructionExecutor;
 
-    public ActiveHookFunctions(Stack<SubgraphScopedHookSynchroniser> scopeStack, Queue<INodeHookDefinition> newlyCreatedHooks, Queue<IStoryNode> contextBuilderInputs, HookContextBuilder contextBuilder, ParallelConstructionExecutor? parallelConstructionExecutor)
+    public ActiveHookFunctions(Stack<SubgraphScopedHookSynchroniser> scopeStack, Queue<IHookDefinition> newlyCreatedHooks, Queue<IStoryNode> contextBuilderInputs, HookContextBuilder contextBuilder, ParallelConstructionExecutor? parallelConstructionExecutor)
         : base(newlyCreatedHooks)
     {
         _scopeStack = scopeStack;
@@ -40,24 +40,32 @@ public class ActiveHookFunctions : InactiveHookFunctions
         _scopeStack.Pop();
     }
 
-    public override void FinaliseDefinition(INodeHookDefinition hookDefinition)
+    public override void FinaliseDefinition(IHookDefinition hookDefinition)
     {
         // Must be done after all properties have been set via the fluent API
         //INodeHookDefinition hookDefinition = _newlyCreatedHooks.Dequeue();
-        hookDefinition.Scope.AddOrVerifyInPhase(
-            hookDefinition,
-            add: () =>
-            {
-                IStoryNode newNode = hookDefinition.GetNode();
 
-                _contextBuilderInputs.Enqueue(newNode); // TODO Remove the inputs class, it's too much
-                _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
+        if (hookDefinition is INodeHookDefinition nodeHookDefinition)
+        {
+            nodeHookDefinition.Scope.AddOrVerifyInPhase(
+                nodeHookDefinition,
+                add: () =>
+                {
+                    IStoryNode newNode = nodeHookDefinition.GetNode();
 
-                //ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
-                //_parallelConstructionExecutor!.AddNodeToStoryAndAdvance(newNode); // TODO This generates an extra event sometimes after RegisterEventForHook has already created one. It's not clear which should win out and when
-            },
-            existing: hookDefinition.ReplaceNodeWithExisting
-        );
+                    _contextBuilderInputs.Enqueue(newNode); // TODO Remove the inputs class, it's too much
+                    _contextBuilder.RefreshContextWithInputs(_contextBuilderInputs);
+
+                    //ArgumentNullExceptionStandard.ThrowIfNull(_parallelConstructionExecutor);
+                    //_parallelConstructionExecutor!.AddNodeToStoryAndAdvance(newNode); // TODO This generates an extra event sometimes after RegisterEventForHook has already created one. It's not clear which should win out and when
+                },
+                existing: nodeHookDefinition.ReplaceNodeWithExisting
+            );
+        } 
+        else if (hookDefinition is ITestCaseHookDefinition testCaseHookDefinition)
+        {
+            
+        }
     }
 
     public override void RegisterEventForHook(INodeHookDefinition hookDefinition, Action<IMetaStoryEvent> configure)

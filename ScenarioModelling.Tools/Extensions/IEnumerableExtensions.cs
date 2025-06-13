@@ -51,7 +51,7 @@ public static class IEnumerableExtensions
             Option<R> evaluated = selector(item);
             if (evaluated.IsSome)
             {
-                chosen.Add((R)evaluated.Case);
+                chosen.Add((R)evaluated.Case!);
             }
             else
             {

@@ -31,6 +31,7 @@ public static class ServiceExtensions
         services.AddScoped<ExpressionInterpreter>();
         services.AddScoped<ExpressionInitialiser>();
         services.AddScoped<ExpressionSerialiser>();
+        services.AddScoped<TestCaseSerialiser>();
 
         MetaStoryNodeExhaustivity.DoForEachNodeType(
             assert: () => services.AddScoped<AssertNodeSerialiser>(),

@@ -21,7 +21,7 @@ public abstract class HookOrchestrator
     protected readonly Stack<SubgraphScopedHookSynchroniser> _scopeStack = new();
     protected readonly Queue<IStoryNode> _contextBuilderInputs;
     protected readonly HookContextBuilder _contextBuilder;
-    protected readonly Queue<INodeHookDefinition> _newlyCreatedHooks = new();
+    protected readonly Queue<IHookDefinition> _newlyCreatedHooks = new();
     protected readonly Instanciator _instanciator;
     private readonly MetaStoryDefinitionStack _metaStoryStack;
     protected readonly IServiceProvider _serviceProvider;
@@ -501,7 +501,10 @@ public abstract class HookOrchestrator
 
     public TestCaseHookDefinition TestCase(string name, string metaStoryName)
     {
-        TestCaseHookDefinition hookDefinition = new(name, Context, metaStoryName);
+        ArgumentNullExceptionStandard.ThrowIfNull(_metaStoryHookFunctions);
+        _metaStoryHookFunctions.VerifyPreviousDefinition();
+
+        TestCaseHookDefinition hookDefinition = new(name, Context, metaStoryName, _metaStoryHookFunctions);
 
         return hookDefinition;
     }

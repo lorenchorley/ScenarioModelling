@@ -5,7 +5,7 @@ using ScenarioModelling.CoreObjects.Visitors;
 
 namespace ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
 
-public interface IMetaStateObject : ICategoryClass, IIdentifiable
+public interface IMetaStateObject : ICategoryClass, ICoreObject
 {
     object Accept(IMetaStateVisitor visitor);
     //string? LineInformation { get; }

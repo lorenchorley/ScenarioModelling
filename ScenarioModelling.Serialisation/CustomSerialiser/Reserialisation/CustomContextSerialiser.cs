@@ -15,15 +15,17 @@ public class CustomContextSerialiser : IContextSerialiser
     private readonly IServiceProvider _serviceProvider;
     private readonly MetaStorySerialiser _metaStorySerialiser;
     private readonly MetaStateSerialiser _systemSerialiser;
+    private readonly TestCaseSerialiser _testCaseSerialiser;
     private Dictionary<string, string> _configuration = new();
 
     private bool UseCompression => _configuration.TryGetValue("Compress", out string useCompression) && useCompression.IsEqv("true");
 
-    public CustomContextSerialiser(IServiceProvider serviceProvider, MetaStorySerialiser metaStorySerialiser, MetaStateSerialiser systemSerialiser)
+    public CustomContextSerialiser(IServiceProvider serviceProvider, MetaStorySerialiser metaStorySerialiser, MetaStateSerialiser systemSerialiser, TestCaseSerialiser testCaseSerialiser)
     {
         _serviceProvider = serviceProvider;
         _metaStorySerialiser = metaStorySerialiser;
         _systemSerialiser = systemSerialiser;
+        _testCaseSerialiser = testCaseSerialiser;
     }
 
     public void SetConfigurationOptions(Dictionary<string, string> configuration)
@@ -69,6 +71,8 @@ public class CustomContextSerialiser : IContextSerialiser
         {
             _metaStorySerialiser.WriteMetaStory(sb, metaStory, "");
         }
+
+        _testCaseSerialiser.WriteTestCases(sb, context.TestCases, "");
 
         string serialisedContext = sb.ToString();
 

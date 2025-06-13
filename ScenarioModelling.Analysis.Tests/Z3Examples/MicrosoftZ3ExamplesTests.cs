@@ -15,7 +15,7 @@ namespace ScenarioModelling.Analysis.Tests.Z3;
 [TestClass]
 public sealed class MicrosoftZ3ExamplesTests
 {
-    private static new Dictionary<string, string> ModelGenerationSettings = new Dictionary<string, string>() { { "model", "true" } };
+    private static Dictionary<string, string> ModelGenerationSettings = new Dictionary<string, string>() { { "model", "true" } };
     public static IEnumerable<object[]> ModelGenerationExamples
         => [
             ["BasicTests"],
@@ -45,7 +45,7 @@ public sealed class MicrosoftZ3ExamplesTests
             ["FloatingPointExample2"]
         ];
 
-    private static new Dictionary<string, string> ProofGenerationSettings = new Dictionary<string, string>() { { "proof", "true" } };
+    private static Dictionary<string, string> ProofGenerationSettings = new Dictionary<string, string>() { { "proof", "true" } };
     public static IEnumerable<object[]> ProofGenerationExamples
         => [
             ["ProveExample1"],
@@ -61,7 +61,7 @@ public sealed class MicrosoftZ3ExamplesTests
             ["UnsatCoreAndProofExample2"]
         ];
 
-    private static new Dictionary<string, string> ProofGenerationAndAutoConfigSettings = new Dictionary<string, string>() { { "proof", "true" }, { "auto-config", "false" } };
+    private static Dictionary<string, string> ProofGenerationAndAutoConfigSettings = new Dictionary<string, string>() { { "proof", "true" }, { "auto-config", "false" } };
     public static IEnumerable<object[]> ProofGenerationAndAutoConfigExamples
       => [
             ["QuantifierExample3"],
@@ -85,7 +85,7 @@ public sealed class MicrosoftZ3ExamplesTests
             Global.ToggleWarningMessages(true);
             Log.Open("test.log");
 
-            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) ?? throw new MemberAccessException();
 
             // These examples need model generation turned on.
             using (Context ctx = new Context(ModelGenerationSettings))
@@ -119,7 +119,7 @@ public sealed class MicrosoftZ3ExamplesTests
             Global.ToggleWarningMessages(true);
             Log.Open("test.log");
 
-            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) ?? throw new MemberAccessException();
 
             // These examples need model generation turned on.
             using (Context ctx = new Context(ProofGenerationSettings))
@@ -153,7 +153,7 @@ public sealed class MicrosoftZ3ExamplesTests
             Global.ToggleWarningMessages(true);
             Log.Open("test.log");
 
-            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) ?? throw new MemberAccessException();
 
             // These examples need model generation turned on.
             using (Context ctx = new Context(ProofGenerationAndAutoConfigSettings))
@@ -187,7 +187,7 @@ public sealed class MicrosoftZ3ExamplesTests
             Global.ToggleWarningMessages(true);
             Log.Open("test.log");
 
-            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo method = typeof(MicrosoftZ3Examples).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) ?? throw new MemberAccessException();
 
             // These examples need model generation turned on.
             method.Invoke(null, []);

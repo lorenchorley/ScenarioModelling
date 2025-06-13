@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseVSTest>true</UseVSTest>
+    <NoWarn>MSB3270</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

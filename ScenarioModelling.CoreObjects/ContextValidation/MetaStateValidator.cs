@@ -33,7 +33,7 @@ public class MetaStateValidator : IMetaStateVisitor
     }
 
 
-    private MetaState? _system;
+    private MetaState _system;
 
     public ValidationErrors Validate(MetaState system)
     {

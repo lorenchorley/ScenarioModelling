@@ -1,13 +1,14 @@
 ﻿using LanguageExt.Common;
 using ScenarioModelling.CoreObjects.ContextValidation;
 using ScenarioModelling.CoreObjects.ContextValidation.Errors;
+using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 using ScenarioModelling.CoreObjects.References;
 using ScenarioModelling.CoreObjects.References.Interfaces;
-using ScenarioModelling.CoreObjects.MetaStateObjects;
+using ScenarioModelling.CoreObjects.TestCaseNodes;
+using ScenarioModelling.Tools.Collections.Graph;
 using YamlDotNet.Serialization;
 using Relation = ScenarioModelling.CoreObjects.MetaStateObjects.Relation;
-using ScenarioModelling.Tools.Collections.Graph;
-using ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
 namespace ScenarioModelling.CoreObjects;
 
@@ -18,6 +19,8 @@ public class Context
     public List<MetaStory> MetaStories { get; private set; } = new();
 
     public MetaState MetaState { get; private set; }
+
+    public List<TestCase> TestCases { get; private set; } = new();
 
     [YamlIgnore]
     public List<IContextSerialiser> Serialisers { get; set; } = new();

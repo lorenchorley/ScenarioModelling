@@ -74,7 +74,7 @@ public class StringInterpolator(MetaState metaState)
 
             return entity.State.ResolvedValue?.Name ?? "Not set";
         }
-
+        
         throw new Exception($"Property not found: {propertyName}");
     }
 }

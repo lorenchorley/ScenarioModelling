@@ -8,9 +8,9 @@ namespace ScenarioModelling.CodeHooks.Utils;
 
 public class InactiveHookFunctions : IMetaStoryHookFunctions
 {
-    private readonly Queue<INodeHookDefinition> _newlyCreatedHooks;
+    private readonly Queue<IHookDefinition> _newlyCreatedHooks;
 
-    public InactiveHookFunctions(Queue<INodeHookDefinition> newlyCreatedHooks)
+    public InactiveHookFunctions(Queue<IHookDefinition> newlyCreatedHooks)
     {
         _newlyCreatedHooks = newlyCreatedHooks;
     }
@@ -31,7 +31,7 @@ public class InactiveHookFunctions : IMetaStoryHookFunctions
         if (_newlyCreatedHooks.Count > 1)
             throw new HookException("Only one definition should have been create since the last call");
 
-        INodeHookDefinition previousDefinition = _newlyCreatedHooks.Dequeue();
+        IHookDefinition previousDefinition = _newlyCreatedHooks.Dequeue();
 
         if (!previousDefinition.Validated)
             throw new HookException("Previous definition was not validated, call the Build method to finalise the hook definition");
@@ -47,7 +47,7 @@ public class InactiveHookFunctions : IMetaStoryHookFunctions
         throw new InternalLogicException($"{nameof(ReturnOneScopeLevel)} called without starting a meta story via hooks");
     }
 
-    public virtual void FinaliseDefinition(INodeHookDefinition hookDefinition)
+    public virtual void FinaliseDefinition(IHookDefinition hookDefinition)
     {
         throw new InternalLogicException($"{nameof(FinaliseDefinition)} called without starting a meta story via hooks");
     }

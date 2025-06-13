@@ -15,6 +15,9 @@ using Microsoft.Z3;
 using System.Collections;
 
 namespace ScenarioModelling.Analysis.Tests.Z3;
+
+#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 public class MicrosoftZ3Examples
 {
     public class TestFailedException : Exception
@@ -858,7 +861,7 @@ public class MicrosoftZ3Examples
         }
 
         Symbol s = ctx.MkSymbol(42);
-        IntSymbol si = s as IntSymbol;
+        IntSymbol si = (IntSymbol)s;
         if (si == null) throw new TestFailedException();
         try
         {
@@ -890,7 +893,7 @@ public class MicrosoftZ3Examples
         }
 
         Sort srt = ctx.MkBitVecSort(32);
-        BitVecSort bvs = null;
+        BitVecSort? bvs = null;
         try
         {
             bvs = (BitVecSort)srt;
@@ -918,13 +921,13 @@ public class MicrosoftZ3Examples
         }
 
         AST a = ctx.MkInt(42);
-        Expr ae = a as Expr;
+        Expr ae = (Expr)a;
         if (ae == null) throw new TestFailedException();
-        ArithExpr aae = a as ArithExpr;
+        ArithExpr aae = (ArithExpr)a;
         if (aae == null) throw new TestFailedException();
-        IntExpr aie = a as IntExpr;
+        IntExpr aie = (IntExpr)a;
         if (aie == null) throw new TestFailedException();
-        IntNum ain = a as IntNum;
+        IntNum ain = (IntNum)a;
         if (ain == null) throw new TestFailedException();
 
 
@@ -975,7 +978,7 @@ public class MicrosoftZ3Examples
             uint cnt = 0;
             while (q.Count > 0)
             {
-                AST cur = (AST)q.Dequeue();
+                AST cur = (AST)q.Dequeue()!;
                 cnt++;
 
                 // This here ...
@@ -1561,7 +1564,7 @@ public class MicrosoftZ3Examples
         Expr nil, l1, l2, x, y, u, v;
         BoolExpr fml, fml1;
         string[] head_tail = new string[] { "car", "cdr" };
-        Sort[] sorts = new Sort[] { null, null };
+        Sort?[] sorts = new Sort?[] { null, null };
         uint[] sort_refs = new uint[] { 0, 0 };
         Constructor nil_con, cons_con;
 
@@ -1638,11 +1641,11 @@ public class MicrosoftZ3Examples
         // points to 'forest', which has index 0.
         //
         Symbol[] head_tail1 = new Symbol[] { ctx.MkSymbol("head"), ctx.MkSymbol("tail") };
-        Sort[] sorts1 = new Sort[] { null, null };
+        Sort?[] sorts1 = new Sort?[] { null, null };
         uint[] sort1_refs = new uint[] { 1, 0 }; // the first item points to a tree, the second to a forest
 
         Symbol[] head_tail2 = new Symbol[] { ctx.MkSymbol("car"), ctx.MkSymbol("cdr") };
-        Sort[] sorts2 = new Sort[] { null, null };
+        Sort?[] sorts2 = new Sort?[] { null, null };
         uint[] sort2_refs = new uint[] { 0, 0 }; // both items point to the forest datatype.
         Constructor nil1_con, cons1_con, nil2_con, cons2_con;
         Constructor[] constructors1 = new Constructor[2], constructors2 = new Constructor[2];
@@ -1743,7 +1746,7 @@ public class MicrosoftZ3Examples
         solver.Assert(ctx.MkGt(x, two));
 
         /* find model for the constraints above */
-        Model model = null;
+        Model? model = null;
         if (Status.SATISFIABLE == solver.Check())
         {
             model = solver.Model;
@@ -1791,7 +1794,7 @@ public class MicrosoftZ3Examples
         solver.Assert(ctx.MkEq(ctx.MkApp(first, tup1), ctx.MkApp(first, tup2)));
 
         /* find model for the constraints above */
-        Model model = null;
+        Model? model = null;
         if (Status.SATISFIABLE == solver.Check())
         {
             model = solver.Model;
@@ -2203,3 +2206,5 @@ public class MicrosoftZ3Examples
     //    }
     //}
 }
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8603 // Possible null reference return.

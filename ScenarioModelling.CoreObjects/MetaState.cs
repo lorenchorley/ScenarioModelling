@@ -1,114 +1,110 @@
-﻿using Newtonsoft.Json;
-using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
-using ScenarioModelling.CoreObjects.References;
+﻿using ScenarioModelling.CoreObjects.Expressions.SemanticTree;
 using ScenarioModelling.CoreObjects.MetaStateObjects;
-using ScenarioModelling.CoreObjects.MetaStateObjects.Interfaces;
-using YamlDotNet.Serialization;
 
 namespace ScenarioModelling.CoreObjects;
 
 public class MetaState
 {
-    public List<Entity> Entities { get; set; } = new();
+    public List<Entity> Entities { get; } = new();
 
-    public List<EntityType> EntityTypes { get; set; } = new();
+    public List<EntityType> EntityTypes { get; } = new();
 
-    public List<Aspect> Aspects { get; set; } = new();
+    public List<Aspect> Aspects { get; } = new();
 
-    public List<State> States { get; set; } = new();
+    public List<State> States { get; } = new();
 
-    public List<StateMachine> StateMachines { get; set; } = new();
+    public List<StateMachine> StateMachines { get; } = new();
 
-    public List<Relation> Relations { get; set; } = new();
+    public List<Relation> Relations { get; } = new();
 
-    public List<Transition> Transitions { get; set; } = new();
+    public List<Transition> Transitions { get; } = new();
 
-    public List<Constraint> Constraints { get; set; } = new();
+    public List<Constraint> Constraints { get; } = new();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<EntityReference> AllEntityReferences
-        => Enumerable.Empty<EntityReference>()
-                     .Concat(Aspects.Select(e => e.Entity.ReferenceOnly))
-                     .Where(s => s != null)
-                     .Cast<EntityReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<EntityReference> AllEntityReferences
+    //    => Enumerable.Empty<EntityReference>()
+    //                 .Concat(Aspects.Select(e => e.Entity.ReferenceOnly))
+    //                 .Where(s => s != null)
+    //                 .Cast<EntityReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<EntityTypeReference> AllEntityTypeReferences
-        => Enumerable.Empty<EntityTypeReference>()
-                     .Concat(Entities.Select(e => e.EntityType.ReferenceOnly))
-                     .Where(s => s != null)
-                     .Cast<EntityTypeReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<EntityTypeReference> AllEntityTypeReferences
+    //    => Enumerable.Empty<EntityTypeReference>()
+    //                 .Concat(Entities.Select(e => e.EntityType.ReferenceOnly))
+    //                 .Where(s => s != null)
+    //                 .Cast<EntityTypeReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<AspectReference> AllAspectReferences
-        => Enumerable.Empty<AspectReference>()
-                     .Concat(Entities.SelectMany(e => e.Aspects.AllReferencesOnly))
-                     .Where(s => s != null)
-                     .Cast<AspectReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<AspectReference> AllAspectReferences
+    //    => Enumerable.Empty<AspectReference>()
+    //                 .Concat(Entities.SelectMany(e => e.Aspects.AllReferencesOnly))
+    //                 .Where(s => s != null)
+    //                 .Cast<AspectReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<StateReference> AllStateReferences
-        => AllStateful.Select(e => e.State.ReferenceOnly)
-                      .Concat(StateMachines.SelectMany(sm => sm.States.AllReferencesOnly))
-                      .Append(Transitions.Select(t => t.SourceState.ReferenceOnly))
-                      .Append(Transitions.Select(t => t.DestinationState.ReferenceOnly))
-                      .Where(s => s != null)
-                      .Cast<StateReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<StateReference> AllStateReferences
+    //    => AllStateful.Select(e => e.State.ReferenceOnly)
+    //                  .Concat(StateMachines.SelectMany(sm => sm.States.AllReferencesOnly))
+    //                  .Append(Transitions.Select(t => t.SourceState.ReferenceOnly))
+    //                  .Append(Transitions.Select(t => t.DestinationState.ReferenceOnly))
+    //                  .Where(s => s != null)
+    //                  .Cast<StateReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<StateMachineReference> AllStateMachineReferences
-        => Enumerable.Empty<StateMachineReference>()
-                     .Concat(Aspects.Select(e => e.AspectType?.StateMachine.ReferenceOnly))
-                     .Concat(EntityTypes.Select(e => e.StateMachine.ReferenceOnly))
-                     .Where(s => s != null)
-                     .Cast<StateMachineReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<StateMachineReference> AllStateMachineReferences
+    //    => Enumerable.Empty<StateMachineReference>()
+    //                 .Concat(Aspects.Select(e => e.AspectType?.StateMachine.ReferenceOnly))
+    //                 .Concat(EntityTypes.Select(e => e.StateMachine.ReferenceOnly))
+    //                 .Where(s => s != null)
+    //                 .Cast<StateMachineReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<RelationReference> AllRelationReferences
-        => Enumerable.Empty<RelationReference>()
-                     .Concat(AllRelatable.SelectMany(e => e.Relations.AllReferencesOnly))
-                     .Where(s => s != null)
-                     .Cast<RelationReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<RelationReference> AllRelationReferences
+    //    => Enumerable.Empty<RelationReference>()
+    //                 .Concat(AllRelatable.SelectMany(e => e.Relations.AllReferencesOnly))
+    //                 .Where(s => s != null)
+    //                 .Cast<RelationReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<TransitionReference> AllTransitionReferences
-        => Enumerable.Empty<TransitionReference>()
-                     .Concat(StateMachines.SelectMany(s => s.Transitions.AllReferencesOnly))
-                     .Where(s => s != null)
-                     .Cast<TransitionReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<TransitionReference> AllTransitionReferences
+    //    => Enumerable.Empty<TransitionReference>()
+    //                 .Concat(StateMachines.SelectMany(s => s.Transitions.AllReferencesOnly))
+    //                 .Where(s => s != null)
+    //                 .Cast<TransitionReference>();
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<IStateful> AllStateful
-        => Enumerable.Empty<IStateful>()
-                     .Concat(Entities)
-                     .Concat(AllAspects)
-                     .Concat(Relations);
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<IStateful> AllStateful
+    //    => Enumerable.Empty<IStateful>()
+    //                 .Concat(Entities)
+    //                 .Concat(AllAspects)
+    //                 .Concat(Relations);
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<IRelatable> AllRelatable
-        => Enumerable.Empty<IRelatable>()
-                     .Concat(Entities)
-                     .Concat(Entities.SelectMany(x => x.Aspects));
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<IRelatable> AllRelatable
+    //    => Enumerable.Empty<IRelatable>()
+    //                 .Concat(Entities)
+    //                 .Concat(Entities.SelectMany(x => x.Aspects));
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<Aspect> AllAspects
-        => Enumerable.Empty<Aspect>()
-                     .Concat(Entities.SelectMany(x => x.Aspects));
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<Aspect> AllAspects
+    //    => Enumerable.Empty<Aspect>()
+    //                 .Concat(Entities.SelectMany(x => x.Aspects));
 
-    [JsonIgnore]
-    [YamlIgnore]
-    public IEnumerable<ConstraintReference> AllConstraintReferences
-        => Enumerable.Empty<ConstraintReference>();
+    //[JsonIgnore]
+    //[YamlIgnore]
+    //public IEnumerable<ConstraintReference> AllConstraintReferences
+    //    => Enumerable.Empty<ConstraintReference>();
 
     public MetaState()
     {

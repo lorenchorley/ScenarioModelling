@@ -10,6 +10,6 @@ public interface IMetaStoryHookFunctions
     void VerifyPreviousDefinition();
     SubgraphScopedHookSynchroniser EnterSubgraph(SemiLinearSubGraph<IStoryNode> subgraph);
     void ReturnOneScopeLevel();
-    void FinaliseDefinition(INodeHookDefinition hookDefinition);
+    void FinaliseDefinition(IHookDefinition hookDefinition);
     void RegisterEventForHook(INodeHookDefinition hookDefinition, Action<IMetaStoryEvent> configure);
 }

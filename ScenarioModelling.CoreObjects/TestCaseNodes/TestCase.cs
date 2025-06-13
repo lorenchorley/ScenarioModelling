@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
-using ScenarioModelling.CoreObjects.TestCaseNodes.BaseClasses;
+using ScenarioModelling.CoreObjects.TestCaseNodes.Interfaces;
 
 namespace ScenarioModelling.CoreObjects.TestCaseNodes;
 
 /// <summary>
 /// 
 /// </summary>
-public class TestCase : ITestCaseNode, IIdentifiable
+public class TestCase : ITestCaseNode
 {
     public string Name { get; set; } = "";
 
@@ -16,6 +16,9 @@ public class TestCase : ITestCaseNode, IIdentifiable
     public Context Context { get; private set; }
 
     public string MetaStoryName { get; private set; }
+
+    public Dictionary<string, string> InitialStates { get; private set; } = new();
+    public Dictionary<string, string> FinalStates { get; private set; } = new();
 
     public TestCase(Context context, string metaStoryName)
     {

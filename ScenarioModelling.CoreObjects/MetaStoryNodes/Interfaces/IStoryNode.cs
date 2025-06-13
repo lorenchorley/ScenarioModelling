@@ -5,7 +5,7 @@ using ScenarioModelling.Tools.Collections.Graph;
 
 namespace ScenarioModelling.CoreObjects.MetaStoryNodes.Interfaces;
 
-public interface IStoryNode : ICategoryClass, IDirectedGraphNode<IStoryNode>, IIdentifiable
+public interface IStoryNode : ICategoryClass, IDirectedGraphNode<IStoryNode>, ICoreObject
 {
     /// <summary>
     /// The line number in the source file where the node is defined, if the node came from a serialised source file

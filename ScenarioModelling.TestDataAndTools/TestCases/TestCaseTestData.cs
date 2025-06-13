@@ -42,7 +42,7 @@ public class TestCaseTestData
     public static void MetaStateOneActorTwoStates(MetaStateHookDefinition config)
     {
         config.Entity("Actor")
-               .SetState("S1");
+              .SetState("S1");
 
         config.StateMachine("SM1")
                .WithState("S1")
@@ -173,6 +173,36 @@ public class TestCaseTestData
                .WithTransition("S1", "S2", "T1")
                .WithTransition("S2", "S3", "T1");
     }
+
+    [ExpectedSerialisedForm(
+    """
+    Entity Actor {
+      State S1
+    }
+    Entity StatelessEntity {
+    }
+    StateMachine SM1 {
+      State S1
+      State S2
+      State S3
+      S1 -> S2 : T1
+      S2 -> S3 : T1
+    }
+    """)]
+    public static void MetaStateTwoEntities_OneWithoutState(MetaStateHookDefinition config)
+    {
+        config.Entity("Actor")
+              .SetState("S1");
+
+        config.Entity("StatelessEntity");
+
+        config.StateMachine("SM1")
+              .WithState("S1")
+              .WithState("S2")
+              .WithState("S3")
+              .WithTransition("S1", "S2", "T1")
+              .WithTransition("S2", "S3", "T1");
+    }
     #endregion
 
     [ExpectedSerialisedForm(
@@ -191,6 +221,7 @@ public class TestCaseTestData
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
              .BuildAndRegister();
+
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
@@ -215,7 +246,7 @@ public class TestCaseTestData
       InitialStates {
       }
       ExpectedStates {
-        Actor.State S2
+        Actor S2
       }
     }
     """)]
@@ -223,8 +254,46 @@ public class TestCaseTestData
     public static void OneStateChange_OneAssertion_Succeeds(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
+             .AddFinalState("Actor", "S2")
+             .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Transition("Actor", "T1")
+             .BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+    
+    
+    [ExpectedSerialisedForm(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Changing the state"
+      }
+      Transition {
+        Actor : T1
+      }
+    }
+
+    TestCase "Main test case" {
+      InitialStates {
+        Actor.State S1
+      }
+      ExpectedStates {
+        Actor.State S2
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorTwoStates))]
+    public static void OneStateChange_OneAssertionOnExplicitStateProperty_Succeeds(HookOrchestrator hooks)
+    {
+        hooks.TestCase("Main test case", "MetaStory recorded by hooks")
              .AddFinalState("Actor.State", "S2")
              .BuildAndRegister();
+
 
         hooks.StartMetaStory("MetaStory recorded by hooks");
 
@@ -247,7 +316,7 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
       }
       ExpectedStates {
       }
@@ -257,8 +326,11 @@ public class TestCaseTestData
     public static void OneStateChange_InitialStateDifferent_NoAssertions_Succeeds(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
+             .AddInitialState("Actor", "S2")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
@@ -279,10 +351,10 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
       }
       ExpectedStates {
-        Actor.State S3
+        Actor S3
       }
     }
     """)]
@@ -290,16 +362,19 @@ public class TestCaseTestData
     public static void OneStateChange_InitialStateDifferent_OneAssertion_Succeeds(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
-             .AddFinalState("Actor.State", "S3")
+             .AddInitialState("Actor", "S2")
+             .AddFinalState("Actor", "S3")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
 
         hooks.EndMetaStory();
     }
-    
+
     [ExpectedSerialisedForm(
     """
     MetaStory "MetaStory recorded by hooks" {
@@ -313,27 +388,31 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
       }
       ExpectedStates {
-        Actor.State S3
+        Actor S2
       }
     }
     """)]
     [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
-    public static void OneState_MultipleInitialStates_OneAssertion_Fails_OnUnknownEntity(HookOrchestrator hooks)
+    [ExpectedTestFailureResult("Final state of Actor was S3, not S2 as expected")]
+    public static void OneStateChange_InitialStateDifferent_OneAssertion_Fails_OnAssertion(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
-             .AddFinalState("Actor.State", "S3")
+             .AddInitialState("Actor", "S2")
+             .AddFinalState("Actor", "S2")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
 
         hooks.EndMetaStory();
     }
-    
+
     [ExpectedSerialisedForm(
     """
     MetaStory "MetaStory recorded by hooks" {
@@ -347,20 +426,26 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
+        StatelessEntity S1
       }
       ExpectedStates {
-        Actor.State S3
+        Actor S3
       }
     }
     """)]
-    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateTwoEntities_OneWithoutState))]
+    [ExpectedTestFailureResult("State S1 cannot be assigned to entity 'StatelessEntity' that was defined without a state", isError: true)]
     public static void OneState_MultipleInitialStates_OneAssertion_Fails_OnEntityWithoutState(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
-             .AddFinalState("Actor.State", "S3")
+             .AddInitialState("Actor", "S2")
+             .AddInitialState("StatelessEntity", "S1")
+             .AddFinalState("Actor", "S3")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
@@ -381,10 +466,48 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
       }
       ExpectedStates {
-        Actor.State S3
+        Actor S3
+      }
+    }
+    """)]
+    [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
+    [ExpectedTestFailureResult("TODO", isError: true)]
+    public static void OneState_MultipleInitialStates_OneAssertion_Fails_OnUndefinedEntity(HookOrchestrator hooks)
+    {
+        hooks.TestCase("Main test case", "MetaStory recorded by hooks")
+             .AddInitialState("Actor", "S2")
+             .AddFinalState("Actor", "S3")
+             .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
+
+        hooks.Transition("Actor", "T1")
+             .BuildAndRegister();
+
+        hooks.EndMetaStory();
+    }
+    
+    [ExpectedSerialisedForm(
+    """
+    MetaStory "MetaStory recorded by hooks" {
+      Dialog {
+        Text "Changing the state"
+      }
+      Transition {
+        Actor : T1
+      }
+    }
+
+    TestCase "Main test case" {
+      InitialStates {
+        Actor S2
+      }
+      ExpectedStates {
+        Actor S3
       }
     }
     """)]
@@ -392,9 +515,12 @@ public class TestCaseTestData
     public static void OneState_MultipleAssertions_Fails_OnUnknownEntity(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
-             .AddFinalState("Actor.State", "S3")
+             .AddInitialState("Actor", "S2")
+             .AddFinalState("Actor", "S3")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
@@ -415,20 +541,24 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
       }
       ExpectedStates {
-        Actor.State S3
+        Actor S3
       }
     }
     """)]
     [AssociatedMetaStateHookMethod(nameof(MetaStateOneActorThreeStates))]
+    [ExpectedTestFailureResult("TODO")]
     public static void OneState_MultipleAssertions_Fails_OnEntityWithoutState(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
-             .AddFinalState("Actor.State", "S3")
+             .AddInitialState("Actor", "S2")
+             .AddFinalState("Actor", "S3")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();
@@ -449,10 +579,10 @@ public class TestCaseTestData
 
     TestCase "Main test case" {
       InitialStates {
-        Actor.State S2
+        Actor S2
       }
       ExpectedStates {
-        Actor.State S3
+        Actor S3
       }
     }
     """)]
@@ -460,9 +590,12 @@ public class TestCaseTestData
     public static void MultipleStates_OneAssertion_Succeeds(HookOrchestrator hooks)
     {
         hooks.TestCase("Main test case", "MetaStory recorded by hooks")
-             .AddInitialState("Actor.State", "S2")
-             .AddFinalState("Actor.State", "S3")
+             .AddInitialState("Actor", "S2")
+             .AddFinalState("Actor", "S3")
              .BuildAndRegister();
+
+
+        hooks.StartMetaStory("MetaStory recorded by hooks");
 
         hooks.Transition("Actor", "T1")
              .BuildAndRegister();

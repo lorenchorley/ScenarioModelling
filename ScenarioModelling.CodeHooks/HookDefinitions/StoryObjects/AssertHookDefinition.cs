@@ -65,7 +65,6 @@ public class AssertHookDefinition : IInSituNodeHookDefinition
     {
         Validate();
         _hookFunctions.FinaliseDefinition(this);
-        _hookFunctions.RegisterEventForHook(this, _ => { });
     }
 
     public void ReplaceNodeWithExisting(IStoryNode preexistingNode)
