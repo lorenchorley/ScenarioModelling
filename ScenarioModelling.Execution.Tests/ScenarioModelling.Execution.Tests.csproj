@@ -25,7 +25,7 @@
     <ProjectReference Include="..\ScenarioModelling.Serialisation\ScenarioModelling.Serialisation.csproj" />
     <ProjectReference Include="..\ScenarioModelling.TestDataAndTools\ScenarioModelling.TestDataAndTools.csproj" />
     <ProjectReference Include="..\ScenarioModelling.Tools\ScenarioModelling.Tools.csproj" />
-    <ProjectReference Include="..\ScenarioModel\ScenarioModelling.csproj" />
+    <ProjectReference Include="..\ScenarioModel\ScenarioModelling.Package.csproj" />
   </ItemGroup>
 
   <ItemGroup>

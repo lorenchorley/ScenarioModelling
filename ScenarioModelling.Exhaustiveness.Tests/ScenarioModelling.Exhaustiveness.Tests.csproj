@@ -24,7 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ScenarioModelling.Exhaustiveness\ScenarioModelling.Exhaustiveness.csproj" />
     <ProjectReference Include="..\ScenarioModelling.TestDataAndTools\ScenarioModelling.TestDataAndTools.csproj" />
-    <ProjectReference Include="..\ScenarioModel\ScenarioModelling.csproj" />
+    <ProjectReference Include="..\ScenarioModel\ScenarioModelling.Package.csproj" />
   </ItemGroup>
 
   <ItemGroup>
